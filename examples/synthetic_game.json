@@ -1,0 +1,15 @@
+{
+  "metadata": {"title": "Synthetic choice benchmark (not the game)", "fidelity": "verified_game_rules"},
+  "start": "arrival",
+  "nodes": {
+    "arrival": {"id":"arrival","type":"scene","chapter":"demo-1","character":"Investigator","heading":"Arrival","description":"You enter a locked laboratory and notice a damaged sensor.","dialogue":[{"speaker":"Guard","text":"The sensor may explain the alarm.","source_keys":[]}],"observations":["Sensor is damaged"],"next":"first_decision"},
+    "first_decision": {"id":"first_decision","type":"choice","chapter":"demo-1","character":"Investigator","heading":"The laboratory","description":"You can investigate the sensor or enter the storage room.","options":[{"id":"inspect","label":"Inspect the sensor","next":"sensor_outcome","effects":{"flags":{"sensor_inspected":true}},"requirements_unverified":[]},{"id":"storage","label":"Enter the storage room","next":"storage_outcome","effects":{"flags":{"sensor_inspected":false}},"requirements_unverified":[]}]},
+    "sensor_outcome": {"id":"sensor_outcome","type":"scene","chapter":"demo-1","character":"Investigator","heading":"Investigation","description":"You find a maintenance code on the damaged sensor.","dialogue":[],"observations":["Maintenance code 204"],"next":"ch2"},
+    "storage_outcome": {"id":"storage_outcome","type":"scene","chapter":"demo-1","character":"Investigator","heading":"Storage","description":"You find empty shelves, but not the maintenance code.","dialogue":[],"observations":[],"next":"ch2"},
+    "ch2": {"id":"ch2","type":"scene","chapter":"demo-2","character":"Investigator","heading":"Control room","description":"The security console requires evidence to unlock.","dialogue":[],"observations":[],"next":"gate"},
+    "gate": {"id":"gate","type":"condition","chapter":"demo-2","branches":[{"condition_text":"Sensor was inspected","when":{"flag":"sensor_inspected","equals":true},"next":"has_code"}],"next":"no_code"},
+    "has_code": {"id":"has_code","type":"scene","chapter":"demo-2","character":"Investigator","heading":"Unlocked","description":"The maintenance code opens the console.","dialogue":[],"observations":[],"next":"end"},
+    "no_code": {"id":"no_code","type":"scene","chapter":"demo-2","character":"Investigator","heading":"Blocked","description":"You cannot open the console without the code.","dialogue":[],"observations":[],"next":"end"},
+    "end": {"id":"end","type":"ending","chapter":"demo-2","description":"Experiment complete"}
+  }
+}

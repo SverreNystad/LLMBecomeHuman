@@ -1,0 +1,16 @@
+{
+  "nodes": {
+    "REPLACE_WITH_REAL_CHOICE_NODE_ID": {
+      "options": {
+        "option_0": {"effects":{"flags":{"example_choice_taken":true}}}
+      }
+    },
+    "REPLACE_WITH_REAL_CONDITION_NODE_ID": {
+      "branches": [
+        {"condition_text":"Example prerequisite verified manually",
+         "when":{"flag":"example_choice_taken","equals":true},
+         "next":"REPLACE_WITH_REAL_TARGET_NODE_ID"}
+      ]
+    }
+  }
+}

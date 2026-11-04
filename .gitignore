@@ -1,0 +1,25 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local runs and source-derived transcripts (may contain copyrighted content)
+runs/
+data/
+upstream-detroit/
+
+# Python/editor cache
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+.coverage
+htmlcov/
+.DS_Store
+.idea/
+.vscode/

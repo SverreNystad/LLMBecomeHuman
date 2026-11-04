@@ -1,0 +1,47 @@
+# Dashboard and experiment runner use the SAME image: FastAPI serves the static frontend.
+# Run with `docker compose up --build -d dashboard`.
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: llm-become-human:local
+    command:
+      - python
+      - -m
+      - detroit_benchmark
+      - dashboard
+      - --runs-dir
+      - /app/runs
+      - --graphs-dir
+      - /app/data
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+    ports:
+      - "127.0.0.1:${DASHBOARD_PORT:-8000}:8000"
+    volumes:
+      - ./runs:/app/runs:ro
+      # Show bundled synthetic previews alongside real saved runs.
+      - ./demo_runs:/app/runs/previews:ro
+      - ./data:/app/data:ro
+    restart: unless-stopped
+
+  # On-demand worker/CLI, not automatically started by `up` (avoids accidental API bills).
+  # Example: docker compose run --rm runner play /app/examples/synthetic_game.json ...
+  runner:
+    image: llm-become-human:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    profiles: ["tools"]
+    entrypoint: ["python", "-m", "detroit_benchmark"]
+    command: ["--help"]
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./runs:/app/runs
+      - ./data:/app/data
+      - ./upstream-detroit:/app/upstream-detroit:ro

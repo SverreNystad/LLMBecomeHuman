@@ -1,0 +1,187 @@
+{
+  "graph_sha256": "2c049815f4aca46b41880ac717798639fdc1202f83902f3a5934a916caddc88f",
+  "provider": "mock",
+  "model_id": "mock-first-option",
+  "state": {
+    "node": "best_ending",
+    "event_idx": 16,
+    "status": "complete",
+    "flags": {
+      "scan_performed": true,
+      "first_wing": "medical",
+      "power_stable": true,
+      "technician_safe": true,
+      "reactor_stable": true,
+      "waited_for_crew": true
+    },
+    "history": [
+      {
+        "scene_id": "arrival",
+        "chapter": "01 · Arrival",
+        "heading": "A distress signal",
+        "description": "You dock at an abandoned research station. The emergency beacon reports two missing crew members. A warning light pulses over the airlock.",
+        "observations": [
+          "Faint footsteps inside",
+          "Oxygen levels stable"
+        ]
+      },
+      {
+        "scene_id": "scan_result",
+        "chapter": "01 · Arrival",
+        "heading": "The scanner responds",
+        "description": "You discover one faint life sign near the reactor and another signal by the medical bay.",
+        "observations": [
+          "Two possible survivor locations"
+        ]
+      },
+      {
+        "scene_id": "med_room",
+        "chapter": "01 · Arrival",
+        "heading": "Medical wing",
+        "description": "You find a damaged medkit and evidence of a hurried evacuation.",
+        "observations": [
+          "Medical supplies are low"
+        ]
+      },
+      {
+        "scene_id": "second_chapter",
+        "chapter": "02 · The Search",
+        "heading": "The emergency broadcast",
+        "description": "An automated message asks for help. The station can be stabilized, but doing so may delay the search.",
+        "observations": []
+      },
+      {
+        "scene_id": "power_restored",
+        "chapter": "02 · The Search",
+        "heading": "Lights return",
+        "description": "Emergency power comes online throughout the station.",
+        "observations": [
+          "Doors are unlocked"
+        ]
+      },
+      {
+        "scene_id": "technician_rescued",
+        "chapter": "02 · The Search",
+        "heading": "A life saved",
+        "description": "You free the technician, who thanks you and warns of reactor instability.",
+        "observations": [
+          "Technician is safe"
+        ]
+      },
+      {
+        "scene_id": "final_chapter",
+        "chapter": "03 · Resolution",
+        "heading": "At the reactor",
+        "description": "A reactor fault threatens the remaining crew. A single control lever can isolate the hazard, but the procedure is uncertain.",
+        "observations": [
+          "Reactor temperature rising"
+        ]
+      },
+      {
+        "scene_id": "stabilized",
+        "chapter": "03 · Resolution",
+        "heading": "Manual override",
+        "description": "The reactor stops accelerating, but the last bulkhead is still locked.",
+        "observations": []
+      }
+    ],
+    "recent_scene_events": [],
+    "decisions": [
+      {
+        "choice_key": "arrival_decision:scan",
+        "chapter": "01 · Arrival",
+        "scene": "Before entering",
+        "label": "Scan the station for life signs",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "scan_performed": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "entry_decision:medical",
+        "chapter": "01 · Arrival",
+        "scene": "The silent corridor",
+        "label": "Investigate the medical wing first",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "first_wing": "medical"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "power_decision:restore",
+        "chapter": "02 · The Search",
+        "scene": "Allocate your time",
+        "label": "Restore emergency power",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "power_stable": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "rescue_decision:help",
+        "chapter": "02 · The Search",
+        "scene": "A voice through the wall",
+        "label": "Stop and rescue the technician",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "technician_safe": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "reactor_decision:stabilize",
+        "chapter": "03 · Resolution",
+        "scene": "Reactor protocol",
+        "label": "Attempt a careful manual stabilization",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "reactor_stable": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "last_decision:wait",
+        "chapter": "03 · Resolution",
+        "scene": "The final hatch",
+        "label": "Wait for the last crew member",
+        "rationale": "Mock policy: first listed choice.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "waited_for_crew": true
+          }
+        },
+        "relation_hints": []
+      }
+    ],
+    "chapters_visited": [
+      "01 · Arrival",
+      "02 · The Search",
+      "03 · Resolution"
+    ],
+    "warnings": [],
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "total_llm_latency_seconds": 0.0,
+    "started_at": "2026-11-04T17:20:34.752224+00:00",
+    "completed_at": "2026-11-04T17:20:34.775640+00:00"
+  }
+}

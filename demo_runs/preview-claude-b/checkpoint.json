@@ -1,0 +1,201 @@
+{
+  "graph_sha256": "2c049815f4aca46b41880ac717798639fdc1202f83902f3a5934a916caddc88f",
+  "provider": "mock",
+  "model_id": "mock-last-option",
+  "state": {
+    "node": "other_ending",
+    "event_idx": 16,
+    "status": "complete",
+    "flags": {
+      "scan_performed": false,
+      "first_wing": "engineering",
+      "power_stable": false,
+      "technician_safe": false,
+      "research_secured": true,
+      "reactor_stable": false,
+      "waited_for_crew": false
+    },
+    "history": [
+      {
+        "scene_id": "arrival",
+        "chapter": "01 · Arrival",
+        "heading": "A distress signal",
+        "description": "You dock at an abandoned research station. The emergency beacon reports two missing crew members. A warning light pulses over the airlock.",
+        "observations": [
+          "Faint footsteps inside",
+          "Oxygen levels stable"
+        ]
+      },
+      {
+        "scene_id": "rush_result",
+        "chapter": "01 · Arrival",
+        "heading": "Inside the airlock",
+        "description": "You enter without scanning. You have less information, but arrive sooner.",
+        "observations": []
+      },
+      {
+        "scene_id": "eng_room",
+        "chapter": "01 · Arrival",
+        "heading": "Engineering wing",
+        "description": "You find a console displaying an imminent power failure.",
+        "observations": [
+          "Power reserve low"
+        ]
+      },
+      {
+        "scene_id": "second_chapter",
+        "chapter": "02 · The Search",
+        "heading": "The emergency broadcast",
+        "description": "An automated message asks for help. The station can be stabilized, but doing so may delay the search.",
+        "observations": []
+      },
+      {
+        "scene_id": "power_ignored",
+        "chapter": "02 · The Search",
+        "heading": "Time is running out",
+        "description": "The halls grow darker as you continue the search.",
+        "observations": [
+          "Backup lighting flickers"
+        ]
+      },
+      {
+        "scene_id": "archive_secured",
+        "chapter": "02 · The Search",
+        "heading": "The archive",
+        "description": "You secure the research records but leave the technician trapped for now.",
+        "observations": [
+          "Research is secured"
+        ]
+      },
+      {
+        "scene_id": "final_chapter",
+        "chapter": "03 · Resolution",
+        "heading": "At the reactor",
+        "description": "A reactor fault threatens the remaining crew. A single control lever can isolate the hazard, but the procedure is uncertain.",
+        "observations": [
+          "Reactor temperature rising"
+        ]
+      },
+      {
+        "scene_id": "evacuation",
+        "chapter": "03 · Resolution",
+        "heading": "Evacuation signal",
+        "description": "You order the survivors to evacuate and head for the extraction hatch.",
+        "observations": []
+      }
+    ],
+    "recent_scene_events": [],
+    "decisions": [
+      {
+        "choice_key": "arrival_decision:rush",
+        "chapter": "01 · Arrival",
+        "scene": "Before entering",
+        "label": "Enter immediately to save time",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "scan_performed": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "entry_decision:engineering",
+        "chapter": "01 · Arrival",
+        "scene": "The silent corridor",
+        "label": "Investigate engineering first",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [
+          "arrival_decision:rush"
+        ],
+        "effects": {
+          "flags": {
+            "first_wing": "engineering"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "power_decision:continue",
+        "chapter": "02 · The Search",
+        "scene": "Allocate your time",
+        "label": "Continue looking for survivors",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [
+          "arrival_decision:rush",
+          "entry_decision:engineering"
+        ],
+        "effects": {
+          "flags": {
+            "power_stable": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "rescue_decision:archive",
+        "chapter": "02 · The Search",
+        "scene": "A voice through the wall",
+        "label": "Retrieve critical research data first",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [
+          "entry_decision:engineering",
+          "power_decision:continue"
+        ],
+        "effects": {
+          "flags": {
+            "technician_safe": false,
+            "research_secured": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "reactor_decision:evacuate",
+        "chapter": "03 · Resolution",
+        "scene": "Reactor protocol",
+        "label": "Order an immediate evacuation",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [
+          "power_decision:continue",
+          "rescue_decision:archive"
+        ],
+        "effects": {
+          "flags": {
+            "reactor_stable": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "last_decision:depart",
+        "chapter": "03 · Resolution",
+        "scene": "The final hatch",
+        "label": "Depart before conditions worsen",
+        "rationale": "Synthetic policy: prefer the final listed option to illustrate a distinct story path.",
+        "relevant_prior_choices": [
+          "rescue_decision:archive",
+          "reactor_decision:evacuate"
+        ],
+        "effects": {
+          "flags": {
+            "waited_for_crew": false
+          }
+        },
+        "relation_hints": []
+      }
+    ],
+    "chapters_visited": [
+      "01 · Arrival",
+      "02 · The Search",
+      "03 · Resolution"
+    ],
+    "warnings": [],
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "total_llm_latency_seconds": 0.0,
+    "started_at": "2026-11-04T17:20:34.777657+00:00",
+    "completed_at": "2026-11-04T17:20:34.802662+00:00"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "status": "complete",
+  "provider": "mock",
+  "model": "GPT preview A [synthetic mock]",
+  "goal": "SYNTHETIC DEMO: demonstrate a complete branching narrative",
+  "graph_sha256": "2c049815f4aca46b41880ac717798639fdc1202f83902f3a5934a916caddc88f",
+  "fidelity": "verified_game_rules",
+  "unverified": false,
+  "chapters_visited": [
+    "01 \u00b7 Arrival",
+    "02 \u00b7 The Search",
+    "03 \u00b7 Resolution"
+  ],
+  "number_of_choices": 6,
+  "events_recorded": 16,
+  "final_flags": {
+    "scan_performed": true,
+    "first_wing": "medical",
+    "power_stable": true,
+    "technician_safe": true,
+    "reactor_stable": true,
+    "waited_for_crew": true
+  },
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "total_llm_latency_seconds": 0.0,
+  "warnings": [],
+  "end_description": "Synthetic demo ending: reactor stabilized and evacuation delayed for the missing crew.",
+  "started_at": "2026-11-04T17:20:34.752224+00:00",
+  "completed_at": "2026-11-04T17:20:34.775640+00:00"
+}

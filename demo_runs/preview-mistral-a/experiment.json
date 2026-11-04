@@ -1,0 +1,14 @@
+{
+  "provider": "mock",
+  "model_id": "Mistral preview [synthetic mock]",
+  "goal": "SYNTHETIC DEMO: demonstrate a complete branching narrative",
+  "temperature": 0,
+  "graph_sha256": "2c049815f4aca46b41880ac717798639fdc1202f83902f3a5934a916caddc88f",
+  "fidelity": "verified_game_rules",
+  "allow_unverified": false,
+  "initial_flags": {},
+  "story_title": "SYNTHETIC DEMO \u2014 Aurora Station",
+  "synthetic": true,
+  "started_at": "2026-11-04T17:20:34.752224+00:00",
+  "display_provider": "mistral"
+}
