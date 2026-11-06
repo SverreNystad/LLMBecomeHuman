@@ -8,6 +8,7 @@ from __future__ import annotations
 import shutil
 import json
 from pathlib import Path
+from urllib.parse import quote
 
 import pytest
 from fastapi.testclient import TestClient
@@ -29,7 +30,11 @@ def test_chapter_flowchart_browser_interactions():
         run_id = r['id']
         detail = c.get(f'/api/runs/{run_id}').json()
         mock_responses[f'/api/runs/{run_id}'] = detail
-        mock_responses[f'/api/runs/{run_id}/flowchart'] = c.get(f'/api/runs/{run_id}/flowchart').json()
+        flowchart = c.get(f'/api/runs/{run_id}/flowchart').json()
+        mock_responses[f'/api/runs/{run_id}/flowchart'] = flowchart
+        for chapter in flowchart['chapters']:
+            path = f'/api/runs/{run_id}/story?chapter={quote(chapter, safe="")}'
+            mock_responses[path] = c.get(path).json()
         for ev in detail['events']:
             mock_responses[f'/api/runs/{run_id}/events/{ev["index"]}'] = c.get(
                 f'/api/runs/{run_id}/events/{ev["index"]}'
@@ -38,8 +43,10 @@ def test_chapter_flowchart_browser_interactions():
     html = (ASSETS / 'index.html').read_text(encoding='utf-8')
     css = (ASSETS / 'styles.css').read_text(encoding='utf-8')
     js = (ASSETS / 'app.js').read_text(encoding='utf-8')
+    story_js = (ASSETS / 'story.js').read_text(encoding='utf-8')
     html = html.replace('<link rel="stylesheet" href="/assets/styles.css">', f'<style>{css}</style>')
     html = html.replace('<script src="/assets/app.js" defer></script>', '')
+    html = html.replace('<script src="/assets/story.js" defer></script>', '')
 
     with playwright.sync_playwright() as p:
         browser = p.chromium.launch(executable_path=binary, args=['--no-sandbox'])
@@ -57,10 +64,40 @@ def test_chapter_flowchart_browser_interactions():
                 json: async () => window.__responses[url] ?? {detail:'Mock API route missing'}
               });
             }''', mock_responses)
+            page.add_script_tag(content=story_js)
             page.add_script_tag(content=js)
-            page.locator('.flow-node').first.wait_for()
+
+            # The story opens first: readable text, and each decision compared across runs.
+            page.locator('.story-decision').first.wait_for()
             assert page.locator('#chapterTitle').inner_text().startswith('01')
-            assert page.locator('#selectedRunCount').inner_text() == '6'
+            assert page.locator('#selectedRunCount').inner_text() == '10'
+            first_card = page.locator('.story-decision').first
+            assert 'Decision 1 of' in first_card.inner_text()
+            assert page.locator('.story-why').first.inner_text().strip()
+            assert page.locator('.story-line, .story-narration, .story-clue').count() > 0
+            assert page.locator('#decisionStrip button').count() == page.locator('.story-decision').count()
+            mark = page.locator('.story-mark').first
+            mark.click()
+            assert not page.locator('.story-other-why:not(.is-hidden)').first.inner_text() == ''
+            page.locator('#modeKey').click()
+            page.wait_for_function("document.querySelector('#modeKey').getAttribute('aria-pressed') === 'true'")
+            assert page.locator('.story-decision').count() > 0
+
+            # A card links to the same moment on the flowchart, and back.
+            page.locator('[data-show-node]').first.click()
+            page.locator('.flow-node').first.wait_for()
+            page.locator('.inspect-read').click()
+            page.locator('.story-flash').wait_for()
+            page.evaluate('scrollToStoryEvent(Number.MAX_SAFE_INTEGER)')  # a chapter exit has no text
+            assert page.locator('.story-flash').count() >= 1
+            page.locator('#viewFlow').click()
+            page.locator('.flow-node').first.wait_for()
+            page.locator('.run-chip-remove').last.click()
+            page.locator('.run-chip-remove').last.click()
+            page.locator('.run-chip-remove').last.click()
+            page.locator('.run-chip-remove').last.click()
+            page.wait_for_function("document.querySelector('#selectedRunCount')?.textContent === '6'")
+            page.locator('.flow-node').first.wait_for()
             assert page.locator('.flow-node.kind-option').count() == 4
             assert page.locator('.flow-node').count() == 12  # complete chapter graph + portal
             assert page.locator('.flow-node.kind-portal').count() == 1

@@ -6,17 +6,25 @@ const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const svgNS = 'http://www.w3.org/2000/svg';
+const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
 const PALETTE = ['#1596bd','#d36b56','#7756b7','#1b946f','#bb7622','#b34b8a','#2376a4','#a09d29','#815c43','#d25b7b','#3e7b47','#6660aa','#b55329','#607b91','#b34651','#2e8c8a'];
 const state = {
   runs: [], selectedIds: [], details: new Map(), graph: null, chapter: null,
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
-  toastTimer: null, selectionHydrated: false, assignedColors: new Map(), focusedId: null
+  toastTimer: null, selectionHydrated: false, assignedColors: new Map(), focusedId: null, viewTouched: false,
+  view: 'story', readerRunId: null, storyMode: 'full', pendingStoryIndex: null
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
 const modelName = provider => ({openai:'OpenAI',anthropic:'Anthropic',xai:'xAI',grok:'xAI',google:'Google',gemini:'Google',deepseek:'DeepSeek',mistral:'Mistral',openrouter:'OpenRouter',mock:'Mock agent'})[provider] || provider || 'Other';
 const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'run'}`;
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
+const runStatusLabel = run => {
+  const count = `${niceNum(run?.choices)} ${run?.choices === 1 ? 'decision' : 'decisions'}`;
+  if (run?.status === 'running') return `running, ${count}`;
+  if (run?.status === 'stopped') return run.choices ? `stopped early, ${count}` : 'stopped, no decisions';
+  return count;
+};
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
 function colorFor(run) {
   // Stable identifier across reordering/filtering. Distinct runs from one provider
@@ -69,6 +77,7 @@ function setupRunFocus(){
    el.addEventListener('mouseleave',()=>applyRunFocus());
    el.addEventListener('click',e=>{
      if(e.target.closest('.run-chip-remove'))return;
+     if(state.view==='story'&&el.classList.contains('run-chip')){setReaderRun(el.dataset.focusId);return;}
      state.focusedId=state.focusedId===el.dataset.focusId?null:el.dataset.focusId;
      applyRunFocus();
    });
@@ -100,7 +109,7 @@ function updateSelectors() {
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
   $('selectAllRuns').disabled=!anchorRun();
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="Click to focus this run" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '<span class="chips-empty">Select a playthrough to see its route</span>';
+  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="Click to follow this run" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '<span class="chips-empty">Select a playthrough to see its route</span>';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
   setupRunFocus();
   $('searchRuns').value=state.search;
@@ -114,7 +123,7 @@ function renderPickerList(){
   for(const run of available){const name=modelName(providerOf(run));if(!groups.has(name))groups.set(name,[]);groups.get(name).push(run);}
   list.innerHTML=[...groups.entries()].map(([group,runs])=>`<div class="picker-group"><div class="picker-group-heading">${esc(group)} <span>${runs.length}</span></div>${runs.map(run=>{
     const checked=state.selectedIds.includes(run.id),allowed=compatible(run)||checked;
-    return `<label class="picker-run ${allowed?'':'incompatible'}"><input type="checkbox" data-run-id="${esc(run.id)}" ${checked?'checked':''} ${allowed?'':'disabled'}><span class="picker-check"></span><span class="picker-run-logo">${modelIcon(providerOf(run))}</span><span class="picker-run-text"><strong>${esc(run.model)}</strong><small>${esc(run.name)}${run.synthetic?' · SYNTHETIC':''}</small></span><span class="picker-color" style="background:${checked?routeColor(run):'#c9d4da'}"></span></label>`;
+    return `<label class="picker-run ${allowed?'':'incompatible'}"><input type="checkbox" data-run-id="${esc(run.id)}" ${checked?'checked':''} ${allowed?'':'disabled'}><span class="picker-check"></span><span class="picker-run-logo">${modelIcon(providerOf(run))}</span><span class="picker-run-text"><strong>${esc(run.model)}</strong><small>${esc(runStatusLabel(run))}${run.synthetic?' · SYNTHETIC':''}</small></span><span class="picker-color" style="background:${checked?routeColor(run):'#c9d4da'}"></span></label>`;
   }).join('')}</div>`).join('')||'<div class="picker-no-runs">No matching playthroughs.</div>';
   list.querySelectorAll('[data-run-id]').forEach(input=>input.addEventListener('change',()=>toggleRun(input.dataset.runId,input.checked)));
   const anchor=anchorRun();
@@ -138,7 +147,8 @@ async function toggleRun(id,enabled){
 function displayNoRuns(){
  $('graphEmpty').classList.remove('is-hidden');
  $('graphEmpty').innerHTML='<div class="empty-glyph">◇</div><strong>Select one or more playthroughs</strong><p>The complete source graph remains in the background while each selected run gets its own colored path.</p>';
- $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();$('canvasLegend').innerHTML='<div class="legend-title">NO RUNS SELECTED</div>';
+ $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();$('canvasLegend').innerHTML='<summary class="legend-title">NO RUNS SELECTED</summary>';
+ $('storyContent').innerHTML='<div class="story-empty"><strong>Select a playthrough to read its story</strong></div>';$('decisionStrip').replaceChildren();renderStoryToolbar(null);
  $('chapterList').innerHTML='<div class="sidebar-loading">No chapter selected.</div>';
  $('storyName').textContent='Select recorded runs';$('visibleCount').textContent='0';$('totalCount').textContent='0';
  state.rendered=null;
@@ -151,8 +161,11 @@ async function refreshRuns({reselect=false}={}){
    state.runs=results;
    state.selectedIds=state.selectedIds.filter(id=>runById(id));
    if(!state.selectionHydrated && results.length){
-     const base=results[0];
-     state.selectedIds=results.filter(r=>r.graph_sha256 && r.graph_sha256===base.graph_sha256).slice(0,6).map(r=>r.id);
+     // Open on real runs that recorded decisions, not synthetic previews or runs that never started.
+     const played=results.filter(r=>r.choices>0);
+     const base=played.find(r=>!r.synthetic)||played[0]||results[0];
+     const matching=results.filter(r=>r.graph_sha256&&r.graph_sha256===base.graph_sha256);
+     state.selectedIds=(matching.some(r=>r.choices>0)?matching.filter(r=>r.choices>0):matching).map(r=>r.id);
      state.selectionHydrated=true;
    }
    if(!results.length){state.selectedIds=[];state.graph=null;state.details.clear();updateSelectors();displayNoRuns();return;}
@@ -202,24 +215,53 @@ async function refreshEventsInPlace(){
 }
 function chapters() {return state.graph?.chapters || [];}
 function chapterNumber(ch) {
+  // Titled graphs have real chapter numbers (such as 30.1); others only have a position.
+  if (state.graph?.chapter_info?.[ch]?.title) return ch==='final'?'':ch;
   const pos = chapters().indexOf(ch);
   return String(Math.max(1, pos + 1)).padStart(2,'0');
+}
+function chapterNumeral(ch,i) {
+  if (state.graph?.chapter_info?.[ch]?.title) return ch==='final'?'END':ch;
+  return String(i+1).padStart(2,'0');
+}
+function syncHash() {
+  if (location.protocol === 'about:') return;
+  const params = new URLSearchParams();
+  if (state.chapter) params.set('chapter',state.chapter);
+  if (state.view !== 'story') params.set('view',state.view);
+  history.replaceState(null,'',location.pathname+location.search+'#'+params.toString());
+}
+function setView(view) {
+  state.view = view;
+  const story = view === 'story';
+  $('storyView').classList.toggle('is-hidden',!story);
+  $('viewerWrap').classList.toggle('is-hidden',story);
+  document.querySelectorAll('.flow-only').forEach(el=>el.classList.toggle('is-hidden',story));
+  $('viewStory').setAttribute('aria-pressed',String(story));
+  $('viewFlow').setAttribute('aria-pressed',String(!story));
+  if (story) closeDrawer();
+  syncHash();
+  renderChapter(true);
 }
 function renderChapterList() {
   const all = chapters();
   $('chapterTotal').textContent = String(all.length).padStart(2,'0');
   $('storyName').textContent = activeViews()[0]?.detail?.run.story_title || state.graph?.metadata?.title || 'Branching narrative';
-  const traveled = new Set(activeViews().flatMap(view=>view.detail.events||[]).map(e=>e.chapter));
-  $('chapterList').innerHTML = all.length ? all.map((ch,i) => `
-    <button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${traveled.has(ch)?'taken':''}" data-chapter="${esc(ch)}" title="${esc(ch)}" aria-current="${state.chapter===ch?'page':'false'}">
-      <span class="chapter-numeral">${String(i+1).padStart(2,'0')}</span><span class="chapter-name">${esc(ch)}</span><span class="chapter-status"></span>
-    </button>`).join('') : '<div class="sidebar-loading">No chapter graph available.</div>';
+  const reader = readerRun(), readerDetail = reader && state.details.get(reader.id);
+  const decisionCounts = new Map((readerDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
+  $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
+    const reached = decisionCounts.has(ch), count = decisionCounts.get(ch)||0, character = chapterCharacter(ch);
+    const countLabel = !reader ? '' : reached ? `${count} ${count===1?'decision':'decisions'}` : `Not reached by ${reader.model}`;
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" title="${esc(chapterTitle(ch))}${countLabel?` · ${esc(countLabel)}`:''}" aria-current="${state.chapter===ch?'page':'false'}">
+      <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span><span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span><span class="chapter-count">${reached&&count?count:''}</span>
+    </button>`;}).join('') : '<div class="sidebar-loading">No chapter graph available.</div>';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
+  document.querySelector('.chapter-entry.active')?.scrollIntoView({block:'nearest'});
 }
 function changeChapter(ch) {
   if (!chapters().includes(ch)) return;
-  state.chapter = ch; state.selected = null; closeDrawer();
-  if (location.protocol !== 'about:') history.replaceState(null,'',location.pathname+location.search+'#chapter='+encodeURIComponent(ch));
+  state.chapter = ch; closeDrawer();
+  syncHash();
   renderChapterList(); renderChapter(true);
 }
 function optionId(parent, option) {return `${parent}::OPTION::${encodeURIComponent(option)}`;}
@@ -440,15 +482,21 @@ function drawGraph(graph, paths) {
 }
 function renderChapter(fit=true){
  if(!state.graph||!state.chapter)return;
+ const chapter=state.chapter;
+ $('chapterIndexLabel').textContent=chapterNumber(chapter)?`CHAPTER ${chapterNumber(chapter)}`:'ENDINGS';
+ $('breadcrumbChapter').textContent=$('chapterIndexLabel').textContent;
+ $('chapterTitle').textContent=chapterTitle(chapter);
+ if(state.view==='story'){state.rendered=null;renderStory({keepScroll:!fit});return;}
+ renderFlowchart(fit);
+}
+function renderFlowchart(fit=true){
+ renderStoryToolbar(readerRun());
  const chapter=state.chapter, views=activeViews(), graph=buildChapterGraph(chapter);
  const paths=views.map(v=>({...v,path:computePath(v,chapter)}));
  const visited=new Set(paths.flatMap(v=>[...v.path.visited]));
  const choiceCount=views.reduce((sum,v)=>sum+(v.detail?.decisions||[]).filter(x=>x.chapter===chapter).length,0);
- $('chapterIndexLabel').textContent=`CHAPTER ${chapterNumber(chapter)}`;
- $('breadcrumbChapter').textContent=`CHAPTER ${chapterNumber(chapter)}`;
- $('chapterTitle').textContent=chapter;
- $('chapterMetrics').textContent=`${niceNum(graph.nodes.size)} NODES · ${niceNum(choiceCount)} RECORDED DECISIONS · ${niceNum(views.length)} RUNS`;
- $('chapterSubtitle').textContent=state.graph.metadata?.description||'The complete script graph, with each model playthrough traced independently.';
+ $('chapterMetrics').textContent=`${niceNum(graph.nodes.size)} nodes · ${niceNum(choiceCount)} recorded decisions · ${niceNum(views.length)} runs`;
+ $('chapterSubtitle').textContent=state.graph.metadata?.description||'Every script branch, with each selected run traced in color';
  $('visibleCount').textContent=niceNum(visited.size);$('totalCount').textContent=niceNum(graph.nodes.size);
  $('integrityNotice').textContent=!state.graph.complete?'SOURCE GRAPH MISSING · CANNOT SHOW ALL BRANCHES':
    views.some(v=>v.run.synthetic)?'SYNTHETIC PREVIEW · NOT ACTUAL MODEL DECISIONS':
@@ -457,7 +505,7 @@ function renderChapter(fit=true){
  const notice=$('graphNotice');notice.classList.toggle('is-hidden',state.graph.complete);
  if(!state.graph.complete)notice.textContent='The source graph is required to show all possible paths. Provide story-graph.json or a matching file via --graphs-dir.';
  const legend=$('canvasLegend');
- legend.innerHTML=`<div class="legend-title">${niceNum(views.length)} RUNS · ${niceNum(graph.edges.length)} SCRIPT CONNECTIONS</div><div class="legend-runs">${views.map(v=>`<div class="legend-line" data-focus-id="${esc(v.run.id)}" role="button" tabindex="0" title="Click to focus ${esc(modelLabel(v.run))}"><span class="legend-dash" style="border-color:${routeColor(v.run)}"></span><span class="legend-model">${modelIcon(providerOf(v.run))}</span><span class="legend-run-name">${esc(v.run.model)}</span></div>`).join('')}</div><div class="legend-line"><span class="legend-dash unvisited"></span>Untaken script branch</div>`;
+ legend.innerHTML=`<summary class="legend-title">${niceNum(views.length)} RUNS · ${niceNum(graph.edges.length)} SCRIPT CONNECTIONS</summary><div class="legend-runs">${views.map(v=>`<div class="legend-line" data-focus-id="${esc(v.run.id)}" role="button" tabindex="0" title="Click to focus ${esc(modelLabel(v.run))}"><span class="legend-dash" style="border-color:${routeColor(v.run)}"></span><span class="legend-model">${modelIcon(providerOf(v.run))}</span><span class="legend-run-name">${esc(v.run.model)}</span></div>`).join('')}</div><div class="legend-line"><span class="legend-dash unvisited"></span>Untaken script branch</div>`;
  if(!state.graph.complete){
    $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();
    $('graphEmpty').classList.remove('is-hidden');
@@ -469,10 +517,24 @@ function renderChapter(fit=true){
  const bounds=drawGraph(graph,paths);
  state.rendered={graph,paths,bounds};
  setupRunFocus();applyRunFocus();
- if(fit)requestAnimationFrame(fitGraph);else applyTransform();
+ if(fit)requestAnimationFrame(openChapterView);else applyTransform();
  if(state.selected&&!graph.nodes.has(state.selected.id))closeDrawer();
 }
 function applyTransform(){ $('graphWorld').style.transform=`translate3d(${state.panX}px,${state.panY}px,0) scale(${state.scale})`; $('zoomLabel').textContent=`${Math.round(state.scale*100)}%`; }
+function openChapterView(){
+  // Long chapters are unreadable when fitted, so start at a legible zoom on the first node.
+  if(!state.rendered)return;
+  state.viewTouched=false;
+  fitGraph();
+  if(state.scale>=MIN_READABLE_FIT)return;
+  const nodes=[...state.rendered.graph.nodes.values()], first=nodes.reduce((a,b)=>b.x<a.x?b:a,nodes[0]);
+  if(!first)return;
+  const box=$('viewport').getBoundingClientRect();
+  state.scale=OPENING_ZOOM;
+  state.panX=48-first.x*state.scale;
+  state.panY=box.height/2-(first.y+first.height/2)*state.scale;
+  applyTransform();
+}
 function fitGraph(){
   if(!state.rendered) return;
   const viewport=$('viewport').getBoundingClientRect();
@@ -488,6 +550,7 @@ function centerSelectedNode() {
   if (!state.selected || !state.rendered) return;
   const node=state.rendered.graph.nodes.get(state.selected.id);
   if(!node)return;
+  state.viewTouched=true;
   const box=$('viewport').getBoundingClientRect();
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
@@ -498,6 +561,7 @@ function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();
   const x=clientX===undefined?vp.width/2:clientX-vp.left;
   const y=clientY===undefined?vp.height/2:clientY-vp.top;
+  state.viewTouched=true;
   const old=state.scale,next=clamp(old*factor,.16,2.2);
   state.panX=x-(x-state.panX)/old*next;
   state.panY=y-(y-state.panY)/old*next;
@@ -511,7 +575,8 @@ function renderInspectorShell(node,runId,view){
  return `<div class="inspect-model-line"><span class="inspect-logo" style="border-color:${color};color:${color}">${modelIcon(provider)}</span><div><div class="inspect-model-name">${esc(modelName(provider))}</div><div class="inspect-run-name">${esc(run?.model||'Unknown')} · ${esc(run?.name||'')}</div></div></div>
   ${run?.synthetic?'<p class="inspect-note synthetic-disclaimer">SYNTHETIC PREVIEW — the recorded agent was a deterministic mock, not the named commercial model.</p>':''}
   <div class="inspect-overline">${esc(state.chapter)} · ${esc(node.type==='option'?'ACTION':'STORY NODE')}</div>
-  <h2 class="inspect-title">${esc(node.label)}</h2>`;
+  <h2 class="inspect-title">${esc(node.label)}</h2>
+  <button type="button" class="story-link inspect-read" data-read-run="${esc(runId)}">Read this moment in the story</button>`;
 }
 async function inspect(nodeId,runId){
  const node=state.rendered?.graph.nodes.get(nodeId);if(!node)return;
@@ -576,11 +641,20 @@ function setupInteractions(){
   updateSelectors();await loadCurrent(false);
  });
  $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});
- $('fitBtn').addEventListener('click',fitGraph);
+ const fitToButton=()=>{fitGraph();state.viewTouched=true;};
+ $('fitBtn').addEventListener('click',fitToButton);
  $('zoomIn').addEventListener('click',()=>zoom(1.2));
  $('zoomOut').addEventListener('click',()=>zoom(1/1.2));
- $('zoomReset').addEventListener('click',fitGraph);
+ $('zoomReset').addEventListener('click',fitToButton);
  $('closeDrawer').addEventListener('click',closeDrawer);
+ $('drawerContent').addEventListener('click',e=>{
+  const link=e.target.closest('[data-read-run]');if(!link)return;
+  const path=state.rendered?.paths.find(p=>p.run.id===link.dataset.readRun)?.path;
+  const events=path?.byId.get(state.selected?.id)||[];
+  state.pendingStoryIndex=events[0]?.index??null;
+  state.readerRunId=link.dataset.readRun;
+  setView('story');renderChapterList();
+ });
  $('refreshBtn').addEventListener('click',()=>refreshRuns({reselect:true}));
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();if(state.pickerOpen){state.pickerOpen=false;updateSelectors();}}});
  const vp=$('viewport');let drag=null;
@@ -591,13 +665,24 @@ function setupInteractions(){
  });
  vp.addEventListener('pointermove',e=>{
   if(!drag||e.pointerId!==drag.id)return;
+  state.viewTouched=true;
   state.panX=drag.px+e.clientX-drag.x;state.panY=drag.py+e.clientY-drag.y;applyTransform();
  });
  const end=e=>{if(drag&&drag.id===e.pointerId){drag=null;vp.classList.remove('dragging');}};
  vp.addEventListener('pointerup',end);vp.addEventListener('pointercancel',end);
  vp.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY);},{passive:false});
  let resizeDebounce;
- new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>state.selected?centerSelectedNode():fitGraph(),130);}).observe(vp);
+ new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>{
+  // Closing the drawer also resizes the canvas; that must not undo where the reader has moved to.
+  if(state.selected)centerSelectedNode();
+  else if(!state.viewTouched)openChapterView();
+ },130);}).observe(vp);
 }
-async function init(){setupInteractions();await refreshRuns({reselect:true});setInterval(()=>refreshRuns(),8000);}
+async function init(){
+ setupInteractions();setupStoryInteractions();
+ if(new URLSearchParams(location.hash.replace(/^#/,'')).get('view')==='flow'){
+  state.view='flow';$('storyView').classList.add('is-hidden');$('viewerWrap').classList.remove('is-hidden');
+  $('viewStory').setAttribute('aria-pressed','false');$('viewFlow').setAttribute('aria-pressed','true');
+ }else document.querySelectorAll('.flow-only').forEach(el=>el.classList.add('is-hidden'));
+ await refreshRuns({reselect:true});setInterval(()=>refreshRuns(),8000);}
 init();

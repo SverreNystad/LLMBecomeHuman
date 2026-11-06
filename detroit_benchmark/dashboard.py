@@ -9,7 +9,9 @@ import base64
 import csv
 import io
 import json
+import time
 from collections import Counter
+from functools import lru_cache
 
 from .engine import canonical_hash
 from pathlib import Path
@@ -20,6 +22,31 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
+
+# A run with no final summary and no new events for this long is no longer active.
+STALE_RUN_SECONDS = 15 * 60
+
+# Display names from the transcript's own chapter menu. They live here rather than in
+# the story graph because adding them there would change the hash that run comparison uses.
+DETROIT_SOURCE = "detroitbecometext"
+DETROIT_CHAPTER_TITLES = {
+    "1": "The Hostage", "2": "Opening", "3": "Shades of Color", "4": "A New Home",
+    "5": "The Painter", "6": "Partners", "7": "Stormy Night", "8": "Broken",
+    "9": "The Interrogation", "10": "Fugitives", "11": "From the Dead",
+    "12": "Waiting for Hank...", "13": "On the Run", "14": "Jericho", "15": "The Nest",
+    "16": "Time to Decide", "17": "Zlatko", "18": "Russian Roulette", "19": "Spare Parts",
+    "20": "The Eden Club", "21": "The Pirates' Cove", "22": "The Bridge",
+    "23": "The Stratford Tower", "24": "Public Enemy", "25": "Midnight Train",
+    "26": "Capitol Park", "27": "Meet Kamski", "28": "Freedom March",
+    "29": "Last Chance, Connor", "30.1": "Crossroads: Kara", "30.2": "Crossroads: Connor",
+    "30.3": "Crossroads: Markus", "31.1": "Night of the Soul: Markus",
+    "31.2": "Night of the Soul: Connor", "32.1": "Battle for Detroit: Kara Leaving Detroit",
+    "32.2": "Battle for Detroit: Kara Captured",
+    "32.3": "Battle for Detroit: Connor's Last Mission",
+    "32.4": "Battle for Detroit: Connor at the CyberLife Tower",
+    "32.5": "Battle for Detroit: Markus Demonstration",
+    "32.6": "Battle for Detroit: Markus Revolution", "final": "Final Routes",
+}
 
 
 def _json_file(path: Path) -> dict[str, Any] | None:
@@ -75,12 +102,21 @@ def _event_iter(directory: Path):
         return
 
 
+def _seconds_since_write(directory: Path) -> float:
+    try:
+        return time.time() - (directory / "events.jsonl").stat().st_mtime
+    except OSError:
+        return float("inf")
+
+
 def _metadata(root: Path, directory: Path) -> dict[str, Any]:
     exp = _json_file(directory / "experiment.json") or {}
     summary = _json_file(directory / "summary.json") or {}
     checkpoint = _json_file(directory / "checkpoint.json") or {}
     state = checkpoint.get("state", {})
     status = summary.get("status") or state.get("status") or "unknown"
+    if status == "running" and _seconds_since_write(directory) > STALE_RUN_SECONDS:
+        status = "stopped"
     chapters = summary.get("chapters_visited", state.get("chapters_visited", []))
     decisions = summary.get("number_of_choices", len(state.get("decisions", [])))
     return {
@@ -141,9 +177,58 @@ def _short_event(event: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
+    """What a reader needs from one event, including the dialogue _short_event leaves out."""
+    kind = event.get("type")
+    beat = {k: event.get(k) for k in ("index", "type", "node_id")}
+    if kind == "scene":
+        scene = event.get("visible_to_agent") or {}
+        beat.update(heading=scene.get("heading"), description=scene.get("description"),
+                    observations=scene.get("observations", []),
+                    dialogue=[{"speaker": line.get("speaker"), "text": line.get("text")}
+                              for line in scene.get("dialogue", [])])
+    elif kind == "decision":
+        scene = (event.get("input") or {}).get("current_scene") or {}
+        beat.update(heading=scene.get("heading"), character=scene.get("character"),
+                    available_choices=(event.get("input") or {}).get("available_choices", []),
+                    choice_id=(event.get("output") or {}).get("choice_id"),
+                    rationale=(event.get("output") or {}).get("rationale"))
+    elif kind == "condition":
+        beat.update(branch_index=event.get("branch_index"),
+                    used_unverified_default=event.get("used_unverified_default", False))
+    elif kind == "route":
+        beat.update(flag=event.get("flag"), value=event.get("value"), assumed=event.get("assumed", False))
+    elif kind == "ending":
+        beat.update(description=event.get("description"))
+    else:
+        return None
+    return beat
+
+
+@lru_cache(maxsize=64)
+def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, dict]:
+    """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
+    short: list[dict[str, Any]] = []
+    story: dict[str, list[dict[str, Any]]] = {}
+    for event in _event_iter(Path(directory)):
+        short.append(_short_event(event))
+        beat = _story_beat(event)
+        if beat is not None:
+            story.setdefault(str(event.get("chapter") or "Unknown"), []).append(beat)
+    return short, story
+
+
+def _parsed_events(directory: Path) -> tuple[list, dict]:
+    try:
+        stat = (directory / "events.jsonl").stat()
+    except OSError:
+        return [], {}
+    return _parse_events(str(directory), stat.st_mtime_ns, stat.st_size)
+
+
 def _detail(root: Path, directory: Path) -> dict[str, Any]:
     meta = _metadata(root, directory)
-    events = [_short_event(event) for event in _event_iter(directory)]
+    events = _parsed_events(directory)[0]
     decisions = [ev for ev in events if ev["type"] == "decision"]
     chapter_counts: Counter = Counter()
     for decision in decisions:
@@ -192,6 +277,18 @@ def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 
+def _chapter_info(graph: dict, nodes: dict, chapters: list[str]) -> dict[str, dict[str, Any]]:
+    characters: dict[str, Counter] = {chapter: Counter() for chapter in chapters}
+    for node in nodes.values():
+        if node.get("chapter") and node.get("character") not in (None, "multiple"):
+            characters[str(node["chapter"])][node["character"]] += 1
+    is_detroit = DETROIT_SOURCE in str(graph.get("metadata", {}).get("source", ""))
+    return {chapter: {
+        "title": DETROIT_CHAPTER_TITLES.get(chapter) if is_detroit else None,
+        "character": characters[chapter].most_common(1)[0][0] if characters[chapter] else None,
+    } for chapter in chapters}
+
+
 def _flowchart_projection(graph: dict, *, complete: bool, source: str) -> dict[str, Any]:
     """A small, read-only graph for the browser; excludes full dialogue and raw game text."""
     nodes = {}
@@ -215,6 +312,7 @@ def _flowchart_projection(graph: dict, *, complete: bool, source: str) -> dict[s
     ))
     return {"metadata": graph.get("metadata", {}), "start": graph.get("start"),
             "complete": complete, "source": source, "chapters": chapters,
+            "chapter_info": _chapter_info(graph, nodes, chapters),
             "node_count": len(nodes), "nodes": nodes}
 
 
@@ -276,6 +374,14 @@ def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = No
     graph_root = Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     app = FastAPI(title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs")
 
+    @app.middleware("http")
+    async def revalidate_frontend(request, call_next):
+        # Without this, browsers can keep an old page after the dashboard is updated.
+        response = await call_next(request)
+        if not request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-cache"
+        return response
+
     @app.get("/api/health")
     def health():
         return {"ok": True, "runs_dir": str(root)}
@@ -294,6 +400,11 @@ def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = No
         directory = _resolve_run(root, run_id)
         graph, complete, source = _load_saved_graph(root, directory, graph_root)
         return _flowchart_projection(graph, complete=complete, source=source)
+
+    @app.get("/api/runs/{run_id}/story")
+    def get_story(run_id: str, chapter: str):
+        # A chapter the run never entered is a normal answer, not an error.
+        return {"chapter": chapter, "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, [])}
 
     @app.get("/api/runs/{run_id}/events/{event_index}")
     def get_event(run_id: str, event_index: int):

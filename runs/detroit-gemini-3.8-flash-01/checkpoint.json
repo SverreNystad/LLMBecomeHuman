@@ -1,0 +1,58 @@
+{
+  "graph_sha256": "c40758b39134192a813cda435d013f2e0776febd890cc524358f7f244f9a956a",
+  "provider": "google",
+  "model_id": "gemini-3.8-flash",
+  "state": {
+    "node": "ch1_00167",
+    "event_idx": 2,
+    "status": "running",
+    "flags": {},
+    "history": [
+      {
+        "scene_id": "ch1_00169",
+        "chapter": "1",
+        "heading": "Out of the elevator",
+        "description": "Out of the elevator",
+        "observations": []
+      },
+      {
+        "scene_id": "ch1_00168",
+        "chapter": "1",
+        "heading": "Out of the elevator",
+        "description": "Inspect: Fish",
+        "observations": [
+          "DWARF GOURAMI | Trichogaster Lalius | Origin: Ganges Delta, India"
+        ]
+      }
+    ],
+    "recent_scene_events": [
+      {
+        "scene_id": "ch1_00169",
+        "chapter": "1",
+        "heading": "Out of the elevator",
+        "description": "Out of the elevator",
+        "dialogue": [],
+        "observations": []
+      },
+      {
+        "scene_id": "ch1_00168",
+        "chapter": "1",
+        "heading": "Out of the elevator",
+        "description": "Inspect: Fish",
+        "dialogue": [],
+        "observations": [
+          "DWARF GOURAMI | Trichogaster Lalius | Origin: Ganges Delta, India"
+        ]
+      }
+    ],
+    "decisions": [],
+    "chapters_visited": [
+      "1"
+    ],
+    "warnings": [],
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "total_llm_latency_seconds": 0.0,
+    "started_at": "2026-11-06T17:35:39.589400+00:00"
+  }
+}

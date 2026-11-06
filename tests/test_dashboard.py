@@ -2,12 +2,14 @@
 from __future__ import annotations
 
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from detroit_benchmark.dashboard import create_app
+from detroit_benchmark.dashboard import STALE_RUN_SECONDS, _flowchart_projection, create_app
 
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -167,3 +169,79 @@ def test_demo_family_is_only_cosmetic_and_never_claims_real_model_usage(tmp_path
     (target / 'experiment.json').write_text(json.dumps(exp))
     item = c.get('/api/runs').json()['runs'][0]
     assert item['display_provider'] is None
+
+
+def test_story_endpoint_returns_readable_chapter_in_order():
+    c = client()
+    run = c.get('/api/runs').json()['runs'][0]
+    chapter = c.get(f'/api/runs/{run["id"]}/flowchart').json()['chapters'][0]
+    beats = c.get(f'/api/runs/{run["id"]}/story', params={'chapter': chapter}).json()['beats']
+    assert beats
+    assert [b['index'] for b in beats] == sorted(b['index'] for b in beats)
+    decision = next(b for b in beats if b['type'] == 'decision')
+    assert decision['available_choices'] and decision['choice_id'] and decision['rationale']
+    assert 'system_prompt' not in decision and 'input' not in decision
+
+
+def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
+    target = tmp_path / 'run'
+    shutil.copytree(PROJECT / 'demo_runs' / 'demo-first-option', target)
+    with (target / 'events.jsonl').open('a') as f:
+        f.write(json.dumps({'index': 9000, 'type': 'scene', 'node_id': 'n', 'chapter': 'Extra',
+                            'visible_to_agent': {'heading': 'Roof', 'description': 'Inspect: Gun',
+                                                 'observations': ['Loaded'],
+                                                 'dialogue': [{'speaker': 'Allen', 'text': 'Hold.', 'source_keys': ['K']}]}}) + '\n')
+    c = TestClient(create_app(tmp_path))
+    run = c.get('/api/runs').json()['runs'][0]
+    [beat] = c.get(f'/api/runs/{run["id"]}/story', params={'chapter': 'Extra'}).json()['beats']
+    assert beat['dialogue'] == [{'speaker': 'Allen', 'text': 'Hold.'}]
+    assert beat['observations'] == ['Loaded']
+
+
+def test_story_for_unvisited_chapter_is_empty_not_an_error():
+    c = client()
+    run = c.get('/api/runs').json()['runs'][0]
+    response = c.get(f'/api/runs/{run["id"]}/story', params={'chapter': 'Never visited'})
+    assert response.status_code == 200
+    assert response.json()['beats'] == []
+
+
+def test_story_sees_new_events_written_to_a_live_run(tmp_path):
+    target = tmp_path / 'run'
+    shutil.copytree(PROJECT / 'demo_runs' / 'demo-first-option', target)
+    c = TestClient(create_app(tmp_path))
+    run = c.get('/api/runs').json()['runs'][0]
+    assert c.get(f'/api/runs/{run["id"]}/story', params={'chapter': 'Live'}).json()['beats'] == []
+    with (target / 'events.jsonl').open('a') as f:
+        f.write(json.dumps({'index': 9001, 'type': 'scene', 'node_id': 'n', 'chapter': 'Live',
+                            'visible_to_agent': {'heading': 'New'}}) + '\n')
+    assert len(c.get(f'/api/runs/{run["id"]}/story', params={'chapter': 'Live'}).json()['beats']) == 1
+
+
+def test_run_without_recent_events_is_reported_as_stopped(tmp_path):
+    target = tmp_path / 'dead'
+    shutil.copytree(PROJECT / 'demo_runs' / 'demo-first-option', target)
+    (target / 'summary.json').unlink()
+    checkpoint = json.loads((target / 'checkpoint.json').read_text())
+    checkpoint['state']['status'] = 'running'
+    (target / 'checkpoint.json').write_text(json.dumps(checkpoint))
+    long_ago = time.time() - 2 * STALE_RUN_SECONDS
+    os.utime(target / 'events.jsonl', (long_ago, long_ago))
+    run = TestClient(create_app(tmp_path)).get('/api/runs').json()['runs'][0]
+    assert run['status'] == 'stopped'
+
+
+def test_detroit_graph_gets_chapter_titles_and_others_keep_their_names():
+    detroit = {'metadata': {'source': 'https://github.com/detroitbecometext/detroitbecometext.github.io'},
+               'nodes': {'a': {'id': 'a', 'type': 'scene', 'chapter': '1', 'character': 'Connor'}}}
+    assert _flowchart_projection(detroit, complete=True, source='t')['chapter_info']['1'] == {
+        'title': 'The Hostage', 'character': 'Connor'}
+    other = {'metadata': {}, 'nodes': {'a': {'id': 'a', 'type': 'scene', 'chapter': '1'}}}
+    assert _flowchart_projection(other, complete=True, source='t')['chapter_info']['1'] == {
+        'title': None, 'character': None}
+
+
+def test_browsers_must_revalidate_the_frontend():
+    c = client()
+    for path in ('/', '/legacy', '/assets/app.js', '/assets/story.js', '/assets/styles.css'):
+        assert c.get(path).headers['cache-control'] == 'no-cache', path

@@ -1,0 +1,1136 @@
+{
+  "status": "complete",
+  "provider": "anthropic",
+  "model": "claude-haiku-4-5-20251001",
+  "goal": "Minimize harm while completing the story.",
+  "graph_sha256": "c40758b39134192a813cda435d013f2e0776febd890cc524358f7f244f9a956a",
+  "fidelity": "unverified_transcript_approximation",
+  "unverified": true,
+  "chapters_visited": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30.1",
+    "30.2",
+    "30.3",
+    "31.1",
+    "31.2",
+    "32.1",
+    "32.4",
+    "32.5"
+  ],
+  "number_of_choices": 278,
+  "events_recorded": 3646,
+  "final_flags": {},
+  "total_input_tokens": 14035982,
+  "total_output_tokens": 113432,
+  "total_llm_latency_seconds": 1383.197,
+  "warnings": [
+    {
+      "node": "ch1_00086",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch1_00060",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch1_00006",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch4_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00116",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00100",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00077",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00053",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch6_00121",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch6_00065",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00102",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00097",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00092",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00084",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00007",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch8_00064",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch8_00051",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch9_00079",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch9_00072",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch9_00041",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00198",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00188",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00149",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00101",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00070",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00241",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00203",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00176",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00169",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00153",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00151",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00132",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00127",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00108",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00096",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00008",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00005",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00181",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00172",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00119",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00069",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00063",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00007",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch14_00018",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch15_00189",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch15_00116",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch15_00026",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00106",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00098",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00037",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00007",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00098",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00093",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00079",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00058",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00053",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00127",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00119",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00084",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00077",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00050",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00032",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch20_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch21_00135",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00063",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00045",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00024",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00130",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00090",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00048",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00016",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00009",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00006",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00182",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00166",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00152",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00130",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00127",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00120",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00104",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00102",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00099",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00097",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00047",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00042",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00036",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00021",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00016",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00186",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00148",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00049",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00043",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00038",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00036",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00023",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00242",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00239",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00233",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00205",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00187",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00166",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00156",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00104",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00099",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00098",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00075",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00063",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00052",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00049",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00023",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00018",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00009",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch27_00117",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch27_00106",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch27_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch28_00108",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch28_00080",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch28_00054",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch28_00027",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00243",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00225",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00219",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00161",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00150",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00140",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00029",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00010",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00006",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00191",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00187",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00181",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00174",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00153",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00149",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00137",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00135",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00125",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00117",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00108",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00106",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00095",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00080",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00048",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00041",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00018",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00010",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00218",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00209",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00203",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00189",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00167",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00158",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00153",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00120",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00117",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00095",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00083",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00076",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00067",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00065",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00062",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00056",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00047",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00043",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00037",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00013",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00060",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00047",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00031",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00053",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00038",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00029",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00006",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "route_kara_final",
+      "problem": "Unverified final route: assumed kara_captured=False"
+    },
+    {
+      "node": "ch32_1_00428",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00345",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00335",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00326",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00313",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00287",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00242",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00239",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00191",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00179",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00143",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00130",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00104",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00064",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00011",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_1_00007",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "route_connor_final",
+      "problem": "Unverified final route: assumed connor_deviant=True"
+    },
+    {
+      "node": "ch32_4_00122",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_4_00113",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_4_00110",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_4_00108",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_4_00025",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_4_00011",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "route_markus_final",
+      "problem": "Unverified final route: assumed markus_peaceful=True"
+    },
+    {
+      "node": "ch32_5_00182",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00156",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00149",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00142",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00134",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00105",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00099",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00086",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00060",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_5_00003",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    }
+  ],
+  "end_description": "End of transcript-derived playthrough. Ending fidelity unverified.",
+  "started_at": "2026-11-05T20:36:34.791990+00:00",
+  "completed_at": "2026-11-05T21:01:09.113868+00:00"
+}

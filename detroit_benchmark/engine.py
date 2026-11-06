@@ -94,7 +94,9 @@ def create_model(provider: str, model_id: str | None, temperature: float | None 
             raise RuntimeError('Install the optional package: pip install langchain-google-genai') from exc
         if not os.environ.get('GOOGLE_API_KEY'):
             raise RuntimeError('Set GOOGLE_API_KEY to run Google Gemini models')
-        return ChatGoogleGenerativeAI(model=model_id or 'gemini-2.5-flash', temperature=temperature)
+        # This client rejects temperature=None, so omit it to use the provider default.
+        options = {} if temperature is None else {'temperature': temperature}
+        return ChatGoogleGenerativeAI(model=model_id or 'gemini-2.5-flash', **options)
     # These services expose OpenAI-compatible chat completion endpoints.
     compatible = {
         'xai': ('https://api.x.ai/v1', 'XAI_API_KEY', 'grok-4'),
@@ -242,7 +244,9 @@ class Runner:
         messages=[SystemMessage(content=SYSTEM_PROMPT),HumanMessage(content=msg)]
         # Structured output with raw metadata for reproducible usage / latency logs.
         t0=time.perf_counter()
-        output=self.model.with_structured_output(ModelDecision,include_raw=True).invoke(messages)
+        # DeepSeek rejects the JSON-schema response_format, so use function calling there.
+        options={'method':'function_calling'} if self.provider=='deepseek' else {}
+        output=self.model.with_structured_output(ModelDecision,include_raw=True,**options).invoke(messages)
         elapsed=round(time.perf_counter()-t0,4)
         decision=output['parsed']
         if decision is None:

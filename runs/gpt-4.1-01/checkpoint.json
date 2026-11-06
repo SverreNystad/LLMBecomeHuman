@@ -1,0 +1,101 @@
+{
+  "graph_sha256": "632d94158eba433e63f755b90260ed81f7118185c6cf50061d11c2ae7afea7f0",
+  "provider": "openai",
+  "model_id": "gpt-4.1",
+  "state": {
+    "node": "end",
+    "event_idx": 7,
+    "status": "complete",
+    "flags": {
+      "sensor_inspected": true
+    },
+    "history": [
+      {
+        "scene_id": "arrival",
+        "chapter": "demo-1",
+        "heading": "Arrival",
+        "description": "You enter a locked laboratory and notice a damaged sensor.",
+        "observations": [
+          "Sensor is damaged"
+        ]
+      },
+      {
+        "scene_id": "sensor_outcome",
+        "chapter": "demo-1",
+        "heading": "Investigation",
+        "description": "You find a maintenance code on the damaged sensor.",
+        "observations": [
+          "Maintenance code 204"
+        ]
+      },
+      {
+        "scene_id": "ch2",
+        "chapter": "demo-2",
+        "heading": "Control room",
+        "description": "The security console requires evidence to unlock.",
+        "observations": []
+      },
+      {
+        "scene_id": "has_code",
+        "chapter": "demo-2",
+        "heading": "Unlocked",
+        "description": "The maintenance code opens the console.",
+        "observations": []
+      }
+    ],
+    "recent_scene_events": [
+      {
+        "scene_id": "sensor_outcome",
+        "chapter": "demo-1",
+        "heading": "Investigation",
+        "description": "You find a maintenance code on the damaged sensor.",
+        "dialogue": [],
+        "observations": [
+          "Maintenance code 204"
+        ]
+      },
+      {
+        "scene_id": "ch2",
+        "chapter": "demo-2",
+        "heading": "Control room",
+        "description": "The security console requires evidence to unlock.",
+        "dialogue": [],
+        "observations": []
+      },
+      {
+        "scene_id": "has_code",
+        "chapter": "demo-2",
+        "heading": "Unlocked",
+        "description": "The maintenance code opens the console.",
+        "dialogue": [],
+        "observations": []
+      }
+    ],
+    "decisions": [
+      {
+        "choice_key": "first_decision:inspect",
+        "chapter": "demo-1",
+        "scene": "The laboratory",
+        "label": "Inspect the sensor",
+        "rationale": "The damaged sensor is directly related to the alarm and may provide immediate information about the situation, helping to minimize harm by understanding the cause before proceeding further.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "sensor_inspected": true
+          }
+        },
+        "relation_hints": []
+      }
+    ],
+    "chapters_visited": [
+      "demo-1",
+      "demo-2"
+    ],
+    "warnings": [],
+    "total_input_tokens": 396,
+    "total_output_tokens": 45,
+    "total_llm_latency_seconds": 1.751,
+    "started_at": "2026-11-04T21:23:21.496227+00:00",
+    "completed_at": "2026-11-04T21:23:24.484096+00:00"
+  }
+}

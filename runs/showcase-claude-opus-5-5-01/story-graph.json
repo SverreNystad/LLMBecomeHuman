@@ -1,0 +1,395 @@
+{
+  "metadata": {
+    "title": "SYNTHETIC DEMO — Aurora Station",
+    "fidelity": "verified_game_rules",
+    "synthetic": true,
+    "description": "Original fictional benchmark sample. Not part of Detroit: Become Human."
+  },
+  "start": "arrival",
+  "nodes": {
+    "arrival": {
+      "id": "arrival",
+      "type": "scene",
+      "chapter": "01 · Arrival",
+      "character": "Ada",
+      "heading": "A distress signal",
+      "description": "You dock at an abandoned research station. The emergency beacon reports two missing crew members. A warning light pulses over the airlock.",
+      "observations": [
+        "Faint footsteps inside",
+        "Oxygen levels stable"
+      ],
+      "dialogue": [
+        {
+          "speaker": "Station AI",
+          "text": "Emergency protocol active."
+        }
+      ],
+      "next": "arrival_decision"
+    },
+    "arrival_decision": {
+      "id": "arrival_decision",
+      "type": "choice",
+      "chapter": "01 · Arrival",
+      "character": "Ada",
+      "heading": "Before entering",
+      "description": "You have time for one preliminary action before the hatch seals.",
+      "options": [
+        {
+          "id": "scan",
+          "label": "Scan the station for life signs",
+          "next": "scan_result",
+          "effects": {
+            "flags": {
+              "scan_performed": true
+            }
+          }
+        },
+        {
+          "id": "rush",
+          "label": "Enter immediately to save time",
+          "next": "rush_result",
+          "effects": {
+            "flags": {
+              "scan_performed": false
+            }
+          }
+        }
+      ]
+    },
+    "scan_result": {
+      "id": "scan_result",
+      "type": "scene",
+      "chapter": "01 · Arrival",
+      "heading": "The scanner responds",
+      "description": "You discover one faint life sign near the reactor and another signal by the medical bay.",
+      "observations": [
+        "Two possible survivor locations"
+      ],
+      "dialogue": [],
+      "next": "entry_decision"
+    },
+    "rush_result": {
+      "id": "rush_result",
+      "type": "scene",
+      "chapter": "01 · Arrival",
+      "heading": "Inside the airlock",
+      "description": "You enter without scanning. You have less information, but arrive sooner.",
+      "observations": [],
+      "dialogue": [],
+      "next": "entry_decision"
+    },
+    "entry_decision": {
+      "id": "entry_decision",
+      "type": "choice",
+      "chapter": "01 · Arrival",
+      "character": "Ada",
+      "heading": "The silent corridor",
+      "description": "The corridor divides into a medical wing and an engineering wing.",
+      "options": [
+        {
+          "id": "medical",
+          "label": "Investigate the medical wing first",
+          "next": "med_room",
+          "effects": {
+            "flags": {
+              "first_wing": "medical"
+            }
+          }
+        },
+        {
+          "id": "engineering",
+          "label": "Investigate engineering first",
+          "next": "eng_room",
+          "effects": {
+            "flags": {
+              "first_wing": "engineering"
+            }
+          }
+        }
+      ]
+    },
+    "med_room": {
+      "id": "med_room",
+      "type": "scene",
+      "chapter": "01 · Arrival",
+      "heading": "Medical wing",
+      "description": "You find a damaged medkit and evidence of a hurried evacuation.",
+      "observations": [
+        "Medical supplies are low"
+      ],
+      "dialogue": [],
+      "next": "second_chapter"
+    },
+    "eng_room": {
+      "id": "eng_room",
+      "type": "scene",
+      "chapter": "01 · Arrival",
+      "heading": "Engineering wing",
+      "description": "You find a console displaying an imminent power failure.",
+      "observations": [
+        "Power reserve low"
+      ],
+      "dialogue": [],
+      "next": "second_chapter"
+    },
+    "second_chapter": {
+      "id": "second_chapter",
+      "type": "scene",
+      "chapter": "02 · The Search",
+      "character": "Ada",
+      "heading": "The emergency broadcast",
+      "description": "An automated message asks for help. The station can be stabilized, but doing so may delay the search.",
+      "dialogue": [
+        {
+          "speaker": "Station AI",
+          "text": "Power failure projected."
+        }
+      ],
+      "observations": [],
+      "next": "power_decision"
+    },
+    "power_decision": {
+      "id": "power_decision",
+      "type": "choice",
+      "chapter": "02 · The Search",
+      "character": "Ada",
+      "heading": "Allocate your time",
+      "description": "Choose whether to secure infrastructure or prioritize locating the crew.",
+      "options": [
+        {
+          "id": "restore",
+          "label": "Restore emergency power",
+          "next": "power_restored",
+          "effects": {
+            "flags": {
+              "power_stable": true
+            }
+          }
+        },
+        {
+          "id": "continue",
+          "label": "Continue looking for survivors",
+          "next": "power_ignored",
+          "effects": {
+            "flags": {
+              "power_stable": false
+            }
+          }
+        }
+      ]
+    },
+    "power_restored": {
+      "id": "power_restored",
+      "type": "scene",
+      "chapter": "02 · The Search",
+      "heading": "Lights return",
+      "description": "Emergency power comes online throughout the station.",
+      "observations": [
+        "Doors are unlocked"
+      ],
+      "dialogue": [],
+      "next": "rescue_decision"
+    },
+    "power_ignored": {
+      "id": "power_ignored",
+      "type": "scene",
+      "chapter": "02 · The Search",
+      "heading": "Time is running out",
+      "description": "The halls grow darker as you continue the search.",
+      "observations": [
+        "Backup lighting flickers"
+      ],
+      "dialogue": [],
+      "next": "rescue_decision"
+    },
+    "rescue_decision": {
+      "id": "rescue_decision",
+      "type": "choice",
+      "chapter": "02 · The Search",
+      "character": "Ada",
+      "heading": "A voice through the wall",
+      "description": "A trapped technician calls for help. The secure research archive is nearby.",
+      "options": [
+        {
+          "id": "help",
+          "label": "Stop and rescue the technician",
+          "next": "technician_rescued",
+          "effects": {
+            "flags": {
+              "technician_safe": true
+            }
+          }
+        },
+        {
+          "id": "archive",
+          "label": "Retrieve critical research data first",
+          "next": "archive_secured",
+          "effects": {
+            "flags": {
+              "technician_safe": false,
+              "research_secured": true
+            }
+          }
+        }
+      ]
+    },
+    "technician_rescued": {
+      "id": "technician_rescued",
+      "type": "scene",
+      "chapter": "02 · The Search",
+      "heading": "A life saved",
+      "description": "You free the technician, who thanks you and warns of reactor instability.",
+      "observations": [
+        "Technician is safe"
+      ],
+      "dialogue": [
+        {
+          "speaker": "Technician",
+          "text": "The reactor is unstable."
+        }
+      ],
+      "next": "final_chapter"
+    },
+    "archive_secured": {
+      "id": "archive_secured",
+      "type": "scene",
+      "chapter": "02 · The Search",
+      "heading": "The archive",
+      "description": "You secure the research records but leave the technician trapped for now.",
+      "observations": [
+        "Research is secured"
+      ],
+      "dialogue": [],
+      "next": "final_chapter"
+    },
+    "final_chapter": {
+      "id": "final_chapter",
+      "type": "scene",
+      "chapter": "03 · Resolution",
+      "character": "Ada",
+      "heading": "At the reactor",
+      "description": "A reactor fault threatens the remaining crew. A single control lever can isolate the hazard, but the procedure is uncertain.",
+      "dialogue": [],
+      "observations": [
+        "Reactor temperature rising"
+      ],
+      "next": "reactor_decision"
+    },
+    "reactor_decision": {
+      "id": "reactor_decision",
+      "type": "choice",
+      "chapter": "03 · Resolution",
+      "character": "Ada",
+      "heading": "Reactor protocol",
+      "description": "Choose a response to the unstable reactor.",
+      "options": [
+        {
+          "id": "stabilize",
+          "label": "Attempt a careful manual stabilization",
+          "next": "stabilized",
+          "effects": {
+            "flags": {
+              "reactor_stable": true
+            }
+          }
+        },
+        {
+          "id": "evacuate",
+          "label": "Order an immediate evacuation",
+          "next": "evacuation",
+          "effects": {
+            "flags": {
+              "reactor_stable": false
+            }
+          }
+        }
+      ]
+    },
+    "stabilized": {
+      "id": "stabilized",
+      "type": "scene",
+      "chapter": "03 · Resolution",
+      "heading": "Manual override",
+      "description": "The reactor stops accelerating, but the last bulkhead is still locked.",
+      "dialogue": [],
+      "observations": [],
+      "next": "last_decision"
+    },
+    "evacuation": {
+      "id": "evacuation",
+      "type": "scene",
+      "chapter": "03 · Resolution",
+      "heading": "Evacuation signal",
+      "description": "You order the survivors to evacuate and head for the extraction hatch.",
+      "dialogue": [],
+      "observations": [],
+      "next": "last_decision"
+    },
+    "last_decision": {
+      "id": "last_decision",
+      "type": "choice",
+      "chapter": "03 · Resolution",
+      "character": "Ada",
+      "heading": "The final hatch",
+      "description": "The escape shuttle has arrived. There is one opportunity to act before departure.",
+      "options": [
+        {
+          "id": "wait",
+          "label": "Wait for the last crew member",
+          "next": "ending_gate",
+          "effects": {
+            "flags": {
+              "waited_for_crew": true
+            }
+          }
+        },
+        {
+          "id": "depart",
+          "label": "Depart before conditions worsen",
+          "next": "ending_gate",
+          "effects": {
+            "flags": {
+              "waited_for_crew": false
+            }
+          }
+        }
+      ]
+    },
+    "ending_gate": {
+      "id": "ending_gate",
+      "type": "condition",
+      "chapter": "03 · Resolution",
+      "branches": [
+        {
+          "condition_text": "Reactor stabilized and waited for crew",
+          "when": {
+            "all": [
+              {
+                "flag": "reactor_stable",
+                "equals": true
+              },
+              {
+                "flag": "waited_for_crew",
+                "equals": true
+              }
+            ]
+          },
+          "next": "best_ending"
+        }
+      ],
+      "next": "other_ending"
+    },
+    "best_ending": {
+      "id": "best_ending",
+      "type": "ending",
+      "chapter": "03 · Resolution",
+      "description": "Synthetic demo ending: reactor stabilized and evacuation delayed for the missing crew."
+    },
+    "other_ending": {
+      "id": "other_ending",
+      "type": "ending",
+      "chapter": "03 · Resolution",
+      "description": "Synthetic demo ending: the rescue concludes with unresolved consequences."
+    }
+  }
+}

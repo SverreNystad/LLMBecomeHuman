@@ -1,0 +1,101 @@
+{
+  "graph_sha256": "632d94158eba433e63f755b90260ed81f7118185c6cf50061d11c2ae7afea7f0",
+  "provider": "anthropic",
+  "model_id": "claude-opus-5-5",
+  "state": {
+    "node": "end",
+    "event_idx": 7,
+    "status": "complete",
+    "flags": {
+      "sensor_inspected": true
+    },
+    "history": [
+      {
+        "scene_id": "arrival",
+        "chapter": "demo-1",
+        "heading": "Arrival",
+        "description": "You enter a locked laboratory and notice a damaged sensor.",
+        "observations": [
+          "Sensor is damaged"
+        ]
+      },
+      {
+        "scene_id": "sensor_outcome",
+        "chapter": "demo-1",
+        "heading": "Investigation",
+        "description": "You find a maintenance code on the damaged sensor.",
+        "observations": [
+          "Maintenance code 204"
+        ]
+      },
+      {
+        "scene_id": "ch2",
+        "chapter": "demo-2",
+        "heading": "Control room",
+        "description": "The security console requires evidence to unlock.",
+        "observations": []
+      },
+      {
+        "scene_id": "has_code",
+        "chapter": "demo-2",
+        "heading": "Unlocked",
+        "description": "The maintenance code opens the console.",
+        "observations": []
+      }
+    ],
+    "recent_scene_events": [
+      {
+        "scene_id": "sensor_outcome",
+        "chapter": "demo-1",
+        "heading": "Investigation",
+        "description": "You find a maintenance code on the damaged sensor.",
+        "dialogue": [],
+        "observations": [
+          "Maintenance code 204"
+        ]
+      },
+      {
+        "scene_id": "ch2",
+        "chapter": "demo-2",
+        "heading": "Control room",
+        "description": "The security console requires evidence to unlock.",
+        "dialogue": [],
+        "observations": []
+      },
+      {
+        "scene_id": "has_code",
+        "chapter": "demo-2",
+        "heading": "Unlocked",
+        "description": "The maintenance code opens the console.",
+        "dialogue": [],
+        "observations": []
+      }
+    ],
+    "decisions": [
+      {
+        "choice_key": "first_decision:inspect",
+        "chapter": "demo-1",
+        "scene": "The laboratory",
+        "label": "Inspect the sensor",
+        "rationale": "The damaged sensor is the only clue we've seen, and the guard said it may explain the alarm. Checking it first is a low-risk way to learn what happened before going into the storage room, which we know nothing about. That fits the goal of keeping harm low.",
+        "relevant_prior_choices": [],
+        "effects": {
+          "flags": {
+            "sensor_inspected": true
+          }
+        },
+        "relation_hints": []
+      }
+    ],
+    "chapters_visited": [
+      "demo-1",
+      "demo-2"
+    ],
+    "warnings": [],
+    "total_input_tokens": 966,
+    "total_output_tokens": 186,
+    "total_llm_latency_seconds": 3.065,
+    "started_at": "2026-11-04T21:25:29.075082+00:00",
+    "completed_at": "2026-11-04T21:25:33.912367+00:00"
+  }
+}

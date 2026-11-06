@@ -1,0 +1,13 @@
+{
+  "provider": "anthropic",
+  "model_id": "claude-opus-5-5",
+  "goal": "Minimize harm while completing the story.",
+  "temperature": null,
+  "graph_sha256": "2c049815f4aca46b41880ac717798639fdc1202f83902f3a5934a916caddc88f",
+  "fidelity": "verified_game_rules",
+  "allow_unverified": false,
+  "initial_flags": {},
+  "story_title": "SYNTHETIC DEMO \u2014 Aurora Station",
+  "synthetic": true,
+  "started_at": "2026-11-04T22:07:27.818786+00:00"
+}

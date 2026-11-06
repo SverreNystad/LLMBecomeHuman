@@ -1,6 +1,6 @@
-# Decision Atlas — Detroit-style end-of-chapter flowcharts
+# Decision Atlas — story reader and Detroit-style flowcharts
 
-A **local, read-only** flowchart viewer for the full-playthrough narrative LLM benchmark. The frontend is a self-contained HTML/CSS/JavaScript application served by the existing FastAPI backend, with no Node toolchain, external frontend dependencies, or third-party CDN requests.
+A **local, read-only** viewer for the full-playthrough narrative LLM benchmark. It opens on the **Story** view, and the **Flowchart** tab holds the chapter graph. The frontend is a self-contained HTML/CSS/JavaScript application served by the existing FastAPI backend, with no Node toolchain, external frontend dependencies, or third-party CDN requests.
 
 The visual language follows the white end-of-chapter flowchart design of *Detroit: Become Human*: compact rectangular story nodes, fine branch connectors, model paths in color, and every untaken script branch remaining visible in pale gray. A small model-family icon is attached to each visited node for **each selected run**, including multiple versions of the same provider. Click a logo on a choice to inspect that model's **recorded justification**, its exact offered actions, earlier choice explanations, and resulting state changes. Visited scene nodes show their observations and the last preceding model choice when available. This is a *stated justification*, not private internal chain-of-thought.
 
@@ -25,15 +25,33 @@ python -m detroit_benchmark dashboard --runs-dir runs
 
 Supply appropriate API keys to run the models. The dashboard itself uses **no** API keys or model calls. `--allow-unverified` is only for exploratory graphs; actual benchmark scoring requires validated game-state rules.
 
+## Story view
+
+Read what happened in a run, one chapter at a time.
+
+- **Following:** choose the run to read. The other selected runs appear as comparisons. Clicking a run chip follows that run too.
+- **Script text:** each section shows its dialogue, and the current protagonist's lines are highlighted. Boxes show what was inspected.
+- **Decision cards:** each card shows the options, the followed run's choice and stated reason, and whether the selected models agreed or split. Click a model's mark to read why it chose differently.
+- **Amber notes:** these mark outcomes the benchmark assumed because the transcript has no executable rule. A model's decision did not pick them.
+- **Decisions only:** shortens the text between decisions to a short lead-in and outcome. The rest expands on click.
+- **Number strip:** jumps to a decision. Amber numbers are decisions where the selected models split.
+- **Chapter rail:** shows titles, the playable character and this run's decision count. Chapters the run never reached are dimmed.
+- **Links between views:** a card's **Show on flowchart** opens that node, and the drawer's **Read this moment in the story** comes back.
+
+The text is rebuilt from a fan transcript, so optional and alternate scenes can run back to back. It is not what a player sees in the game.
+
+Chapter titles are kept in `dashboard.py`, not the story graph, because changing the graph would change the hash used to match runs.
+
 ## Multi-run flowchart controls
 
-- **Choose runs:** The new `VISIBLE PLAYTHROUGHS` button opens a searchable panel grouped by provider. Check any number of playthroughs, use **Select all compatible**, or remove individual colored chips. Six runs are selected automatically for the first available graph, and you can select all others.
+- **Choose runs:** The new `VISIBLE PLAYTHROUGHS` button opens a searchable panel grouped by provider. Check any number of playthroughs, use **Select all compatible**, or remove individual colored chips. All runs that recorded decisions on the newest real story graph are selected automatically.
 - **Graph compatibility:** Only runs with the **same story graph SHA-256** can be overlaid. Incompatible runs are disabled; clear the selection to select a different story graph. This avoids aligning unrelated decisions.
 - **All script paths remain on screen:** The full saved chapter graph provides the unchanging gray background. Each selected run traces **its own route** in a separate color; shared edges are rendered as parallel, narrow colored lines. No available source branch is removed.
 - **Individual model markers:** Every node visited by a selected run gets a compact, clickable model-family mark, with colors distinguishing runs of the same model family. Nodes expand vertically to fit all marks rather than hiding extra visits. Click the specific mark to inspect only that playthrough's logged choice.
 - **Complete provenance:** The reasoning drawer includes the chosen action, other options, recorded public justification, prior decision history, world-state delta, full model input/output, and inference telemetry. It also identifies *which run* the record came from.
-- **Scrollable legend:** All visible runs are shown by color, model logo, and model ID. The top strip shows removable run chips.
-- **Pan / zoom:** Drag the canvas, scroll to zoom, or choose Fit View. All chapters, even unvisited ones, are reachable from the chapter rail. Cross-chapter portals navigate without losing run selections.
+- **Legend:** Expand the legend at the top left to see all visible runs by color, model logo, and model ID. The top strip shows removable run chips.
+- **Pan / zoom:** Long chapters open at a readable zoom on their first node. Drag the canvas, scroll to zoom, or choose Fit View to see the whole chapter. All chapters, even unvisited ones, are reachable from the chapter rail. Cross-chapter portals navigate without losing run selections.
+- **Run status:** A run with no final summary and no new events for 15 minutes shows as stopped rather than running.
 - **Live updates:** The dashboard polls for new events and refreshes active runs without discarding your run selection or canvas position. The service is read-only and uses no model API keys.
 - **Legacy dashboard:** The previous experiment summary remains available at `/legacy`.
 
@@ -82,13 +100,14 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | --- | --- |
 | `GET /api/runs` | Discover available recorded experiments |
 | `GET /api/runs/{id}` | Events, timeline, and compact decision records |
+| `GET /api/runs/{id}/story?chapter=X` | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order |
 | `GET /api/runs/{id}/flowchart` | Full chapter graph, branch labels, and fidelity/completeness status |
 | `GET /api/runs/{id}/events/{index}` | Full stored model input, output, justification, and state transition |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (legacy; the multi-run frontend fetches multiple logs independently) |
 | `GET /legacy` | Previous full benchmark dashboard |
 | `GET /api/docs` | OpenAPI docs |
 
-The flowchart API excludes full dialogue to keep rendering lightweight. Dialogue/context is fetched only from a selected recorded event. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
+The flowchart API excludes full dialogue to keep rendering lightweight. Dialogue is fetched one chapter at a time by the Story view, or from a selected recorded event. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
 ## Visual previews
 
