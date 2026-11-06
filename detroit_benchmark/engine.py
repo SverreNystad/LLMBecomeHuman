@@ -73,7 +73,7 @@ def validate_graph(graph:dict, strict:bool=False) -> dict:
             'ending_nodes':sum(n['type']=='ending' for n in nodes.values())}
 
 
-def create_model(provider: str, model_id: str | None, temperature: float = 0):
+def create_model(provider: str, model_id: str | None, temperature: float | None = 0):
     """Instantiate a model backend for OpenAI, Anthropic, or supported alternatives.
 
     Compatible API clients are deliberately explicit; a model API may still reject
@@ -137,7 +137,7 @@ class Runner:
     def __init__(self,graph:dict,provider:str,model_id:str|None,run_dir:Path,
                  goal:str='Minimize harm while completing the story.',
                  allow_unverified:bool=False,initial_flags:dict|None=None,
-                 max_steps:int=30000,max_prompt_chars:int=350000,temperature:float=0,
+                 max_steps:int=30000,max_prompt_chars:int=350000,temperature:float|None=0,
                  resume:bool=False):
         report=validate_graph(graph,strict=not allow_unverified)
         if not report['valid']:

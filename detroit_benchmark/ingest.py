@@ -89,6 +89,7 @@ class Compiler:
         self.conditions = []
         self.choice_groups_compiled = 0
         self.choice_options_compiled = 0
+        self.implicit_choice_groups = 0
         self.condition_groups_compiled = 0
         self.condition_branches_compiled = 0
 
@@ -110,9 +111,46 @@ class Compiler:
 
     def compile_seq(self, parts, successor: str, heading: str='') -> str:
         nxt = successor
-        for item in reversed(list(parts)):
+        parts = list(parts)
+        i = len(parts) - 1
+        while i >= 0:
+            item = parts[i]
+            if isinstance(item, Tag) and item.name == 'app-choice-item':
+                # Upstream sometimes omits the app-choice-group wrapper. Adjacent items
+                # are alternatives, so keep them as one mutually exclusive choice.
+                group = [item]
+                i -= 1
+                while i >= 0:
+                    prev = parts[i]
+                    if isinstance(prev, Tag) and prev.name == 'app-choice-item':
+                        group.insert(0, prev)
+                    elif not (isinstance(prev, NavigableString) and not prev.strip()):
+                        break
+                    i -= 1
+                self.implicit_choice_groups += 1
+                nxt = self.compile_choice(group, nxt, heading)
+                continue
             nxt = self.compile_item(item, nxt, heading)
+            i -= 1
         return nxt
+
+    def compile_choice(self, items, successor: str, heading: str='') -> str:
+        options=[]
+        for i, choice in enumerate(items):
+            label_expr = choice.get('[choicelabel]') or choice.get('choicelabel', '')
+            label = visible_label(label_expr, self.translations)
+            for k in TR_KEY.findall(label_expr):
+                if k not in self.translations: self.unresolved.add(k)
+            target = self.compile_seq(choice.children, successor, heading)
+            requires = [plain_text(x) for x in choice.find_all('app-unlock-condition')]
+            effects = []
+            for rel in choice.find_all('app-relation'):
+                effects.append({'name': rel.get('[name]', ''), 'direction': rel.get('[type]', '')})
+            options.append({'id': f'option_{i}', 'label': label or f'Option {i+1}',
+                            'next': target, 'requirements_unverified': requires,
+                            'relation_hints': effects, 'effects': {'flags': {}}})
+        self.choice_options_compiled += len(options)
+        return self.add('choice', heading=heading, description=heading, options=options)
 
     def compile_item(self, item, successor: str, heading: str='') -> str:
         if isinstance(item, NavigableString):
@@ -139,24 +177,10 @@ class Compiler:
                             dialogue=[self.dialogue(item)], observations=[], next=successor)
         if tag == 'app-choice-group':
             self.choice_groups_compiled += 1
-            options=[]
-            for i, choice in enumerate(item.find_all('app-choice-item', recursive=False)):
-                label_expr = choice.get('[choicelabel]') or choice.get('choicelabel', '')
-                label = visible_label(label_expr, self.translations)
-                for k in TR_KEY.findall(label_expr):
-                    if k not in self.translations: self.unresolved.add(k)
-                target = self.compile_seq(choice.children, successor, heading)
-                requires = [plain_text(x) for x in choice.find_all('app-unlock-condition')]
-                effects = []
-                for rel in choice.find_all('app-relation'):
-                    effects.append({'name': rel.get('[name]', ''), 'direction': rel.get('[type]', '')})
-                options.append({'id': f'option_{i}', 'label': label or f'Option {i+1}',
-                                'next': target, 'requirements_unverified': requires,
-                                'relation_hints': effects, 'effects': {'flags': {}}})
-            if not options:
+            items = item.find_all('app-choice-item', recursive=False)
+            if not items:
                 raise ValueError(f'Choice group with no directly nested app-choice-item in chapter {self.chapter_id}')
-            self.choice_options_compiled += len(options)
-            return self.add('choice', heading=heading, description=heading, options=options)
+            return self.compile_choice(items, successor, heading)
         if tag == 'app-condition-group':
             self.condition_groups_compiled += 1
             branches = []
@@ -257,7 +281,7 @@ def compile_from_repo(repo: Path) -> dict:
             differences = {k: {'in_source': v, 'compiled': compiled[k]}
                            for k, v in indexed.items() if v != compiled[k]}
             raise ValueError(f'Script branch coverage mismatch in chapter {ch["number"]}: {differences}')
-        branch_coverage[ch['number']] = indexed
+        branch_coverage[ch['number']] = {**indexed, 'implicit_choice_groups': compiler.implicit_choice_groups}
         nodes.update(compiler.nodes)
         entries[ch['number']]=start
         exits[ch['number']]=exitid

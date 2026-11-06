@@ -46,6 +46,24 @@ def test_orphan_branch_is_rejected_instead_of_combining_outcomes():
         compiler.compile_seq(soup.contents, 'ending')
 
 
+def test_adjacent_choice_items_without_group_stay_mutually_exclusive():
+    source = '''<section><p>Before</p>
+      <app-choice-item choiceLabel="A"><app-dialogue-line name="Kara">Only A</app-dialogue-line></app-choice-item>
+      <app-choice-item choiceLabel="B"><app-dialogue-line name="Kara">Only B</app-dialogue-line></app-choice-item>
+    </section>'''
+    soup = BeautifulSoup(source, 'html.parser')
+    compiler = Compiler({}, '7', 'Kara')
+    terminal = compiler.add('chapter_exit', next=None)
+    compiler.compile_seq(soup.contents, terminal)
+    choices = [n for n in compiler.nodes.values() if n['type'] == 'choice']
+    assert len(choices) == 1
+    assert [o['label'] for o in choices[0]['options']] == ['A', 'B']
+    assert choices[0]['options'][0]['next'] != choices[0]['options'][1]['next']
+    assert compiler.implicit_choice_groups == 1
+    assert compiler.choice_groups_compiled == 0
+    assert compiler.choice_options_compiled == 2
+
+
 def test_malformed_choice_group_fails_instead_of_dropping_branches():
     soup = BeautifulSoup('<app-choice-group><div><app-choice-item choiceLabel="HELLO">Text</app-choice-item></div></app-choice-group>', 'html.parser')
     compiler = Compiler({}, '4', 'Markus')

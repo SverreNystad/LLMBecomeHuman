@@ -31,7 +31,8 @@ def main():
     play.add_argument('--resume',action='store_true')
     play.add_argument('--max-steps',type=int,default=30000)
     play.add_argument('--max-prompt-chars',type=int,default=350000)
-    play.add_argument('--temperature',type=float,default=0)
+    play.add_argument('--temperature',type=lambda v: None if v.lower()=='none' else float(v),default=0,
+                      help="Sampling temperature, or 'none' to omit it and use the provider default")
     play.add_argument('--initial-flags',type=Path,help='Optional JSON dict of game-state flags')
     compare=sub.add_parser('compare',help='Compare saved playthroughs')
     compare.add_argument('run_dirs',type=Path,nargs='+')
