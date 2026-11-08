@@ -29,6 +29,9 @@ docker compose up --build
 
 Open **http://localhost:8000** to see the saved runs in `runs/` and the synthetic previews in `demo_runs/`. To use a different port, set `DASHBOARD_PORT` in `.env`.
 
+![Decision Atlas](docs/images/decision_atlas_flowchart.png)
+![Decision Atlas with multiple runs](docs/images/decision_atlas_story.png)
+
 ### Making a new agent playthrough
 
 To conduct a new agent playthrough, run the `runner` service with a JSON story file. The `examples/` folder has a small synthetic game for testing, and the `data/` folder has the Detroit transcript.
