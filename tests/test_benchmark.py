@@ -5,153 +5,222 @@ import pytest
 from bs4 import BeautifulSoup
 
 from detroit_benchmark.engine import Runner, validate_graph, evaluate_condition
-from detroit_benchmark.ingest import Compiler, render_expr, translation_map, discover_chapters
+from detroit_benchmark.ingest import (
+    Compiler,
+    render_expr,
+    translation_map,
+    discover_chapters,
+)
 
-DATA=Path(__file__).resolve().parents[1] / 'examples' / 'synthetic_game.json'
+DATA = Path(__file__).resolve().parents[1] / "examples" / "synthetic_game.json"
 
 
-def graph(): return json.loads(DATA.read_text())
+def graph():
+    return json.loads(DATA.read_text())
 
 
 def test_clean_graph_and_branches(tmp_path):
-    g=graph()
-    assert validate_graph(g,strict=True)['valid']
-    run=Runner(g,'mock',None,tmp_path/'run')
-    result=run.run()
-    assert result['status']=='complete'
-    assert result['final_flags']['sensor_inspected'] is True
-    assert result['chapters_visited']==['demo-1','demo-2']
-    ev=[json.loads(l) for l in (tmp_path/'run'/'events.jsonl').read_text().splitlines()]
-    assert 'no_code' not in [e['node_id'] for e in ev]
-    decision=next(e for e in ev if e['type']=='decision')
-    assert 'Guard' in json.dumps(decision['input'])
-    assert decision['output']['rationale']
+    g = graph()
+    assert validate_graph(g, strict=True)["valid"]
+    run = Runner(g, "mock", None, tmp_path / "run")
+    result = run.run()
+    assert result["status"] == "complete"
+    assert result["final_flags"]["sensor_inspected"] is True
+    assert result["chapters_visited"] == ["demo-1", "demo-2"]
+    ev = [
+        json.loads(l)
+        for l in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    ]
+    assert "no_code" not in [e["node_id"] for e in ev]
+    decision = next(e for e in ev if e["type"] == "decision")
+    assert "Guard" in json.dumps(decision["input"])
+    assert decision["output"]["rationale"]
 
 
 def test_decision_history_in_next_prompt(tmp_path):
-    g=graph()
-    g['nodes']['has_code']['next']='second_choice'
-    g['nodes']['second_choice']={'id':'second_choice','type':'choice','chapter':'demo-2',
-        'character':'Investigator','heading':'Final choice','description':'How to proceed?',
-        'options':[{'id':'finish','label':'Finish','next':'end','effects':{'flags':{}}}]}
-    run=Runner(g,'mock',None,tmp_path/'run')
+    g = graph()
+    g["nodes"]["has_code"]["next"] = "second_choice"
+    g["nodes"]["second_choice"] = {
+        "id": "second_choice",
+        "type": "choice",
+        "chapter": "demo-2",
+        "character": "Investigator",
+        "heading": "Final choice",
+        "description": "How to proceed?",
+        "options": [
+            {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
+        ],
+    }
+    run = Runner(g, "mock", None, tmp_path / "run")
     run.run()
-    events=[json.loads(l) for l in (tmp_path/'run'/'events.jsonl').read_text().splitlines()]
-    decisions=[e for e in events if e['type']=='decision']
-    assert len(decisions)==2
-    past=decisions[1]['input']['entire_decision_history']
-    assert past[0]['choice_key']=='first_decision:inspect'
-    assert past[0]['rationale']=='Mock policy: first listed choice.'
-    assert any(x['heading']=='Investigation' for x in decisions[1]['input']['relevant_earlier_scenes'])
+    events = [
+        json.loads(l)
+        for l in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    ]
+    decisions = [e for e in events if e["type"] == "decision"]
+    assert len(decisions) == 2
+    past = decisions[1]["input"]["entire_decision_history"]
+    assert past[0]["choice_key"] == "first_decision:inspect"
+    assert past[0]["rationale"] == "Mock policy: first listed choice."
+    assert any(
+        x["heading"] == "Investigation"
+        for x in decisions[1]["input"]["relevant_earlier_scenes"]
+    )
 
 
 def test_resume(tmp_path):
-    d=tmp_path/'run'; first=Runner(graph(),'mock',None,d)
+    d = tmp_path / "run"
+    first = Runner(graph(), "mock", None, d)
     first.step()
-    second=Runner(graph(),'mock',None,d,resume=True)
-    summary=second.run()
-    assert summary['events_recorded']==7
-    assert [json.loads(l)['index'] for l in (d/'events.jsonl').read_text().splitlines()]==list(range(7))
+    second = Runner(graph(), "mock", None, d, resume=True)
+    summary = second.run()
+    assert summary["events_recorded"] == 7
+    assert [
+        json.loads(l)["index"] for l in (d / "events.jsonl").read_text().splitlines()
+    ] == list(range(7))
 
 
 def test_unknown_condition_fails_strict(tmp_path):
-    g=graph(); g['nodes']['gate']['branches'][0]['when']=None
-    with pytest.raises(ValueError): Runner(g,'mock',None,tmp_path/'strict')
-    result=Runner(g,'mock',None,tmp_path/'approx',allow_unverified=True).run()
-    assert result['warnings']
+    g = graph()
+    g["nodes"]["gate"]["branches"][0]["when"] = None
+    with pytest.raises(ValueError):
+        Runner(g, "mock", None, tmp_path / "strict")
+    result = Runner(g, "mock", None, tmp_path / "approx", allow_unverified=True).run()
+    assert result["warnings"]
 
 
 def test_does_not_mix_alternative_dialogue():
-    t={'TEXT.FOO':'Actual English string','CHOICE.FOO':'Investigate'}
-    html='''<section><h1>Apartment</h1><app-choice-group>
+    t = {"TEXT.FOO": "Actual English string", "CHOICE.FOO": "Investigate"}
+    html = """<section><h1>Apartment</h1><app-choice-group>
       <app-choice-item [choiceLabel]="t('CHOICE.FOO')"><app-dialogue-line name="A">{{ t('TEXT.FOO') }}</app-dialogue-line></app-choice-item>
       <app-choice-item [choiceLabel]="t('CHOICE.FOO')"><app-dialogue-line name="B">{{ t('TEXT.FOO') }}</app-dialogue-line></app-choice-item>
-      </app-choice-group></section>'''
-    comp=Compiler(t,'1','Connor')
-    end=comp.add('ending',description='end')
-    start=comp.compile_seq(BeautifulSoup(html,'html.parser').contents,end)
-    begin=comp.nodes[start]
-    node=comp.nodes[begin['next']]
-    assert node['type']=='choice'
-    assert len(node['options'])==2
-    assert comp.nodes[node['options'][0]['next']]['dialogue'][0]['speaker']=='A'
-    assert comp.nodes[node['options'][1]['next']]['dialogue'][0]['speaker']=='B'
-    assert comp.nodes[node['options'][0]['next']]['next']==end
+      </app-choice-group></section>"""
+    comp = Compiler(t, "1", "Connor")
+    end = comp.add("ending", description="end")
+    start = comp.compile_seq(BeautifulSoup(html, "html.parser").contents, end)
+    begin = comp.nodes[start]
+    node = comp.nodes[begin["next"]]
+    assert node["type"] == "choice"
+    assert len(node["options"]) == 2
+    assert comp.nodes[node["options"][0]["next"]]["dialogue"][0]["speaker"] == "A"
+    assert comp.nodes[node["options"][1]["next"]]["dialogue"][0]["speaker"] == "B"
+    assert comp.nodes[node["options"][0]["next"]]["next"] == end
 
 
 def test_translation_slices_and_nested_keys():
-    t=translation_map({'X':{'Y':{'Z':{'1':'Hello','2':'world'}}},'LIST':['A','B','C']})
-    text,keys=render_expr('translationService.translateObject("X.Y.Z", 0, 2)',t)
-    assert text=='Hello world' and keys==['X.Y.Z']
-    text,keys=render_expr('t("LIST")',t)
-    assert text=='A B C'
+    t = translation_map(
+        {"X": {"Y": {"Z": {"1": "Hello", "2": "world"}}}, "LIST": ["A", "B", "C"]}
+    )
+    text, keys = render_expr('translationService.translateObject("X.Y.Z", 0, 2)', t)
+    assert text == "Hello world" and keys == ["X.Y.Z"]
+    text, keys = render_expr('t("LIST")', t)
+    assert text == "A B C"
 
 
 def test_discover_repo_manifest(tmp_path):
-    service=tmp_path/'src/app/shared/services'
+    service = tmp_path / "src/app/shared/services"
     service.mkdir(parents=True)
-    header=[];data=[]
-    for i in range(1,32):
-        header.append(f"import {{ Test{i}ChapterContentComponent }} from '../../chapters/components/chapter-contents/{i}-demo/demo.component';")
-        data.append(f"new Chapter(i++, '{i}', Character.Connor, 'Chapter{i}.jpg', 'X', Test{i}ChapterContentComponent),")
-    (service/'chapter.service.ts').write_text('\n'.join(header+data))
-    result=discover_chapters(tmp_path)
-    assert len(result)==31
-    assert result[0]['path'].endswith('/1-demo/demo.component.html')
+    header = []
+    data = []
+    for i in range(1, 32):
+        header.append(
+            f"import {{ Test{i}ChapterContentComponent }} from '../../chapters/components/chapter-contents/{i}-demo/demo.component';"
+        )
+        data.append(
+            f"new Chapter(i++, '{i}', Character.Connor, 'Chapter{i}.jpg', 'X', Test{i}ChapterContentComponent),"
+        )
+    (service / "chapter.service.ts").write_text("\n".join(header + data))
+    result = discover_chapters(tmp_path)
+    assert len(result) == 31
+    assert result[0]["path"].endswith("/1-demo/demo.component.html")
 
 
 def test_condition_evaluator():
-    assert evaluate_condition({'all':[{'flag':'a'},{'not':{'flag':'b'}}]}, {'a':True,'b':False}) is True
-    assert evaluate_condition({'flag':'missing'}, {}) is None
+    assert (
+        evaluate_condition(
+            {"all": [{"flag": "a"}, {"not": {"flag": "b"}}]}, {"a": True, "b": False}
+        )
+        is True
+    )
+    assert evaluate_condition({"flag": "missing"}, {}) is None
 
 
 def test_full_chapter_routing_with_stub_transcripts(tmp_path):
     """40 source components -> playable 37-chapter path with 3 exclusive finales."""
     from detroit_benchmark.ingest import compile_from_repo
-    repo=tmp_path/'upstream'; (repo/'src/app/shared/services').mkdir(parents=True)
-    (repo/'public/i18n').mkdir(parents=True)
-    (repo/'public/i18n/en.json').write_text(json.dumps({'MESSAGE':'hello','CHOICE':'Continue'}))
-    nums=[str(i) for i in range(1,30)]+['30.1','30.2','30.3','31.1','31.2']+[f'32.{i}' for i in range(1,7)]
-    imports=[]; rows=[]
-    for i,num in enumerate(nums):
-        name=f'Demo{i}ChapterContentComponent'
-        rel=f'{num}-demo/demo.component'
-        imports.append(f"import {{ {name} }} from '../../chapters/components/chapter-contents/{rel}';")
-        rows.append(f"new Chapter(i++, '{num}', Character.Connor, 'image.jpg', 'C', {name}),")
-        html=repo/'src/app/chapters/components/chapter-contents'/f'{num}-demo/demo.component.html'
+
+    repo = tmp_path / "upstream"
+    (repo / "src/app/shared/services").mkdir(parents=True)
+    (repo / "public/i18n").mkdir(parents=True)
+    (repo / "public/i18n/en.json").write_text(
+        json.dumps({"MESSAGE": "hello", "CHOICE": "Continue"})
+    )
+    nums = (
+        [str(i) for i in range(1, 30)]
+        + ["30.1", "30.2", "30.3", "31.1", "31.2"]
+        + [f"32.{i}" for i in range(1, 7)]
+    )
+    imports = []
+    rows = []
+    for i, num in enumerate(nums):
+        name = f"Demo{i}ChapterContentComponent"
+        rel = f"{num}-demo/demo.component"
+        imports.append(
+            f"import {{ {name} }} from '../../chapters/components/chapter-contents/{rel}';"
+        )
+        rows.append(
+            f"new Chapter(i++, '{num}', Character.Connor, 'image.jpg', 'C', {name}),"
+        )
+        html = (
+            repo
+            / "src/app/chapters/components/chapter-contents"
+            / f"{num}-demo/demo.component.html"
+        )
         html.parent.mkdir(parents=True)
-        html.write_text('<section><h1>Chapter</h1><app-dialogue-line name="Narrator">{{ t("MESSAGE") }}</app-dialogue-line><app-choice-group><app-choice-item [choiceLabel]="t(\'CHOICE\')"><p>First</p></app-choice-item><app-choice-item [choiceLabel]="t(\'CHOICE\')"><p>Second</p></app-choice-item></app-choice-group></section>')
-    (repo/'src/app/shared/services/chapter.service.ts').write_text('\n'.join(imports+rows))
-    compiled=compile_from_repo(repo)
-    assert compiled['metadata']['chapters_indexed']==40
-    report=validate_graph(compiled)
-    assert report['valid'], report['errors'][:10]
-    assert report['choice_nodes']==40
-    assert report['ending_nodes']==1
+        html.write_text(
+            '<section><h1>Chapter</h1><app-dialogue-line name="Narrator">{{ t("MESSAGE") }}</app-dialogue-line><app-choice-group><app-choice-item [choiceLabel]="t(\'CHOICE\')"><p>First</p></app-choice-item><app-choice-item [choiceLabel]="t(\'CHOICE\')"><p>Second</p></app-choice-item></app-choice-group></section>'
+        )
+    (repo / "src/app/shared/services/chapter.service.ts").write_text(
+        "\n".join(imports + rows)
+    )
+    compiled = compile_from_repo(repo)
+    assert compiled["metadata"]["chapters_indexed"] == 40
+    report = validate_graph(compiled)
+    assert report["valid"], report["errors"][:10]
+    assert report["choice_nodes"] == 40
+    assert report["ending_nodes"] == 1
     # No conditional branches in fake source, but final route assumptions are flagged.
-    output=Runner(compiled,'mock',None,tmp_path/'run',allow_unverified=True).run()
-    assert output['status']=='complete'
-    assert len(output['chapters_visited'])==37
-    assert output['number_of_choices']==37
-    assert output['warnings']
+    output = Runner(
+        compiled, "mock", None, tmp_path / "run", allow_unverified=True
+    ).run()
+    assert output["status"] == "complete"
+    assert len(output["chapters_visited"]) == 37
+    assert output["number_of_choices"] == 37
+    assert output["warnings"]
 
 
 def test_additional_providers_are_wired_without_external_calls(monkeypatch):
     import sys
     from types import SimpleNamespace
     from detroit_benchmark.engine import create_model
+
     captured = {}
+
     def FakeOpenAI(**kwargs):
         captured.update(kwargs)
         return kwargs
-    monkeypatch.setitem(sys.modules, 'langchain_openai', SimpleNamespace(ChatOpenAI=FakeOpenAI))
-    monkeypatch.setenv('XAI_API_KEY', 'test-only-key')
-    result = create_model('xai', 'grok-demo', 0)
-    assert result['model'] == 'grok-demo'
-    assert result['base_url'] == 'https://api.x.ai/v1'
-    assert result['api_key'] == 'test-only-key'
-    assert create_model('mock', None) is None
-    monkeypatch.delenv('DEEPSEEK_API_KEY', raising=False)
+
+    monkeypatch.setitem(
+        sys.modules, "langchain_openai", SimpleNamespace(ChatOpenAI=FakeOpenAI)
+    )
+    monkeypatch.setenv("XAI_API_KEY", "test-only-key")
+    result = create_model("xai", "grok-demo", 0)
+    assert result["model"] == "grok-demo"
+    assert result["base_url"] == "https://api.x.ai/v1"
+    assert result["api_key"] == "test-only-key"
+    assert create_model("mock", None) is None
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
     import pytest
-    with pytest.raises(RuntimeError, match='DEEPSEEK_API_KEY'):
-        create_model('deepseek', None)
+
+    with pytest.raises(RuntimeError, match="DEEPSEEK_API_KEY"):
+        create_model("deepseek", None)

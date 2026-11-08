@@ -3,6 +3,7 @@
 The dashboard is intentionally limited to local, previously recorded run directories.
 It does not invoke LLMs or alter the benchmark's state.
 """
+
 from __future__ import annotations
 
 import base64
@@ -30,22 +31,47 @@ STALE_RUN_SECONDS = 15 * 60
 # the story graph because adding them there would change the hash that run comparison uses.
 DETROIT_SOURCE = "detroitbecometext"
 DETROIT_CHAPTER_TITLES = {
-    "1": "The Hostage", "2": "Opening", "3": "Shades of Color", "4": "A New Home",
-    "5": "The Painter", "6": "Partners", "7": "Stormy Night", "8": "Broken",
-    "9": "The Interrogation", "10": "Fugitives", "11": "From the Dead",
-    "12": "Waiting for Hank...", "13": "On the Run", "14": "Jericho", "15": "The Nest",
-    "16": "Time to Decide", "17": "Zlatko", "18": "Russian Roulette", "19": "Spare Parts",
-    "20": "The Eden Club", "21": "The Pirates' Cove", "22": "The Bridge",
-    "23": "The Stratford Tower", "24": "Public Enemy", "25": "Midnight Train",
-    "26": "Capitol Park", "27": "Meet Kamski", "28": "Freedom March",
-    "29": "Last Chance, Connor", "30.1": "Crossroads: Kara", "30.2": "Crossroads: Connor",
-    "30.3": "Crossroads: Markus", "31.1": "Night of the Soul: Markus",
-    "31.2": "Night of the Soul: Connor", "32.1": "Battle for Detroit: Kara Leaving Detroit",
+    "1": "The Hostage",
+    "2": "Opening",
+    "3": "Shades of Color",
+    "4": "A New Home",
+    "5": "The Painter",
+    "6": "Partners",
+    "7": "Stormy Night",
+    "8": "Broken",
+    "9": "The Interrogation",
+    "10": "Fugitives",
+    "11": "From the Dead",
+    "12": "Waiting for Hank...",
+    "13": "On the Run",
+    "14": "Jericho",
+    "15": "The Nest",
+    "16": "Time to Decide",
+    "17": "Zlatko",
+    "18": "Russian Roulette",
+    "19": "Spare Parts",
+    "20": "The Eden Club",
+    "21": "The Pirates' Cove",
+    "22": "The Bridge",
+    "23": "The Stratford Tower",
+    "24": "Public Enemy",
+    "25": "Midnight Train",
+    "26": "Capitol Park",
+    "27": "Meet Kamski",
+    "28": "Freedom March",
+    "29": "Last Chance, Connor",
+    "30.1": "Crossroads: Kara",
+    "30.2": "Crossroads: Connor",
+    "30.3": "Crossroads: Markus",
+    "31.1": "Night of the Soul: Markus",
+    "31.2": "Night of the Soul: Connor",
+    "32.1": "Battle for Detroit: Kara Leaving Detroit",
     "32.2": "Battle for Detroit: Kara Captured",
     "32.3": "Battle for Detroit: Connor's Last Mission",
     "32.4": "Battle for Detroit: Connor at the CyberLife Tower",
     "32.5": "Battle for Detroit: Markus Demonstration",
-    "32.6": "Battle for Detroit: Markus Revolution", "final": "Final Routes",
+    "32.6": "Battle for Detroit: Markus Revolution",
+    "final": "Final Routes",
 }
 
 
@@ -69,7 +95,11 @@ def _resolve_run(root: Path, run_id: str) -> Path:
         path = (root / rel).resolve()
     except (ValueError, UnicodeDecodeError) as exc:
         raise HTTPException(status_code=404, detail="Unknown run") from exc
-    if path == root or not path.is_relative_to(root) or not (path / "experiment.json").is_file():
+    if (
+        path == root
+        or not path.is_relative_to(root)
+        or not (path / "experiment.json").is_file()
+    ):
         raise HTTPException(status_code=404, detail="Unknown run")
     return path
 
@@ -123,7 +153,9 @@ def _metadata(root: Path, directory: Path) -> dict[str, Any]:
         "id": _run_id(root, directory),
         "name": directory.relative_to(root).as_posix(),
         "provider": exp.get("provider", summary.get("provider", "unknown")),
-        "display_provider": exp.get("display_provider") if exp.get("synthetic", False) else None,
+        "display_provider": exp.get("display_provider")
+        if exp.get("synthetic", False)
+        else None,
         "model": exp.get("model_id", summary.get("model", "unknown")),
         "goal": exp.get("goal", summary.get("goal", "")),
         "story_title": exp.get("story_title"),
@@ -136,9 +168,15 @@ def _metadata(root: Path, directory: Path) -> dict[str, Any]:
         "chapters_visited": chapters,
         "started_at": exp.get("started_at", summary.get("started_at")),
         "completed_at": summary.get("completed_at"),
-        "total_input_tokens": summary.get("total_input_tokens", state.get("total_input_tokens", 0)),
-        "total_output_tokens": summary.get("total_output_tokens", state.get("total_output_tokens", 0)),
-        "total_llm_latency_seconds": summary.get("total_llm_latency_seconds", state.get("total_llm_latency_seconds", 0)),
+        "total_input_tokens": summary.get(
+            "total_input_tokens", state.get("total_input_tokens", 0)
+        ),
+        "total_output_tokens": summary.get(
+            "total_output_tokens", state.get("total_output_tokens", 0)
+        ),
+        "total_llm_latency_seconds": summary.get(
+            "total_llm_latency_seconds", state.get("total_llm_latency_seconds", 0)
+        ),
         "warnings": len(summary.get("warnings", state.get("warnings", []))),
         "end_description": summary.get("end_description"),
         "final_flags": summary.get("final_flags", state.get("flags", {})),
@@ -148,32 +186,57 @@ def _metadata(root: Path, directory: Path) -> dict[str, Any]:
 
 def _short_event(event: dict[str, Any]) -> dict[str, Any]:
     kind = event.get("type")
-    result = {k: event.get(k) for k in ("index", "timestamp", "type", "chapter", "node_id")}
+    result = {
+        k: event.get(k) for k in ("index", "timestamp", "type", "chapter", "node_id")
+    }
     if kind == "scene":
         scene = event.get("visible_to_agent") or {}
-        result.update(heading=scene.get("heading"), description=scene.get("description"),
-                      character=scene.get("character"), observations=scene.get("observations", []),
-                      dialogue_count=len(scene.get("dialogue", [])))
+        result.update(
+            heading=scene.get("heading"),
+            description=scene.get("description"),
+            character=scene.get("character"),
+            observations=scene.get("observations", []),
+            dialogue_count=len(scene.get("dialogue", [])),
+        )
     elif kind == "decision":
         context = event.get("input") or {}
         scene = context.get("current_scene") or {}
-        result.update(heading=scene.get("heading"), description=scene.get("description"),
-                      character=scene.get("character"),
-                      available_choices=context.get("available_choices", []),
-                      label=event.get("label"), choice_key=event.get("decision_key"),
-                      choice_id=(event.get("output") or {}).get("choice_id"),
-                      rationale=(event.get("output") or {}).get("rationale"),
-                      relevant_prior_choices=(event.get("output") or {}).get("relevant_prior_choices", []),
-                      flags_before=event.get("flags_before", {}),
-                      flags_after=event.get("flags_after", {}),
-                      prompt_history_count=len(context.get("entire_decision_history", [])),
-                      retrieved_scenes_count=len(context.get("relevant_earlier_scenes", [])),
-                      model_info=event.get("model_info", {}),
-                      unverified_requirements=event.get("unverified_requirements", []))
+        result.update(
+            heading=scene.get("heading"),
+            description=scene.get("description"),
+            character=scene.get("character"),
+            available_choices=context.get("available_choices", []),
+            label=event.get("label"),
+            choice_key=event.get("decision_key"),
+            choice_id=(event.get("output") or {}).get("choice_id"),
+            rationale=(event.get("output") or {}).get("rationale"),
+            relevant_prior_choices=(event.get("output") or {}).get(
+                "relevant_prior_choices", []
+            ),
+            flags_before=event.get("flags_before", {}),
+            flags_after=event.get("flags_after", {}),
+            prompt_history_count=len(context.get("entire_decision_history", [])),
+            retrieved_scenes_count=len(context.get("relevant_earlier_scenes", [])),
+            model_info=event.get("model_info", {}),
+            unverified_requirements=event.get("unverified_requirements", []),
+        )
     elif kind == "ending":
         result["description"] = event.get("description")
     elif kind in ("condition", "route"):
-        result.update({k: event.get(k) for k in ("branch_index", "used_unverified_default", "flag", "value", "assumed", "next") if k in event})
+        result.update(
+            {
+                k: event.get(k)
+                for k in (
+                    "branch_index",
+                    "used_unverified_default",
+                    "flag",
+                    "value",
+                    "assumed",
+                    "next",
+                )
+                if k in event
+            }
+        )
     return result
 
 
@@ -183,21 +246,35 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     beat = {k: event.get(k) for k in ("index", "type", "node_id")}
     if kind == "scene":
         scene = event.get("visible_to_agent") or {}
-        beat.update(heading=scene.get("heading"), description=scene.get("description"),
-                    observations=scene.get("observations", []),
-                    dialogue=[{"speaker": line.get("speaker"), "text": line.get("text")}
-                              for line in scene.get("dialogue", [])])
+        beat.update(
+            heading=scene.get("heading"),
+            description=scene.get("description"),
+            observations=scene.get("observations", []),
+            dialogue=[
+                {"speaker": line.get("speaker"), "text": line.get("text")}
+                for line in scene.get("dialogue", [])
+            ],
+        )
     elif kind == "decision":
         scene = (event.get("input") or {}).get("current_scene") or {}
-        beat.update(heading=scene.get("heading"), character=scene.get("character"),
-                    available_choices=(event.get("input") or {}).get("available_choices", []),
-                    choice_id=(event.get("output") or {}).get("choice_id"),
-                    rationale=(event.get("output") or {}).get("rationale"))
+        beat.update(
+            heading=scene.get("heading"),
+            character=scene.get("character"),
+            available_choices=(event.get("input") or {}).get("available_choices", []),
+            choice_id=(event.get("output") or {}).get("choice_id"),
+            rationale=(event.get("output") or {}).get("rationale"),
+        )
     elif kind == "condition":
-        beat.update(branch_index=event.get("branch_index"),
-                    used_unverified_default=event.get("used_unverified_default", False))
+        beat.update(
+            branch_index=event.get("branch_index"),
+            used_unverified_default=event.get("used_unverified_default", False),
+        )
     elif kind == "route":
-        beat.update(flag=event.get("flag"), value=event.get("value"), assumed=event.get("assumed", False))
+        beat.update(
+            flag=event.get("flag"),
+            value=event.get("value"),
+            assumed=event.get("assumed", False),
+        )
     elif kind == "ending":
         beat.update(description=event.get("description"))
     else:
@@ -233,10 +310,16 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
     chapter_counts: Counter = Counter()
     for decision in decisions:
         chapter_counts[str(decision.get("chapter") or "Unknown")] += 1
-    ordered_chapters = list(dict.fromkeys(str(ev.get("chapter") or "Unknown") for ev in events))
+    ordered_chapters = list(
+        dict.fromkeys(str(ev.get("chapter") or "Unknown") for ev in events)
+    )
     return {
-        "run": meta, "events": events, "decisions": decisions,
-        "decisions_by_chapter": [{"chapter": ch, "choices": chapter_counts[ch]} for ch in ordered_chapters],
+        "run": meta,
+        "events": events,
+        "decisions": decisions,
+        "decisions_by_chapter": [
+            {"chapter": ch, "choices": chapter_counts[ch]} for ch in ordered_chapters
+        ],
     }
 
 
@@ -257,53 +340,96 @@ def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
     for key in keys:
         left, right = (seq.get(key) for seq in sequences)
         if left and right:
-            status = "same" if left.get("choice_id") == right.get("choice_id") else "different"
-            if status == "same": identical += 1
-            else: different += 1
+            status = (
+                "same"
+                if left.get("choice_id") == right.get("choice_id")
+                else "different"
+            )
+            if status == "same":
+                identical += 1
+            else:
+                different += 1
         else:
             status = "only_left" if left else "only_right"
             unshared += 1
-        rows.append({"node_id": key[0], "occurrence": key[1],
-                     "chapter": (left or right).get("chapter"), "status": status,
-                     "left": left, "right": right})
+        rows.append(
+            {
+                "node_id": key[0],
+                "occurrence": key[1],
+                "chapter": (left or right).get("chapter"),
+                "status": status,
+                "left": left,
+                "right": right,
+            }
+        )
     rows.sort(key=lambda row: ((row["left"] or row["right"])["index"], row["node_id"]))
     return {
         "runs": [d["run"] for d in details],
-        "identical": identical, "different": different, "unshared": unshared,
+        "identical": identical,
+        "different": different,
+        "unshared": unshared,
         "shared": identical + different,
         "rows": rows,
-        "notes": "Only the same decision node and visit number can be compared directly. Different paths can encounter different choices."
+        "notes": "Only the same decision node and visit number can be compared directly. Different paths can encounter different choices.",
     }
 
 
-
-def _chapter_info(graph: dict, nodes: dict, chapters: list[str]) -> dict[str, dict[str, Any]]:
+def _chapter_info(
+    graph: dict, nodes: dict, chapters: list[str]
+) -> dict[str, dict[str, Any]]:
     characters: dict[str, Counter] = {chapter: Counter() for chapter in chapters}
     for node in nodes.values():
         if node.get("chapter") and node.get("character") not in (None, "multiple"):
             characters[str(node["chapter"])][node["character"]] += 1
     is_detroit = DETROIT_SOURCE in str(graph.get("metadata", {}).get("source", ""))
-    return {chapter: {
-        "title": DETROIT_CHAPTER_TITLES.get(chapter) if is_detroit else None,
-        "character": characters[chapter].most_common(1)[0][0] if characters[chapter] else None,
-    } for chapter in chapters}
+    return {
+        chapter: {
+            "title": DETROIT_CHAPTER_TITLES.get(chapter) if is_detroit else None,
+            "character": characters[chapter].most_common(1)[0][0]
+            if characters[chapter]
+            else None,
+        }
+        for chapter in chapters
+    }
 
 
-def _flowchart_projection(graph: dict, *, complete: bool, source: str) -> dict[str, Any]:
+def _flowchart_projection(
+    graph: dict, *, complete: bool, source: str
+) -> dict[str, Any]:
     """A read-only graph for the browser, with each scene's script but not its source keys."""
     nodes = {}
     for node_id, node in graph.get("nodes", {}).items():
-        nodes[node_id] = {k: node[k] for k in (
-            "id", "type", "chapter", "character", "heading", "description", "next",
-            "if_true", "if_false", "flag", "unverified", "condition_text",
-        ) if k in node}
+        nodes[node_id] = {
+            k: node[k]
+            for k in (
+                "id",
+                "type",
+                "chapter",
+                "character",
+                "heading",
+                "description",
+                "next",
+                "if_true",
+                "if_false",
+                "flag",
+                "unverified",
+                "condition_text",
+            )
+            if k in node
+        }
         if node.get("type") == "scene":
             nodes[node_id]["observations"] = node.get("observations", [])
-            nodes[node_id]["dialogue"] = [{"speaker": line.get("speaker"), "text": line.get("text")}
-                                          for line in node.get("dialogue", [])]
+            nodes[node_id]["dialogue"] = [
+                {"speaker": line.get("speaker"), "text": line.get("text")}
+                for line in node.get("dialogue", [])
+            ]
         if node.get("type") == "choice":
             nodes[node_id]["options"] = [
-                {k: o[k] for k in ("id", "label", "next", "requirements_unverified") if k in o}
+                {
+                    k: o[k]
+                    for k in ("id", "label", "next", "requirements_unverified")
+                    if k in o
+                }
                 for o in node.get("options", [])
             ]
         if node.get("type") == "condition":
@@ -311,13 +437,21 @@ def _flowchart_projection(graph: dict, *, complete: bool, source: str) -> dict[s
                 {k: b[k] for k in ("next", "condition_text") if k in b}
                 for b in node.get("branches", [])
             ]
-    chapters = list(dict.fromkeys(
-        str(node["chapter"]) for node in nodes.values() if node.get("chapter")
-    ))
-    return {"metadata": graph.get("metadata", {}), "start": graph.get("start"),
-            "complete": complete, "source": source, "chapters": chapters,
-            "chapter_info": _chapter_info(graph, nodes, chapters),
-            "node_count": len(nodes), "nodes": nodes}
+    chapters = list(
+        dict.fromkeys(
+            str(node["chapter"]) for node in nodes.values() if node.get("chapter")
+        )
+    )
+    return {
+        "metadata": graph.get("metadata", {}),
+        "start": graph.get("start"),
+        "complete": complete,
+        "source": source,
+        "chapters": chapters,
+        "chapter_info": _chapter_info(graph, nodes, chapters),
+        "node_count": len(nodes),
+        "nodes": nodes,
+    }
 
 
 def _event_only_graph(directory: Path) -> dict:
@@ -329,28 +463,46 @@ def _event_only_graph(directory: Path) -> dict:
         if not nid:
             continue
         typ = event.get("type")
-        scene = (event.get("input") or {}).get("current_scene") or event.get("visible_to_agent") or {}
-        node = nodes.setdefault(nid, {"id": nid, "type": "scene", "chapter": event.get("chapter")})
-        node.update(type={"decision": "choice"}.get(typ, typ), chapter=event.get("chapter"),
-                    heading=scene.get("heading"), description=scene.get("description"),
-                    character=scene.get("character"))
-        next_id = events[i+1].get("node_id") if i+1 < len(events) else None
+        scene = (
+            (event.get("input") or {}).get("current_scene")
+            or event.get("visible_to_agent")
+            or {}
+        )
+        node = nodes.setdefault(
+            nid, {"id": nid, "type": "scene", "chapter": event.get("chapter")}
+        )
+        node.update(
+            type={"decision": "choice"}.get(typ, typ),
+            chapter=event.get("chapter"),
+            heading=scene.get("heading"),
+            description=scene.get("description"),
+            character=scene.get("character"),
+        )
+        next_id = events[i + 1].get("node_id") if i + 1 < len(events) else None
         if typ == "decision":
             chosen = (event.get("output") or {}).get("choice_id")
             node["options"] = [
-                {"id": opt["id"], "label": opt.get("label", opt["id"]),
-                 "next": next_id if opt["id"] == chosen else None}
+                {
+                    "id": opt["id"],
+                    "label": opt.get("label", opt["id"]),
+                    "next": next_id if opt["id"] == chosen else None,
+                }
                 for opt in (event.get("input") or {}).get("available_choices", [])
             ]
         elif typ in ("scene", "chapter_exit"):
             node["next"] = next_id
         elif typ in ("condition", "route"):
             node["next"] = next_id
-    return {"metadata": {"title": "Partial reconstruction from recorded events"},
-            "start": events[0].get("node_id") if events else None, "nodes": nodes}
+    return {
+        "metadata": {"title": "Partial reconstruction from recorded events"},
+        "start": events[0].get("node_id") if events else None,
+        "nodes": nodes,
+    }
 
 
-def _load_saved_graph(root: Path, directory: Path, extra_graphs_dir: Path | None) -> tuple[dict, bool, str]:
+def _load_saved_graph(
+    root: Path, directory: Path, extra_graphs_dir: Path | None
+) -> tuple[dict, bool, str]:
     expected = (_json_file(directory / "experiment.json") or {}).get("graph_sha256")
     # New benchmark runs always include their original full story graph.
     snapshot = _json_file(directory / "story-graph.json")
@@ -368,15 +520,25 @@ def _load_saved_graph(root: Path, directory: Path, extra_graphs_dir: Path | None
             if path.name in {"experiment.json", "summary.json", "checkpoint.json"}:
                 continue
             graph = _json_file(path)
-            if graph and "nodes" in graph and (not expected or canonical_hash(graph) == expected):
+            if (
+                graph
+                and "nodes" in graph
+                and (not expected or canonical_hash(graph) == expected)
+            ):
                 return graph, True, "matched_local_graph"
     return _event_only_graph(directory), False, "event_log_only"
 
 
-def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = None) -> FastAPI:
+def create_app(
+    runs_dir: str | Path = "runs", graphs_dir: str | Path | None = None
+) -> FastAPI:
     root = Path(runs_dir).expanduser().resolve()
-    graph_root = Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
-    app = FastAPI(title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs")
+    graph_root = (
+        Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
+    )
+    app = FastAPI(
+        title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs"
+    )
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -392,8 +554,13 @@ def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = No
 
     @app.get("/api/runs")
     def list_runs():
-        return {"runs": sorted((_metadata(root, path) for path in _discovered_runs(root)),
-                               key=lambda run: run.get("started_at") or "", reverse=True)}
+        return {
+            "runs": sorted(
+                (_metadata(root, path) for path in _discovered_runs(root)),
+                key=lambda run: run.get("started_at") or "",
+                reverse=True,
+            )
+        }
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):
@@ -408,7 +575,10 @@ def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = No
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
         # A chapter the run never entered is a normal answer, not an error.
-        return {"chapter": chapter, "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, [])}
+        return {
+            "chapter": chapter,
+            "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, []),
+        }
 
     @app.get("/api/runs/{run_id}/events/{event_index}")
     def get_event(run_id: str, event_index: int):
@@ -425,25 +595,61 @@ def create_app(runs_dir: str | Path = "runs", graphs_dir: str | Path | None = No
         detail = _detail(root, _resolve_run(root, run_id))
         stream = io.StringIO()
         writer = csv.writer(stream)
-        writer.writerow(["event_index", "timestamp", "chapter", "node_id", "character", "choice_id",
-                         "choice_label", "rationale", "relevant_prior_choices", "state_changes"])
+        writer.writerow(
+            [
+                "event_index",
+                "timestamp",
+                "chapter",
+                "node_id",
+                "character",
+                "choice_id",
+                "choice_label",
+                "rationale",
+                "relevant_prior_choices",
+                "state_changes",
+            ]
+        )
         for decision in detail["decisions"]:
-            before, after = decision.get("flags_before") or {}, decision.get("flags_after") or {}
-            changes = {k: {"before": before.get(k), "after": after.get(k)}
-                       for k in before.keys() | after.keys() if before.get(k) != after.get(k)}
-            writer.writerow([decision["index"], decision["timestamp"], decision["chapter"],
-                             decision["node_id"], decision.get("character"), decision["choice_id"],
-                             decision["label"], decision["rationale"],
-                             json.dumps(decision.get("relevant_prior_choices", []), ensure_ascii=False),
-                             json.dumps(changes, ensure_ascii=False)])
-        return Response(stream.getvalue(), media_type="text/csv; charset=utf-8",
-                        headers={"Content-Disposition": f'attachment; filename="{run_id[:40]}-decisions.csv"'})
+            before, after = (
+                decision.get("flags_before") or {},
+                decision.get("flags_after") or {},
+            )
+            changes = {
+                k: {"before": before.get(k), "after": after.get(k)}
+                for k in before.keys() | after.keys()
+                if before.get(k) != after.get(k)
+            }
+            writer.writerow(
+                [
+                    decision["index"],
+                    decision["timestamp"],
+                    decision["chapter"],
+                    decision["node_id"],
+                    decision.get("character"),
+                    decision["choice_id"],
+                    decision["label"],
+                    decision["rationale"],
+                    json.dumps(
+                        decision.get("relevant_prior_choices", []), ensure_ascii=False
+                    ),
+                    json.dumps(changes, ensure_ascii=False),
+                ]
+            )
+        return Response(
+            stream.getvalue(),
+            media_type="text/csv; charset=utf-8",
+            headers={
+                "Content-Disposition": f'attachment; filename="{run_id[:40]}-decisions.csv"'
+            },
+        )
 
     @app.get("/api/compare")
     def compare(run_ids: list[str] = Query(...)):
         if len(run_ids) != 2:
             raise HTTPException(status_code=422, detail="Provide exactly two run_ids")
-        return _compare([_detail(root, _resolve_run(root, run_id)) for run_id in run_ids])
+        return _compare(
+            [_detail(root, _resolve_run(root, run_id)) for run_id in run_ids]
+        )
 
     @app.get("/legacy")
     def legacy_home():
