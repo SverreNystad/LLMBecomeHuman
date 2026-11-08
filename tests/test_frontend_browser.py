@@ -99,10 +99,56 @@ def test_chapter_flowchart_browser_interactions():
             page.wait_for_function("document.querySelector('#selectedRunCount')?.textContent === '6'")
             page.locator('.flow-node').first.wait_for()
             assert page.locator('.flow-node.kind-option').count() == 4
-            assert page.locator('.flow-node').count() == 12  # complete chapter graph + portal
+            # Merging must keep every script step, branch and route on the chart.
+            coverage = page.evaluate('''() => {
+              const chapter = buildChapterGraph(state.chapter);
+              const originals = Object.values(state.graph.nodes).filter(n => n.chapter === state.chapter);
+              const shown = [...chapter.nodes.values()].flatMap(n => n.members ? n.members.map(m => m.id) : [n.id]);
+              return {missing: originals.filter(n => !shown.includes(n.id)).map(n => n.id),
+                      duplicated: shown.length - new Set(shown).size,
+                      nodes: chapter.nodes.size, steps: chapter.sourceSteps,
+                      selfLoops: chapter.edges.filter(e => e.from === e.to).length};
+            }''')
+            assert coverage['missing'] == [] and coverage['duplicated'] == 0 and coverage['selfLoops'] == 0
+
+            # Only straight runs merge: a branch or a second entrance ends a run.
+            merged = page.evaluate('''() => {
+              const saved = state.graph;
+              const scene = (id, next, chapter = 'M') => ({id, type: 'scene', chapter, heading: id, next,
+                dialogue: [{speaker: 'S', text: id}], observations: []});
+              state.graph = {chapters: ['M', 'N'], nodes: {
+                a: scene('a', 'b'), b: scene('b', 'c'), c: scene('c', 'pick'),
+                pick: {id: 'pick', type: 'choice', chapter: 'M', options: [{id: 'x', label: 'X', next: 'd'}, {id: 'y', label: 'Y', next: 'e'}]},
+                d: scene('d', 'join'), e: scene('e', 'join'), join: scene('join', 'g'), g: scene('g', 'other'),
+                other: scene('other', null, 'N'),
+                loop1: scene('loop1', 'loop2'), loop2: scene('loop2', 'loop1'),
+              }};
+              const chapter = buildChapterGraph('M');
+              const view = {detail: {events: ['a', 'b', 'c', 'pick', 'd', 'join', 'g', 'other'].map((node_id, index) => ({
+                index, node_id, chapter: node_id === 'other' ? 'N' : 'M',
+                type: node_id === 'pick' ? 'decision' : 'scene', choice_id: 'x'}))}};
+              const path = computePath(view, 'M', chapter);
+              state.graph = saved;
+              return {runs: [...chapter.nodes.values()].filter(n => n.members).map(n => n.members.map(m => m.id)),
+                      edges: chapter.edges.map(e => e.from + '>' + e.to).sort(),
+                      headEvents: path.byId.get('a').length,
+                      traversed: [...path.traversed].map(t => t.replace('\\u0000', '>')).sort()};
+            }''')
+            assert sorted(merged['runs']) == [['a', 'b', 'c'], ['d'], ['e'], ['join', 'g'], ['loop1'], ['loop2']]
+            assert 'a>pick' in merged['edges'] and 'd>join' in merged['edges'] and 'e>join' in merged['edges']
+            assert 'join>PORTAL::other' in merged['edges']
+            assert 'loop1>loop2' in merged['edges'] and 'loop2>loop1' in merged['edges']
+            assert merged['headEvents'] == 3  # all three scenes' events belong to the merged node
+            assert 'a>pick' in merged['traversed'] and 'd>join' in merged['traversed']
+            assert 'e>join' not in merged['traversed']
+            assert 'a>a' not in merged['traversed']
+
+            node_count = page.locator('.flow-node').count()
+            assert node_count == coverage['nodes']
+            assert page.locator('.node-dialogue').count() > 0
             assert page.locator('.flow-node.kind-portal').count() == 1
             assert 'ALWAYS ON' in page.locator('.full-paths-indicator').inner_text()
-            assert page.locator('.edge-path.route-overlay').count() > 10
+            assert page.locator('.edge-path.route-overlay').count() > 5
             assert page.locator('.flow-node:not(.visited)').count() >= 0
 
             # Clicking the selected model's own mark returns ONLY that run's log.
@@ -120,8 +166,8 @@ def test_chapter_flowchart_browser_interactions():
             page.wait_for_function("document.querySelector('#selectedRunCount')?.textContent === '10'")
             assert page.locator('.run-chip').count() == 10
             assert page.locator('.legend-runs .legend-line').count() == 10
-            assert page.locator('.flow-node').count() == 12
-            assert page.locator('.edge-path.route-overlay').count() > 20
+            assert page.locator('.flow-node').count() == node_count
+            assert page.locator('.edge-path.route-overlay').count() > 10
             assert page.locator('.flow-node.visited .node-model-button').count() >= 10
             # Multi-run badges must wrap within the node; labels remain visible.
             assert page.locator('.flow-node.visited .node-label').first.bounding_box()['height'] > 0
@@ -137,7 +183,7 @@ def test_chapter_flowchart_browser_interactions():
             # Removing only one run doesn't change complete graph.
             page.locator('.run-chip-remove').first.click()
             page.wait_for_function("document.querySelector('#selectedRunCount')?.textContent === '9'")
-            assert page.locator('.flow-node').count() == 12
+            assert page.locator('.flow-node').count() == node_count
             page.locator('.chapter-entry').nth(1).click()
             assert 'The Search' in page.locator('#chapterTitle').inner_text()
             assert not errors

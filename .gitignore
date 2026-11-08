@@ -6,8 +6,8 @@
 *.key
 
 # Local runs and source-derived transcripts (may contain copyrighted content)
-runs/
-data/
+#runs/
+# data/
 upstream-detroit/
 
 # Python/editor cache

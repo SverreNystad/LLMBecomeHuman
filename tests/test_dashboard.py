@@ -3,10 +3,12 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import time
 from pathlib import Path
 
+import pytest
 from fastapi.testclient import TestClient
 
 from detroit_benchmark.dashboard import STALE_RUN_SECONDS, _flowchart_projection, create_app
@@ -124,7 +126,7 @@ def test_flowchart_includes_unvisited_options_and_all_chapters():
     assert len(chart['chapters']) == 3
     assert {'scan', 'rush'} == {o['id'] for o in chart['nodes']['arrival_decision']['options']}
     assert chart['nodes']['arrival_decision']['options'][0]['next'] == 'scan_result'
-    assert 'dialogue' not in chart['nodes']['arrival']
+    assert 'source_keys' not in json.dumps(chart)
 
 
 def test_new_runner_stores_full_graph_snapshot(tmp_path):
@@ -245,3 +247,23 @@ def test_browsers_must_revalidate_the_frontend():
     c = client()
     for path in ('/', '/legacy', '/assets/app.js', '/assets/story.js', '/assets/styles.css'):
         assert c.get(path).headers['cache-control'] == 'no-cache', path
+
+
+def test_flowchart_includes_scene_script_without_source_keys():
+    graph = {'metadata': {}, 'nodes': {'a': {
+        'id': 'a', 'type': 'scene', 'chapter': '1', 'observations': ['Loaded'],
+        'dialogue': [{'speaker': 'Allen', 'text': 'Hold.', 'source_keys': ['K']}]}}}
+    node = _flowchart_projection(graph, complete=True, source='t')['nodes']['a']
+    assert node['dialogue'] == [{'speaker': 'Allen', 'text': 'Hold.'}]
+    assert node['observations'] == ['Loaded']
+
+
+@pytest.mark.skipif(not (PROJECT / 'docker-compose.yml').exists(), reason='compose file is not in the image')
+def test_dashboard_mounts_are_not_nested_inside_a_read_only_mount():
+    compose = (PROJECT / 'docker-compose.yml').read_text()
+    dashboard = compose.split('dashboard:', 1)[1].split('runner:', 1)[0]
+    mounts = re.findall(r'^\s*- \./[^:\s]+:(/app/\S+?)(:ro)?$', dashboard, re.M)
+    assert len(mounts) >= 2
+    for target, read_only in mounts:
+        if read_only:
+            assert not any(other != target and other.startswith(target + '/') for other, _ in mounts), target

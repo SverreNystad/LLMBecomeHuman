@@ -47,6 +47,7 @@ Chapter titles are kept in `dashboard.py`, not the story graph, because changing
 - **Choose runs:** The new `VISIBLE PLAYTHROUGHS` button opens a searchable panel grouped by provider. Check any number of playthroughs, use **Select all compatible**, or remove individual colored chips. All runs that recorded decisions on the newest real story graph are selected automatically.
 - **Graph compatibility:** Only runs with the **same story graph SHA-256** can be overlaid. Incompatible runs are disabled; clear the selection to select a different story graph. This avoids aligning unrelated decisions.
 - **All script paths remain on screen:** The full saved chapter graph provides the unchanging gray background. Each selected run traces **its own route** in a separate color; shared edges are rendered as parallel, narrow colored lines. No available source branch is removed.
+- **Merged scenes:** Scenes that follow each other with no way to branch are one node, showing their full dialogue and inspected details. Scroll inside a node to read long passages, or click it to read the script in the side panel, including on branches the run didn't take. Choices, conditions and every branch keep their own nodes.
 - **Individual model markers:** Every node visited by a selected run gets a compact, clickable model-family mark, with colors distinguishing runs of the same model family. Nodes expand vertically to fit all marks rather than hiding extra visits. Click the specific mark to inspect only that playthrough's logged choice.
 - **Complete provenance:** The reasoning drawer includes the chosen action, other options, recorded public justification, prior decision history, world-state delta, full model input/output, and inference telemetry. It also identifies *which run* the record came from.
 - **Legend:** Expand the legend at the top left to see all visible runs by color, model logo, and model ID. The top strip shows removable run chips.
@@ -101,13 +102,13 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/runs` | Discover available recorded experiments |
 | `GET /api/runs/{id}` | Events, timeline, and compact decision records |
 | `GET /api/runs/{id}/story?chapter=X` | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order |
-| `GET /api/runs/{id}/flowchart` | Full chapter graph, branch labels, and fidelity/completeness status |
+| `GET /api/runs/{id}/flowchart` | Full chapter graph, scene script, branch labels, and fidelity/completeness status |
 | `GET /api/runs/{id}/events/{index}` | Full stored model input, output, justification, and state transition |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (legacy; the multi-run frontend fetches multiple logs independently) |
 | `GET /legacy` | Previous full benchmark dashboard |
 | `GET /api/docs` | OpenAPI docs |
 
-The flowchart API excludes full dialogue to keep rendering lightweight. Dialogue is fetched one chapter at a time by the Story view, or from a selected recorded event. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
+The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
 ## Visual previews
 

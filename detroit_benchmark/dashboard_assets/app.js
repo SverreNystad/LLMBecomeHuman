@@ -7,6 +7,8 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const svgNS = 'http://www.w3.org/2000/svg';
 const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
+const SCENE_NODE_WIDTH = 300, SCENE_NODE_CHROME = 46, NODE_DIALOGUE_MAX_HEIGHT = 150;
+const NODE_CHARS_PER_ROW = 46, NODE_ROW_HEIGHT = 15, NODE_ITEM_GAP = 5;
 const PALETTE = ['#1596bd','#d36b56','#7756b7','#1b946f','#bb7622','#b34b8a','#2376a4','#a09d29','#815c43','#d25b7b','#3e7b47','#6660aa','#b55329','#607b91','#b34651','#2e8c8a'];
 const state = {
   runs: [], selectedIds: [], details: new Map(), graph: null, chapter: null,
@@ -266,14 +268,86 @@ function changeChapter(ch) {
 }
 function optionId(parent, option) {return `${parent}::OPTION::${encodeURIComponent(option)}`;}
 function modelView(runId){return {run:runById(runId),detail:state.details.get(runId)};}
+const nodeTargets = n => n.type === 'choice' ? (n.options||[]).map(o=>o.next)
+  : n.type === 'condition' ? [...(n.branches||[]).map(b=>b.next), n.next]
+  : n.type === 'route' ? [n.if_true, n.if_false]
+  : n.type === 'ending' ? [] : [n.next];
+const inboundCache = new WeakMap();
+function inboundCounts() {
+  // Counted across the whole story, so an entry from another chapter also blocks a merge.
+  if (!inboundCache.has(state.graph)) {
+    const counts = new Map();
+    for (const n of Object.values(state.graph.nodes))
+      for (const target of new Set(nodeTargets(n).filter(Boolean))) counts.set(target,(counts.get(target)||0)+1);
+    inboundCache.set(state.graph,counts);
+  }
+  return inboundCache.get(state.graph);
+}
+/* A scene joins the next one only if that is its sole exit and the next scene's sole
+ * entrance. Nothing can branch inside such a run, so merging cannot hide a branch. */
+function straightSceneRuns(originals) {
+  const inbound = inboundCounts(), byId = new Map(originals.map(n=>[n.id,n]));
+  const scenes = originals.filter(n=>n.type==='scene'), follows = new Map(), hasPrevious = new Set();
+  for (const n of scenes) {
+    const next = byId.get(n.next);
+    if (next && next !== n && next.type === 'scene' && inbound.get(next.id) === 1) {
+      follows.set(n.id,next); hasPrevious.add(next.id);
+    }
+  }
+  const runs = [], grouped = new Set();
+  for (const n of scenes) {
+    if (hasPrevious.has(n.id)) continue;
+    const run = [n];
+    while (follows.has(run.at(-1).id)) run.push(follows.get(run.at(-1).id));
+    run.forEach(member=>grouped.add(member.id));
+    runs.push(run);
+  }
+  // A closed loop of scenes has no first scene, so its scenes stay separate.
+  for (const n of scenes) if (!grouped.has(n.id)) runs.push([n]);
+  return runs;
+}
+function sceneRunLabel(run) {
+  const headings = [...new Set(run.map(n=>n.heading).filter(Boolean))];
+  if (!headings.length) return shortTitle(run[0].id,26);
+  return headings.length === 1 ? headings[0] : `${headings[0]} → ${headings.at(-1)}`;
+}
+function estimateDialogueHeight(items) {
+  let rows = 0;
+  for (const item of items) {
+    const chars = item.kind === 'line' ? `${item.speaker||''} ${item.text||''}`.length
+      : item.kind === 'clue' ? (item.lines||[]).join(' ').length + 12 : String(item.text||'').length;
+    rows += Math.ceil(Math.max(1,chars)/NODE_CHARS_PER_ROW);
+  }
+  return Math.min(NODE_DIALOGUE_MAX_HEIGHT,rows*NODE_ROW_HEIGHT+items.length*NODE_ITEM_GAP);
+}
+function nodeDialogueMarkup(items) {
+  return items.map(item => {
+    if (item.kind === 'heading') return `<b class="node-section">${esc(item.text)}</b>`;
+    if (item.kind === 'line') return `<p><b>${esc(item.speaker||'Unknown')}:</b> ${esc(item.text)}</p>`;
+    if (item.kind === 'clue') return `<p class="node-clue"><b>Inspected${item.title?`: ${esc(item.title)}`:''}.</b> ${esc((item.lines||[]).join(' · ').replaceAll(' | ',', '))}</p>`;
+    return `<p><i>${esc(item.text)}</i></p>`;
+  }).join('');
+}
 function buildChapterGraph(chapter) {
   const originals = Object.values(state.graph?.nodes || {}).filter(n => n.chapter === chapter);
-  const nodes = new Map(), edges = [];
+  const nodes = new Map(), edges = [], groupOf = new Map();
   const addEdge = (from, to, type='normal', id='') => {
     if (!to) return;
     edges.push({from, to, type, id});
   };
+  for (const run of straightSceneRuns(originals)) {
+    const head = run[0];
+    // The first heading is already the node's title.
+    const items = buildStoryItems(run.map(n=>({...n,type:'scene'}))).filter((item,i)=>!(i===0&&item.kind==='heading'));
+    const dialogueHeight = estimateDialogueHeight(items);
+    run.forEach(member=>groupOf.set(member.id,head.id));
+    nodes.set(head.id,{id:head.id,parent:null,type:'scene',originalType:'scene',label:sceneRunLabel(run),node:head,
+                       members:run,items,dialogueHeight,width:items.length?SCENE_NODE_WIDTH:190,
+                       height:items.length?dialogueHeight+SCENE_NODE_CHROME:60});
+    addEdge(head.id,run.at(-1).next,'normal');
+  }
   for (const n of originals) {
+    if (n.type === 'scene') continue;
     const type = n.type === 'condition' || n.type === 'route' ? 'junction'
                : n.type === 'chapter_exit' ? 'exit' : n.type;
     const label = n.heading || ({choice:'CHOICE',condition:'CONDITION',route:'STORY BRANCH',chapter_exit:'CHAPTER COMPLETE',ending:'STORY END'}[n.type] || shortTitle(n.id,26));
@@ -282,6 +356,7 @@ function buildChapterGraph(chapter) {
                      height: n.type === 'condition'||n.type === 'route' ? 39 : 60});
   }
   for (const n of originals) {
+    if (n.type === 'scene') continue;
     if (n.type === 'choice') {
       for (const o of n.options || []) {
         const id = optionId(n.id, o.id);
@@ -300,6 +375,7 @@ function buildChapterGraph(chapter) {
   // Keep exits to other chapters as clickable portals. Do not discard any
   // edges merely because their destination belongs to another chapter.
   for (const e of edges) {
+    e.to = groupOf.get(e.to) || e.to;
     if (nodes.has(e.to)) continue;
     const destination = state.graph?.nodes?.[e.to];
     if (!destination) continue;
@@ -314,20 +390,23 @@ function buildChapterGraph(chapter) {
     e.to = portalId;
   }
   const internal = edges.filter(e => nodes.has(e.from) && nodes.has(e.to));
-  return {nodes, edges:internal, chapter};
+  const sourceSteps = originals.reduce((sum,n)=>sum+1+(n.options||[]).length,0);
+  const merged = groupOf.size > [...nodes.values()].filter(n=>n.members).length;
+  return {nodes, edges:internal, chapter, groupOf, sourceSteps, merged};
 }
-function computePath(view, chapter) {
+function computePath(view, chapter, graph) {
+  const groupId = id => graph.groupOf.get(id) || id;
   const visited = new Set(), traversed = new Set(), byId = new Map(), counts = new Map();
   const events = view?.detail?.events || [];
   for (let i = 0; i < events.length; i++) {
-    const ev = events[i], nid = ev.node_id;
-    if (ev.chapter !== chapter || !nid) continue;
+    const ev = events[i], nid = groupId(ev.node_id);
+    if (ev.chapter !== chapter || !ev.node_id) continue;
     visited.add(nid);
     if (!byId.has(nid)) byId.set(nid,[]);
     byId.get(nid).push(ev);
     counts.set(nid,(counts.get(nid)||0)+1);
     const next = events[i+1];
-    const nextId = next?.chapter === chapter ? next.node_id :
+    const nextId = next?.chapter === chapter ? groupId(next.node_id) :
       next?.node_id && state.graph?.nodes?.[next.node_id] ? `PORTAL::${next.node_id}` : null;
     if (ev.type === 'decision') {
       const opt = optionId(nid, ev.choice_id);
@@ -336,7 +415,7 @@ function computePath(view, chapter) {
       byId.get(opt).push(ev);
       traversed.add(`${nid}\u0000${opt}`);
       if (nextId) {traversed.add(`${opt}\u0000${nextId}`); if(nextId.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}}
-    } else if (nextId) {
+    } else if (nextId && nextId !== nid) {
       traversed.add(`${nid}\u0000${nextId}`);
       if(nextId.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}
     }
@@ -384,17 +463,19 @@ function layoutGraph(graph) {
       }
     }
   }
-  const maxRows = Math.max(1,...layers.map(x=>x.length));
-  const stepX = 250, stepY = Math.max(109, ...all.map(n=>n.height + 42)), left = 115, top = 110;
-  const contentHeight = maxRows * stepY;
-  for(let rank=0;rank<layers.length;rank++) {
-    const layer=layers[rank], startY=top+(contentHeight-layer.length*stepY)/2;
-    for(let i=0;i<layer.length;i++) {
-      const n=byId.get(layer[i]); n.x=left+rank*stepX; n.y=startY+i*stepY+15;
+  // Nodes vary in size now that they hold dialogue, so each column fits its own nodes.
+  const gapX = 62, gapY = 42, left = 115, top = 110;
+  const columnHeight = layer => layer.reduce((sum,id)=>sum+byId.get(id).height+gapY,0)-gapY;
+  const contentHeight = Math.max(0,...layers.map(columnHeight));
+  let x = left;
+  for(const layer of layers) {
+    let y = top+(contentHeight-columnHeight(layer))/2;
+    for(const id of layer) {
+      const n=byId.get(id); n.x=x; n.y=y; y+=n.height+gapY;
     }
+    x += Math.max(0,...layer.map(id=>byId.get(id).width))+gapX;
   }
-  return {width: left*2+Math.max(0,layers.length-1)*stepX+220,
-          height:Math.max(420,top*2+contentHeight),rankCount:layers.length};
+  return {width:x-gapX+left,height:Math.max(420,top*2+contentHeight),rankCount:layers.length};
 }
 function edgeMarkup(e, graph, offset=0) {
   const a=graph.nodes.get(e.from),b=graph.nodes.get(e.to);
@@ -426,7 +507,9 @@ function drawGraph(graph, paths) {
   // Keep every model logo visible. Additional rows expand node heights as needed.
   for(const node of graph.nodes.values()) {
     const count=paths.filter(x=>x.path.visited.has(node.id)).length;
-    node.height=Math.max(node.height, count ? 58 + Math.ceil(count/7)*22 : node.height);
+    const logoRows=Math.ceil(count/(node.width>=SCENE_NODE_WIDTH?12:7));
+    if(node.type==='scene'&&node.items.length)node.height+=logoRows*22;
+    else node.height=Math.max(node.height, count ? 58 + logoRows*22 : node.height);
   }
   const bounds=layoutGraph(graph);
   world.style.width=bounds.width+'px';world.style.height=bounds.height+'px';
@@ -460,6 +543,10 @@ function drawGraph(graph, paths) {
     n.setAttribute('aria-label',`${node.label}. ${users.length} of ${views.length} selected runs visited this node.`);
     n.title=`${node.label} · ${users.length} / ${views.length} runs visited`;
     const label=document.createElement('span');label.className='node-label';label.textContent=node.label;n.appendChild(label);
+    if(node.items?.length){
+      const dialogue=document.createElement('div');dialogue.className='node-dialogue';
+      dialogue.innerHTML=nodeDialogueMarkup(node.items);n.appendChild(dialogue);
+    }
     const left=document.createElement('i');left.className='node-socket left';left.setAttribute('aria-hidden','true');n.appendChild(left);
     const right=document.createElement('i');right.className='node-socket right';right.setAttribute('aria-hidden','true');n.appendChild(right);
     if(node.type==='choice'||node.type==='junction'){
@@ -492,10 +579,10 @@ function renderChapter(fit=true){
 function renderFlowchart(fit=true){
  renderStoryToolbar(readerRun());
  const chapter=state.chapter, views=activeViews(), graph=buildChapterGraph(chapter);
- const paths=views.map(v=>({...v,path:computePath(v,chapter)}));
+ const paths=views.map(v=>({...v,path:computePath(v,chapter,graph)}));
  const visited=new Set(paths.flatMap(v=>[...v.path.visited]));
  const choiceCount=views.reduce((sum,v)=>sum+(v.detail?.decisions||[]).filter(x=>x.chapter===chapter).length,0);
- $('chapterMetrics').textContent=`${niceNum(graph.nodes.size)} nodes · ${niceNum(choiceCount)} recorded decisions · ${niceNum(views.length)} runs`;
+ $('chapterMetrics').textContent=`${niceNum(graph.nodes.size)} nodes${graph.merged?`, merged from ${niceNum(graph.sourceSteps)} script steps`:''} · ${niceNum(choiceCount)} recorded decisions · ${niceNum(views.length)} runs`;
  $('chapterSubtitle').textContent=state.graph.metadata?.description||'Every script branch, with each selected run traced in color';
  $('visibleCount').textContent=niceNum(visited.size);$('totalCount').textContent=niceNum(graph.nodes.size);
  $('integrityNotice').textContent=!state.graph.complete?'SOURCE GRAPH MISSING · CANNOT SHOW ALL BRANCHES':
@@ -569,17 +656,19 @@ function zoom(factor,clientX,clientY){
 }
 function closeDrawer(){state.selected=null;$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
-function renderInspectorShell(node,runId,view){
+function renderInspectorShell(node,runId,view,visited=true){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
  $('reasoningDrawer').style.setProperty('--inspect-color',color);
  return `<div class="inspect-model-line"><span class="inspect-logo" style="border-color:${color};color:${color}">${modelIcon(provider)}</span><div><div class="inspect-model-name">${esc(modelName(provider))}</div><div class="inspect-run-name">${esc(run?.model||'Unknown')} · ${esc(run?.name||'')}</div></div></div>
   ${run?.synthetic?'<p class="inspect-note synthetic-disclaimer">SYNTHETIC PREVIEW — the recorded agent was a deterministic mock, not the named commercial model.</p>':''}
   <div class="inspect-overline">${esc(state.chapter)} · ${esc(node.type==='option'?'ACTION':'STORY NODE')}</div>
   <h2 class="inspect-title">${esc(node.label)}</h2>
-  <button type="button" class="story-link inspect-read" data-read-run="${esc(runId)}">Read this moment in the story</button>`;
+  ${visited?`<button type="button" class="story-link inspect-read" data-read-run="${esc(runId)}">Read this moment in the story</button>`:''}`;
 }
 async function inspect(nodeId,runId){
- const node=state.rendered?.graph.nodes.get(nodeId);if(!node)return;
+ const rendered=state.rendered?.graph;
+ const node=rendered?.nodes.get(rendered.groupOf.get(nodeId)||nodeId);if(!node)return;
+ nodeId=node.id;
  const view=modelView(runId), path=state.rendered?.paths.find(p=>p.run.id===runId)?.path;
  const events=path?.byId.get(nodeId)||[];
  const selectedEvent=events.findLast?.(e=>e.type==='decision')||events[events.length-1];
@@ -588,7 +677,7 @@ async function inspect(nodeId,runId){
  $('reasoningDrawer').classList.remove('is-hidden');requestAnimationFrame(centerSelectedNode);
  document.querySelectorAll('.flow-node').forEach(el=>el.classList.toggle('selected',el.dataset.nodeId===nodeId));
  if(!selectedEvent){
-  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`<div class="nondecision-msg">This branch was not visited by this run. No model explanation or state transition was recorded here.</div>`;
+  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view,false)+`<div class="nondecision-msg">This run did not visit this branch, so no model explanation or state change was recorded here.</div>${sceneScriptSection(node)}`;
   return;
  }
  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+'<div class="nondecision-msg">Loading recorded decision…</div>';
@@ -617,6 +706,14 @@ function renderDecisionInspector(node,ev,runId,view){
   <section class="inspect-section"><h3>RECORD METADATA</h3><div class="inspect-metrics"><div class="inspect-metric"><span>INPUT TOKENS</span><b>${niceNum(usage.input_tokens)}</b></div><div class="inspect-metric"><span>OUTPUT TOKENS</span><b>${niceNum(usage.output_tokens)}</b></div><div class="inspect-metric"><span>PRIOR SCENES</span><b>${niceNum((input.relevant_earlier_scenes||[]).length)}</b></div><div class="inspect-metric"><span>LATENCY</span><b>${ev.model_info?.latency_seconds!=null?esc(ev.model_info.latency_seconds)+' s':'—'}</b></div></div><details class="inspect-disclosure"><summary>VIEW FULL RECORDED INPUT + OUTPUT</summary><pre>${esc(JSON.stringify({system_prompt:ev.system_prompt,input,output},null,2))}</pre></details></section>
  ${ev.unverified_requirements?.length?'<p class="inspect-note">This decision involved unverified game-state requirements.</p>':''}`;
 }
+function sceneScriptSection(node){
+ if(!node.members)return '';
+ const items=buildStoryItems(node.members.map(n=>({...n,type:'scene'})));
+ const lines=items.filter(item=>item.kind==='line').length;
+ if(items.every(item=>item.kind==='heading'))return '';
+ const context={protagonist:chapterCharacter(state.chapter)};
+ return `<section class="inspect-section inspect-script"><h3>SCRIPT · ${niceNum(lines)} ${lines===1?'LINE':'LINES'}</h3>${items.map(item=>renderItem(item,context)).join('')}</section>`;
+}
 function renderSceneInspector(node,ev,runId,view){
  const data=ev.visible_to_agent||{};
  const preceding=(view.detail?.decisions||[]).filter(d=>d.index<ev.index).at(-1);
@@ -624,10 +721,9 @@ function renderSceneInspector(node,ev,runId,view){
  `<div class="selected-choice" style="border-left-color:${routeColor(view.run)}"><div class="selected-label">${esc(preceding.heading||'PREVIOUS ACTION')}</div><strong>${esc(preceding.label||preceding.choice_id)}</strong></div><p class="rationale">${esc(preceding.rationale||'No rationale recorded')}</p><p class="inspect-note">The latest recorded decision before this scene; other state variables can also affect the outcome.</p>`:
  '<p class="no-state">No prior decision in this run.</p>'}</section>`;
  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`
-  <p class="inspect-subtitle">${esc(data.description||ev.description||node.node.description||'')}</p>
-  <div class="nondecision-msg">This is a ${esc(ev.type)} event. It was not a direct model choice; the previous decision is shown below.</div>${prior}
-  ${(data.observations||[]).length?`<section class="inspect-section"><h3>OBSERVATIONS</h3>${data.observations.map(o=>`<p class="nondecision-text">${esc(o)}</p>`).join('')}</section>`:''}
-  ${(data.dialogue||[]).length?`<section class="inspect-section"><h3>DIALOGUE VISIBLE TO MODEL</h3>${data.dialogue.map(d=>`<div class="inspect-history"><strong>${esc(d.speaker||'Unknown')}</strong><p>${esc(d.text||'')}</p></div>`).join('')}</section>`:''}
+  ${node.members?'':`<p class="inspect-subtitle">${esc(data.description||ev.description||node.node.description||'')}</p>`}
+  ${sceneScriptSection(node)}
+  <div class="nondecision-msg">This was not a direct model choice. The previous decision is shown below.</div>${prior}
   <section class="inspect-section"><details class="inspect-disclosure"><summary>VIEW RAW SAVED EVENT</summary><pre>${esc(JSON.stringify(ev,null,2))}</pre></details></section>`;
 }
 function setupInteractions(){
@@ -670,7 +766,11 @@ function setupInteractions(){
  });
  const end=e=>{if(drag&&drag.id===e.pointerId){drag=null;vp.classList.remove('dragging');}};
  vp.addEventListener('pointerup',end);vp.addEventListener('pointercancel',end);
- vp.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY);},{passive:false});
+ vp.addEventListener('wheel',e=>{
+  // Over a node's dialogue, the wheel scrolls the text instead of zooming.
+  const dialogue=e.target.closest('.node-dialogue');
+  if(dialogue&&dialogue.scrollHeight>dialogue.clientHeight)return;
+  e.preventDefault();zoom(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY);},{passive:false});
  let resizeDebounce;
  new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>{
   // Closing the drawer also resizes the canvas; that must not undo where the reader has moved to.

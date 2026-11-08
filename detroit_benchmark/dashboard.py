@@ -290,13 +290,17 @@ def _chapter_info(graph: dict, nodes: dict, chapters: list[str]) -> dict[str, di
 
 
 def _flowchart_projection(graph: dict, *, complete: bool, source: str) -> dict[str, Any]:
-    """A small, read-only graph for the browser; excludes full dialogue and raw game text."""
+    """A read-only graph for the browser, with each scene's script but not its source keys."""
     nodes = {}
     for node_id, node in graph.get("nodes", {}).items():
         nodes[node_id] = {k: node[k] for k in (
             "id", "type", "chapter", "character", "heading", "description", "next",
             "if_true", "if_false", "flag", "unverified", "condition_text",
         ) if k in node}
+        if node.get("type") == "scene":
+            nodes[node_id]["observations"] = node.get("observations", [])
+            nodes[node_id]["dialogue"] = [{"speaker": line.get("speaker"), "text": line.get("text")}
+                                          for line in node.get("dialogue", [])]
         if node.get("type") == "choice":
             nodes[node_id]["options"] = [
                 {k: o[k] for k in ("id", "label", "next", "requirements_unverified") if k in o}

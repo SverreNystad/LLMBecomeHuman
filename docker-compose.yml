@@ -12,7 +12,7 @@ services:
       - detroit_benchmark
       - dashboard
       - --runs-dir
-      - /app/runs
+      - /app/saved_runs
       - --graphs-dir
       - /app/data
       - --host
@@ -22,9 +22,10 @@ services:
     ports:
       - "127.0.0.1:${DASHBOARD_PORT:-8000}:8000"
     volumes:
-      - ./runs:/app/runs:ro
+      # Sibling folders: a mount nested inside a read-only one fails on a fresh clone.
+      - ./runs:/app/saved_runs/runs:ro
       # Show bundled synthetic previews alongside real saved runs.
-      - ./demo_runs:/app/runs/previews:ro
+      - ./demo_runs:/app/saved_runs/previews:ro
       - ./data:/app/data:ro
     restart: unless-stopped
 
