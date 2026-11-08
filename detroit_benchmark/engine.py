@@ -186,6 +186,7 @@ class Runner:
         max_prompt_chars: int = 350000,
         temperature: float | None = 0,
         resume: bool = False,
+        retrieval_limit: int = 14,
     ):
         report = validate_graph(graph, strict=not allow_unverified)
         if not report["valid"]:
@@ -195,6 +196,7 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
+        self.retrieval_limit = retrieval_limit
         self.provider = provider
         self.model_id = (
             model_id
@@ -385,11 +387,17 @@ class Runner:
             "response_id": getattr(raw, "id", None),
         }
 
-    def _retrieve_past_scenes(
-        self, node: dict, options: list[dict], limit: int = 14
-    ) -> list[dict]:
-        """Deterministic retrieval; earlier dialogue is never invented or auto-summarized."""
-        entries = self.state["history"]
+    def _retrieve_past_scenes(self, node: dict, options: list[dict]) -> list[dict]:
+        """Deterministic keyword retrieval of earlier scenes, dialogue included verbatim.
+
+        Dialogue is never invented or summarized. Scenes recorded before dialogue
+        was kept in history (older checkpoints) simply come back without it.
+
+        Scenes since the last choice are excluded: they are already sent in full
+        as ``narrative_since_last_choice`` and always form the tail of history.
+        """
+        history = self.state["history"]
+        entries = history[: len(history) - len(self.state["recent_scene_events"])]
         q = " ".join(
             [node.get("heading", ""), node.get("description", "")]
             + [o.get("label", "") for o in options]
@@ -398,13 +406,19 @@ class Runner:
         ranked = []
         for i, event in enumerate(entries):
             blob = " ".join(
-                [event.get("heading", ""), event.get("description", "")]
+                [event.get("heading") or "", event.get("description") or ""]
                 + event.get("observations", [])
+                + [
+                    f"{line.get('speaker') or ''} {line.get('text') or ''}"
+                    for line in event.get("dialogue", [])
+                ]
             )
             tokens = set(re.findall(r"[a-z]{4,}", blob.lower()))
             relevance = len(terms & tokens)
             ranked.append((relevance, i, event))
-        chosen = sorted(ranked, key=lambda t: (t[0], t[1]), reverse=True)[:limit]
+        chosen = sorted(ranked, key=lambda t: (t[0], t[1]), reverse=True)[
+            : self.retrieval_limit
+        ]
         return [t[2] for t in sorted(chosen, key=lambda t: t[1])]
 
     def _choice(self, node: dict):
@@ -526,15 +540,7 @@ class Runner:
             }
             if node.get("chapter") not in self.state["chapters_visited"]:
                 self.state["chapters_visited"].append(node.get("chapter"))
-            self.state["history"].append(
-                {
-                    "scene_id": node["id"],
-                    "chapter": node.get("chapter"),
-                    "heading": node.get("heading"),
-                    "description": node.get("description"),
-                    "observations": node.get("observations", []),
-                }
-            )
+            self.state["history"].append(deepcopy(scene))
             self.state["recent_scene_events"].append(scene)
             self.state["node"] = node["next"]
             self._record("scene", node, {"visible_to_agent": scene})

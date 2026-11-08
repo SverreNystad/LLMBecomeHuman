@@ -63,8 +63,40 @@ def test_decision_history_in_next_prompt(tmp_path):
     assert past[0]["rationale"] == "Mock policy: first listed choice."
     assert any(
         x["heading"] == "Investigation"
-        for x in decisions[1]["input"]["relevant_earlier_scenes"]
+        for x in decisions[1]["input"]["narrative_since_last_choice"]
     )
+
+
+def test_earlier_scenes_include_dialogue(tmp_path):
+    g = graph()
+    g["nodes"]["has_code"]["next"] = "second_choice"
+    g["nodes"]["second_choice"] = {
+        "id": "second_choice",
+        "type": "choice",
+        "chapter": "demo-2",
+        "character": "Investigator",
+        # "alarm" appears only in the Arrival scene's dialogue, not its description.
+        "heading": "Alarm",
+        "description": "Silence the alarm?",
+        "options": [
+            {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
+        ],
+    }
+    Runner(g, "mock", None, tmp_path / "run", retrieval_limit=1).run()
+    events = [
+        json.loads(line)
+        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    ]
+    second = [e for e in events if e["type"] == "decision"][1]
+    [arrival] = second["input"]["relevant_earlier_scenes"]
+    assert arrival["heading"] == "Arrival"
+    assert arrival["dialogue"] == [
+        {
+            "speaker": "Guard",
+            "text": "The sensor may explain the alarm.",
+            "source_keys": [],
+        }
+    ]
 
 
 def test_resume(tmp_path):
@@ -224,3 +256,33 @@ def test_additional_providers_are_wired_without_external_calls(monkeypatch):
 
     with pytest.raises(RuntimeError, match="DEEPSEEK_API_KEY"):
         create_model("deepseek", None)
+
+
+def test_recent_scenes_not_repeated_in_earlier_scenes(tmp_path):
+    g = graph()
+    g["nodes"]["has_code"]["next"] = "second_choice"
+    g["nodes"]["second_choice"] = {
+        "id": "second_choice",
+        "type": "choice",
+        "chapter": "demo-2",
+        "character": "Investigator",
+        "heading": "Final choice",
+        "description": "How to proceed?",
+        "options": [
+            {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
+        ],
+    }
+    Runner(g, "mock", None, tmp_path / "run").run()
+    events = [
+        json.loads(line)
+        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    ]
+    first, second = [e["input"] for e in events if e["type"] == "decision"]
+    # Nothing precedes the first choice except its own recent narrative.
+    assert [s["scene_id"] for s in first["narrative_since_last_choice"]] == ["arrival"]
+    assert first["relevant_earlier_scenes"] == []
+    # Later, only scenes from before the last choice are retrieved.
+    recent = {s["scene_id"] for s in second["narrative_since_last_choice"]}
+    earlier = [s["scene_id"] for s in second["relevant_earlier_scenes"]]
+    assert recent == {"sensor_outcome", "ch2", "has_code"}
+    assert earlier == ["arrival"]
