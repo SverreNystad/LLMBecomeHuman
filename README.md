@@ -6,8 +6,8 @@ A research prototype that lets LLMs play through a text version of *Detroit: Bec
 
 ## Prerequisites
 
-- **Git**: Ensure that git is installed on your machine. [Download Git](https://git-scm.com/downloads)
-- **Docker**: Ensure that Docker is installed on your machine. [Download Docker](https://www.docker.com/products/docker-desktop)
+- **Git**: Ensure that git is installed on your machine. To be able to get the repository, you need git installed. [Download Git](https://git-scm.com/downloads)
+- **Docker**: Ensure that Docker is installed on your machine, to be able to run the application in a container. [Download Docker](https://www.docker.com/products/docker-desktop)
 - API keys for each model provider you want to run, see below. Add them to `.env` in the root of the repository, e.g. `OPENAI_API_KEY=...`. You can leave out any providers you don't want to use.
   - **OpenAI**: [Get an API key](https://platform.openai.com/account/api-keys)
   - **Anthropic**: [Get an API key](https://platform.claude.com/settings/keys)

@@ -62,14 +62,14 @@ Run metadata is provider-agnostic: the viewer recognizes OpenAI, Anthropic, xAI/
 
 The benchmark runner now supports these `--provider` values:
 
-| Provider | Key variable | Example model flag |
-| --- | --- | --- |
-| `openai` | `OPENAI_API_KEY` | `--model gpt-4.1-mini` |
-| `anthropic` | `ANTHROPIC_API_KEY` | `--model claude-sonnet-4-5` |
-| `xai` | `XAI_API_KEY` | `--model grok-4` |
-| `google` | `GOOGLE_API_KEY` | `--model gemini-2.5-flash` |
-| `deepseek` | `DEEPSEEK_API_KEY` | `--model deepseek-chat` |
-| `mistral` | `MISTRAL_API_KEY` | `--model mistral-large-latest` |
+| Provider     | Key variable         | Example model flag                    |
+| ------------ | -------------------- | ------------------------------------- |
+| `openai`     | `OPENAI_API_KEY`     | `--model gpt-4.1-mini`                |
+| `anthropic`  | `ANTHROPIC_API_KEY`  | `--model claude-sonnet-4-5`           |
+| `xai`        | `XAI_API_KEY`        | `--model grok-4`                      |
+| `google`     | `GOOGLE_API_KEY`     | `--model gemini-2.5-flash`            |
+| `deepseek`   | `DEEPSEEK_API_KEY`   | `--model deepseek-chat`               |
+| `mistral`    | `MISTRAL_API_KEY`    | `--model mistral-large-latest`        |
 | `openrouter` | `OPENROUTER_API_KEY` | `--model <provider/model>` (required) |
 
 Google Gemini adapter `langchain-google-genai` is included in `pyproject.toml`. xAI, DeepSeek, Mistral, and OpenRouter use compatible chat endpoints through `langchain-openai`. An individual model must support the structured output mechanism the runner uses; these integrations are not integration-tested against live APIs here. Set `--model` to an actual model your account can access.
@@ -97,16 +97,16 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 
 ## API additions
 
-| Route | Purpose |
-| --- | --- |
-| `GET /api/runs` | Discover available recorded experiments |
-| `GET /api/runs/{id}` | Events, timeline, and compact decision records |
-| `GET /api/runs/{id}/story?chapter=X` | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order |
-| `GET /api/runs/{id}/flowchart` | Full chapter graph, scene script, branch labels, and fidelity/completeness status |
-| `GET /api/runs/{id}/events/{index}` | Full stored model input, output, justification, and state transition |
+| Route                                  | Purpose                                                                                                          |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `GET /api/runs`                        | Discover available recorded experiments                                                                          |
+| `GET /api/runs/{id}`                   | Events, timeline, and compact decision records                                                                   |
+| `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order                              |
+| `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status                                |
+| `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (legacy; the multi-run frontend fetches multiple logs independently) |
-| `GET /legacy` | Previous full benchmark dashboard |
-| `GET /api/docs` | OpenAPI docs |
+| `GET /legacy`                          | Previous full benchmark dashboard                                                                                |
+| `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 
 The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
