@@ -82,15 +82,15 @@ Do not predict hidden endings or assume that unseen scenes have happened."""
 
 **User message:** a JSON object with:
 
-| Key                           | Contents                                                                                                                                  |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `current_scene`               | Chapter, playable character, heading and description of the choice point                                                                  |
-| `narrative_since_last_choice` | Every scene since the previous choice, including full dialogue (speaker and text) and on-screen observations                              |
-| `relevant_earlier_scenes`     | Up to 14 older scenes chosen by keyword overlap with the current scene and options (headings, descriptions and observations; no dialogue) |
-| `entire_decision_history`     | Every earlier choice: label, the model's own rationale, and the choice's recorded effects and relation hints                              |
-| `world_state`                 | Current story flags                                                                                                                       |
-| `goal`                        | The run's goal                                                                                                                            |
-| `available_choices`           | Only the options that are currently unlocked, as `{id, label}`                                                                            |
+| Key                           | Contents                                                                                                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `current_scene`               | Chapter, playable character, heading and description of the choice point                                                                                     |
+| `narrative_since_last_choice` | Every scene since the previous choice, including full dialogue (speaker and text) and on-screen observations                                                 |
+| `relevant_earlier_scenes`     | Up to a configurable 14 older scenes chosen by keyword overlap with the current scene and options, with heading, description, observations and full dialogue |
+| `entire_decision_history`     | Every earlier choice: label, the model's own rationale, and the choice's recorded effects and relation hints                                                 |
+| `world_state`                 | Current story flags                                                                                                                                          |
+| `goal`                        | The run's goal                                                                                                                                               |
+| `available_choices`           | Only the options that are currently unlocked, as `{id, label}`                                                                                               |
 
 The model must reply in a structured format: `choice_id`, `rationale` and `relevant_prior_choices`. An invalid ID stops the run. History is never truncated, so late-game prompts reach about 200k characters. A run aborts if a prompt goes over `--max-prompt-chars` (default 350k).
 
@@ -107,3 +107,7 @@ The exact input and output of every call are stored in the run's `events.jsonl`.
 | `story-graph.json` | The full story graph, so the dashboard can show untaken branches      |
 
 See [DASHBOARD.md](docs/DASHBOARD.md) for dashboard controls and API routes.
+
+## Acknowledgements
+
+Thanks to the detroitbecometext project for the original transcript. See [https://detroitbecometext.github.io/home](https://detroitbecometext.github.io/home).
