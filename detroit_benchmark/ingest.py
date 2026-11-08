@@ -9,7 +9,6 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from collections import OrderedDict
 from pathlib import Path
 
 from bs4 import BeautifulSoup, NavigableString, Tag

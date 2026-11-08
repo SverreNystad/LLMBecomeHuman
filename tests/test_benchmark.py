@@ -1,4 +1,3 @@
-import copy
 import json
 from pathlib import Path
 import pytest
@@ -28,8 +27,8 @@ def test_clean_graph_and_branches(tmp_path):
     assert result["final_flags"]["sensor_inspected"] is True
     assert result["chapters_visited"] == ["demo-1", "demo-2"]
     ev = [
-        json.loads(l)
-        for l in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+        json.loads(line)
+        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
     ]
     assert "no_code" not in [e["node_id"] for e in ev]
     decision = next(e for e in ev if e["type"] == "decision")
@@ -54,8 +53,8 @@ def test_decision_history_in_next_prompt(tmp_path):
     run = Runner(g, "mock", None, tmp_path / "run")
     run.run()
     events = [
-        json.loads(l)
-        for l in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+        json.loads(line)
+        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
     ]
     decisions = [e for e in events if e["type"] == "decision"]
     assert len(decisions) == 2
@@ -76,7 +75,8 @@ def test_resume(tmp_path):
     summary = second.run()
     assert summary["events_recorded"] == 7
     assert [
-        json.loads(l)["index"] for l in (d / "events.jsonl").read_text().splitlines()
+        json.loads(line)["index"]
+        for line in (d / "events.jsonl").read_text().splitlines()
     ] == list(range(7))
 
 

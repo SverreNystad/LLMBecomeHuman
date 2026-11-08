@@ -7,7 +7,6 @@ Other tests remain runnable without a browser.
 from __future__ import annotations
 
 import shutil
-import json
 from pathlib import Path
 from urllib.parse import quote
 
