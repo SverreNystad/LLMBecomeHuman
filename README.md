@@ -102,7 +102,7 @@ The exact input and output of every call are stored in the run's `events.jsonl`.
 
 | File               | Contents                                                              |
 | ------------------ | --------------------------------------------------------------------- |
-| `experiment.json`  | Provider, model, goal, temperature, graph hash                        |
+| `experiment.json`  | Provider, model, goal, temperature, decision token and reasoning limits, graph hash |
 | `events.jsonl`     | Every scene shown, model input and output, and state before and after |
 | `checkpoint.json`  | Resumable state                                                       |
 | `summary.json`     | Ending, number of choices, final flags, token usage, latency          |

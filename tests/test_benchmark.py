@@ -286,3 +286,101 @@ def test_recent_scenes_not_repeated_in_earlier_scenes(tmp_path):
     earlier = [s["scene_id"] for s in second["relevant_earlier_scenes"]]
     assert recent == {"sensor_outcome", "ch2", "has_code"}
     assert earlier == ["arrival"]
+
+
+def read_events(run_dir):
+    return [
+        json.loads(line)
+        for line in (run_dir / "events.jsonl").read_text().splitlines()
+    ]
+
+
+def test_overlong_reply_is_retried_once_briefly_then_accepted(tmp_path):
+    long_reply = json.dumps({"choice_id": "inspect", "rationale": "word " * 2000})
+    short_reply = json.dumps({"choice_id": "storage", "rationale": "Brief."})
+    run = Runner(
+        graph(), "mock", None, tmp_path / "run", mock_replies=[long_reply, short_reply]
+    )
+    run.run()
+    [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decision["output"]["choice_id"] == "storage"
+    assert decision["model_info"]["attempts"] == 2
+    assert "answer briefly" in decision["model_info"]["retry_instruction"].lower()
+
+
+def test_second_broken_reply_stops_the_run(tmp_path):
+    long_reply = json.dumps({"choice_id": "inspect", "rationale": "word " * 2000})
+    run = Runner(
+        graph(),
+        "mock",
+        None,
+        tmp_path / "run",
+        mock_replies=[long_reply, "not json at all", "{}"],
+    )
+    with pytest.raises(RuntimeError, match="after one brief retry"):
+        run.run()
+    assert run.mock_replies == ["{}"]  # exactly two attempts consumed
+    assert not [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+
+
+def test_experiment_records_decision_token_and_reasoning_settings(tmp_path):
+    Runner(graph(), "google", "gemini-2.5-flash", tmp_path / "run")
+    experiment = json.loads((tmp_path / "run" / "experiment.json").read_text())
+    limits = experiment["decision_limits"]
+    assert limits["max_output_tokens"] == 400
+    assert limits["rationale_max_sentences"] == 2
+    assert limits["broken_reply_retries"] == 1
+    assert limits["reasoning"] == {"thinking_budget": 0}
+
+
+def fake_chat_module(monkeypatch, module, cls):
+    import sys
+    from types import SimpleNamespace
+
+    captured = {}
+
+    def Fake(**kwargs):
+        captured.update(kwargs)
+        return kwargs
+
+    monkeypatch.setitem(sys.modules, module, SimpleNamespace(**{cls: Fake}))
+    return captured
+
+
+@pytest.mark.parametrize(
+    "provider,model,module,cls,token_key,reasoning",
+    [
+        ("openai", "gpt-4.1-mini", "langchain_openai", "ChatOpenAI", "max_tokens", {}),
+        ("openai", "o4-mini", "langchain_openai", "ChatOpenAI", "max_tokens",
+         {"reasoning_effort": "low"}),
+        ("openai", "gpt-5-mini", "langchain_openai", "ChatOpenAI", "max_tokens",
+         {"reasoning_effort": "minimal"}),
+        ("anthropic", "claude-sonnet-4-5", "langchain_anthropic", "ChatAnthropic",
+         "max_tokens", {}),
+        ("anthropic", "claude-sonnet-5", "langchain_anthropic", "ChatAnthropic",
+         "max_tokens", {"thinking": {"type": "disabled"}}),
+        ("google", "gemini-2.5-flash", "langchain_google_genai",
+         "ChatGoogleGenerativeAI", "max_output_tokens", {"thinking_budget": 0}),
+        ("google", "gemini-3-pro-preview", "langchain_google_genai",
+         "ChatGoogleGenerativeAI", "max_output_tokens", {"thinking_level": "low"}),
+        ("deepseek", "deepseek-chat", "langchain_openai", "ChatOpenAI", "max_tokens",
+         {}),
+        ("openrouter", "x/y", "langchain_openai", "ChatOpenAI", "max_tokens",
+         {"extra_body": {"reasoning": {"effort": "low"}}}),
+    ],
+)
+def test_providers_get_decision_token_limit_and_lowest_reasoning(
+    monkeypatch, provider, model, module, cls, token_key, reasoning
+):
+    from detroit_benchmark.engine import create_model
+
+    captured = fake_chat_module(monkeypatch, module, cls)
+    for env in ("GOOGLE_API_KEY", "DEEPSEEK_API_KEY", "OPENROUTER_API_KEY"):
+        monkeypatch.setenv(env, "test-only-key")
+    create_model(provider, model, 0)
+    assert captured[token_key] == 400
+    for key, value in reasoning.items():
+        assert captured[key] == value
+    for key in ("reasoning_effort", "thinking", "thinking_budget", "thinking_level"):
+        if key not in reasoning:
+            assert key not in captured
