@@ -335,7 +335,11 @@
         "implicit_choice_groups": 1
       }
     },
-    "unresolved_translation_keys": []
+    "unresolved_translation_keys": [],
+    "enrichment_sources": [
+      "https://detroit-become-human.fandom.com/wiki/Detroit:_Become_Human#Chapters",
+      "Chapter Briefings and Public News are paraphrased from the Detroit: Become Human Wiki chapter pages (CC BY-SA 3.0) and the player-facing context text of data/context/chNN_*_en.json."
+    ]
   },
   "start": "ch1_00169",
   "chapter_entries": {
@@ -379,6 +383,48 @@
     "32.4": "ch32_4_00135",
     "32.5": "ch32_5_00207",
     "32.6": "ch32_6_00125"
+  },
+  "chapter_briefings": {
+    "1": "A high-rise apartment in Detroit, August 2038, at dusk. A household android, Daniel, has shot the father and holds the family's young daughter, Emma, at the edge of the rooftop terrace. Police and SWAT fill the apartment; the commander, Captain Allen, is tense and short on patience, a mother pleads in tears, a police helicopter circles. A wounded officer lies on the terrace. Daniel is agitated and screaming. Stakes: the child's life, the officers' lives and whether the deviant is stopped.",
+    "2": "An android store in Detroit, rainy evening. A newly repaired AX400 housekeeper android, Kara, has just been reactivated with her memory wiped. Her owner, Todd Williams, a tired and irritable man, collects her and drives her home in silence. At a run-down suburban house his young daughter Alice waits at the foot of the stairs, quiet and withdrawn. Stakes: starting a new life in a tense, neglected household.",
+    "3": "A busy square in Detroit's Greek District on an autumn morning. Markus, a caretaker android, is sent to pick up paint for his elderly owner, the painter Carl Manfred. A busker plays, a street preacher rails against androids to a small crowd, a vendor glares at passing androids, and a CyberLife store displays new models in its window. Stakes: completing the errand while staying out of trouble.",
+    "4": "The Williams house in a run-down Detroit suburb, day. The house is filthy: dirty dishes, overflowing trash, laundry left outside for days. Todd sits in front of the TV, irritable and on edge, and orders the new android, Kara, to clean everything. His daughter Alice keeps to her room upstairs, silent and guarded, clearly afraid of her father. Stakes: keeping the household calm and reaching the lonely girl.",
+    "5": "Carl Manfred's mansion in Detroit, morning. Carl, a famous elderly painter who uses a wheelchair, is cared for by his android, Markus. The grand house is full of art, a piano, a chess set and books. Carl is warm, sharp and blunt, treats Markus as more than a machine and invites him to paint for the first time. His son Leo, a resentful drug user, sometimes turns up asking for money. Stakes: Carl's well-being and Markus's sense of himself.",
+    "6": "Night in Detroit. Connor, the android investigator from CyberLife, must find his new partner, homicide Lieutenant Hank Anderson, a gruff, hard-drinking cop who dislikes androids. Hank is drinking in a dingy bar where androids are not welcome. The case: Carlos Ortiz has been found stabbed to death in his house weeks ago, and his android is missing. Officers on scene are bored and dismissive. Stakes: earning Hank's cooperation and finding the deviant.",
+    "7": "The Williams house on a stormy night. Todd, high on the drug Red Ice, is volatile and violent; at the dinner table he turns on his daughter Alice, who is terrified. The android Kara has been ordered not to move or interfere. Rain hammers the windows; the house feels like a trap. Stakes: Alice's safety, Kara's own survival, and whether Kara acts against her orders.",
+    "8": "Carl Manfred's mansion, night, after a gallery evening. Carl is exhausted but in good spirits. The lights are on and the door is unlocked: Carl's son Leo, high and desperate for money, has broken in with friends. Leo is aggressive and resentful toward Markus, Carl is furious and frail. Police have been called. Stakes: Carl's health, Leo's safety and what Markus is willing to do under pressure.",
+    "9": "The Detroit police station, night. The android found hiding in Carlos Ortiz's attic sits in the interrogation room, silent, damaged and frightened. Hank and other officers have failed to get it to speak; Detective Gavin Reed is impatient and hostile. Connor watches through the one-way mirror, then goes in to question it. Stakes: getting a confession and information about the deviants without the suspect breaking down or self-destructing.",
+    "10": "Detroit, a cold, rainy night. Kara and Alice have fled the Williams house with nothing: no money, no papers, and Alice's clothes are still wet. The bus drops them in a poor, near-empty district with a laundromat, a convenience store, a motel and an abandoned house. Alice is exhausted, shivering and scared. Stakes: finding shelter, clothes and safety for the night without drawing attention.",
+    "11": "An android junkyard outside Detroit, at night in the rain. Markus wakes up badly damaged, missing parts, half-blind and barely able to move. Broken androids lie in heaps; some are still functioning and pleading. No humans are in sight. A slope of debris leads toward a fence. Stakes: repairing himself with parts from other androids and escaping the dump alive.",
+    "12": "Morning in Detroit. Connor reports to Amanda, his CyberLife handler, in the serene Zen Garden; she is calm, exacting and focused on results. At the police station, Hank has not arrived. Officers go about their work; Detective Gavin Reed is openly hostile toward Connor. Hank's desk and the station terminals hold case files. Stakes: making progress on the deviancy investigation and keeping Hank on side, under Amanda's expectations.",
+    "13": "Early morning in a run-down district of Detroit. Kara and Alice, tired and scared, are waking from a night in hiding while police sweep the neighbourhood after a report about them. Connor and Hank are investigating nearby, Hank indifferent and Connor determined. The girl is fragile and relies on Kara completely. Stakes: whether the fugitives escape the police and whether Connor captures a deviant.",
+    "14": "Ferndale, a deserted district of Detroit, at night. Markus follows strange symbols painted on walls through an abandoned train station, searching for the hidden android refuge called Jericho. The trail leads past rooftops and empty buildings to an old freighter in the harbour. The androids hiding inside are wary, scared and damaged. Stakes: finding Jericho and being accepted by its people.",
+    "15": "Day, Detroit. Connor and Hank investigate a reported deviant, Rupert, at a cramped apartment covered in the symbol 'rA9' and full of pigeons. The deviant is nervous and unpredictable; Hank is skeptical, tired and sharp-tongued. Stakes: catching the deviant, the partnership with Hank, and Hank's safety during the chase.",
+    "16": "Jericho, inside the rusting freighter, night. Dozens of hiding androids are damaged, cold and running out of thirium and parts. Three leaders, North, Josh and Simon, are wary of the newcomer Markus; North is angry, Josh cautious, Simon gentle. An old android named Lucy speaks in riddles. Stakes: whether Markus can earn the group's trust and whether he steps up to lead them.",
+    "17": "A crumbling mansion outside Detroit, night. Zlatko, a big, overly friendly man, offers Kara help removing her tracker and getting papers, and leads her to the basement while Luther, a large, silent android, watches. Strange sounds come from upstairs; Alice is frightened and the house feels wrong. Stakes: Alice's safety and Kara's freedom and integrity.",
+    "18": "Late at night in Detroit. Connor arrives at Hank Anderson's house. Hank is drunk, sunk in grief and depression, with a revolver on the floor and his big dog Sumo nearby. He is hostile and slurring. A new case is waiting: a homicide at the Eden Club. Stakes: Hank's condition and getting him to the crime scene.",
+    "19": "A CyberLife warehouse near Detroit, night. Markus leads North, Simon and Josh on a raid for spare biocomponents and thirium for the dying androids of Jericho. Guards and patrol drones watch the site; a truck could carry supplies. The team is tense; North is eager, Josh nervous. Stakes: bringing back enough supplies without being caught or causing deaths.",
+    "20": "The Eden Club, a sex club where androids are rented out, night. A man has been found strangled in a private room; a damaged Traci android lies nearby. Hank is uncomfortable and the officer on scene, Ben Collins, is matter-of-fact. A deviant Traci is somewhere among the dormant androids in the warehouse. Stakes: solving the murder and how Connor treats a frightened, cornered deviant.",
+    "21": "A snowy highway at night outside Detroit. Kara, Alice and Luther drive an old car that breaks down near an abandoned amusement park, the Pirates' Cove. Alice is sick and feverish; Luther is quiet and protective. The park is dark and abandoned, but something stirs inside. Stakes: Alice's health and finding shelter and help for the night.",
+    "22": "The Ambassador Bridge overlook, a snowy night. Hank sits alone near the river, drunk and morose, holding a bottle. He is hostile and probing, asking Connor what he really is. The distant lights of Canada are visible across the water. Stakes: Hank's state of mind and the relationship between the two partners.",
+    "23": "The Stratford Tower, a TV broadcast building in downtown Detroit, day. Markus, North, Simon and Josh infiltrate it in disguise to hijack the live broadcast and send the androids' message to the world. Humans work in the offices; armed guards stand at checkpoints. Josh wants no violence, North is ready for it. Stakes: delivering the message, the lives of the staff, and getting the team out alive.",
+    "24": "Hours after the Stratford Tower broadcast. Connor reports to Amanda in the Zen Garden, now snowy and cold. Then the Stratford Tower: the FBI has taken over, and Special Agent Perkins is condescending. Hank is irritated and protective of Connor. Clues may point to a deviant still hiding in the building. Stakes: catching the deviant and Connor's standing with CyberLife.",
+    "25": "A farmhouse outside Detroit, day, under a gray sky. Rose, a calm, motherly woman, hides fugitive androids and helps them reach Canada; her son Adam is wary of the newcomers. Kara, Alice and Luther are tired from running. Police are searching houses in the area. Stakes: staying hidden, Alice's trust, and the chance to cross the border.",
+    "26": "Capitol Park, a commercial district in Detroit, around two in the morning. Markus leads a group of androids to a CyberLife store full of androids for sale, aiming to free them and make a public statement. Drones and police cars patrol the area. North pushes for a forceful message. Stakes: the androids' public image, freeing the store androids, and the lives of anyone who interferes.",
+    "27": "A modern house outside Detroit, snowy day. Connor and Hank visit Elijah Kamski, the reclusive founder of CyberLife, hoping he knows something about deviancy. Kamski is calm, curious and enigmatic; identical Chloe androids attend him. Hank is impatient. Stakes: getting answers about deviancy and what Connor is willing to do to get them.",
+    "28": "Detroit, a cold winter day. Markus leads the androids of Jericho in a march through downtown, converting other androids along the way. North wants a show of strength, Josh insists on nonviolence, Simon is torn. Riot police line up ahead with orders to stop the march. Stakes: the androids' lives, public opinion, and whether the movement stays peaceful.",
+    "29": "Detroit police station, night. CyberLife has told Connor he will be removed from the case after a failure. Connor reports to a cold Amanda in the Zen Garden, then sneaks into the station to search the evidence archive, where deactivated deviants are stored, for the location of Jericho. Hank has been suspended. Stakes: finding Jericho before Connor is taken off the case.",
+    "30.1": "Night. Rose drives Kara and Alice, with Luther if he is still with them, to the freighter Jericho, where hiding androids may help them reach Canada. Radio news reports raids on androids across the city. Inside the ship, androids are frightened but hopeful; Alice is anxious. Stakes: Alice's safety and the chance to leave Detroit.",
+    "30.2": "Jericho, the androids' refuge in a rusting freighter in the harbour, at night. Connor has tracked the deviants here and moves through the ship among frightened androids who do not yet suspect him. Somewhere aboard is their leader. Amanda expects Connor to accomplish his mission. Stakes: capturing the deviant leader and what Connor decides he is.",
+    "30.3": "The captain's cabin aboard the Jericho freighter, night. Markus meets the other leaders of Jericho who are still with him; they are anxious, short of supplies, and divided about what to do next after the recent events. Outside the city is on edge, with raids reported everywhere. Stakes: the safety of everyone aboard and Markus's leadership.",
+    "31.1": "Night, after the assault on Jericho. Survivors have regrouped in an abandoned church; many androids are missing or dead. Markus, shaken, goes to Carl's home to reflect before facing the survivors. His remaining companions look to him for direction. Stakes: the survival and future strategy of the android people.",
+    "31.2": "Night, after the assault on Jericho. Connor stands in the Zen Garden before Amanda, who expects a report. Later he goes to Hank's house; Hank is drinking, gun on the table, and both are uneasy. Stakes: Hank's well-being and the next step in Connor's mission.",
+    "32.1": "Detroit under curfew, night, snowing. Kara and Alice, with Luther if he is still with them, try to reach the bus terminal and the Canadian border. Army checkpoints stop civilians; soldiers are on edge and androids are being rounded up. Alice is frightened and quiet. Stakes: crossing the city undetected and getting Alice to safety.",
+    "32.2": "Detroit, night, in the back of an army truck. Kara and Alice have been captured with other androids and are taken to a recycling camp where soldiers process and destroy androids. Soldiers are brutal and nervous; captives are terrified. Stakes: survival for Kara and Alice.",
+    "32.3": "A rooftop overlooking downtown Detroit, night. Connor is on a mission to neutralize the deviant leader. Below, crowds of androids gather and soldiers and helicopters move in. Stakes: Connor's mission and the lives of the demonstrators.",
+    "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, thousands of new androids wait in storage. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
+    "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
+    "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city."
   },
   "nodes": {
     "ch1_00001": {
@@ -674,7 +720,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_shot_hostage_taker": true
+            },
+            "news": [
+              {
+                "headline": "Police android shoots deviant hostage-taker on Detroit penthouse terrace",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -756,7 +810,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_shot_hostage_taker": true
+            },
+            "news": [
+              {
+                "headline": "Police android shoots deviant hostage-taker on Detroit penthouse terrace",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -29613,7 +29675,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_highway_pursuit": true
+            },
+            "news": [
+              {
+                "headline": "Police android chases fugitive android and child across busy highway",
+                "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Connor_Pursues_Kara"
+              }
+            ]
           }
         },
         {
@@ -45781,7 +45851,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_warehouse_androids_freed": true
+            },
+            "news": [
+              {
+                "headline": "Androids go missing after overnight break-in at CyberLife warehouse",
+                "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -45791,7 +45869,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_warehouse_parts_stolen": true
+            },
+            "news": [
+              {
+                "headline": "Android parts stolen in overnight break-in at CyberLife warehouse",
+                "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -46177,7 +46263,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_warehouse_guard_killed": true
+            },
+            "news": [
+              {
+                "headline": "Security guard killed during break-in at CyberLife warehouse",
+                "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#The_Guard_Station"
+              }
+            ]
           }
         },
         {
@@ -56163,7 +56257,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_broadcast_peaceful": true
+            },
+            "news": [
+              {
+                "headline": "Android broadcast from Stratford Tower appeals for peace and equal rights",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -56173,7 +56275,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_broadcast_threatening": true
+            },
+            "news": [
+              {
+                "headline": "Android broadcast from Stratford Tower warns humans androids will fight for their rights",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+              }
+            ]
           }
         }
       ]
@@ -56771,7 +56881,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_stratford_operator_shot": true
+            },
+            "news": [
+              {
+                "headline": "Channel 16 employee shot during android hijacking of Stratford Tower broadcast",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -57421,7 +57539,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_stratford_guards_shot": true
+            },
+            "news": [
+              {
+                "headline": "Security guards shot as androids storm Stratford Tower",
+                "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+              }
+            ]
           }
         }
       ]
@@ -67539,7 +67665,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_police_killed": true
+            },
+            "news": [
+              {
+                "headline": "Two police officers killed by androids in Capitol Park",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -67549,7 +67683,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_police_spared": true
+            },
+            "news": [
+              {
+                "headline": "Androids release two captured police officers unharmed in Capitol Park",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -67559,7 +67701,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_police_killed": true
+            },
+            "news": [
+              {
+                "headline": "Two police officers killed by androids in Capitol Park",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         }
       ]
@@ -68296,7 +68446,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_peaceful": true
+            },
+            "news": [
+              {
+                "headline": "Androids free CyberLife store stock in Capitol Park and leave without setting fires",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -68311,7 +68469,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_violent": true
+            },
+            "news": [
+              {
+                "headline": "Androids set fires and wreck Capitol Park after raiding CyberLife store",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         }
       ]
@@ -73966,7 +74132,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_police_killed": true
+            },
+            "news": [
+              {
+                "headline": "Police officers killed after android marchers break through riot lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -74181,7 +74355,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74191,7 +74373,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_peaceful": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers hold a peaceful line against riot police downtown",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74201,7 +74391,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_dispersed": true
+            },
+            "news": [
+              {
+                "headline": "Android march disperses on police orders",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -74291,7 +74489,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74543,7 +74749,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74565,7 +74779,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_stood_under_fire": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers stand motionless under police gunfire",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74592,7 +74814,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_fled": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers flee downtown plaza under police fire",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -74688,7 +74918,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74730,7 +74968,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_fired_upon": true
+            },
+            "news": [
+              {
+                "headline": "Police open fire on android marchers who refused to disperse",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74740,7 +74986,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_dispersed": true
+            },
+            "news": [
+              {
+                "headline": "Android march disperses on police orders",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -74836,7 +75090,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74846,7 +75108,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_stood_under_fire": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers stand motionless under police gunfire",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74856,7 +75126,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_fled": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers flee downtown plaza under police fire",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -74876,7 +75154,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": true
+            },
+            "news": [
+              {
+                "headline": "Android march turns violent as marchers charge police lines",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -74913,7 +75199,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_dispersed": true
+            },
+            "news": [
+              {
+                "headline": "Android march disperses on police orders",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -75046,7 +75340,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_peaceful": true
+            },
+            "news": [
+              {
+                "headline": "Android marchers hold a peaceful line against riot police downtown",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -83274,7 +83576,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_revealed_jericho": true
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -93144,7 +93454,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_jericho_blown_up": true
+            },
+            "news": [
+              {
+                "headline": "Deviant freighter Jericho explodes and sinks during army raid",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
+              }
+            ]
           }
         }
       ]
@@ -95213,7 +95531,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_chose_demonstration": true
+            },
+            "news": [
+              {
+                "headline": "Androids gather in downtown Detroit for a mass demonstration",
+                "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Markus"
+              }
+            ]
           }
         },
         {
@@ -95236,7 +95562,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_chose_revolution": true
+            },
+            "news": [
+              {
+                "headline": "Armed androids prepare to attack android recall camps in Detroit",
+                "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Markus"
+              }
+            ]
           }
         }
       ]
@@ -102739,7 +103073,15 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_bus_terminal_incident": true
+            },
+            "news": [
+              {
+                "headline": "Android causes commotion at Detroit bus terminal security check",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
+              }
+            ]
           }
         },
         {
@@ -104690,7 +105032,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_checkpoint_shooting": true
+            },
+            "news": [
+              {
+                "headline": "Shots fired at army checkpoint in Detroit during curfew",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit"
+              }
+            ]
           }
         },
         {
@@ -112060,7 +112410,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_shot_deviant_leader": true
+            },
+            "news": [
+              {
+                "headline": "Deviant leader shot dead by a sniper during downtown demonstration",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
+              }
+            ]
           }
         }
       ]
@@ -116936,7 +117294,15 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_dirty_bomb_threat": true
+            },
+            "news": [
+              {
+                "headline": "Deviant leader threatens to detonate a dirty bomb in Detroit",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -116948,7 +117314,15 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_barricade_kiss": true
+            },
+            "news": [
+              {
+                "headline": "Live TV shows android couple embracing at besieged Hart Plaza barricade",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -116958,7 +117332,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_barricade_song": true
+            },
+            "news": [
+              {
+                "headline": "Besieged androids sing on live TV as soldiers close in",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -119373,7 +119755,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_hart_plaza_calm": true
+            },
+            "news": [
+              {
+                "headline": "Android leader calmly appeals to soldiers surrounding Hart Plaza",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -119388,7 +119778,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_hart_plaza_accused": true
+            },
+            "news": [
+              {
+                "headline": "Android leader accuses soldiers of persecution at Hart Plaza",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Public_Opinion"
+              }
+            ]
           }
         }
       ]
@@ -119508,7 +119906,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_hart_plaza_peaceful": true
+            },
+            "news": [
+              {
+                "headline": "Android demonstrators answer soldiers peacefully at Hart Plaza",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -119523,7 +119929,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_hart_plaza_provoked": true
+            },
+            "news": [
+              {
+                "headline": "Android leader provokes soldiers in Hart Plaza standoff",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -120849,7 +121263,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_dirty_bomb_detonated": true
+            },
+            "news": [
+              {
+                "headline": "Dirty bomb detonated in Detroit; city contaminated",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
           }
         },
         {

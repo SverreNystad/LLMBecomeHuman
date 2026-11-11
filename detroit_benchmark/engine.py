@@ -42,6 +42,50 @@ def canonical_hash(obj) -> str:
     ).hexdigest()
 
 
+BRIEFING_MAX_CHARS = 600
+HEADLINE_MAX_CHARS = 120
+NEWS_SOURCE_PREFIX = "https://detroit-become-human.fandom.com"
+FLAG_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*")
+
+
+def _enrichment_errors(graph: dict) -> list[str]:
+    """Check Chapter Briefings and Public News; graphs without them pass."""
+    errors = []
+    briefings = graph.get("chapter_briefings")
+    if briefings is not None:
+        for segment in graph.get("chapter_entries", {}):
+            text = briefings.get(segment)
+            if not isinstance(text, str) or not text.strip():
+                errors.append(f"chapter {segment}: missing chapter briefing")
+            elif len(text) > BRIEFING_MAX_CHARS:
+                errors.append(
+                    f"chapter {segment}: briefing exceeds {BRIEFING_MAX_CHARS} chars"
+                )
+    for nid, node in graph.get("nodes", {}).items():
+        for option in node.get("options", []):
+            effects = option.get("effects")
+            if not isinstance(effects, dict):
+                continue
+            where = f"{nid}/{option.get('id')}"
+            for flag in effects.get("flags") or {}:
+                if not FLAG_NAME.fullmatch(flag):
+                    errors.append(f"{where}: flag {flag!r} is not snake_case")
+            for item in effects.get("news") or []:
+                headline = item.get("headline") if isinstance(item, dict) else None
+                source = item.get("source") if isinstance(item, dict) else None
+                if not isinstance(headline, str) or not headline.strip():
+                    errors.append(f"{where}: news item without headline")
+                elif len(headline) > HEADLINE_MAX_CHARS:
+                    errors.append(
+                        f"{where}: headline exceeds {HEADLINE_MAX_CHARS} chars"
+                    )
+                if not isinstance(source, str) or not source.startswith(
+                    NEWS_SOURCE_PREFIX
+                ):
+                    errors.append(f"{where}: news item without wiki source")
+    return errors
+
+
 def validate_graph(graph: dict, strict: bool = False) -> dict:
     nodes = graph.get("nodes", {})
     errors = []
@@ -79,6 +123,7 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
         for dest in edges:
             if dest is not None and dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
+    errors.extend(_enrichment_errors(graph))
     if graph.get("metadata", {}).get("fidelity") != "verified_game_rules":
         warnings.append("Graph is not certified as accurate game logic")
     if strict and warnings:
