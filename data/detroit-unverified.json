@@ -64935,7 +64935,8 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00081"
+      "next": "ch25_00081",
+      "key": true
     },
     "ch25_00083": {
       "id": "ch25_00083",
@@ -64946,7 +64947,8 @@
       "description": "Watch TV",
       "dialogue": [],
       "observations": [],
-      "next": "ch25_00082"
+      "next": "ch25_00082",
+      "key": true
     },
     "ch25_00084": {
       "id": "ch25_00084",
@@ -64965,7 +64967,8 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00083"
+      "next": "ch25_00083",
+      "key": true
     },
     "ch25_00085": {
       "id": "ch25_00085",
@@ -64984,7 +64987,8 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00084"
+      "next": "ch25_00084",
+      "key": true
     },
     "ch25_00086": {
       "id": "ch25_00086",
@@ -65003,7 +65007,8 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00085"
+      "next": "ch25_00085",
+      "key": true
     },
     "ch25_00087": {
       "id": "ch25_00087",
@@ -65014,7 +65019,8 @@
       "description": "Talk to Luther",
       "dialogue": [],
       "observations": [],
-      "next": "ch25_00086"
+      "next": "ch25_00086",
+      "key": true
     },
     "ch25_00088": {
       "id": "ch25_00088",
@@ -65269,7 +65275,7 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00099"
+      "next": "ch25_x0001"
     },
     "ch25_00101": {
       "id": "ch25_00101",
@@ -70933,7 +70939,8 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00192"
+      "next": "ch26_00192",
+      "key": true
     },
     "ch26_00194": {
       "id": "ch26_00194",
@@ -70944,7 +70951,8 @@
       "description": "Look inside stores",
       "dialogue": [],
       "observations": [],
-      "next": "ch26_00193"
+      "next": "ch26_00193",
+      "key": true
     },
     "ch26_00195": {
       "id": "ch26_00195",
@@ -70963,7 +70971,8 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00194"
+      "next": "ch26_00194",
+      "key": true
     },
     "ch26_00196": {
       "id": "ch26_00196",
@@ -70974,7 +70983,8 @@
       "description": "Convert Androids",
       "dialogue": [],
       "observations": [],
-      "next": "ch26_00195"
+      "next": "ch26_00195",
+      "key": true
     },
     "ch26_00197": {
       "id": "ch26_00197",
@@ -71023,7 +71033,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00198"
+      "next": "ch26_x0001"
     },
     "ch26_00200": {
       "id": "ch26_00200",
@@ -73249,7 +73259,8 @@
         }
       ],
       "observations": [],
-      "next": "ch27_00063"
+      "next": "ch27_00063",
+      "key": true
     },
     "ch27_00065": {
       "id": "ch27_00065",
@@ -73263,7 +73274,8 @@
         "KAMSKI, ELIJAH | AI Graduate at University of Colbridge | Born: 07/17/02"
       ],
       "dialogue": [],
-      "next": "ch27_00064"
+      "next": "ch27_00064",
+      "key": true
     },
     "ch27_00066": {
       "id": "ch27_00066",
@@ -73274,7 +73286,8 @@
       "description": "Analysing photo of Amanda and Kamski",
       "dialogue": [],
       "observations": [],
-      "next": "ch27_00065"
+      "next": "ch27_00065",
+      "key": true
     },
     "ch27_00067": {
       "id": "ch27_00067",
@@ -73287,7 +73300,8 @@
         "KAMSKI, ELIJAH | Cyberlife Founder - Resigned 2028 | Inventor of Thirium and bio-components technology"
       ],
       "dialogue": [],
-      "next": "ch27_00066"
+      "next": "ch27_00066",
+      "key": true
     },
     "ch27_00068": {
       "id": "ch27_00068",
@@ -73607,7 +73621,7 @@
         }
       ],
       "observations": [],
-      "next": "ch27_00081"
+      "next": "ch27_x0001"
     },
     "ch27_00083": {
       "id": "ch27_00083",
@@ -76291,87 +76305,6 @@
       "observations": [],
       "next": "ch28_00076"
     },
-    "ch28_00078": {
-      "id": "ch28_00078",
-      "type": "scene",
-      "chapter": "28",
-      "character": "Markus",
-      "heading": "Attempting to go out of the mall without converting any androids",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Simon",
-          "text": "Wait, Markus. Where you going? We should start in here.",
-          "source_keys": [
-            "X1001M.MALL.CALLBACK.FA.X10MSIMON.UTURN01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch28_00077"
-    },
-    "ch28_00079": {
-      "id": "ch28_00079",
-      "type": "scene",
-      "chapter": "28",
-      "character": "Markus",
-      "heading": "Attempting to go out of the mall without converting any androids",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Josh",
-          "text": "Wait, Markus. Where are you going? We should start in here.",
-          "source_keys": [
-            "X1001M.MALL.CALLBACK.FA.X10MJOSH.UTURN02"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch28_00077"
-    },
-    "ch28_00080": {
-      "id": "ch28_00080",
-      "type": "condition",
-      "chapter": "28",
-      "character": "Markus",
-      "heading": "Attempting to go out of the mall without converting any androids",
-      "branches": [
-        {
-          "condition_text": "Simon is alive",
-          "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
-          },
-          "next": "ch28_00078"
-        },
-        {
-          "condition_text": "Simon is dead",
-          "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
-          },
-          "next": "ch28_00079"
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "next": "ch28_00077",
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
-    },
-    "ch28_00081": {
-      "id": "ch28_00081",
-      "type": "scene",
-      "chapter": "28",
-      "character": "Markus",
-      "heading": "Attempting to go out of the mall without converting any androids",
-      "description": "Attempting to go out of the mall without converting any androids",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch28_00080"
-    },
     "ch28_00082": {
       "id": "ch28_00082",
       "type": "scene",
@@ -76389,7 +76322,7 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00081"
+      "next": "ch28_00077"
     },
     "ch28_00083": {
       "id": "ch28_00083",
@@ -76419,7 +76352,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00083"
+      "next": "ch28_x0002",
+      "key": true
     },
     "ch28_00085": {
       "id": "ch28_00085",
@@ -76438,7 +76372,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00084"
+      "next": "ch28_00084",
+      "key": true
     },
     "ch28_00086": {
       "id": "ch28_00086",
@@ -76458,7 +76393,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00085"
+      "next": "ch28_00085",
+      "key": true
     },
     "ch28_00087": {
       "id": "ch28_00087",
@@ -76477,7 +76413,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00086"
+      "next": "ch28_00086",
+      "key": true
     },
     "ch28_00088": {
       "id": "ch28_00088",
@@ -76496,7 +76433,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00087"
+      "next": "ch28_00087",
+      "key": true
     },
     "ch28_00089": {
       "id": "ch28_00089",
@@ -76515,7 +76453,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00088"
+      "next": "ch28_00088",
+      "key": true
     },
     "ch28_00090": {
       "id": "ch28_00090",
@@ -76534,7 +76473,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00089"
+      "next": "ch28_00089",
+      "key": true
     },
     "ch28_00091": {
       "id": "ch28_00091",
@@ -76553,7 +76493,8 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00090"
+      "next": "ch28_00090",
+      "key": true
     },
     "ch28_00092": {
       "id": "ch28_00092",
@@ -76564,7 +76505,8 @@
       "description": "Group talking",
       "dialogue": [],
       "observations": [],
-      "next": "ch28_00091"
+      "next": "ch28_00091",
+      "key": true
     },
     "ch28_00093": {
       "id": "ch28_00093",
@@ -76814,7 +76756,7 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00105"
+      "next": "ch28_x0001"
     },
     "ch28_00107": {
       "id": "ch28_00107",
@@ -76833,7 +76775,7 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00105"
+      "next": "ch28_x0001"
     },
     "ch28_00108": {
       "id": "ch28_00108",
@@ -76863,7 +76805,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch28_00105",
+      "next": "ch28_x0001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
     },
@@ -83708,13 +83650,20 @@
           "id": "option_2",
           "label": "AMANDA’S PICTURE",
           "next": "ch29_00250",
-          "requirements_unverified": [
-            "Looked at Amanda's picture in Meet Kamski"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch27_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Arrive_with_Hank"
         },
         {
           "id": "option_3",
@@ -110716,19 +110665,28 @@
       "branches": [
         {
           "condition_text": "Talked to the two Jerry (and saw Alice) - Kara goes with Luther",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "kara_ch32_exploration",
+              "equals": "rush"
+            }
+          },
           "next": "ch32_2_00114"
         },
         {
           "condition_text": "Didn't see Alice",
-          "when": null,
+          "when": {
+            "flag": "kara_ch32_exploration",
+            "equals": "rush"
+          },
           "next": "ch32_2_00124"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_2_00112",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00126": {
       "id": "ch32_2_00126",
@@ -111416,7 +111374,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00159"
+      "next": "ch32_2_x0002",
+      "key": true
     },
     "ch32_2_00161": {
       "id": "ch32_2_00161",
@@ -111435,7 +111394,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00160"
+      "next": "ch32_2_00160",
+      "key": true
     },
     "ch32_2_00162": {
       "id": "ch32_2_00162",
@@ -111454,7 +111414,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00161"
+      "next": "ch32_2_00161",
+      "key": true
     },
     "ch32_2_00163": {
       "id": "ch32_2_00163",
@@ -111473,7 +111434,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00162"
+      "next": "ch32_2_00162",
+      "key": true
     },
     "ch32_2_00164": {
       "id": "ch32_2_00164",
@@ -111492,7 +111454,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00163"
+      "next": "ch32_2_00163",
+      "key": true
     },
     "ch32_2_00165": {
       "id": "ch32_2_00165",
@@ -111511,7 +111474,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00164"
+      "next": "ch32_2_00164",
+      "key": true
     },
     "ch32_2_00166": {
       "id": "ch32_2_00166",
@@ -111530,7 +111494,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00165"
+      "next": "ch32_2_00165",
+      "key": true
     },
     "ch32_2_00167": {
       "id": "ch32_2_00167",
@@ -111549,7 +111514,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00166"
+      "next": "ch32_2_00166",
+      "key": true
     },
     "ch32_2_00168": {
       "id": "ch32_2_00168",
@@ -111568,7 +111534,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00167"
+      "next": "ch32_2_00167",
+      "key": true
     },
     "ch32_2_00169": {
       "id": "ch32_2_00169",
@@ -111587,7 +111554,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00168"
+      "next": "ch32_2_00168",
+      "key": true
     },
     "ch32_2_00170": {
       "id": "ch32_2_00170",
@@ -111607,7 +111575,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00169"
+      "next": "ch32_2_00169",
+      "key": true
     },
     "ch32_2_00171": {
       "id": "ch32_2_00171",
@@ -111618,7 +111587,8 @@
       "description": "Talk to other Jerry",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_2_00170"
+      "next": "ch32_2_00170",
+      "key": true
     },
     "ch32_2_00172": {
       "id": "ch32_2_00172",
@@ -111639,7 +111609,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00171"
+      "next": "ch32_2_00171",
+      "key": true
     },
     "ch32_2_00173": {
       "id": "ch32_2_00173",
@@ -111658,7 +111629,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00172"
+      "next": "ch32_2_00172",
+      "key": true
     },
     "ch32_2_00174": {
       "id": "ch32_2_00174",
@@ -111677,7 +111649,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00173"
+      "next": "ch32_2_00173",
+      "key": true
     },
     "ch32_2_00175": {
       "id": "ch32_2_00175",
@@ -111696,7 +111669,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00174"
+      "next": "ch32_2_00174",
+      "key": true
     },
     "ch32_2_00176": {
       "id": "ch32_2_00176",
@@ -111707,7 +111681,8 @@
       "description": "Talk to Jerry",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_2_00175"
+      "next": "ch32_2_00175",
+      "key": true
     },
     "ch32_2_00177": {
       "id": "ch32_2_00177",
@@ -111794,7 +111769,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00180"
+      "next": "ch32_2_x0001"
     },
     "ch32_2_00182": {
       "id": "ch32_2_00182",
@@ -125640,6 +125615,304 @@
           "effects": {
             "flags": {
               "connor_ch24_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch25_x0001": {
+      "id": "ch25_x0001",
+      "type": "choice",
+      "chapter": "25",
+      "character": "Kara",
+      "heading": "In the house",
+      "description": "Rose has gone out. The house is quiet: Alice is upstairs, Luther waits nearby, and Rose's son Adam sits in the kitchen, angry that you are here. You have time before Rose comes back. How do you use it?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "LOOK AROUND THE HOUSE",
+          "next": "ch25_00099",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch25_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK THE ESSENTIALS",
+          "next": "ch25_00087",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch25_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WAIT FOR ROSE",
+          "next": "ch25_00081",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch25_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch26_x0001": {
+      "id": "ch26_x0001",
+      "type": "choice",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "At Capitol Park",
+      "description": "Capitol Park is empty at this hour. A statue stands in the middle of the plaza and androids wait behind shop windows like merchandise. The CyberLife store is just ahead, and police patrols pass now and then. How do you cross the plaza?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "STUDY THE PLAZA",
+          "next": "ch26_00198",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch26_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "SCAN AS YOU MOVE",
+          "next": "ch26_00196",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch26_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "HEAD FOR THE STORE",
+          "next": "ch26_00192",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch26_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch27_x0001": {
+      "id": "ch27_x0001",
+      "type": "choice",
+      "chapter": "27",
+      "character": "Connor",
+      "heading": "Inside",
+      "description": "Chloe has gone to fetch Kamski. The room opens onto an indoor pool, with a portrait above the fireplace and sculptures in the alcoves. Hank waits beside you. How do you spend the wait?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "EXAMINE THE ROOM",
+          "next": "ch27_00081",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch27_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "SCAN THE ROOM",
+          "next": "ch27_00067",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch27_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WAIT FOR KAMSKI",
+          "next": "ch27_00063",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch27_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch28_x0002": {
+      "id": "ch28_x0002",
+      "type": "condition",
+      "chapter": "28",
+      "character": "Markus",
+      "heading": "Woman on the phone",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch28_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch28_00083"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch28_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch28_00077"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+    },
+    "ch28_x0001": {
+      "id": "ch28_x0001",
+      "type": "choice",
+      "chapter": "28",
+      "character": "Markus",
+      "heading": "In the Mall",
+      "description": "The mall is busy: shoppers, couples, people on their phones, and androids serving them everywhere. Your people are waiting for you to begin. How do you move through the mall?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN THE MALL",
+          "next": "ch28_00105",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch28_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LISTEN FOR WHAT MATTERS",
+          "next": "ch28_00092",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch28_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "START CONVERTING",
+          "next": "ch28_00077",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch28_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch32_2_x0002": {
+      "id": "ch32_2_x0002",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Ralph talking",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "kara_ch32_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch32_2_00159"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "kara_ch32_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch32_2_00127"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+    },
+    "ch32_2_x0001": {
+      "id": "ch32_2_x0001",
+      "type": "choice",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Explore enclosure",
+      "description": "The enclosure is a pen of chain-link and razor wire, watched by drones that fire on anything that moves too fast. Androids wait in silent groups for the processing line. Alice is somewhere in here. How do you look for her?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "STUDY THE ENCLOSURE",
+          "next": "ch32_2_00180",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "ASK AROUND FOR ALICE",
+          "next": "ch32_2_00176",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "HEAD FOR THE LINE",
+          "next": "ch32_2_00127",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_exploration": "rush"
             }
           }
         }

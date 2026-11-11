@@ -274,6 +274,11 @@ EXPLORED_CHAPTERS = {
     "21": 1,
     "23": 1,
     "24": 1,
+    "25": 1,
+    "26": 1,
+    "27": 1,
+    "28": 1,
+    "32.2": 1,
 }
 EXPLORATIONS = sorted(
     nid
@@ -330,6 +335,7 @@ def test_every_story_node_is_reachable(dataset):
     [
         ("ch9_00123", "FEAR", "connor_ch9_exploration"),
         ("ch9_00123", "WOUNDS", "connor_ch9_exploration"),
+        ("ch29_00256", "AMANDA\u2019S PICTURE", "connor_ch27_exploration"),
         ("ch32_3_00033", "HANK'S SON", "connor_ch18_exploration"),
     ],
 )
