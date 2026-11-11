@@ -1,4 +1,4 @@
-/* Title screen: "LLM: Become Human", shown on every load until any key, click or tap.
+/* Title screen: "LLM Become Human", shown on every load until any key, click or tap.
  *
  * Loaded in <head> (not deferred) so the dashboard is hidden before its first paint.
  * Dismissing it is the user gesture that unlocks sound (see sound.js).
@@ -20,7 +20,7 @@
     screen.id = 'titleScreen';
     screen.setAttribute('role', 'dialog');
     screen.setAttribute('aria-modal', 'true');
-    screen.setAttribute('aria-label', 'LLM: Become Human. Press any key to start.');
+    screen.setAttribute('aria-label', 'LLM Become Human. Press any key to start.');
     screen.tabIndex = -1;
     screen.innerHTML = `
       <div class="title-art" aria-hidden="true"></div>
@@ -31,7 +31,7 @@
           <circle class="led-ring-light" cx="20" cy="20" r="13"/>
           <circle class="led-ring-core" cx="20" cy="20" r="7.5"/>
         </svg>
-        <h1 class="title-name"><span class="title-llm">LLM<span class="title-colon">:</span></span><span class="title-become">Become Human</span></h1>
+        <h1 class="title-name"><span class="title-llm" data-text="LLM">LLM</span><span class="title-become">Become Human</span></h1>
       </div>
       <p class="title-prompt">Press any key</p>`;
     return screen;

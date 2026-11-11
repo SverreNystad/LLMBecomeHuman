@@ -46,14 +46,37 @@ html.title-on .app-shell { opacity: 0; }
 .title-screen.has-art .title-ring .led-ring-light { filter: drop-shadow(0 0 3px rgba(140, 202, 255, .7)); }
 
 .title-name { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; font-weight: 300; text-align: center; }
+/* "LLM": heavy, wide capitals cut by a horizontal slice; the slice's two halves drift apart
+ * on a slow glitch, and a blue LED glow sits behind. The rest of the title stays light. */
 .title-llm {
-  font-size: clamp(44px, 8vw, 104px); line-height: 1;
-  letter-spacing: .2em; margin-right: -.2em; /* keep the spaced word optically centred */
+  position: relative; display: inline-block;
+  font-size: clamp(56px, 10vw, 132px); line-height: .9; font-weight: 900;
+  letter-spacing: .14em; margin-right: -.14em; /* keep the spaced word optically centred */
+  color: var(--title-ink);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--connor-2) 45%, transparent);
+  clip-path: polygon(0 0, 100% 0, 100% 52%, 0 52%, 0 58%, 100% 58%, 100% 100%, 0 100%);
   opacity: 0; transform: translateY(6px);
   transition: opacity 1.6s var(--ease) .35s, transform 1.6s var(--ease) .35s;
 }
-.title-colon { color: var(--highlight); }
-.title-screen.has-art .title-colon { color: #8ccaff; }
+/* The two slices: the upper half overlays the whole word, the lower one shifts. */
+.title-llm::before, .title-llm::after {
+  content: attr(data-text); position: absolute; inset: 0; pointer-events: none;
+}
+.title-llm::before { color: var(--connor-2); opacity: .55; clip-path: inset(52% 0 0 0); transform: translateX(-.04em); mix-blend-mode: screen; }
+.title-llm::after { color: #ff4b5c; opacity: .4; clip-path: inset(0 0 48% 0); transform: translateX(.03em); mix-blend-mode: screen; }
+.title-screen.is-shown .title-llm::before { animation: title-glitch-a 4.2s steps(1) 2.4s infinite; }
+.title-screen.is-shown .title-llm::after { animation: title-glitch-b 4.2s steps(1) 2.4s infinite; }
+@keyframes title-glitch-a {
+  0%, 86%, 100% { transform: translateX(-.04em); clip-path: inset(52% 0 0 0); }
+  88% { transform: translateX(-.14em); clip-path: inset(60% 0 12% 0); }
+  91% { transform: translateX(.08em); clip-path: inset(30% 0 46% 0); }
+  94% { transform: translateX(-.02em); clip-path: inset(70% 0 4% 0); }
+}
+@keyframes title-glitch-b {
+  0%, 86%, 100% { transform: translateX(.03em); clip-path: inset(0 0 48% 0); }
+  89% { transform: translateX(.12em); clip-path: inset(10% 0 62% 0); }
+  92% { transform: translateX(-.1em); clip-path: inset(40% 0 30% 0); }
+}
 .title-become {
   font-size: clamp(12px, 1.5vw, 19px);
   letter-spacing: .9em; margin-right: -.62em;

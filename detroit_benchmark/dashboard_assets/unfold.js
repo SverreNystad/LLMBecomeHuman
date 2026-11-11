@@ -1,12 +1,13 @@
 /* Decision marker card: hovering or focusing a model's marker on the Flowchart unfolds a
- * card with what it chose and why, for quick reading. Clicking still opens the drawer.
+ * card with what it chose and why. The card stays open while the pointer is on it, and
+ * clicking the card (or the marker) opens the full record in the drawer.
  *
  * Reads the Run events app.js already holds (state.rendered paths), so it adds no requests.
  */
 (() => {
   'use strict';
   const GAP = 14;
-  const HIDE_DELAY_MS = 90;
+  const HIDE_DELAY_MS = 220; // long enough to cross the gap from the marker to the card
   let card = null, current = null, hideTimer = null;
 
 
@@ -15,8 +16,20 @@
     card = document.createElement('div');
     card.className = 'unfold-card';
     card.id = 'unfoldCard';
-    card.setAttribute('role', 'tooltip');
-    card.innerHTML = '<span class="unfold-card-line" aria-hidden="true"></span><div class="unfold-card-body"></div>';
+    card.setAttribute('role', 'button');
+    card.tabIndex = -1;
+    card.innerHTML = '<span class="unfold-card-line" aria-hidden="true"></span><div class="unfold-card-body"></div>'
+      + '<span class="unfold-card-corner tl" aria-hidden="true"></span><span class="unfold-card-corner br" aria-hidden="true"></span>';
+    card.addEventListener('pointerenter', () => clearTimeout(hideTimer));
+    card.addEventListener('pointerleave', () => hide());
+    card.addEventListener('click', () => {
+      const button = current;
+      if (!button) return;
+      const nodeId = button.closest('.flow-node')?.dataset.nodeId, runId = button.dataset.runId;
+      hide(true);
+      window.uiSound?.play('click');
+      if (nodeId && runId && typeof inspect === 'function') inspect(nodeId, runId);
+    });
     document.body.appendChild(card);
     return card;
   }
@@ -32,13 +45,12 @@
   }
 
   function cardMarkup({run, decision}) {
-    const who = run ? `${run.model || 'Unknown model'} · ${run.name || 'run'}` : '';
-    const head = `<p class="unfold-card-model">${esc(who)}</p>`;
+    const logo = run && typeof modelIcon === 'function' ? `<span class="unfold-card-logo">${modelIcon(providerOf(run))}</span>` : '';
+    const head = `<p class="unfold-card-model">${logo}<span>${esc(run?.model || 'Unknown model')}</span></p>`;
     if (!decision) return `${head}<p class="unfold-card-why">Passed through this moment.</p>`;
     const chosen = decision.label || decision.available_choices?.find(o => o.id === decision.choice_id)?.label || decision.choice_id || 'Not recorded';
     return `${head}<p class="unfold-card-choice"><small>Chose</small>${esc(chosen)}</p>
-      <p class="unfold-card-why">${esc(decision.rationale || 'No reason recorded.')}</p>
-      <p class="unfold-card-hint">Click for the full record</p>`;
+      <p class="unfold-card-why">${esc(decision.rationale || 'No reason recorded.')}</p>`;
   }
 
   function place(button) {
@@ -97,8 +109,10 @@
   });
   document.addEventListener('focusout', event => { if (marker(event)) hide(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && current) hide(true); });
-  // Panning, zooming or clicking moves the marker out from under the card.
-  for (const type of ['pointerdown', 'wheel']) document.addEventListener(type, () => { if (current) hide(true); }, {capture: true, passive: true});
+  // Panning, zooming or clicking elsewhere moves the marker out from under the card.
+  for (const type of ['pointerdown', 'wheel']) {
+    document.addEventListener(type, event => { if (current && !card?.contains(event.target)) hide(true); }, {capture: true, passive: true});
+  }
 
   window.unfoldCard = {open, hide};
 })();

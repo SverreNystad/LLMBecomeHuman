@@ -92,7 +92,7 @@ svg { display: block; }
 /* ── Brand + LED ring ─────────────────────────────────── */
 .brand { display: flex; align-items: center; gap: 12px; padding: 26px 22px 30px; }
 .brand-name { font-size: 13px; font-weight: 500; letter-spacing: .04em; white-space: nowrap; }
-.brand-colon { color: var(--ink-muted); }
+.brand-llm { font-weight: 900; letter-spacing: .08em; }
 .led-ring { width: 30px; height: 30px; flex: 0 0 auto; overflow: visible; }
 .led-ring circle { fill: none; }
 .led-ring-light { stroke: var(--led, var(--accent)); stroke-width: 3.4; }
@@ -132,12 +132,13 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .chapter-character { font-size: 13px; color: var(--ink-muted); min-height: 18px; }
 
 /* Segmented controls */
-.view-tabs { display: flex; flex: 0 0 auto; border-bottom: 1px solid var(--line); }
-.view-tabs button { position: relative; padding: 8px 14px; font-size: 13px; color: var(--ink-muted); transition: color .2s; }
-.view-tabs button::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: -1px; height: 2px; background: var(--highlight); transform: scaleX(0); transition: transform .3s var(--ease); }
+/* Story / Flowchart: a pill switch; the filled thumb in the Character's color slides under the active side. */
+.view-tabs { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; flex: 0 0 auto; padding: 3px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-solid); }
+.view-tabs::before { content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: var(--shade-4); box-shadow: 0 0 14px -2px var(--accent); transition: transform .38s var(--ease); }
+.view-tabs:has(#viewFlow[aria-pressed="true"])::before { transform: translateX(100%); }
+.view-tabs button { position: relative; z-index: 1; padding: 6px 16px; border-radius: 999px; font-size: 13px; color: var(--ink-muted); transition: color .3s; }
 .view-tabs button:hover { color: var(--ink); }
-.view-tabs button[aria-pressed="true"] { color: var(--ink); }
-.view-tabs button[aria-pressed="true"]::after { transform: scaleX(1); }
+.view-tabs button[aria-pressed="true"] { color: #fff; }
 
 /* ── Model strip ──────────────────────────────────────── */
 .control-strip { position: relative; z-index: 7; display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -155,7 +156,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .picker-run:hover { background: var(--bg); }
 .picker-run.incompatible { opacity: .35; cursor: not-allowed; }
 .picker-run input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.picker-check { width: 14px; height: 14px; flex: 0 0 auto; border: 1px solid var(--ink-faint); border-radius: 50%; transition: background .2s, border-color .2s; }
+.picker-check { width: 14px; height: 14px; flex: 0 0 auto; border: 1px solid var(--ink-faint); border-radius: 3px; transition: background .2s, border-color .2s; }
 .picker-run input:checked + .picker-check { background: var(--run-color, var(--highlight)); border-color: var(--run-color, var(--highlight)); box-shadow: inset 0 0 0 3px var(--surface-solid); }
 .picker-run input:focus-visible + .picker-check { outline: 1.5px solid var(--highlight); outline-offset: 2px; }
 .picker-run-logo { width: 18px; height: 18px; flex: 0 0 auto; display: grid; place-items: center; opacity: .75; }
@@ -182,7 +183,8 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .mock-icon { font-size: 11px; line-height: 1; color: var(--ink-soft); }
 
 /* ── Panels shared by Story and Flowchart ─────────────── */
-.story-view, .viewer-wrap { flex: 1; min-height: 0; background: var(--surface); border: 1px solid var(--line-soft); backdrop-filter: blur(6px); }
+/* Light, unblurred panels: the node network behind them stays visible; text keeps its halo (backdrop.css). */
+.story-view, .viewer-wrap { flex: 1; min-height: 0; background: rgba(250, 251, 252, .55); border: 1px solid var(--line-soft); }
 
 /* ── Story ────────────────────────────────────────────── */
 .story-view { display: flex; flex-direction: column; }
@@ -275,13 +277,13 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 
 .flow-node { position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; padding: 10px 12px; background: var(--surface-solid); border: 1px solid var(--line-soft); color: var(--ink-muted); text-align: center; font-size: 11.5px; line-height: 1.3; pointer-events: auto; cursor: pointer; user-select: none; transition: border-color .2s, box-shadow .25s var(--ease); }
 .flow-node:hover { border-color: var(--ink-faint); z-index: 10; }
-.flow-node.visited { color: var(--ink); border-color: var(--line); justify-content: flex-start; }
+.flow-node.visited { color: var(--ink); border-color: var(--line); }
 .flow-node.selected { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft), var(--shadow); z-index: 11; }
 .flow-node.moment-focus { animation: moment-pulse 1.6s var(--ease) 2; }
 @keyframes moment-pulse { 50% { box-shadow: 0 0 0 10px var(--accent-soft), var(--shadow); } }
-.flow-node .node-label { display: block; max-height: 34px; overflow: hidden; overflow-wrap: anywhere; }
-.flow-node.kind-scene { align-items: stretch; justify-content: flex-start; text-align: left; padding: 9px 12px; }
-.flow-node.kind-scene .node-label { max-height: 18px; font-size: 12px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; color: var(--ink); }
+.flow-node .node-label { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.flow-node.kind-scene { align-items: stretch; justify-content: center; text-align: left; padding: 9px 12px; }
+.flow-node.kind-scene .node-label { font-size: 12px; font-weight: 500; color: var(--ink); }
 .flow-node.kind-choice { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; border-color: var(--line); }
 .flow-node.kind-option { border-radius: 18px; font-size: 12px; }
 .flow-node.kind-option.visited { border-color: var(--accent); }
@@ -290,8 +292,13 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .flow-node.kind-portal { border-style: dashed; font-size: 10.5px; letter-spacing: .08em; }
 .flow-node.kind-portal:hover { border-color: var(--accent); color: var(--accent); }
 .node-mini { position: absolute; left: 10px; top: -8px; padding: 1px 6px; background: var(--surface-solid); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
-.node-dialogue { flex: 1 1 auto; min-height: 0; overflow-y: auto; font-size: 11.5px; line-height: 15px; color: var(--ink-soft); overflow-wrap: anywhere; scrollbar-width: thin; cursor: text; }
-.flow-node:not(.visited) .node-dialogue { opacity: .7; }
+/* Idle nodes show only their title; the scene's dialogue opens below it on hover or focus,
+ * over the chart, without moving any other node. */
+.node-dialogue { display: none; position: absolute; left: -1px; right: -1px; top: calc(100% - 1px); z-index: 2;
+  max-height: 180px; padding: 8px 12px 10px; background: var(--surface-solid); border: 1px solid var(--line); border-top: 0;
+  box-shadow: var(--shadow); text-align: left; overflow-y: auto; font-size: 11.5px; line-height: 15px; color: var(--ink-soft); overflow-wrap: anywhere; scrollbar-width: thin; cursor: text; }
+.flow-node:is(:hover, :focus-visible) .node-dialogue { display: block; animation: glitch-in .28s steps(4, end); }
+.flow-node:is(:hover, :focus-visible):has(.node-dialogue) { z-index: 15; }
 .node-dialogue p { margin: 0 0 5px; }
 .node-dialogue b { font-weight: 500; color: var(--ink); }
 .node-dialogue .node-section { display: block; margin: 6px 0 3px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
@@ -299,7 +306,9 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .node-socket { position: absolute; top: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
 .node-socket.left { left: -2.5px; } .node-socket.right { right: -2.5px; }
 .flow-node.visited .node-socket { background: var(--node-accent, var(--accent)); }
-.node-logos { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; width: 100%; margin-top: auto; }
+/* Models that reached a node: one vertical column at its right edge. */
+.flow-node.has-logos { padding-right: 34px; }
+.node-logos { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .node-model-button { width: 20px; height: 20px; display: grid; place-items: center; padding: 0; background: #fff; border: 1.5px solid var(--badge-color, var(--accent)); border-radius: 50%; pointer-events: auto; transition: transform .2s var(--ease), opacity .2s; }
 .node-model-button img { width: 11px; height: 11px; }
 .node-model-button .mock-icon { font-size: 9px; }

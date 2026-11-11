@@ -5,8 +5,7 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;',
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const svgNS = 'http://www.w3.org/2000/svg';
 const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
-const SCENE_NODE_WIDTH = 300, SCENE_NODE_CHROME = 46, NODE_DIALOGUE_MAX_HEIGHT = 150;
-const NODE_CHARS_PER_ROW = 46, NODE_ROW_HEIGHT = 15, NODE_ITEM_GAP = 5;
+const SCENE_NODE_WIDTH = 240, NODE_LOGO_STEP = 22, NODE_LOGO_PADDING = 12;
 // A chapter shows at most six Runs, one per shade of its Character's colour.
 const MAX_VISIBLE_RUNS = 6;
 // Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
@@ -33,6 +32,19 @@ function runById(id) {return state.runs.find(r=>r.id===id) || null;}
 function activeRuns(){return state.selectedIds.map(runById).filter(Boolean);}
 function activeViews(){return activeRuns().map(run=>({run,detail:state.details.get(run.id)})).filter(x=>x.detail);}
 function anchorRun(){return activeRuns()[0]||null;}
+/* What "Select all" adds: every Run of the shown story, the ones already shown first. With
+ * nothing shown, the story most Runs played. Capped later at MAX_VISIBLE_RUNS. */
+function selectAllCandidates(){
+  let hash=anchorRun()?.graph_sha256;
+  if(!hash){
+    const counts=new Map();
+    for(const r of state.runs)if(r.graph_sha256)counts.set(r.graph_sha256,(counts.get(r.graph_sha256)||0)+1);
+    hash=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0];
+  }
+  if(!hash)return [];
+  const kept=state.selectedIds.filter(id=>runById(id)?.graph_sha256===hash);
+  return [...kept,...state.runs.filter(r=>r.graph_sha256===hash&&!kept.includes(r.id)).sort(byRunOrder).map(r=>r.id)];
+}
 function compatible(run,anchor=anchorRun()) {return !anchor || Boolean(run.graph_sha256 && run.graph_sha256===anchor.graph_sha256);}
 /* Each selected Run keeps one shade slot while it stays selected, so it sits at the same
  * place on the light-to-dark range in every chapter. A Run prefers the slot given by its
@@ -115,7 +127,9 @@ function updateSelectors() {
   $('pickerToggle').setAttribute('aria-expanded',String(state.pickerOpen));
   $('pickerPanel').classList.toggle('is-hidden',!state.pickerOpen);
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
-  $('selectAllRuns').disabled=!anchorRun();
+  const fill=selectAllCandidates();
+  $('selectAllRuns').disabled=!fill.length||fill.every(id=>state.selectedIds.includes(id));
+  $('selectAllRuns').textContent=fill.length>MAX_VISIBLE_RUNS?'Select six':'Select all';
   const chips=$('selectedRunChips');
   chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
@@ -308,15 +322,6 @@ function sceneRunLabel(run) {
   if (!headings.length) return shortTitle(run[0].id,26);
   return headings.length === 1 ? headings[0] : `${headings[0]} → ${headings.at(-1)}`;
 }
-function estimateDialogueHeight(items) {
-  let rows = 0;
-  for (const item of items) {
-    const chars = item.kind === 'line' ? `${item.speaker||''} ${item.text||''}`.length
-      : item.kind === 'clue' ? (item.lines||[]).join(' ').length + 12 : String(item.text||'').length;
-    rows += Math.ceil(Math.max(1,chars)/NODE_CHARS_PER_ROW);
-  }
-  return Math.min(NODE_DIALOGUE_MAX_HEIGHT,rows*NODE_ROW_HEIGHT+items.length*NODE_ITEM_GAP);
-}
 function nodeDialogueMarkup(items) {
   return items.map(item => {
     if (item.kind === 'heading') return `<b class="node-section">${esc(item.text)}</b>`;
@@ -336,11 +341,9 @@ function buildChapterGraph(chapter) {
     const head = run[0];
     // The first heading is already the node's title.
     const items = buildStoryItems(run.map(n=>({...n,type:'scene'}))).filter((item,i)=>!(i===0&&item.kind==='heading'));
-    const dialogueHeight = estimateDialogueHeight(items);
     run.forEach(member=>groupOf.set(member.id,head.id));
     nodes.set(head.id,{id:head.id,parent:null,type:'scene',originalType:'scene',label:sceneRunLabel(run),node:head,
-                       members:run,items,dialogueHeight,width:items.length?SCENE_NODE_WIDTH:190,
-                       height:items.length?dialogueHeight+SCENE_NODE_CHROME:60});
+                       members:run,items,width:items.length?SCENE_NODE_WIDTH:190,height:60});
     addEdge(head.id,run.at(-1).next,'normal');
   }
   for (const n of originals) {
@@ -474,6 +477,32 @@ function layoutGraph(graph) {
   }
   return {width:x-gapX+left,height:Math.max(420,top*2+contentHeight),rankCount:layers.length};
 }
+/* A long jump that would cross the boxes in between runs instead through the empty lane
+ * above or below them, whichever is nearer, with rounded corners in the column gaps. */
+const EDGE_CLEARANCE = 8, LANE_MARGIN = 22, CORNER = 12;
+function curveHitsNodes([x0,y0,c1x,c1y,c2x,c2y,x3,y3], nodes) {
+  for (let i = 1; i < 40; i++) {
+    const t = i/40, u = 1-t;
+    const x = u*u*u*x0 + 3*u*u*t*c1x + 3*u*t*t*c2x + t*t*t*x3;
+    const y = u*u*u*y0 + 3*u*u*t*c1y + 3*u*t*t*c2y + t*t*t*y3;
+    if (nodes.some(n=>x>n.x-EDGE_CLEARANCE&&x<n.x+n.width+EDGE_CLEARANCE&&y>n.y-EDGE_CLEARANCE&&y<n.y+n.height+EDGE_CLEARANCE)) return true;
+  }
+  return false;
+}
+function detourMarkup(x1, y1, x2, y2, between, offset) {
+  const top = Math.min(...between.map(n=>n.y)) - LANE_MARGIN + offset;
+  const bottom = Math.max(...between.map(n=>n.y+n.height)) + LANE_MARGIN + offset;
+  const lane = Math.abs(y1-top)+Math.abs(y2-top) <= Math.abs(y1-bottom)+Math.abs(y2-bottom) ? top : bottom;
+  // The vertical runs sit in the gaps just before the first and after the last box in between.
+  const xa = (x1 + Math.min(...between.map(n=>n.x))) / 2;
+  const xb = (x2 + Math.max(...between.map(n=>n.x+n.width))) / 2;
+  const turn = (fromY, toY) => Math.sign(toY-fromY) * Math.min(CORNER, Math.abs(toY-fromY)/2);
+  const down = turn(y1, lane), up = turn(lane, y2);
+  return `M ${x1} ${y1} L ${xa-CORNER} ${y1} Q ${xa} ${y1} ${xa} ${y1+down}`
+    + ` L ${xa} ${lane-down} Q ${xa} ${lane} ${xa+CORNER} ${lane}`
+    + ` L ${xb-CORNER} ${lane} Q ${xb} ${lane} ${xb} ${lane+up}`
+    + ` L ${xb} ${y2-up} Q ${xb} ${y2} ${xb+CORNER} ${y2} L ${x2} ${y2}`;
+}
 function edgeMarkup(e, graph, offset=0) {
   const a=graph.nodes.get(e.from),b=graph.nodes.get(e.to);
   if (!a || !b) return '';
@@ -481,7 +510,10 @@ function edgeMarkup(e, graph, offset=0) {
   const x2=b.x, y2=b.y+b.height/2+offset;
   if (x2 >= x1) {
     const bend = Math.max(20, (x2-x1)*.52);
-    return `M ${x1} ${y1} C ${x1+bend} ${y1}, ${x2-bend} ${y2}, ${x2} ${y2}`;
+    const curve = `M ${x1} ${y1} C ${x1+bend} ${y1}, ${x2-bend} ${y2}, ${x2} ${y2}`;
+    const between = [...graph.nodes.values()].filter(n=>n!==a&&n!==b&&n.x>=x1&&n.x+n.width<=x2);
+    if (!between.length || !curveHitsNodes([x1,y1,x1+bend,y1,x2-bend,y2,x2,y2], between)) return curve;
+    return detourMarkup(x1, y1, x2, y2, between, offset);
   }
   return `M ${x1} ${y1} C ${x1+62} ${y1}, ${x1+62} ${y1+55}, ${x1+13} ${y1+55} L ${x2-13} ${y2+55} C ${x2-51} ${y2+55}, ${x2-51} ${y2}, ${x2} ${y2}`;
 }
@@ -498,12 +530,13 @@ function createLogo(node, view) {
   btn.addEventListener('click',e=>{e.stopPropagation();inspect(node.id,run.id);});
   return btn;
 }
-/* The provider's mark at the middle of a route line, so same-colored routes stay apart. */
-const ROUTE_LOGO_MIN_LENGTH = 90, ROUTE_LOGO_SIZE = 14;
-function routeLogo(path, run) {
+/* The provider's mark at the middle of a route line, so same-colored routes stay apart.
+ * Several models on one line get their marks stacked in a column, never on top of each other. */
+const ROUTE_LOGO_MIN_LENGTH = 90, ROUTE_LOGO_SIZE = 14, ROUTE_LOGO_STEP = ROUTE_LOGO_SIZE + 6;
+function routeLogo(path, run, shift=0) {
   const length=path.getTotalLength?.()||0;
   if(length<ROUTE_LOGO_MIN_LENGTH)return null;
-  const {x,y}=path.getPointAtLength(length/2), half=ROUTE_LOGO_SIZE/2;
+  const middle=path.getPointAtLength(length/2), half=ROUTE_LOGO_SIZE/2, x=middle.x, y=middle.y+shift;
   const g=document.createElementNS(svgNS,'g');
   g.setAttribute('class','route-logo');g.setAttribute('aria-hidden','true');
   const disc=document.createElementNS(svgNS,'circle');
@@ -521,12 +554,11 @@ function routeLogo(path, run) {
 function drawGraph(graph, paths) {
   const world=$('graphWorld'), nodesEl=$('graphNodes'), edgesEl=$('graphEdges');
   const views=activeViews();
-  // Keep every model logo visible. Additional rows expand node heights as needed.
+  // Idle nodes show only their title; model logos stack in a column at the right edge,
+  // so a node grows just tall enough to keep every logo visible.
   for(const node of graph.nodes.values()) {
     const count=paths.filter(x=>x.path.visited.has(node.id)).length;
-    const logoRows=Math.ceil(count/(node.width>=SCENE_NODE_WIDTH?12:7));
-    if(node.type==='scene'&&node.items.length)node.height+=logoRows*22;
-    else node.height=Math.max(node.height, count ? 58 + logoRows*22 : node.height);
+    node.height=Math.max(node.height, count*NODE_LOGO_STEP+NODE_LOGO_PADDING);
   }
   const bounds=layoutGraph(graph);
   world.style.width=bounds.width+'px';world.style.height=bounds.height+'px';
@@ -548,7 +580,7 @@ function drawGraph(graph, paths) {
       path.setAttribute('aria-label',`${modelLabel(view.run)} took this branch`);
       const title=document.createElementNS(svgNS,'title');title.textContent=modelLabel(view.run);path.appendChild(title);
       edgesEl.appendChild(path);
-      const logo=routeLogo(path,view.run);
+      const logo=routeLogo(path,view.run,(i-(users.length-1)/2)*ROUTE_LOGO_STEP-offset);
       if(logo)edgesEl.appendChild(logo);
     });
   }
@@ -578,6 +610,7 @@ function drawGraph(graph, paths) {
       n.appendChild(mini);
     }
     if(users.length){
+      n.classList.add('has-logos');
       const logos=document.createElement('div');logos.className='node-logos';
       for(const view of users)logos.appendChild(createLogo(node,view));
       n.appendChild(logos);
@@ -765,12 +798,11 @@ function setupInteractions(){
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});
  $('selectAllRuns').addEventListener('click',async()=>{
-  const anchor=anchorRun()||state.runs[0];if(!anchor)return;
-  const kept=state.selectedIds.filter(id=>compatible(runById(id),anchor));
-  const extra=state.runs.filter(r=>!kept.includes(r.id)&&r.graph_sha256&&r.graph_sha256===anchor.graph_sha256).sort(byRunOrder).map(r=>r.id);
-  state.selectedIds=[...kept,...extra].slice(0,MAX_VISIBLE_RUNS);
-  if(kept.length+extra.length>MAX_VISIBLE_RUNS)toast('Showing six models at a time.');
-  updateSelectors();await loadCurrent(false);
+  const all=selectAllCandidates();if(!all.length)return;
+  const hadAnchor=Boolean(anchorRun());
+  state.selectedIds=all.slice(0,MAX_VISIBLE_RUNS);
+  if(all.length>MAX_VISIBLE_RUNS)toast('Showing six models at a time.');
+  updateSelectors();await loadCurrent(!hadAnchor);
  });
  $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});
  const fitToButton=()=>{fitGraph();state.viewTouched=true;};

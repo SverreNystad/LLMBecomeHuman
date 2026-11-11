@@ -229,6 +229,12 @@ def test_chapter_flowchart_browser_interactions():
             node_count = page.locator(".flow-node").count()
             assert node_count == coverage["nodes"]
             assert page.locator(".node-dialogue").count() > 0
+            # Idle nodes show only their title; the dialogue opens on hover.
+            scene = page.locator(".flow-node.kind-scene:has(.node-dialogue)").first
+            assert not scene.locator(".node-dialogue").is_visible()
+            scene.hover(force=True)
+            scene.locator(".node-dialogue").wait_for(state="visible")
+            page.mouse.move(0, 0)
             assert page.locator(".flow-node.kind-portal").count() == 1
             assert page.locator(".edge-path.route-overlay").count() > 5
             assert page.locator(".flow-node:not(.visited)").count() >= 0
@@ -242,8 +248,14 @@ def test_chapter_flowchart_browser_interactions():
             assert "Synthetic preview" in page.locator("#drawerContent").text_content()
             page.locator("#closeDrawer").click()
 
-            # "Select" fills up to six compatible runs; swap one for the Grok preview.
+            # "Select six" works even with nothing selected, and fills up to six
+            # compatible runs; swap one for the Grok preview.
             page.locator("#pickerToggle").click()
+            page.locator("#clearRuns").click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 0"
+            )
+            assert page.locator("#selectAllRuns").is_enabled()
             page.locator("#selectAllRuns").click()
             page.wait_for_function(
                 "document.querySelectorAll('.run-chip').length === 6"
@@ -265,7 +277,7 @@ def test_chapter_flowchart_browser_interactions():
             assert page.locator(".flow-node.visited .node-model-button").count() >= 6
             # Same-hue routes differ by provider line style.
             assert page.locator(".route-overlay.provider-xai").count() > 0
-            # Multi-run badges must wrap within the node; labels remain visible.
+            # Several models' logos stack in one column; labels remain visible.
             assert (
                 page.locator(".flow-node.visited .node-label").first.bounding_box()[
                     "height"
@@ -276,7 +288,7 @@ def test_chapter_flowchart_browser_interactions():
                 page.locator(".flow-node.visited .node-logos").first.evaluate(
                     "el => getComputedStyle(el).flexDirection"
                 )
-                == "row"
+                == "column"
             )
             colors = page.locator(".route-overlay").evaluate_all(
                 "els => [...new Set(els.map(e => e.style.stroke))]"
