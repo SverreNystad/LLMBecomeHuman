@@ -250,3 +250,9 @@ htmlcov/
 
 # MkDocs build output
 site/
+
+# Game art is copyrighted: keep local, only Character portraits are committed
+images/*
+!images/Connor.webp
+!images/Kara.webp
+!images/Markus.webp
