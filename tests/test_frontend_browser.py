@@ -324,7 +324,7 @@ def _launch_chromium(p):
     return p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
 
 
-def test_title_screen_and_sound(live_dashboard):
+def test_title_screen_sound_and_marker_card(live_dashboard):
     playwright = pytest.importorskip("playwright.sync_api")
     with playwright.sync_playwright() as p:
         browser = _launch_chromium(p)
@@ -363,6 +363,20 @@ def test_title_screen_and_sound(live_dashboard):
             page.locator("#titleScreen").wait_for(state="detached")
             assert page.evaluate("uiSound.play('hover')") is False
 
+            # Focusing a decision marker unfolds its rationale; the drawer stays for click.
+            page.locator("#viewFlow").click()
+            marker = page.locator(
+                ".flow-node.kind-option.visited .node-model-button"
+            ).first
+            marker.wait_for()
+            marker.focus()
+            card = page.locator("#unfoldCard.is-open")
+            card.wait_for()
+            assert "CHOSE" in card.inner_text().upper()
+            assert page.locator(".unfold-card-why").inner_text().strip()
+            assert marker.get_attribute("aria-describedby") == "unfoldCard"
+            page.keyboard.press("Escape")
+            page.wait_for_function("!document.querySelector('#unfoldCard.is-open')")
             assert not errors
         finally:
             browser.close()
