@@ -262,6 +262,17 @@
       "caption": "Hank drinking at Jimmy's Bar"
     },
     {
+      "key": "ch06_ortiz_attic",
+      "file": "scenes/ch06_ortiz_attic.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "Search the attic"
+      ],
+      "chapter_main": false,
+      "caption": "Connor searching the attic for the deviant"
+    },
+    {
       "key": "ch09_observation_room",
       "file": "scenes/ch09_observation_room.webp",
       "chapter": "9",
@@ -928,6 +939,17 @@
       "caption": "Connor in Hank's bedroom"
     },
     {
+      "key": "ch18_zen_garden",
+      "file": "scenes/ch18_zen_garden.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda questions Connor in the Zen Garden"
+    },
+    {
       "key": "ch19_cyberlife_warehouse",
       "file": "scenes/ch19_cyberlife_warehouse.webp",
       "chapter": "19",
@@ -1065,6 +1087,17 @@
       "caption": "Eden Club storage"
     },
     {
+      "key": "ch20_traci_fight",
+      "file": "scenes/ch20_traci_fight.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "Find the Traci"
+      ],
+      "chapter_main": false,
+      "caption": "Two Tracis fight Connor"
+    },
+    {
       "key": "ch21_pirates_cove",
       "file": "scenes/ch21_pirates_cove.webp",
       "chapter": "21",
@@ -1181,6 +1214,28 @@
       "caption": "Broadcast control room"
     },
     {
+      "key": "ch23_construction_floor",
+      "file": "scenes/ch23_construction_floor.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "Floor 47"
+      ],
+      "chapter_main": false,
+      "caption": "Unfinished floor near the top of Stratford Tower"
+    },
+    {
+      "key": "ch23_jericho_plan",
+      "file": "scenes/ch23_jericho_plan.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "In Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "Markus, North, Simon and Josh plan in Jericho"
+    },
+    {
       "key": "ch24_stratford_tower",
       "file": "scenes/ch24_stratford_tower.webp",
       "chapter": "24",
@@ -1201,6 +1256,17 @@
       ],
       "chapter_main": false,
       "caption": "Stratford Tower kitchen"
+    },
+    {
+      "key": "ch24_zen_garden",
+      "file": "scenes/ch24_zen_garden.webp",
+      "chapter": "24",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda and Connor in the Zen Garden"
     },
     {
       "key": "ch25_roses_house",
@@ -1427,6 +1493,17 @@
       "caption": "Snowy street"
     },
     {
+      "key": "ch28_markus_speech",
+      "file": "scenes/ch28_markus_speech.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "Start the march"
+      ],
+      "chapter_main": false,
+      "caption": "Markus raises his fist to the crowd"
+    },
+    {
       "key": "ch29_evidence_room",
       "file": "scenes/ch29_evidence_room.webp",
       "chapter": "29",
@@ -1447,6 +1524,17 @@
       ],
       "chapter_main": false,
       "caption": "Fowler's office"
+    },
+    {
+      "key": "ch29_zen_garden",
+      "file": "scenes/ch29_zen_garden.webp",
+      "chapter": "29",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda gives Connor a last chance"
     },
     {
       "key": "ch30_jericho_attack",
@@ -1480,6 +1568,17 @@
       ],
       "chapter_main": false,
       "caption": "Jericho's busy hold"
+    },
+    {
+      "key": "ch30_jericho_arrival",
+      "file": "scenes/ch30_jericho_arrival.webp",
+      "chapter": "30.1",
+      "character": "Kara",
+      "headings": [
+        "Arriving at Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "A freighter loading by the river at night"
     },
     {
       "key": "ch30_hold",
@@ -1551,6 +1650,17 @@
       "caption": "Androids in the church"
     },
     {
+      "key": "ch31_carl_alive",
+      "file": "scenes/ch31_carl_alive.webp",
+      "chapter": "31.1",
+      "character": "Markus",
+      "headings": [
+        "Carl is still alive"
+      ],
+      "chapter_main": false,
+      "caption": "Markus with Carl one last time"
+    },
+    {
       "key": "ch32_barricade",
       "file": "scenes/ch32_barricade.webp",
       "chapter": "32.5",
@@ -1582,6 +1692,17 @@
       ],
       "chapter_main": false,
       "caption": "Assault"
+    },
+    {
+      "key": "ch32_cyberlife_front",
+      "file": "scenes/ch32_cyberlife_front.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "At the CyberLife tower"
+      ],
+      "chapter_main": true,
+      "caption": "CyberLife Tower entrance"
     },
     {
       "key": "ch32_cyberlife_tower_bridge",
