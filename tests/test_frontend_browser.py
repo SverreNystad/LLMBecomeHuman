@@ -115,7 +115,10 @@ def test_chapter_flowchart_browser_interactions():
             moment = card.get_attribute("data-moment")
             card.locator("h3").click()
             page.locator(".flow-node.selected").wait_for()
-            assert page.locator(".flow-node.selected").get_attribute("data-moment") == moment
+            assert (
+                page.locator(".flow-node.selected").get_attribute("data-moment")
+                == moment
+            )
             assert page.locator("#storyView").is_hidden()
             assert "Read this moment" not in page.locator("#drawerContent").inner_text()
             scene = page.locator(".flow-node.kind-scene.visited").nth(1)
@@ -123,7 +126,10 @@ def test_chapter_flowchart_browser_interactions():
             scene.locator(".node-label").click()
             page.locator(".story-flash").wait_for()
             assert page.locator("#viewerWrap").is_hidden()
-            assert page.locator(".story-flash").first.get_attribute("data-moment") == scene_moment
+            assert (
+                page.locator(".story-flash").first.get_attribute("data-moment")
+                == scene_moment
+            )
             page.evaluate(
                 "scrollToMoment({index: Number.MAX_SAFE_INTEGER})"
             )  # a chapter exit has no text
@@ -372,7 +378,10 @@ def test_title_screen_sound_and_marker_card(live_dashboard):
             # The title screen shows on load, without art, and any key dismisses it.
             title = page.locator("#titleScreen")
             title.wait_for()
-            assert "LLM" in title.inner_text() and "BECOME HUMAN" in title.inner_text().upper()
+            assert (
+                "LLM" in title.inner_text()
+                and "BECOME HUMAN" in title.inner_text().upper()
+            )
             assert "PRESS ANY KEY" in title.inner_text().upper()
             assert page.evaluate("document.getElementById('appShell').inert")
             page.wait_for_timeout(400)

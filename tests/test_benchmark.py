@@ -63,7 +63,11 @@ def test_segment_narrative_includes_earlier_choices_and_dialogue(tmp_path):
         "Unlocked",
     ]
     assert narrative[0]["dialogue"] == [
-        {"speaker": "Guard", "text": "The sensor may explain the alarm.", "source_keys": []}
+        {
+            "speaker": "Guard",
+            "text": "The sensor may explain the alarm.",
+            "source_keys": [],
+        }
     ]
     assert narrative[1]["rationale"] == "Mock policy: first listed choice."
 
@@ -80,7 +84,10 @@ def test_decision_prompt_contains_only_the_allowed_context(tmp_path):
             "available_choices",
         ]
         assert set(decision["input"]["current_scene"]) == {
-            "chapter", "character", "heading", "description"
+            "chapter",
+            "character",
+            "heading",
+            "description",
         }
     # The segment restarts at each chapter exit.
     third = decisions[2]["input"]["narrative_since_chapter_start"]
@@ -248,8 +255,7 @@ def test_additional_providers_are_wired_without_external_calls(monkeypatch):
 
 def read_events(run_dir):
     return [
-        json.loads(line)
-        for line in (run_dir / "events.jsonl").read_text().splitlines()
+        json.loads(line) for line in (run_dir / "events.jsonl").read_text().splitlines()
     ]
 
 
@@ -287,30 +293,55 @@ def three_segment_graph():
     def segment(n, character, heading, label):
         return {
             f"s{n}": {
-                "id": f"s{n}", "type": "scene", "chapter": str(n),
-                "character": character, "heading": heading,
+                "id": f"s{n}",
+                "type": "scene",
+                "chapter": str(n),
+                "character": character,
+                "heading": heading,
                 "description": f"{heading} description.",
                 "dialogue": [{"speaker": "Someone", "text": f"Line in {heading}."}],
-                "observations": [], "next": f"c{n}",
+                "observations": [],
+                "next": f"c{n}",
             },
             f"c{n}": {
-                "id": f"c{n}", "type": "choice", "chapter": str(n),
-                "character": character, "heading": f"{heading} choice",
+                "id": f"c{n}",
+                "type": "choice",
+                "chapter": str(n),
+                "character": character,
+                "heading": f"{heading} choice",
                 "description": "What now?",
                 "options": [
-                    {"id": "a", "label": label, "next": f"t{n}", "effects": {"flags": {}}},
-                    {"id": "b", "label": "Do nothing", "next": f"t{n}", "effects": {"flags": {}}},
+                    {
+                        "id": "a",
+                        "label": label,
+                        "next": f"t{n}",
+                        "effects": {"flags": {}},
+                    },
+                    {
+                        "id": "b",
+                        "label": "Do nothing",
+                        "next": f"t{n}",
+                        "effects": {"flags": {}},
+                    },
                 ],
             },
             f"t{n}": {
-                "id": f"t{n}", "type": "scene", "chapter": str(n),
-                "character": character, "heading": f"{heading} aftermath",
-                "description": "It is done.", "dialogue": [], "observations": [],
+                "id": f"t{n}",
+                "type": "scene",
+                "chapter": str(n),
+                "character": character,
+                "heading": f"{heading} aftermath",
+                "description": "It is done.",
+                "dialogue": [],
+                "observations": [],
                 "next": f"x{n}",
             },
             f"x{n}": {
-                "id": f"x{n}", "type": "chapter_exit", "chapter": str(n),
-                "character": character, "description": f"End of chapter {n}",
+                "id": f"x{n}",
+                "type": "chapter_exit",
+                "chapter": str(n),
+                "character": character,
+                "description": f"End of chapter {n}",
                 "next": f"s{n + 1}" if n < 3 else "end",
             },
         }
@@ -381,8 +412,12 @@ def test_over_limit_memory_gets_one_shorten_retry_then_truncation(tmp_path):
         tmp_path / "run",
         memory_max_chars=40,
         mock_replies=[
-            choice, still_long, shortened,  # chapter 1: retry fixes it
-            choice, still_long, still_long,  # chapter 2: still too long, truncated
+            choice,
+            still_long,
+            shortened,  # chapter 1: retry fixes it
+            choice,
+            still_long,
+            still_long,  # chapter 2: still too long, truncated
         ],
     )
     run.run()
@@ -438,22 +473,70 @@ def fake_chat_module(monkeypatch, module, cls):
     "provider,model,module,cls,token_key,reasoning",
     [
         ("openai", "gpt-4.1-mini", "langchain_openai", "ChatOpenAI", "max_tokens", {}),
-        ("openai", "o4-mini", "langchain_openai", "ChatOpenAI", "max_tokens",
-         {"reasoning_effort": "low"}),
-        ("openai", "gpt-5-mini", "langchain_openai", "ChatOpenAI", "max_tokens",
-         {"reasoning_effort": "minimal"}),
-        ("anthropic", "claude-sonnet-4-5", "langchain_anthropic", "ChatAnthropic",
-         "max_tokens", {}),
-        ("anthropic", "claude-sonnet-5", "langchain_anthropic", "ChatAnthropic",
-         "max_tokens", {"thinking": {"type": "disabled"}}),
-        ("google", "gemini-2.5-flash", "langchain_google_genai",
-         "ChatGoogleGenerativeAI", "max_output_tokens", {"thinking_budget": 0}),
-        ("google", "gemini-3-pro-preview", "langchain_google_genai",
-         "ChatGoogleGenerativeAI", "max_output_tokens", {"thinking_level": "low"}),
-        ("deepseek", "deepseek-chat", "langchain_openai", "ChatOpenAI", "max_tokens",
-         {}),
-        ("openrouter", "x/y", "langchain_openai", "ChatOpenAI", "max_tokens",
-         {"extra_body": {"reasoning": {"effort": "low"}}}),
+        (
+            "openai",
+            "o4-mini",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"reasoning_effort": "low"},
+        ),
+        (
+            "openai",
+            "gpt-5-mini",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"reasoning_effort": "minimal"},
+        ),
+        (
+            "anthropic",
+            "claude-sonnet-4-5",
+            "langchain_anthropic",
+            "ChatAnthropic",
+            "max_tokens",
+            {},
+        ),
+        (
+            "anthropic",
+            "claude-sonnet-5",
+            "langchain_anthropic",
+            "ChatAnthropic",
+            "max_tokens",
+            {"thinking": {"type": "disabled"}},
+        ),
+        (
+            "google",
+            "gemini-2.5-flash",
+            "langchain_google_genai",
+            "ChatGoogleGenerativeAI",
+            "max_output_tokens",
+            {"thinking_budget": 0},
+        ),
+        (
+            "google",
+            "gemini-3-pro-preview",
+            "langchain_google_genai",
+            "ChatGoogleGenerativeAI",
+            "max_output_tokens",
+            {"thinking_level": "low"},
+        ),
+        (
+            "deepseek",
+            "deepseek-chat",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {},
+        ),
+        (
+            "openrouter",
+            "x/y",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"extra_body": {"reasoning": {"effort": "low"}}},
+        ),
     ],
 )
 def test_providers_get_decision_token_limit_and_lowest_reasoning(
@@ -486,7 +569,12 @@ def test_public_news_from_one_character_reaches_the_others(tmp_path):
     g = three_segment_graph()
     g["nodes"]["c2"]["options"][0]["effects"] = {
         "flags": {"kara_protected_alice": True},
-        "news": [{"headline": "Android flees with child", "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night"}],
+        "news": [
+            {
+                "headline": "Android flees with child",
+                "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night",
+            }
+        ],
     }
     Runner(g, "mock", None, tmp_path / "run").run()
     decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]

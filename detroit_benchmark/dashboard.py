@@ -622,9 +622,7 @@ def create_app(
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
-    app = FastAPI(
-        title="LLM: Become Human", version="0.3.0", docs_url="/api/docs"
-    )
+    app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -752,10 +750,19 @@ def create_app(
             "scenes": [
                 {
                     k: scene.get(k)
-                    for k in ("key", "chapter", "character", "headings", "chapter_main", "caption")
+                    for k in (
+                        "key",
+                        "chapter",
+                        "character",
+                        "headings",
+                        "chapter_main",
+                        "caption",
+                    )
                 }
                 | {"url": f"/api/art/scene/{quote(key, safe='')}"}
-                for key, scene in _installed_scene_art(images_root, manifest_path).items()
+                for key, scene in _installed_scene_art(
+                    images_root, manifest_path
+                ).items()
             ]
         }
 

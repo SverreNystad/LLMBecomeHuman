@@ -138,8 +138,7 @@ def test_legacy_view_is_gone():
 def test_frontend_has_no_internal_detail_copy():
     c = client()
     page = "\n".join(
-        c.get(path).text
-        for path in ("/", "/assets/app.js", "/assets/story.js")
+        c.get(path).text for path in ("/", "/assets/app.js", "/assets/story.js")
     ).lower()
     for phrase in (
         "all script paths",
@@ -445,8 +444,11 @@ def test_flowchart_marks_exploration_choices_and_key_inspect_scenes():
         "metadata": {},
         "nodes": {
             "how": {
-                "id": "how", "type": "choice", "chapter": "1",
-                "exploration": True, "options": [],
+                "id": "how",
+                "type": "choice",
+                "chapter": "1",
+                "exploration": True,
+                "options": [],
             },
             "gun": {"id": "gun", "type": "scene", "chapter": "1", "key": True},
             "plain": {"id": "plain", "type": "scene", "chapter": "1"},
