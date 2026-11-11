@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 from .ingest import apply_overrides, compile_from_repo
-from .engine import Runner, validate_graph
+from .engine import DEFAULT_MEMORY_MAX_CHARS, Runner, validate_graph
 
 
 def read_json(p):
@@ -59,6 +59,12 @@ def main():
     play.add_argument("--resume", action="store_true")
     play.add_argument("--max-steps", type=int, default=30000)
     play.add_argument("--max-prompt-chars", type=int, default=350000)
+    play.add_argument(
+        "--memory-max-chars",
+        type=int,
+        default=DEFAULT_MEMORY_MAX_CHARS,
+        help="Size limit of each Character Memory, in characters",
+    )
     play.add_argument(
         "--temperature",
         type=lambda v: None if v.lower() == "none" else float(v),
@@ -125,6 +131,7 @@ def main():
             initial_flags=read_json(args.initial_flags) if args.initial_flags else None,
             max_steps=args.max_steps,
             max_prompt_chars=args.max_prompt_chars,
+            memory_max_chars=args.memory_max_chars,
             temperature=args.temperature,
             resume=args.resume,
         )
