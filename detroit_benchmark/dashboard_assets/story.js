@@ -65,13 +65,16 @@ function buildStoryItems(beats) {
 }
 
 /* Every story element names its event and its Moment, so the Flowchart can open it. */
+const graphNode = id => state.graph?.nodes?.[id] || null;
+const MAGNIFIER = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l4 4"/></svg>';
 const momentAttrs = item => `data-index="${item.index}"${item.moment != null ? ` data-moment="${esc(item.moment)}"` : ''}`;
 function renderLine(item, protagonist) {
   const lead = protagonist && item.speaker === protagonist;
   return `<p class="story-line ${lead ? 'is-protagonist' : ''}" ${momentAttrs(item)}><span class="story-speaker">${esc(item.speaker || 'Unknown')}</span><span class="story-text">${esc(item.text)}</span></p>`;
 }
 function renderClue(item) {
-  return `<div class="story-clue" ${momentAttrs(item)}><div class="story-clue-title">Inspected${item.title ? `: ${esc(item.title)}` : ''}</div>${item.lines.map(line => {
+  const key = graphNode(item.moment)?.key;
+  return `<div class="story-clue ${key ? 'is-key' : ''}" ${momentAttrs(item)}><div class="story-clue-title">Inspected${item.title ? `: ${esc(item.title)}` : ''}${key ? '<span class="story-key" title="Key area"></span>' : ''}</div>${item.lines.map(line => {
     const [first, ...rest] = String(line).split(' | ');
     return `<p><b>${esc(first)}</b>${rest.length ? `<span>${esc(rest.join(' · '))}</span>` : ''}</p>`;
   }).join('')}</div>`;
@@ -101,13 +104,17 @@ function agreementLabel(byChoice) {
 function renderDecision(item, number, total, key, tables, run) {
   const beat = item.beat, {byChoice} = compareDecision(key, tables);
   const who = beat.character && beat.character !== 'multiple' ? beat.character : null;
+  const exploration = Boolean(graphNode(beat.node_id)?.exploration);
   const options = (beat.available_choices || []).map(option => {
     const chosen = option.id === beat.choice_id, group = byChoice.get(option.id) || [];
     const others = group.filter(entry => entry.run.id !== run.id);
     return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}</span><span class="story-option-models">${others.map(entry => modelMark(entry.run, entry.decision, option.label || option.id)).join('')}</span></li>`;
   }).join('');
-  return `<article class="story-decision" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
-    <header><span class="story-decision-count">Decision ${number} of ${total}</span>${agreementLabel(byChoice)}</header>
+  const count = exploration
+    ? `<span class="story-decision-count story-exploration" title="Exploration Choice: how thoroughly to search">${MAGNIFIER}Decision ${number} of ${total}</span>`
+    : `<span class="story-decision-count">Decision ${number} of ${total}</span>`;
+  return `<article class="story-decision ${exploration ? 'is-exploration' : ''}" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
+    <header>${count}${agreementLabel(byChoice)}</header>
     <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
     <ul class="story-options">${options}</ul>
     <div class="story-why"><div class="story-why-label">${esc(run.model)}</div><p>${esc(beat.rationale || '—')}</p></div>

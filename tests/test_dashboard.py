@@ -438,6 +438,24 @@ def test_flowchart_includes_scene_script_without_source_keys():
     assert node["observations"] == ["Loaded"]
 
 
+def test_flowchart_marks_exploration_choices_and_key_inspect_scenes():
+    graph = {
+        "metadata": {},
+        "nodes": {
+            "how": {
+                "id": "how", "type": "choice", "chapter": "1",
+                "exploration": True, "options": [],
+            },
+            "gun": {"id": "gun", "type": "scene", "chapter": "1", "key": True},
+            "plain": {"id": "plain", "type": "scene", "chapter": "1"},
+        },
+    }
+    nodes = _flowchart_projection(graph, complete=True, source="t")["nodes"]
+    assert nodes["how"]["exploration"] is True
+    assert nodes["gun"]["key"] is True
+    assert "key" not in nodes["plain"]
+
+
 @pytest.mark.skipif(
     not (PROJECT / "docker-compose.yml").exists(),
     reason="compose file is not in the image",

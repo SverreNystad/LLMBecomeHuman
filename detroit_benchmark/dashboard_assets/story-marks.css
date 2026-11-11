@@ -1,0 +1,17 @@
+/* Story and Flowchart marks: the Chapter Briefing opener, the Memory card,
+ * Exploration Choices and key inspect scenes. */
+
+/* Exploration Choice: a magnifier on the decision card. */
+.story-exploration { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); }
+.story-exploration svg, .node-glyph svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
+.story-decision.is-exploration { border-style: dashed; }
+
+/* Key inspect scenes: a small accent diamond beside the clue. */
+.story-clue.is-key { border-left-width: 2px; }
+.story-key { display: inline-block; width: 6px; height: 6px; margin-left: 8px; vertical-align: 1px; background: var(--accent); transform: rotate(45deg); opacity: .8; }
+
+/* Flowchart. */
+.flow-node.kind-choice.is-exploration { border-style: dashed; border-color: var(--accent); border-radius: 22px; }
+.flow-node.is-exploration .node-mini { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); }
+.node-glyph svg { width: 10px; height: 10px; }
+.flow-node.has-key::after { content: ""; position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); opacity: .75; }

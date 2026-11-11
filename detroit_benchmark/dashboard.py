@@ -424,6 +424,8 @@ def _flowchart_projection(
                 "flag",
                 "unverified",
                 "condition_text",
+                "exploration",
+                "key",
             )
             if k in node
         }
