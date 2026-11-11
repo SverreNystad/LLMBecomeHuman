@@ -15610,7 +15610,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_pushed_leo": true
+            }
           }
         },
         {
@@ -15620,7 +15622,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_pushed_leo": false
+            }
           }
         }
       ]
@@ -16714,7 +16718,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_ending": "intervened_self_destruct"
+            }
           }
         },
         {
@@ -16724,7 +16730,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_ending": "let_self_destruct"
+            }
           }
         }
       ]
@@ -17358,7 +17366,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_ending": "let_chris_take_it"
+            }
           }
         },
         {
@@ -17379,7 +17389,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_ending": "intervened_with_chris"
+            }
           }
         }
       ]
@@ -24868,7 +24880,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00002"
+      "next": "ch12_00002",
+      "resolution": "unknown"
     },
     "ch12_00006": {
       "id": "ch12_00006",
@@ -24928,7 +24941,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00001"
+      "next": "ch12_00001",
+      "resolution": "qte"
     },
     "ch12_00009": {
       "id": "ch12_00009",
@@ -25653,7 +25667,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00039"
+      "next": "ch12_00039",
+      "resolution": "unknown"
     },
     "ch12_00044": {
       "id": "ch12_00044",
@@ -25694,7 +25709,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00044"
+      "next": "ch12_00044",
+      "resolution": "unknown"
     },
     "ch12_00046": {
       "id": "ch12_00046",
@@ -25716,18 +25732,26 @@
       "branches": [
         {
           "condition_text": "Carl didn't die in Broken",
-          "when": null,
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": true
+          },
           "next": "ch12_00046"
         },
         {
           "condition_text": "Carl died in Broken",
-          "when": null,
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": false
+          },
           "next": "ch12_00046"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00046"
+      "next": "ch12_00046",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Broken#Cross-chapter_impacts"
     },
     "ch12_00048": {
       "id": "ch12_00048",
@@ -25844,7 +25868,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": true
+            }
           }
         },
         {
@@ -25861,7 +25887,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25878,7 +25906,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25895,7 +25925,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25905,7 +25937,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25915,7 +25949,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25927,7 +25963,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         },
         {
@@ -25937,7 +25975,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_sumo_name": false
+            }
           }
         }
       ]
@@ -26177,13 +26217,34 @@
           "id": "option_0",
           "label": "NEW CONNOR",
           "next": "ch12_00061",
-          "requirements_unverified": [
-            "Connor died in The Interrogation"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_interrogation_ending",
+                  "equals": "intervened_self_destruct"
+                },
+                {
+                  "all": [
+                    {
+                      "flag": "connor_interrogation_ending",
+                      "equals": "let_chris_take_it"
+                    },
+                    {
+                      "flag": "connor_pressured_deviant",
+                      "equals": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Notes"
         },
         {
           "id": "option_1",
@@ -26804,18 +26865,62 @@
       "branches": [
         {
           "condition_text": "Connor died in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00093"
         },
         {
           "condition_text": "Connor didn't die in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "let_self_destruct"
+              },
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": false
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00095"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00089"
+      "next": "ch12_00089",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00097": {
       "id": "ch12_00097",
@@ -26948,13 +27053,18 @@
       "branches": [
         {
           "condition_text": "Connor intervened in The Interrogation",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_ending",
+            "equals": "intervened_with_chris"
+          },
           "next": "ch12_00103"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00099"
+      "next": "ch12_00099",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00105": {
       "id": "ch12_00105",
@@ -27022,18 +27132,62 @@
       "branches": [
         {
           "condition_text": "Connor died in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00102"
         },
         {
           "condition_text": "Connor didn't die in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "let_self_destruct"
+              },
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": false
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00107"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00099"
+      "next": "ch12_00099",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00109": {
       "id": "ch12_00109",
@@ -27359,7 +27513,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00124"
+      "next": "ch12_00124",
+      "resolution": "unknown"
     },
     "ch12_00128": {
       "id": "ch12_00128",
@@ -27438,18 +27593,38 @@
       "branches": [
         {
           "condition_text": "Connor intervened during The Interrogation",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_ending",
+            "equals": "intervened_with_chris"
+          },
           "next": "ch12_00130"
         },
         {
           "condition_text": "Connor didn't intervene in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "let_self_destruct"
+              },
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "let_chris_take_it"
+              }
+            ]
+          },
           "next": "ch12_00131"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00128"
+      "next": "ch12_00128",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00133": {
       "id": "ch12_00133",
@@ -27827,13 +28002,18 @@
       "branches": [
         {
           "condition_text": "Didn't get a confession in The Interrogation",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_approach",
+            "equals": "give_up"
+          },
           "next": "ch12_00148"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00146"
+      "next": "ch12_00146",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch12_00150": {
       "id": "ch12_00150",
@@ -27863,18 +28043,62 @@
       "branches": [
         {
           "condition_text": "Connor died in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00147"
         },
         {
           "condition_text": "Connor didn't die in The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "let_self_destruct"
+              },
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": false
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00150"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00146"
+      "next": "ch12_00146",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00152": {
       "id": "ch12_00152",
@@ -27915,7 +28139,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00146"
+      "next": "ch12_00146",
+      "resolution": "unknown"
     },
     "ch12_00154": {
       "id": "ch12_00154",
@@ -28272,13 +28497,18 @@
       "branches": [
         {
           "condition_text": "Talking with Carlos Ortiz's android",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_ending",
+            "equals": "intervened_with_chris"
+          },
           "next": "ch12_00168"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00154"
+      "next": "ch12_00154",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
     },
     "ch12_00170": {
       "id": "ch12_00170",
@@ -28387,13 +28617,34 @@
       "branches": [
         {
           "condition_text": "Deviant shot Connor during The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00175"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00174"
+      "next": "ch12_00174",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00177": {
       "id": "ch12_00177",
@@ -28854,7 +29105,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00200"
+      "next": "ch12_00200",
+      "resolution": "unknown"
     },
     "ch12_00204": {
       "id": "ch12_00204",
@@ -29323,13 +29575,18 @@
       "branches": [
         {
           "condition_text": "Got a confession",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_approach",
+            "equals": "convince"
+          },
           "next": "ch12_00223"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00217"
+      "next": "ch12_00217",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
     },
     "ch12_00225": {
       "id": "ch12_00225",
@@ -29420,25 +29677,51 @@
           "id": "option_2",
           "label": "INTERVENTION",
           "next": "ch12_00225",
-          "requirements_unverified": [
-            "Intervened and saved the deviant in The Interrogation"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_interrogation_ending",
+              "equals": "intervened_with_chris"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
         },
         {
           "id": "option_3",
           "label": "REGRETS",
           "next": "ch12_00226",
-          "requirements_unverified": [
-            "Connor died in The Interrogation"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_interrogation_ending",
+                  "equals": "intervened_self_destruct"
+                },
+                {
+                  "all": [
+                    {
+                      "flag": "connor_interrogation_ending",
+                      "equals": "let_chris_take_it"
+                    },
+                    {
+                      "flag": "connor_pressured_deviant",
+                      "equals": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Cross-chapter_impacts"
         },
         {
           "id": "option_4",
@@ -29670,23 +29953,108 @@
       "branches": [
         {
           "condition_text": "Got a confession, without dying",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_self_destruct"
+                  },
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "intervened_with_chris"
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_interrogation_ending",
+                        "equals": "let_chris_take_it"
+                      },
+                      {
+                        "flag": "connor_pressured_deviant",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "not": {
+                  "flag": "connor_interrogation_approach",
+                  "equals": "give_up"
+                }
+              }
+            ]
+          },
           "next": "ch12_00232"
         },
         {
           "condition_text": "Connor died during The Interrogation",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_self_destruct"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_chris_take_it"
+                  },
+                  {
+                    "flag": "connor_pressured_deviant",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch12_00236"
         },
         {
           "condition_text": "Connor found the deviant but didn't get a confession in The Interrogation",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "let_self_destruct"
+                  },
+                  {
+                    "flag": "connor_interrogation_ending",
+                    "equals": "intervened_with_chris"
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_interrogation_ending",
+                        "equals": "let_chris_take_it"
+                      },
+                      {
+                        "flag": "connor_pressured_deviant",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "flag": "connor_interrogation_approach",
+                "equals": "give_up"
+              }
+            ]
+          },
           "next": "ch12_00239"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00229"
+      "next": "ch12_00229",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch12_00241": {
       "id": "ch12_00241",
@@ -29708,7 +30076,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch12_00217"
+      "next": "ch12_00217",
+      "resolution": "unknown"
     },
     "ch12_00242": {
       "id": "ch12_00242",
@@ -29887,8 +30256,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch13_00002"
+      "default_branch": 2,
+      "next": "ch13_00002",
+      "resolution": "qte"
     },
     "ch13_00008": {
       "id": "ch13_00008",
@@ -29942,7 +30312,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_highway_pursuit": false
+            }
           }
         }
       ]
@@ -31011,7 +31383,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00060"
+      "next": "ch13_00060",
+      "resolution": "qte"
     },
     "ch13_00064": {
       "id": "ch13_00064",
@@ -31128,7 +31501,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00060"
+      "next": "ch13_00060",
+      "resolution": "unknown"
     },
     "ch13_00070": {
       "id": "ch13_00070",
@@ -32121,18 +32495,26 @@
       "branches": [
         {
           "condition_text": "Kara was nice with Ralph",
-          "when": null,
+          "when": {
+            "flag": "kara_threatened_ralph",
+            "equals": false
+          },
           "next": "ch13_00107"
         },
         {
           "condition_text": "Kara threatened Ralph",
-          "when": null,
+          "when": {
+            "flag": "kara_threatened_ralph",
+            "equals": true
+          },
           "next": "ch13_00118"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch13_00094"
+      "next": "ch13_00094",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#The_Squat"
     },
     "ch13_00120": {
       "id": "ch13_00120",
@@ -32336,7 +32718,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00122"
+      "next": "ch13_00122",
+      "resolution": "unknown"
     },
     "ch13_00131": {
       "id": "ch13_00131",
@@ -32450,7 +32833,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_threatened_ralph": false
+            }
           }
         },
         {
@@ -32462,7 +32847,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_threatened_ralph": false
+            }
           }
         },
         {
@@ -32472,7 +32859,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_threatened_ralph": true
+            }
           }
         },
         {
@@ -32482,7 +32871,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_threatened_ralph": false
+            }
           }
         },
         {
@@ -32492,7 +32883,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_threatened_ralph": false
+            }
           }
         }
       ]
@@ -33261,7 +33654,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00159"
+      "next": "ch13_00159",
+      "resolution": "unknown"
     },
     "ch13_00173": {
       "id": "ch13_00173",
@@ -33414,7 +33808,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00179"
+      "next": "ch13_00179",
+      "resolution": "qte"
     },
     "ch13_00182": {
       "id": "ch13_00182",
@@ -34077,18 +34472,26 @@
       "branches": [
         {
           "condition_text": "Carl died in Broken",
-          "when": null,
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": false
+          },
           "next": "ch14_00011"
         },
         {
           "condition_text": "Carl is alive",
-          "when": null,
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": true
+          },
           "next": "ch14_00017"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch14_00005"
+      "next": "ch14_00005",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Broken#Cross-chapter_impacts"
     },
     "ch14_00019": {
       "id": "ch14_00019",
@@ -34733,7 +35136,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_nest_rooftop": "chased_rupert"
+            }
           }
         },
         {
@@ -34752,7 +35157,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_nest_rooftop": "saved_hank"
+            }
           }
         }
       ]
@@ -34915,7 +35322,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch15_00001"
+      "next": "ch15_00001",
+      "resolution": "qte"
     },
     "ch15_00027": {
       "id": "ch15_00027",
@@ -36502,7 +36910,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch15_00109"
+      "next": "ch15_00109",
+      "resolution": "unknown"
     },
     "ch15_00117": {
       "id": "ch15_00117",
@@ -36801,13 +37210,18 @@
           "id": "option_0",
           "label": "HIGHWAY",
           "next": "ch15_00119",
-          "requirements_unverified": [
-            "Didn't pursue Kara on the highway in On The Run"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_highway_pursuit",
+              "equals": false
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
         },
         {
           "id": "option_1",
@@ -38031,7 +38445,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch15_00100"
+      "next": "ch15_00100",
+      "resolution": "qte"
     },
     "ch15_00190": {
       "id": "ch15_00190",
@@ -39638,7 +40053,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00004"
+      "next": "ch17_00004",
+      "resolution": "unknown"
     },
     "ch17_00008": {
       "id": "ch17_00008",
@@ -40018,7 +40434,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00025"
+      "next": "ch17_00025",
+      "resolution": "unknown"
     },
     "ch17_00029": {
       "id": "ch17_00029",
@@ -40168,7 +40585,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00014"
+      "next": "ch17_00014",
+      "resolution": "unknown"
     },
     "ch17_00038": {
       "id": "ch17_00038",
@@ -40905,7 +41323,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00075"
+      "next": "ch17_00075",
+      "resolution": "unknown"
     },
     "ch17_00079": {
       "id": "ch17_00079",
@@ -40941,7 +41360,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00078"
+      "next": "ch17_00078",
+      "resolution": "unknown"
     },
     "ch17_00081": {
       "id": "ch17_00081",
@@ -41285,8 +41705,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch17_00048"
+      "default_branch": 1,
+      "next": "ch17_00048",
+      "resolution": "qte"
     },
     "ch17_00099": {
       "id": "ch17_00099",
@@ -41440,8 +41861,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch17_00098"
+      "default_branch": 1,
+      "next": "ch17_00098",
+      "resolution": "qte"
     },
     "ch17_00107": {
       "id": "ch17_00107",
@@ -43274,13 +43696,28 @@
       "branches": [
         {
           "condition_text": "Connor died in The Nest",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "chased_rupert"
+                },
+                {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              ]
+            }
+          },
           "next": "ch18_00052"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch18_00050"
+      "next": "ch18_00050",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
     },
     "ch18_00054": {
       "id": "ch18_00054",
@@ -43364,18 +43801,26 @@
       "branches": [
         {
           "condition_text": "Connor knows Sumo's name",
-          "when": null,
+          "when": {
+            "flag": "connor_knows_sumo_name",
+            "equals": true
+          },
           "next": "ch18_00056"
         },
         {
           "condition_text": "Connor doesn't know Sumo's name",
-          "when": null,
+          "when": {
+            "flag": "connor_knows_sumo_name",
+            "equals": false
+          },
           "next": "ch18_00057"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch18_00055"
+      "next": "ch18_00055",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Russian_Roulette#Flowchart"
     },
     "ch18_00059": {
       "id": "ch18_00059",
@@ -43831,18 +44276,26 @@
       "branches": [
         {
           "condition_text": "Connor caught Rupert in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "chased_rupert"
+          },
           "next": "ch18_00078"
         },
         {
           "condition_text": "Connor failed to catch Rupert in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "saved_hank"
+          },
           "next": "ch18_00072"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch18_00072"
+      "next": "ch18_00072",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
     },
     "ch18_00080": {
       "id": "ch18_00080",
@@ -44174,7 +44627,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch18_00090"
+      "next": "ch18_00090",
+      "resolution": "unknown"
     },
     "ch18_00094": {
       "id": "ch18_00094",
@@ -44261,23 +44715,44 @@
       "branches": [
         {
           "condition_text": "Rupert wasn't caught in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "saved_hank"
+          },
           "next": "ch18_00093"
         },
         {
           "condition_text": "Rupert was caught in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "chased_rupert"
+          },
           "next": "ch18_00094"
         },
         {
           "condition_text": "Connor died in The Nest",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "chased_rupert"
+                },
+                {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              ]
+            }
+          },
           "next": "ch18_00097"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch18_00085"
+      "next": "ch18_00085",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
     },
     "ch18_00099": {
       "id": "ch18_00099",
@@ -44394,7 +44869,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch19_00001"
+      "next": "ch19_00001",
+      "resolution": "unknown"
     },
     "ch19_00005": {
       "id": "ch19_00005",
@@ -44652,13 +45128,18 @@
       "branches": [
         {
           "condition_text": "Markus went back to save John",
-          "when": null,
+          "when": {
+            "flag": "markus_tried_to_save_john",
+            "equals": true
+          },
           "next": "ch19_00017"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch19_00015"
+      "next": "ch19_00015",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00019": {
       "id": "ch19_00019",
@@ -44747,7 +45228,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch19_00004"
+      "next": "ch19_00004",
+      "resolution": "unknown"
     },
     "ch19_00023": {
       "id": "ch19_00023",
@@ -44903,7 +45385,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch19_00030"
+      "next": "ch19_00030",
+      "resolution": "unknown"
     },
     "ch19_00033": {
       "id": "ch19_00033",
@@ -45129,7 +45612,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_tried_to_save_john": true
+            }
           }
         },
         {
@@ -45139,7 +45624,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_tried_to_save_john": false
+            }
           }
         }
       ]
@@ -45269,7 +45756,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch19_00032"
+      "next": "ch19_00032",
+      "resolution": "unknown"
     },
     "ch19_00051": {
       "id": "ch19_00051",
@@ -45823,18 +46311,26 @@
       "branches": [
         {
           "condition_text": "Awoke androids",
-          "when": null,
+          "when": {
+            "flag": "markus_warehouse_androids_freed",
+            "equals": true
+          },
           "next": "ch19_00075"
         },
         {
           "condition_text": "Didn't awake androids",
-          "when": null,
+          "when": {
+            "flag": "markus_warehouse_androids_freed",
+            "equals": false
+          },
           "next": "ch19_00076"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch19_00074"
+      "next": "ch19_00074",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00078": {
       "id": "ch19_00078",
@@ -45983,18 +46479,26 @@
       "branches": [
         {
           "condition_text": "Awoke androids",
-          "when": null,
+          "when": {
+            "flag": "markus_warehouse_androids_freed",
+            "equals": true
+          },
           "next": "ch19_00082"
         },
         {
           "condition_text": "Didn't awake androids",
-          "when": null,
+          "when": {
+            "flag": "markus_warehouse_androids_freed",
+            "equals": false
+          },
           "next": "ch19_00083"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch19_00081"
+      "next": "ch19_00081",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00085": {
       "id": "ch19_00085",
@@ -46119,7 +46623,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_warehouse_parts_stolen": true
+              "markus_warehouse_parts_stolen": true,
+              "markus_warehouse_androids_freed": false
             },
             "news": [
               {
@@ -46782,8 +47287,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch19_00112"
+      "default_branch": 1,
+      "next": "ch19_00112",
+      "resolution": "qte"
     },
     "ch19_00120": {
       "id": "ch19_00120",
@@ -46925,7 +47431,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch19_00124"
+      "next": "ch19_00124",
+      "resolution": "unknown"
     },
     "ch19_00128": {
       "id": "ch19_00128",
@@ -47286,7 +47793,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_eden_tracis": "shot_one"
+            }
           }
         },
         {
@@ -47305,7 +47814,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_eden_tracis": "spared"
+            }
           }
         }
       ]
@@ -47372,7 +47883,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_eden_tracis": "shot_in_back"
+            }
           }
         },
         {
@@ -47391,7 +47904,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_eden_tracis": "spared"
+            }
           }
         }
       ]
@@ -47454,7 +47969,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch20_00001"
+      "next": "ch20_00001",
+      "resolution": "qte"
     },
     "ch20_00015": {
       "id": "ch20_00015",
@@ -52893,7 +53409,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch21_00133"
+      "next": "ch21_00133",
+      "resolution": "unknown"
     },
     "ch21_00136": {
       "id": "ch21_00136",
@@ -53286,7 +53803,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch22_00001"
+      "next": "ch22_00001",
+      "resolution": "unknown"
     },
     "ch22_00005": {
       "id": "ch22_00005",
@@ -53763,7 +54281,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch22_00022"
+      "next": "ch22_00022",
+      "resolution": "unknown"
     },
     "ch22_00025": {
       "id": "ch22_00025",
@@ -54289,28 +54808,56 @@
       "branches": [
         {
           "condition_text": "Connor spared the Tracis",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "spared"
+          },
           "next": "ch22_00028"
         },
         {
           "condition_text": "Connor shot the Tracis in the back",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "shot_in_back"
+          },
           "next": "ch22_00034"
         },
         {
           "condition_text": "Connor shot one Traci",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "shot_one"
+          },
           "next": "ch22_00038"
         },
         {
           "condition_text": "Connor didn't find the Tracis",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "spared"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          },
           "next": "ch22_00044"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch22_00024"
+      "next": "ch22_00024",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Notes"
     },
     "ch22_00046": {
       "id": "ch22_00046",
@@ -54768,18 +55315,52 @@
       "branches": [
         {
           "condition_text": "Found the Tracis in The Eden Club",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "spared"
+              },
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_one"
+              },
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_in_back"
+              }
+            ]
+          },
           "next": "ch22_00057"
         },
         {
           "condition_text": "Took too much time looking for the Traci in The Eden Club",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "spared"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          },
           "next": "ch22_00062"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch22_00051"
+      "next": "ch22_00051",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Notes"
     },
     "ch22_00064": {
       "id": "ch22_00064",
