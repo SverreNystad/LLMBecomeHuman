@@ -224,7 +224,8 @@ async function renderStory({keepScroll = false} = {}) {
   }
   if (version !== storyVersion) return;
   const beats = response.beats || [];
-
+  // portraits.js slides the chapter's Character in at the edge of the Story.
+  document.dispatchEvent(new CustomEvent('storychapter', {detail: {chapter, character: chapterCharacter(chapter), run: run.id}}));
   if (!beats.length) {renderUnvisitedChapter(run, chapter); if (!keepScroll) scrollStoryToTop(); return;}
 
   const items = buildStoryItems(beats);

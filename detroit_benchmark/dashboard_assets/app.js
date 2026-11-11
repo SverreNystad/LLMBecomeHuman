@@ -241,7 +241,7 @@ function renderChapterList() {
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
     return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
-      <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span><span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
+      <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
   document.querySelector('.chapter-entry.active')?.scrollIntoView({block:'nearest'});
