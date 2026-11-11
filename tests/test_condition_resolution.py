@@ -155,9 +155,8 @@ def test_rule_follows_earlier_choice_not_default(tmp_path):
     assert result["warnings"] == []
 
 
-def test_rule_branch_taken_applies_its_flag_effects(tmp_path):
-    # A fate decided at a rule (Luther dies when the officer finds the androids)
-    # is remembered for later rules.
+def test_rule_branch_decides_a_fate_that_later_rules_read(tmp_path):
+    # Luther dies when the officer finds the androids: later scenes must know.
     fatal = {
         **RULE,
         "branches": [
@@ -172,12 +171,46 @@ def test_rule_branch_taken_applies_its_flag_effects(tmp_path):
             {"id": "jump", "effects": {"flags": {"connor_sacrificed": True}}},
         ],
     )
-    result, _ = play(g, tmp_path)
+    result, events = play(g, tmp_path)
+    assert result["final_flags"]["luther_alive"] is False
+    gate = next(e for e in events if e["node_id"] == "gate")
+    assert gate["flags_set"] == {"luther_alive": False}
+
+
+def test_quick_time_event_success_branch_can_decide_a_fate(tmp_path):
+    qte = {
+        "resolution": "qte",
+        "unverified": True,
+        "default_branch": 0,
+        "branches": [
+            {
+                "condition_text": "Luther is shot",
+                "when": None,
+                "next": "a",
+                "effects": {"flags": {"luther_alive": False}},
+            },
+        ],
+    }
+    result, _ = play(tiny_graph(qte), tmp_path)
     assert result["final_flags"]["luther_alive"] is False
 
 
-def test_story_initial_flags_start_every_run(tmp_path):
-    # Every side character starts the story alive.
+def test_branch_and_starting_flags_must_be_snake_case():
+    bad_branch = {
+        **RULE,
+        "branches": [
+            {**RULE["branches"][0], "effects": {"flags": {"Luther Alive": False}}},
+            RULE["branches"][1],
+        ],
+    }
+    assert not validate_graph(tiny_graph(bad_branch))["valid"]
+    assert not validate_graph(
+        {**tiny_graph(RULE), "initial_flags": {"Luther Alive": True}}
+    )["valid"]
+
+
+def test_graph_initial_flags_start_every_run(tmp_path):
+    # Every Fate starts alive.
     g = {**tiny_graph(RULE), "initial_flags": {"luther_alive": True}}
     result, _ = play(g, tmp_path, allow_unverified=True)
     assert result["final_flags"]["luther_alive"] is True
@@ -242,11 +275,11 @@ def test_dataset_conditions_are_sorted(chapter):
             assert 0 <= n["default_branch"] < len(n["branches"]), n["id"]
 
 
-def test_dataset_rule_flags_are_set_by_some_choice():
-    # Set by a choice, by a fate decided at an earlier rule, or at the story's start.
+def test_dataset_rule_flags_are_set_somewhere():
+    # Set by a choice, by a Fate decided at an earlier condition, or from the start.
     graph = load_dataset()
     nodes = graph["nodes"]
-    set_by_choices = set(flag_values(graph))
+    set_somewhere = set(flag_values(graph))
 
     def flags_in(expr):
         if "flag" in expr:
@@ -257,13 +290,14 @@ def test_dataset_rule_flags_are_set_by_some_choice():
     for n in nodes.values():
         if n.get("resolution") == "rule":
             for b in n["branches"]:
-                assert flags_in(b["when"]) <= set_by_choices, n["id"]
+                assert flags_in(b["when"]) <= set_somewhere, n["id"]
 
 
 def test_dataset_rule_branches_never_overlap():
     # The engine refuses a condition where two branches match at once.
-    nodes = load_dataset()["nodes"]
-    values = flag_values(load_dataset())
+    graph = load_dataset()
+    nodes = graph["nodes"]
+    values = flag_values(graph)
 
     def flags_in(expr):
         if "flag" in expr:

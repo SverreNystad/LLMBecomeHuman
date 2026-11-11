@@ -2,6 +2,8 @@
 
 import json
 from functools import lru_cache
+
+from detroit_benchmark.engine import effect_flags
 from pathlib import Path
 
 DATASET = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
@@ -24,6 +26,6 @@ def flag_values(graph: dict) -> dict[str, set]:
         values.setdefault(name, set()).add(value)
     for n in graph["nodes"].values():
         for o in n.get("options", []) + n.get("branches", []):
-            for name, value in (o.get("effects") or {}).get("flags", {}).items():
+            for name, value in effect_flags(o).items():
                 values.setdefault(name, set()).add(value)
     return values

@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 70,
+    "condition_nodes_unverified": 63,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -25447,7 +25447,8 @@
       "default_branch": 0,
       "next": "ch12_00039",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart",
+      "note": "Kara is destroyed only after a failed Quick-Time Event, which never happens here."
     },
     "ch12_00044": {
       "id": "ch12_00044",
@@ -63747,7 +63748,8 @@
       "default_branch": 0,
       "next": "ch25_00002",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart",
+      "note": "Approximation: the officer grows suspicious from evidence left out; here that is when Kara only waited for Rose. Suspicious, he finds the deviants in the laundry room and Luther dies saving them (unless he already died in the kitchen)."
     },
     "ch25_00015": {
       "id": "ch25_00015",
@@ -64413,7 +64415,8 @@
       "default_branch": 0,
       "next": "ch25_00038",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart",
+      "note": "Approximation: the wiki ties this to the curtain left open; here, to Kara only waiting for Rose instead of preparing the house."
     },
     "ch25_00044": {
       "id": "ch25_00044",
@@ -64551,7 +64554,8 @@
       "default_branch": 0,
       "next": "ch25_00043",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart",
+      "note": "Approximation: the blue blood stays out when Kara only waited for Rose instead of preparing the house."
     },
     "ch25_00050": {
       "id": "ch25_00050",
@@ -75279,7 +75283,8 @@
       "default_branch": 0,
       "next": "ch28_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart",
+      "note": "Approximation: Simon counts as dead if he did not escape the Stratford Tower with Markus (left behind, Connor finds him in Public Enemy), and he gives his life in the Freedom March whenever he is alive, assuming Markus and Simon are at least friends."
     },
     "ch28_00028": {
       "id": "ch28_00028",
@@ -81082,19 +81087,47 @@
       "branches": [
         {
           "condition_text": "Hank is friendly",
-          "when": null,
-          "next": "ch29_00131"
+          "next": "ch29_00131",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "saved_hank"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          }
         },
         {
           "condition_text": "Hank is not friendly",
-          "when": null,
-          "next": "ch29_00139"
+          "next": "ch29_00139",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_public_enemy_chase",
+                  "equals": "save_hank"
+                }
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00121",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch29_00141": {
       "id": "ch29_00141",
@@ -81334,14 +81367,27 @@
       "branches": [
         {
           "condition_text": "Hank is friendly",
-          "when": null,
-          "next": "ch29_00149"
+          "next": "ch29_00149",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "saved_hank"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00144",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch29_00151": {
       "id": "ch29_00151",
@@ -82032,19 +82078,47 @@
       "branches": [
         {
           "condition_text": "Hank is friendly",
-          "when": null,
-          "next": "ch29_00176"
+          "next": "ch29_00176",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "saved_hank"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          }
         },
         {
           "condition_text": "Hank is not friendly",
-          "when": null,
-          "next": "ch29_00177"
+          "next": "ch29_00177",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_public_enemy_chase",
+                  "equals": "save_hank"
+                }
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00121",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch29_00179": {
       "id": "ch29_00179",
@@ -82199,14 +82273,27 @@
       "branches": [
         {
           "condition_text": "Hank is friendly",
-          "when": null,
-          "next": "ch29_00183"
+          "next": "ch29_00183",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "saved_hank"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00178",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch29_00185": {
       "id": "ch29_00185",
@@ -83250,14 +83337,39 @@
       "branches": [
         {
           "condition_text": "Hank is hostile",
-          "when": null,
-          "next": "ch29_00224"
+          "next": "ch29_00224",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "saved_hank"
+                    }
+                  },
+                  {
+                    "not": {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "save_hank"
+                    }
+                  }
+                ]
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00220",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch29_00226": {
       "id": "ch29_00226",
@@ -85434,26 +85546,31 @@
       "branches": [
         {
           "condition_text": "Luther is alive - Luther sacrifices himself",
+          "next": "ch30_1_00045",
           "when": {
-            "flag": "kara_helped_luther",
+            "flag": "luther_alive",
             "equals": true
           },
-          "next": "ch30_1_00045"
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         },
         {
           "condition_text": "Luther is dead",
+          "next": "ch30_1_00047",
           "when": {
-            "flag": "kara_helped_luther",
+            "flag": "luther_alive",
             "equals": false
-          },
-          "next": "ch30_1_00047"
+          }
         }
       ],
       "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Kara"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00049": {
       "id": "ch30_1_00049",
@@ -87570,7 +87687,8 @@
       "default_branch": 0,
       "next": "ch30_1_00146",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Connor is decommissioned only if he never learns where Jericho is, which never happens here."
     },
     "ch30_1_00150": {
       "id": "ch30_1_00150",
@@ -87985,7 +88103,8 @@
       "default_branch": 0,
       "next": "ch30_1_00165",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Connor is decommissioned only if he never learns where Jericho is, which never happens here."
     },
     "ch30_1_00169": {
       "id": "ch30_1_00169",
@@ -88137,7 +88256,8 @@
       "default_branch": 0,
       "next": "ch30_1_00139",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch30_1_00175": {
       "id": "ch30_1_00175",
@@ -88997,7 +89117,8 @@
       "default_branch": 0,
       "next": "ch30_2_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch30_2_00019": {
       "id": "ch30_2_00019",
@@ -91949,7 +92070,8 @@
       "default_branch": 0,
       "next": "ch30_3_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch30_3_00005": {
       "id": "ch30_3_00005",
@@ -93056,7 +93178,8 @@
       "default_branch": 0,
       "next": "ch30_3_00047",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch30_3_00057": {
       "id": "ch30_3_00057",
@@ -95298,7 +95421,8 @@
       "default_branch": 0,
       "next": "ch30_3_00161",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch30_3_00168": {
       "id": "ch30_3_00168",
@@ -96226,7 +96350,8 @@
       "default_branch": 0,
       "next": "ch30_3_00160",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch30_3_00210": {
       "id": "ch30_3_00210",
@@ -97023,7 +97148,8 @@
       "default_branch": 0,
       "next": "ch31_1_x0900",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch31_1_00015": {
       "id": "ch31_1_00015",
@@ -97430,7 +97556,8 @@
       "default_branch": 0,
       "next": "ch31_1_x0900",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch31_1_00032": {
       "id": "ch31_1_00032",
@@ -99354,7 +99481,8 @@
       "default_branch": 0,
       "next": "ch31_2_00003",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch31_2_00007": {
       "id": "ch31_2_00007",
@@ -99709,7 +99837,8 @@
       "default_branch": 0,
       "next": "ch31_2_00015",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Approximation: Jericho's standing is a running score; here Markus loses Jericho only if he fled the Freedom March, its largest loss."
     },
     "ch31_2_00023": {
       "id": "ch31_2_00023",
@@ -109219,7 +109348,8 @@
       "default_branch": 0,
       "next": "ch32_1_00346",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Jericho is never attacked only if Connor never learns where it is, which never happens here."
     },
     "ch32_1_00429": {
       "id": "ch32_1_00429",
@@ -114247,7 +114377,8 @@
       "default_branch": 0,
       "next": "ch32_3_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: Connor finds Markus in the crowd when Markus marches peacefully."
     },
     "ch32_3_00010": {
       "id": "ch32_3_00010",
@@ -115489,20 +115620,63 @@
       "branches": [
         {
           "condition_text": "Hank is on the roof",
-          "when": null,
-          "next": "ch32_3_00047"
+          "next": "ch32_3_00047",
+          "when": {
+            "any": [
+              {
+                "any": [
+                  {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "saved_hank"
+                  },
+                  {
+                    "flag": "connor_public_enemy_chase",
+                    "equals": "save_hank"
+                  }
+                ]
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "{{ t(\"MENU.FLOWCHART.04A.CA.ALLENARRIVESSTOPCONNOR\") }}",
-          "when": null,
-          "next": "ch32_3_00065"
+          "next": "ch32_3_00065",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "saved_hank"
+                    }
+                  },
+                  {
+                    "not": {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "save_hank"
+                    }
+                  }
+                ]
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_3_00010",
-      "resolution": "unknown",
-      "unknown_reason": "Depends on Hank's relationship with Connor, a running score the story data does not keep; one version is an untranslated label."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
     },
     "ch32_3_00067": {
       "id": "ch32_3_00067",
@@ -117823,20 +117997,63 @@
       "branches": [
         {
           "condition_text": "Hank is still alive [Hank wasn't hostile in Last Chance, Connor ]",
-          "when": null,
-          "next": "ch32_4_00101"
+          "next": "ch32_4_00101",
+          "when": {
+            "any": [
+              {
+                "any": [
+                  {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "saved_hank"
+                  },
+                  {
+                    "flag": "connor_public_enemy_chase",
+                    "equals": "save_hank"
+                  }
+                ]
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Hank is dead [Hank was hostile in Last Chance, Connor",
-          "when": null,
-          "next": "ch32_4_00107"
+          "next": "ch32_4_00107",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "not": {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "saved_hank"
+                    }
+                  },
+                  {
+                    "not": {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "save_hank"
+                    }
+                  }
+                ]
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_4_00026",
-      "resolution": "unknown",
-      "unknown_reason": "Depends on whether Hank was hostile in Last Chance, Connor, a running relationship score the story data does not keep."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners. A hostile Hank takes his own life in Night of the Soul."
     },
     "ch32_4_00109": {
       "id": "ch32_4_00109",
@@ -118837,6 +119054,11 @@
                 ]
               }
             ]
+          },
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
           }
         },
         {
@@ -118852,7 +119074,8 @@
       "default_branch": 0,
       "next": "ch32_5_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: public opinion is a running score; here it stays positive while neither the Freedom March nor Capitol Park turned violent."
     },
     "ch32_5_00023": {
       "id": "ch32_5_00023",
@@ -119127,7 +119350,8 @@
       "default_branch": 0,
       "next": "ch32_5_00035",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: public opinion is a running score; here it stays positive while neither the Freedom March nor Capitol Park turned violent."
     },
     "ch32_5_00038": {
       "id": "ch32_5_00038",
@@ -119230,7 +119454,8 @@
       "default_branch": 0,
       "next": "ch32_5_00035",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: public opinion is a running score; here it stays positive while neither the Freedom March nor Capitol Park turned violent."
     },
     "ch32_5_00042": {
       "id": "ch32_5_00042",
@@ -119877,7 +120102,8 @@
       "default_branch": 0,
       "next": "ch32_5_00061",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch32_5_00069": {
       "id": "ch32_5_00069",
@@ -120068,7 +120294,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "north_alive": false
+              "north_alive": false,
+              "markus_alive": false
             }
           }
         },
@@ -120398,7 +120625,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "north_alive": false
+              "north_alive": false,
+              "markus_alive": false
             }
           }
         },
@@ -120468,7 +120696,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "north_alive": false
+              "north_alive": false,
+              "markus_alive": false
             }
           }
         },
@@ -121598,7 +121827,8 @@
       "default_branch": 0,
       "next": "ch32_5_00131",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: Simon watches the soldiers with Markus if he lives, else Josh."
     },
     "ch32_5_00143": {
       "id": "ch32_5_00143",
@@ -122887,7 +123117,8 @@
       "default_branch": 0,
       "next": "ch32_5_00177",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: public opinion is a running score; here it stays positive while neither the Freedom March nor Capitol Park turned violent."
     },
     "ch32_5_00203": {
       "id": "ch32_5_00203",
@@ -124500,7 +124731,8 @@
       "default_branch": 0,
       "next": "ch32_6_00061",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch32_6_00065": {
       "id": "ch32_6_00065",
@@ -124549,7 +124781,8 @@
       "default_branch": 0,
       "next": "ch32_6_00061",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch32_6_00067": {
       "id": "ch32_6_00067",
@@ -124654,7 +124887,8 @@
       "default_branch": 0,
       "next": "ch32_6_00068",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
     },
     "ch32_6_00071": {
       "id": "ch32_6_00071",
@@ -125092,7 +125326,8 @@
       "default_branch": 0,
       "next": "ch32_6_00061",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+      "note": "Approximation: North offers her heart whenever she is alive (the game also needs her to be at least Markus's companion)."
     },
     "ch32_6_00093": {
       "id": "ch32_6_00093",
@@ -127871,6 +128106,9 @@
     "connor_deviant": false,
     "connor_highway_pursuit": false,
     "kara_ch30_played_dead": false,
+    "connor_nest_rooftop": "none",
+    "connor_public_enemy_chase": "none",
+    "connor_firm_with_hank": false,
     "quick_time_event_failed": false
   }
 }
