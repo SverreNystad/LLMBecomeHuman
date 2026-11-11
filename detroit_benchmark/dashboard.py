@@ -537,7 +537,7 @@ def create_app(
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
     app = FastAPI(
-        title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs"
+        title="LLM: Become Human", version="0.3.0", docs_url="/api/docs"
     )
 
     @app.middleware("http")

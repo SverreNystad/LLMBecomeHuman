@@ -7,12 +7,18 @@ const svgNS = 'http://www.w3.org/2000/svg';
 const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
 const SCENE_NODE_WIDTH = 300, SCENE_NODE_CHROME = 46, NODE_DIALOGUE_MAX_HEIGHT = 150;
 const NODE_CHARS_PER_ROW = 46, NODE_ROW_HEIGHT = 15, NODE_ITEM_GAP = 5;
-const PALETTE = ['#1596bd','#d36b56','#7756b7','#1b946f','#bb7622','#b34b8a','#2376a4','#a09d29','#815c43','#d25b7b','#3e7b47','#6660aa','#b55329','#607b91','#b34651','#2e8c8a'];
+// A chapter shows at most six Runs, one per shade of its Character's colour.
+const MAX_VISIBLE_RUNS = 6;
+// Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
+// so the first few models get well-separated shades.
+const SHADE_ORDER = [3, 5, 1, 4, 6, 2];
+const CHARACTERS = ['connor', 'kara', 'markus'];
+const PROVIDER_STYLES = new Set(['openai', 'anthropic', 'google', 'gemini', 'xai', 'grok', 'deepseek', 'mistral']);
 const state = {
   runs: [], selectedIds: [], details: new Map(), graph: null, chapter: null,
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
-  toastTimer: null, selectionHydrated: false, assignedColors: new Map(), focusedId: null, viewTouched: false,
+  toastTimer: null, selectionHydrated: false, shadeSlots: new Map(), focusedId: null, viewTouched: false,
   view: 'story', readerRunId: null, storyMode: 'full', pendingStoryIndex: null
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
@@ -21,45 +27,35 @@ const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'r
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
 const runStatusLabel = run => ({running: 'playing', stopped: 'stopped'})[run?.status] || '';
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
-function colorFor(run) {
-  // Stable identifier across reordering/filtering. Distinct runs from one provider
-  // receive different colors; palette cycles only once 16 simultaneous runs exist.
-  const id=String(run?.id||''), model=String(run?.model||'');
-  let h=2166136261;
-  for(const c of `${id}:${model}`){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}
-  return PALETTE[(h>>>0)%PALETTE.length];
-}
+const providerStyle = run => PROVIDER_STYLES.has(providerOf(run)) ? providerOf(run) : 'other';
+const runSortKey = run => `${providerOf(run)}\u0000${run?.model || ''}\u0000${run?.name || ''}`;
+const byRunOrder = (a, b) => runSortKey(a).localeCompare(runSortKey(b));
 function runById(id) {return state.runs.find(r=>r.id===id) || null;}
 function activeRuns(){return state.selectedIds.map(runById).filter(Boolean);}
 function activeViews(){return activeRuns().map(run=>({run,detail:state.details.get(run.id)})).filter(x=>x.detail);}
 function anchorRun(){return activeRuns()[0]||null;}
 function compatible(run,anchor=anchorRun()) {return !anchor || Boolean(run.graph_sha256 && run.graph_sha256===anchor.graph_sha256);}
-function routeColor(run){return state.routeColors?.get(run?.id) || colorFor(run);}
-function rebalanceColors(){
- // Assign each run once; selecting, removing or reordering runs cannot change
- // an existing run's color. More than 16 runs get distinct extra hues.
- const taken=new Set([...state.assignedColors.values()]);
- for(const run of state.runs){
-  if(state.assignedColors.has(run.id))continue;
-  let selected=null, start=PALETTE.indexOf(colorFor(run));
-  for(let n=0;n<PALETTE.length;n++){
-    const color=PALETTE[(start+n)%PALETTE.length];
-    if(!taken.has(color)){selected=color;break;}
-  }
-  if(!selected){
-    const extra=state.assignedColors.size-PALETTE.length;
-    selected=`hsl(${Math.round((extra*137.508+18)%360)},${extra%2?61:69}%,${extra%3===0?35:45}%)`;
-  }
-  state.assignedColors.set(run.id,selected);taken.add(selected);
+/* Each selected Run keeps one shade slot while it stays selected, so it sits at the same
+ * place on the light-to-dark range in every chapter. A Run prefers the slot given by its
+ * position among all Runs (sorted by provider and model) and falls back to the next free one. */
+function assignShadeSlots(){
+ for(const id of [...state.shadeSlots.keys()]) if(!state.selectedIds.includes(id)) state.shadeSlots.delete(id);
+ const taken=new Set(state.shadeSlots.values()), order=[...state.runs].sort(byRunOrder).map(run=>run.id);
+ for(const run of activeRuns().filter(run=>!state.shadeSlots.has(run.id)).sort(byRunOrder)){
+  let slot=Math.max(0,order.indexOf(run.id))%MAX_VISIBLE_RUNS;
+  while(taken.has(slot)) slot=(slot+1)%MAX_VISIBLE_RUNS;
+  state.shadeSlots.set(run.id,slot);taken.add(slot);
  }
- state.routeColors=state.assignedColors;
 }
+function shadeOf(run){const slot=state.shadeSlots.get(run?.id);return slot==null?null:SHADE_ORDER[slot];}
+/* A CSS colour that follows the current chapter's Character ramp. */
+function routeColor(run){const shade=shadeOf(run);return shade?`var(--shade-${shade})`:'var(--ink-faint)';}
 function applyRunFocus(runId){
  const active=runId||state.focusedId;
  document.querySelectorAll('.route-overlay').forEach(edge=>{
    const match=!active||edge.dataset.runId===active;
-   edge.style.opacity=match?'0.97':'0.14';
-   edge.style.strokeWidth=match&&active?'4.2':'2.7';
+   edge.style.opacity=match?'1':'0.15';
+   edge.style.strokeWidth=match&&active?'3.2':'';
  });
  document.querySelectorAll('.node-model-button').forEach(mark=>{
    mark.style.opacity=!active||mark.dataset.runId===active?'1':'0.28';
@@ -87,6 +83,13 @@ function modelIcon(provider, extraClass='') {
   if(assets[kind]) return `<img src="/assets/${assets[kind]}-mark.svg" alt="" aria-hidden="true" class="${esc(extraClass)}">`;
   return `<span class="mock-icon" aria-hidden="true">${kind==='mock'?'◇':(kind.slice(0,1).toUpperCase()||'•')}</span>`;
 }
+function setCharacterTheme(character){
+  // Hook for per-Character theming: CSS swaps the --shade ramp on body[data-character].
+  const key=CHARACTERS.includes(String(character||'').toLowerCase())?String(character).toLowerCase():'none';
+  if(document.body.dataset.character===key)return;
+  document.body.dataset.character=key;
+  document.dispatchEvent(new CustomEvent('characterchange',{detail:{character:key,chapter:state.chapter}}));
+}
 function toast(msg) {
   const box=$('toast');box.textContent=msg;box.classList.add('visible');
   clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>box.classList.remove('visible'),3400);
@@ -97,13 +100,13 @@ async function api(path){
  return res.json();
 }
 function updateSelectors() {
-  rebalanceColors();
+  assignShadeSlots();
   $('pickerToggle').setAttribute('aria-expanded',String(state.pickerOpen));
   $('pickerPanel').classList.toggle('is-hidden',!state.pickerOpen);
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
   $('selectAllRuns').disabled=!anchorRun();
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="Click to follow this run" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
+  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
   setupRunFocus();
   $('searchRuns').value=state.search;
@@ -117,14 +120,15 @@ function renderPickerList(){
   for(const run of available){const name=modelName(providerOf(run));if(!groups.has(name))groups.set(name,[]);groups.get(name).push(run);}
   list.innerHTML=[...groups.entries()].map(([group,runs])=>`<div class="picker-group"><div class="picker-group-heading">${esc(group)}</div>${runs.map(run=>{
     const checked=state.selectedIds.includes(run.id),allowed=compatible(run)||checked;
-    return `<label class="picker-run ${allowed?'':'incompatible'}"><input type="checkbox" data-run-id="${esc(run.id)}" ${checked?'checked':''} ${allowed?'':'disabled'}><span class="picker-check"></span><span class="picker-run-logo">${modelIcon(providerOf(run))}</span><span class="picker-run-text"><strong>${esc(run.model)}</strong>${runStatusLabel(run)?`<small>${esc(runStatusLabel(run))}</small>`:''}</span><span class="picker-color" style="background:${checked?routeColor(run):'#c9d4da'}"></span></label>`;
+    return `<label class="picker-run ${allowed?'':'incompatible'}" style="--run-color:${routeColor(run)}"><input type="checkbox" data-run-id="${esc(run.id)}" ${checked?'checked':''} ${allowed?'':'disabled'}><span class="picker-check"></span><span class="picker-run-logo">${modelIcon(providerOf(run))}</span><span class="picker-run-text"><strong>${esc(run.model)}</strong>${runStatusLabel(run)?`<small>${esc(runStatusLabel(run))}</small>`:''}</span></label>`;
   }).join('')}</div>`).join('')||'<div class="picker-no-runs">No matches</div>';
   list.querySelectorAll('[data-run-id]').forEach(input=>input.addEventListener('change',()=>toggleRun(input.dataset.runId,input.checked)));
 }
 async function toggleRun(id,enabled){
   const run=runById(id);if(!run)return;
   const selected=state.selectedIds.includes(id);
-  if(enabled&&!selected&&!compatible(run)){toast('That model played a different story. Clear the selection first.');return;}
+  if(enabled&&!selected&&!compatible(run)){toast('That model played a different story. Clear the selection first.');renderPickerList();return;}
+  if(enabled&&!selected&&state.selectedIds.length>=MAX_VISIBLE_RUNS){toast('Six models at a time. Remove one to add another.');renderPickerList();return;}
   if(enabled&&!selected)state.selectedIds.push(id);
   if(!enabled&&selected)state.selectedIds=state.selectedIds.filter(x=>x!==id);
   if(state.focusedId===id)state.focusedId=null;
@@ -140,7 +144,7 @@ function displayNoRuns(){
  $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();$('canvasLegend').innerHTML='<summary class="legend-title">Models</summary>';
  $('storyContent').innerHTML='<div class="story-empty"><strong>Choose a model</strong></div>';$('decisionStrip').replaceChildren();renderStoryToolbar(null);
  $('chapterList').replaceChildren();
- state.rendered=null;
+ state.rendered=null;state.chapter=null;setCharacterTheme(null);
 }
 async function refreshRuns({reselect=false}={}){
  if(state.busyRefresh)return;
@@ -154,7 +158,8 @@ async function refreshRuns({reselect=false}={}){
      const played=results.filter(r=>r.choices>0);
      const base=played.find(r=>!r.synthetic)||played[0]||results[0];
      const matching=results.filter(r=>r.graph_sha256&&r.graph_sha256===base.graph_sha256);
-     state.selectedIds=(matching.some(r=>r.choices>0)?matching.filter(r=>r.choices>0):matching).map(r=>r.id);
+     state.selectedIds=(matching.some(r=>r.choices>0)?matching.filter(r=>r.choices>0):matching)
+       .sort(byRunOrder).slice(0,MAX_VISIBLE_RUNS).map(r=>r.id);
      state.selectionHydrated=true;
    }
    if(!results.length){state.selectedIds=[];state.graph=null;state.details.clear();updateSelectors();displayNoRuns();return;}
@@ -235,7 +240,7 @@ function renderChapterList() {
   const decisionCounts = new Map((readerDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
-    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
       <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span><span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
@@ -507,6 +512,7 @@ function drawGraph(graph, paths) {
       const offset=(i-(users.length-1)/2)*step;
       const path=svgPath(edgeMarkup(edge,graph,offset),'edge-path route-overlay');
       path.style.stroke=routeColor(view.run);
+      path.classList.add(`provider-${providerStyle(view.run)}`);
       path.setAttribute('data-run-id',view.run.id);
       path.setAttribute('aria-label',`${modelLabel(view.run)} took this branch`);
       const title=document.createElementNS(svgNS,'title');title.textContent=modelLabel(view.run);path.appendChild(title);
@@ -551,7 +557,8 @@ function drawGraph(graph, paths) {
 function renderChapter(fit=true){
  if(!state.graph||!state.chapter)return;
  const chapter=state.chapter;
- $('chapterIndexLabel').textContent=chapterNumber(chapter)?`CHAPTER ${chapterNumber(chapter)}`:'ENDINGS';
+ $('chapterIndexLabel').textContent=chapterNumber(chapter)?`Chapter ${chapterNumber(chapter)}`:'Endings';
+ setCharacterTheme(chapterCharacter(chapter));
  $('chapterTitle').textContent=chapterTitle(chapter);
  if(state.view==='story'){state.rendered=null;renderStory({keepScroll:!fit});return;}
  renderFlowchart(fit);
@@ -564,7 +571,7 @@ function renderFlowchart(fit=true){
  const notice=$('graphNotice');notice.classList.toggle('is-hidden',state.graph.complete);
  if(!state.graph.complete)notice.textContent='Story graph missing for this run.';
  const legend=$('canvasLegend');
- legend.innerHTML=`<summary class="legend-title">Models</summary><div class="legend-runs">${views.map(v=>`<div class="legend-line" data-focus-id="${esc(v.run.id)}" role="button" tabindex="0" title="Click to focus ${esc(modelLabel(v.run))}"><span class="legend-dash" style="border-color:${routeColor(v.run)}"></span><span class="legend-model">${modelIcon(providerOf(v.run))}</span><span class="legend-run-name">${esc(v.run.model)}</span></div>`).join('')}</div>`;
+ legend.innerHTML=`<summary class="legend-title">Models</summary><div class="legend-runs">${views.map(v=>`<div class="legend-line" data-focus-id="${esc(v.run.id)}" role="button" tabindex="0" title="Click to focus ${esc(modelLabel(v.run))}"><svg class="legend-dash" viewBox="0 0 24 4" aria-hidden="true"><line class="route-overlay provider-${providerStyle(v.run)}" x1="0" y1="2" x2="24" y2="2" style="stroke:${routeColor(v.run)}"/></svg><span class="legend-model">${modelIcon(providerOf(v.run))}</span><span class="legend-run-name">${esc(v.run.model)}</span></div>`).join('')}</div>`;
  if(!state.graph.complete){
    $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();
    $('graphEmpty').classList.remove('is-hidden');
@@ -579,7 +586,7 @@ function renderFlowchart(fit=true){
  if(fit)requestAnimationFrame(openChapterView);else applyTransform();
  if(state.selected&&!graph.nodes.has(state.selected.id))closeDrawer();
 }
-function applyTransform(){ $('graphWorld').style.transform=`translate3d(${state.panX}px,${state.panY}px,0) scale(${state.scale})`; $('zoomLabel').textContent=`${Math.round(state.scale*100)}%`; }
+function applyTransform(){ $('graphWorld').style.transform=`translate3d(${state.panX}px,${state.panY}px,0) scale(${state.scale})`; }
 function openChapterView(){
   // Long chapters are unreadable when fitted, so start at a legible zoom on the first node.
   if(!state.rendered)return;
@@ -698,7 +705,10 @@ function setupInteractions(){
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});
  $('selectAllRuns').addEventListener('click',async()=>{
   const anchor=anchorRun()||state.runs[0];if(!anchor)return;
-  state.selectedIds=state.runs.filter(r=>r.graph_sha256 && r.graph_sha256===anchor.graph_sha256).map(r=>r.id);
+  const kept=state.selectedIds.filter(id=>compatible(runById(id),anchor));
+  const extra=state.runs.filter(r=>!kept.includes(r.id)&&r.graph_sha256&&r.graph_sha256===anchor.graph_sha256).sort(byRunOrder).map(r=>r.id);
+  state.selectedIds=[...kept,...extra].slice(0,MAX_VISIBLE_RUNS);
+  if(kept.length+extra.length>MAX_VISIBLE_RUNS)toast('Showing six models at a time.');
   updateSelectors();await loadCurrent(false);
  });
  $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});

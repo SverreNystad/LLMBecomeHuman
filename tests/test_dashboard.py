@@ -118,6 +118,13 @@ def test_serves_frontend_and_assets():
     assert c.get("/assets/styles.css").status_code == 200
 
 
+def test_frontend_is_named_llm_become_human():
+    c = client()
+    assert "<title>LLM: Become Human</title>" in c.get("/").text
+    for path in ("/", "/assets/app.js", "/assets/story.js", "/assets/styles.css"):
+        assert "decision atlas" not in c.get(path).text.lower(), path
+
+
 def test_legacy_view_is_gone():
     c = client()
     assert c.get("/legacy").status_code == 404

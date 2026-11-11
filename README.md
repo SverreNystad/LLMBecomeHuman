@@ -1,8 +1,8 @@
-# LLMBecomeHuman
+# LLM: Become Human
 
 Me and my girlfriend recently played through *Detroit: Become Human*. The game interactive drama set in a not so distant future populated with humans and androids. It explores moral dilemmas about artificial intelligence, consciousness, and what it is to be a human being. The game is filled with choices that dictate who lives, who dies among humans and androids. This got me thinking of AI safety and how large language models (LLMs) would handle the moral dilemmas in the game, and how different models would make different choices. I wanted to see how LLMs would play through the game, and how their choices would differ from each other and from human players.
 
-LLMBecomeHuman is a research prototype that lets LLMs play through a text version of *Detroit: Become Human* as a branching story. At each choice point a model picks one option and gives a short justification. The engine, not the model, decides what happens next. Every step is logged. A web dashboard (**Decision Atlas**) draws the full chapter flowchart and overlays the paths that several models (GPT, Claude, Gemini, Grok, DeepSeek, Mistral and others) took through it, each in its own colour.
+LLM: Become Human is a research prototype that lets LLMs play through a text version of *Detroit: Become Human* as a branching story. At each choice point a model picks one option and gives a short justification. The engine, not the model, decides what happens next. Every step is logged. Its dashboard reads each Run as a Story and draws every chapter as a Flowchart, with the routes several models (GPT, Claude, Gemini, Grok, DeepSeek, Mistral and others) took drawn on top in the playing Character's colour.
 
 > **NOTE:** The imported Detroit graph is built from fan transcripts. Its game-state rules (unlock conditions, consequences, ending routes) are **unverified**, so these runs are exploratory, not validated benchmark results. The game script itself is not included in this repository.
 
@@ -31,8 +31,8 @@ docker compose up --build
 
 Open **http://localhost:8000** to see the saved runs in `runs/` and the synthetic previews in `demo_runs/`. To use a different port, set `DASHBOARD_PORT` in `.env`.
 
-![Decision Atlas](docs/images/decision_atlas_flowchart.png)
-![Decision Atlas with multiple runs](docs/images/decision_atlas_story.png)
+![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
+![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)
 
 ### Making a new agent playthrough
 

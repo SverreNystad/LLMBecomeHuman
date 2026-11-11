@@ -75,9 +75,16 @@ def test_chapter_flowchart_browser_interactions():
             # The story opens first: readable text, and each decision compared across runs.
             page.locator(".story-decision").first.wait_for()
             assert page.locator("#chapterTitle").inner_text().startswith("01")
-            assert page.locator(".run-chip").count() == 10
+            # At most six Runs are shown; each holds a distinct shade slot.
+            assert page.locator(".run-chip").count() == 6
+            assert "LLM: Become Human" in page.title()
+            assert page.evaluate("document.body.dataset.character") == "none"
+            shades = page.locator(".run-chip").evaluate_all(
+                "els => els.map(e => e.style.getPropertyValue('--run-color'))"
+            )
+            assert len(set(shades)) == 6 and all("--shade-" in s for s in shades)
             first_card = page.locator(".story-decision").first
-            assert "Decision 1 of" in first_card.inner_text()
+            assert "Decision 1 of" in first_card.text_content()
             assert page.locator(".story-why").first.inner_text().strip()
             assert (
                 page.locator(".story-line, .story-narration, .story-clue").count() > 0
@@ -92,9 +99,10 @@ def test_chapter_flowchart_browser_interactions():
                 not page.locator(".story-other-why:not(.is-hidden)").first.inner_text()
                 == ""
             )
-            page.locator("#modeKey").click()
+            assert page.locator("#storyMode").get_attribute("aria-label")
+            page.locator("#storyMode").click()
             page.wait_for_function(
-                "document.querySelector('#modeKey').getAttribute('aria-pressed') === 'true'"
+                "document.querySelector('#storyMode').getAttribute('aria-pressed') === 'true'"
             )
             assert page.locator(".story-decision").count() > 0
 
@@ -109,12 +117,29 @@ def test_chapter_flowchart_browser_interactions():
             assert page.locator(".story-flash").count() >= 1
             page.locator("#viewFlow").click()
             page.locator(".flow-node").first.wait_for()
+            # A seventh Run is refused with a notice.
+            page.locator("#pickerToggle").click()
+            page.locator(".picker-run:not(:has(input:checked))").first.click()
+            page.wait_for_function(
+                "document.querySelector('#toast').classList.contains('visible')"
+            )
+            assert page.locator(".run-chip").count() == 6
+            page.locator("#pickerToggle").click()
+            kept_shade = page.locator(".run-chip").first.evaluate(
+                "e => e.style.getPropertyValue('--run-color')"
+            )
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.wait_for_function(
-                "document.querySelectorAll('.run-chip').length === 6"
+                "document.querySelectorAll('.run-chip').length === 2"
+            )
+            assert (
+                page.locator(".run-chip").first.evaluate(
+                    "e => e.style.getPropertyValue('--run-color')"
+                )
+                == kept_shade
             )
             page.locator(".flow-node").first.wait_for()
             assert page.locator(".flow-node.kind-option").count() == 4
@@ -192,21 +217,32 @@ def test_chapter_flowchart_browser_interactions():
             ).first.click(force=True)
             page.locator(".rationale").wait_for()
             assert "Mock policy" in page.locator(".rationale").first.inner_text()
-            assert "Synthetic preview" in page.locator("#drawerContent").inner_text()
+            assert "Synthetic preview" in page.locator("#drawerContent").text_content()
             page.locator("#closeDrawer").click()
 
-            # Select all 10 recorded experiments in the same graph, including
-            # multiple mock identities from OpenAI/Claude/Grok/other groups.
+            # "Select" fills up to six compatible runs; swap one for the Grok preview.
             page.locator("#pickerToggle").click()
             page.locator("#selectAllRuns").click()
             page.wait_for_function(
-                "document.querySelectorAll('.run-chip').length === 10"
+                "document.querySelectorAll('.run-chip').length === 6"
             )
-            assert page.locator(".run-chip").count() == 10
-            assert page.locator(".legend-runs .legend-line").count() == 10
+            page.locator("#pickerToggle").click()
+            page.locator(".run-chip-remove").last.click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 5"
+            )
+            page.locator("#pickerToggle").click()
+            page.locator("#searchRuns").fill("grok")
+            page.locator(".picker-run").first.click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 6"
+            )
+            assert page.locator(".legend-runs .legend-line").count() == 6
             assert page.locator(".flow-node").count() == node_count
-            assert page.locator(".edge-path.route-overlay").count() > 10
-            assert page.locator(".flow-node.visited .node-model-button").count() >= 10
+            assert page.locator(".edge-path.route-overlay").count() > 6
+            assert page.locator(".flow-node.visited .node-model-button").count() >= 6
+            # Same-hue routes differ by provider line style.
+            assert page.locator(".route-overlay.provider-xai").count() > 0
             # Multi-run badges must wrap within the node; labels remain visible.
             assert (
                 page.locator(".flow-node.visited .node-label").first.bounding_box()[
@@ -225,6 +261,7 @@ def test_chapter_flowchart_browser_interactions():
             )
             assert len(colors) >= 6
             assert page.locator(".node-model-button.provider-xai").count() > 0
+            page.locator("#searchRuns").fill("")
             page.locator("#pickerToggle").click()  # close the selection panel
             page.locator(
                 ".flow-node.kind-option .node-model-button.provider-xai"
@@ -235,7 +272,7 @@ def test_chapter_flowchart_browser_interactions():
             # Removing only one run doesn't change complete graph.
             page.locator(".run-chip-remove").first.click()
             page.wait_for_function(
-                "document.querySelectorAll('.run-chip').length === 9"
+                "document.querySelectorAll('.run-chip').length === 5"
             )
             assert page.locator(".flow-node").count() == node_count
             page.locator(".chapter-entry").nth(1).click()

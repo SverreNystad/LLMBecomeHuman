@@ -174,8 +174,7 @@ function caveatBanner(run) {
 function renderStoryToolbar(run) {
   $('readerRun').innerHTML = activeRuns().map(item => `<option value="${esc(item.id)}" ${item.id === run?.id ? 'selected' : ''}>${esc(item.model)}${runStatusLabel(item) ? ` (${esc(runStatusLabel(item))})` : ''}</option>`).join('');
   $('readerRun').disabled = !run;
-  $('modeFull').setAttribute('aria-pressed', String(state.storyMode === 'full'));
-  $('modeKey').setAttribute('aria-pressed', String(state.storyMode === 'key'));
+  $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
   document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-reader', state.view === 'story' && chip.dataset.focusId === run?.id));
 }
 function renderDecisionStrip(decisions) {
@@ -289,8 +288,9 @@ function setupStoryInteractions() {
     if (button) $(`story-decision-${button.dataset.jumpDecision}`)?.scrollIntoView({block: 'start', behavior: 'smooth'});
   });
   $('readerRun').addEventListener('change', event => setReaderRun(event.target.value));
-  for (const [id, mode] of [['modeFull', 'full'], ['modeKey', 'key']]) {
-    $(id).addEventListener('click', () => {state.storyMode = mode; renderStory();});
-  }
+  $('storyMode').addEventListener('click', () => {
+    state.storyMode = state.storyMode === 'key' ? 'full' : 'key';
+    renderStory();
+  });
   document.querySelectorAll('[data-view]').forEach(tab => tab.addEventListener('click', () => setView(tab.dataset.view)));
 }
