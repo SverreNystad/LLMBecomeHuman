@@ -13,12 +13,12 @@
     "max_chars": 6000,
     "memory_update_max_output_tokens": 2500
   },
-  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "graph_sha256": "4f324b833d41d2c56a4aa890bfa7695bc7a8adf27d932132e5a742cd74fc5a06",
   "fidelity": "unverified_transcript_approximation",
   "allow_unverified": true,
   "initial_flags": {},
   "story_title": "Detroit: Become Human transcript-derived benchmark",
   "synthetic": true,
-  "started_at": "2026-11-11T13:56:40.351466+00:00",
+  "started_at": "2026-11-11T14:34:08.832851+00:00",
   "display_provider": "openai"
 }

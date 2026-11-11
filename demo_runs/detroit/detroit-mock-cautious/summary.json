@@ -3,7 +3,7 @@
   "provider": "mock",
   "model": "Cautious mock [synthetic]",
   "goal": "SYNTHETIC MOCK: preview the dashboard",
-  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "graph_sha256": "4f324b833d41d2c56a4aa890bfa7695bc7a8adf27d932132e5a742cd74fc5a06",
   "fidelity": "unverified_transcript_approximation",
   "unverified": true,
   "chapters_visited": [
@@ -45,8 +45,8 @@
     "32.4",
     "32.5"
   ],
-  "number_of_choices": 301,
-  "events_recorded": 3688,
+  "number_of_choices": 289,
+  "events_recorded": 3565,
   "final_flags": {
     "connor_ch1_exploration": "thorough",
     "connor_took_cop_gun": true,
@@ -58,7 +58,8 @@
     "connor_hank_bar_choice": "spill",
     "connor_firm_with_hank": false,
     "connor_ch6_exploration": "thorough",
-    "kara_reasoned_with_todd": true,
+    "kara_reasoned_with_todd": false,
+    "kara_story_ended": false,
     "markus_pushed_leo": true,
     "connor_ch9_exploration": "thorough",
     "connor_pressured_deviant": true,
@@ -68,10 +69,10 @@
     "kara_has_money": true,
     "kara_ch10_exploration": "thorough",
     "kara_convinced_clerk": false,
+    "kara_ch10_shelter": "motel",
     "markus_ch11_exploration": "thorough",
     "connor_ch12_exploration": "thorough",
     "connor_knows_sumo_name": true,
-    "kara_threatened_ralph": false,
     "connor_highway_pursuit": true,
     "markus_ch14_exploration": "thorough",
     "markus_ch14_trail_exploration": "thorough",
@@ -162,16 +163,6 @@
       "picked": 0
     },
     {
-      "node": "ch7_00092",
-      "problem": "Unverified condition; picked default alternative",
-      "picked": 0
-    },
-    {
-      "node": "ch7_00076",
-      "problem": "Unverified condition; picked default alternative",
-      "picked": 0
-    },
-    {
       "node": "ch8_00064",
       "problem": "Unverified condition; picked default alternative",
       "picked": 0
@@ -218,11 +209,6 @@
     },
     {
       "node": "ch12_00005",
-      "problem": "Unverified condition; picked default alternative",
-      "picked": 0
-    },
-    {
-      "node": "ch13_00172",
       "problem": "Unverified condition; picked default alternative",
       "picked": 0
     },
@@ -692,6 +678,6 @@
     }
   ],
   "end_description": "End of transcript-derived playthrough. Ending fidelity unverified.",
-  "started_at": "2026-11-11T13:56:34.924048+00:00",
-  "completed_at": "2026-11-11T13:56:40.190484+00:00"
+  "started_at": "2026-11-11T14:34:07.642341+00:00",
+  "completed_at": "2026-11-11T14:34:08.673322+00:00"
 }

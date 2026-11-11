@@ -7,6 +7,7 @@ import re
 import pytest
 
 from detroit_benchmark.engine import (
+    ModelDecision,
     Runner,
     _reachable,
     evaluate_condition,
@@ -362,3 +363,103 @@ def test_dataset_metadata_counts_unverified_conditions():
         for n in graph["nodes"].values()
     )
     assert graph["metadata"]["condition_nodes_unverified"] == unknown
+
+
+class _ScriptedRunner(Runner):
+    """Mock player that picks a named option at given choice nodes, else the first."""
+
+    def __init__(self, *args, picks: dict, **kwargs):
+        self.picks = picks
+        super().__init__(*args, **kwargs)
+
+    def _model_response(self, payload, options):
+        wanted = self.picks.get(self.state["node"])
+        pick = next((o for o in options if o["label"] == wanted), options[0])
+        return ModelDecision(choice_id=pick["id"], rationale="Scripted."), {}
+
+
+def _play_story(tmp_path, picks):
+    """Play the whole real story; return the headings seen per chapter."""
+    run = _ScriptedRunner(
+        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+    )
+    run.run()
+    seen = {}
+    for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines():
+        event = json.loads(line)
+        if event["type"] == "scene":
+            heading = event["visible_to_agent"]["heading"]
+            seen.setdefault(str(event.get("chapter")), set()).add(heading)
+    assert run.state["status"] == "complete"
+    return seen
+
+
+MOTEL, SQUAT, CAR = "In the room", "Talk to Ralph", "Looking at the car"
+MORNING = {
+    "motel": "Kara stayed at the Motel",
+    "squat": "Kara stayed at the Squat",
+    "car": "Kara stayed at the Parking lot",
+}
+SHELTERS = {
+    # The first options steal clothes and money, so the motel gives them a room.
+    "motel": ({}, MOTEL),
+    "squat": ({"ch10_00109": "DON'T STEAL", "ch10_00039": "STAY"}, SQUAT),
+    "car": (
+        {
+            "ch10_00109": "DON'T STEAL",
+            "ch10_00039": "LEAVE",
+            "ch10_00013": "STAY HERE",
+        },
+        CAR,
+    ),
+}
+
+
+@pytest.mark.parametrize("shelter", sorted(SHELTERS))
+def test_kara_spends_one_night_in_one_shelter_and_wakes_up_there(tmp_path, shelter):
+    picks, night = SHELTERS[shelter]
+    seen = _play_story(tmp_path, picks)
+    nights = {MOTEL, SQUAT, CAR} & seen["10"]
+    assert nights == {night}
+    mornings = set(MORNING.values()) & seen["13"]
+    assert mornings == {MORNING[shelter]}
+
+
+def test_shelter_choices_record_where_kara_slept():
+    nodes = _dataset()["nodes"]
+    recorded = {
+        (nid, o["label"]): o["effects"]["flags"].get("kara_ch10_shelter")
+        for nid in ("ch10_00039", "ch10_00013")
+        for o in nodes[nid]["options"]
+    }
+    assert recorded[("ch10_00039", "STAY")] == "squat"
+    assert recorded[("ch10_00013", "STAY HERE")] == "car"
+    gate = nodes[_dataset()["chapter_entries"]["13"]]
+    assert gate["resolution"] == "rule"
+    assert gate["source"].startswith(WIKI)
+
+
+KARA_LATER = {"10", "13", "17", "21", "25", "30.1", "32.1", "32.2"}
+
+
+def test_kara_standing_still_lets_todd_kill_alice_and_ends_her_story(tmp_path):
+    seen = _play_story(tmp_path, {"ch7_00092": "STAND STILL"})
+    assert not KARA_LATER & set(seen)
+    assert "Talking with Kara" not in seen["31.1"] | seen.get("31.2", set())
+    # Connor's and Markus's stories go on without her.
+    assert {"11", "12", "14", "32.3", "32.4"} & set(seen)
+
+
+def test_kara_acting_after_breaking_her_programming_keeps_her_story(tmp_path):
+    seen = _play_story(tmp_path, {"ch7_00092": "GO UPSTAIRS"})
+    assert {"10", "13", "17"} <= set(seen)
+
+
+def test_breaking_programming_is_not_a_choice_but_standing_still_is():
+    nodes = _dataset()["nodes"]
+    assert nodes["ch7_00097"]["resolution"] == "qte"
+    after = nodes["ch7_00092"]
+    assert after["type"] == "choice"
+    labels = {o["label"]: o for o in after["options"]}
+    assert set(labels) == {"STAND STILL", "TALK TO TODD", "GO UPSTAIRS"}
+    assert labels["STAND STILL"]["effects"]["flags"]["kara_story_ended"] is True

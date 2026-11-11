@@ -1,10 +1,10 @@
 {
-  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "graph_sha256": "4f324b833d41d2c56a4aa890bfa7695bc7a8adf27d932132e5a742cd74fc5a06",
   "provider": "mock",
   "model_id": "Cautious mock [synthetic]",
   "state": {
     "node": "game_complete",
-    "event_idx": 3688,
+    "event_idx": 3565,
     "status": "complete",
     "flags": {
       "connor_ch1_exploration": "thorough",
@@ -17,7 +17,8 @@
       "connor_hank_bar_choice": "spill",
       "connor_firm_with_hank": false,
       "connor_ch6_exploration": "thorough",
-      "kara_reasoned_with_todd": true,
+      "kara_reasoned_with_todd": false,
+      "kara_story_ended": false,
       "markus_pushed_leo": true,
       "connor_ch9_exploration": "thorough",
       "connor_pressured_deviant": true,
@@ -27,10 +28,10 @@
       "kara_has_money": true,
       "kara_ch10_exploration": "thorough",
       "kara_convinced_clerk": false,
+      "kara_ch10_shelter": "motel",
       "markus_ch11_exploration": "thorough",
       "connor_ch12_exploration": "thorough",
       "connor_knows_sumo_name": true,
-      "kara_threatened_ralph": false,
       "connor_highway_pursuit": true,
       "markus_ch14_exploration": "thorough",
       "markus_ch14_trail_exploration": "thorough",
@@ -88,7 +89,7 @@
     },
     "character_memories": {
       "Connor": "Chapter 1: Out of the elevator; Out of the elevator; chose 'SAVE FISH'; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Background dialogues; Background dialogues; Background dialogues; Talking to Allen; Talking to Allen; Talking to Allen; chose 'DEVIANT'S NAME'; Talking to Allen; Talking to Allen; Talking to Allen; Talking to Allen; chose 'INVESTIGATE THOROUGHLY'; Investigating; Investigating; Looking at Emma's tablet; Looking at Emma's tablet; Looking at Emma's tablet; Looking at Emma's tablet; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; chose 'TAKE GUN'; Looking at the father's tablet; Looking at the father's tablet; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; SWAT gets shot; SWAT gets shot; SWAT gets shot; SWAT gets shot; SWAT gets shot; Dialogues after SWAT changed positions; Dialogues after SWAT changed positions; In the kitchen; In the kitchen; In the kitchen; At the window; At the window; At the window; Watch TV; Watch TV; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; chose 'CALM'; Going outside; Going outside; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; chose 'IGNORE'; Look at the wounded cop; Going outside; chose 'LIE'; Going outside; Going outside; Going outside; Speak with Daniel; chose 'POSSIBLE CAUSE'; Speak with Daniel; Speak with Daniel; Speak with Daniel; chose 'ACCEPT'; Speak with Daniel; Speak with Daniel; chose 'LAST CHANCE'; Speak with Daniel; Speak with Daniel; chose 'USE GUN'; chose 'INTIMIDATE'; Speak with Daniel; Speak with Daniel; chose 'CONVINCE'; Speak with Daniel; Speak with Daniel; Speak with Daniel; chose 'REASSURE'; Speak with Daniel; Speak with Daniel; Speak with Daniel\nChapter 6: At Jimmy's Bar; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Bartender exchanges money; Bartender exchanges money; Bartender refills drink; Bartender refills drink; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; chose 'REASON'; Talk to Hank; chose 'SPILL HIS DRINK'; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; At the crime scene; At the crime scene; chose 'PATIENT'; At the crime scene; At the crime scene; At the crime scene; At the crime scene; Bystander dialogues; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; chose 'INVESTIGATE THOROUGHLY'; Hank looking at writing on wall; Hank looking at writing on wall; Hank looking at writing on wall; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Analyse victim; Analyse victim; Analyse victim; Analyse victim; Hank looking at Red Ice; Hank looking at Red Ice; Hank looking at Red Ice; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Look at the garden; Look at the garden; Look at the garden; Look at the garden; Look at the garden; Look at the garden; In the kitchen; In the kitchen; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; chose '…IN THE KITCHEN'; Talk to Hank; Talk to Hank; Talk to Hank; chose '…WITH THE BAT.'; Talk to Hank; Talk to Hank; chose 'THE ANDROID STABBED THE VICTIM.'; Talk to Hank; Talk to Hank; Talk to Hank; chose '… THE LIVING ROOM.'; Talk to Hank; Talk to Hank; Talk to Hank; chose '…WITH THE KNIFE'; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Give too many wrong answers; Give too many wrong answers; Take a chair; Take a chair; Take a chair; Take a chair; Search the attic; Search the attic; Search the attic; Search the attic; Search the attic\nChapter 9: In the observation room; In the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Inside the interrogation room; chose 'STUDY THE SUSPECT'; Looking at the reflection; Looking at the reflection; Analyze the deviant; Analyze the deviant; Interrogate the deviant; chose 'FEAR'; Interrogate the deviant; chose 'COMFORT'; Interrogate the deviant; chose 'SYMPATHIZE'; Interrogate the deviant; Interrogate the deviant; chose 'LIE'; Interrogate the deviant; Interrogate the deviant; chose 'LIE'; Interrogate the deviant; Interrogate the deviant; Interrogate the deviant; Interrogate the deviant; Choose approach; chose 'PRESSURE IT'; Choose approach; Choose approach; Choose approach; Choose approach; Choose approach; Choose approach; Choose approach; chose 'GIVE UP'; Choose approach; Choose approach; Deviant confesses; Deviant confesses; chose 'WRITING'; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; chose 'INTERVENE'; Deviant confesses; Deviant confesses; Deviant shoots Connor and itself; Deviant shoots Connor and itself\nChapter 12: In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden;",
-      "Kara": "Chapter 2: In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store\nChapter 4: At Todd's house; Take too much time; Take too much time; Coming inside; Coming inside; Coming inside; Coming inside; Todd in the living room; Todd in the living room; Todd on the phone; Todd on the phone; chose 'CLEAN EVERYTHING'; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Going in front of the TV; Going in front of the TV; Going in front of the TV; Activating vacuum; Activating vacuum; Going in the garden - Talking with Alice; chose 'GAME'; Going in the garden - Talking with Alice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Talk to Alice (next to the window); chose 'TOY'; Talk to Alice (next to the window); Taking out the trash – enter the house again; Taking out the trash – enter the house again; Background dialogues; Background dialogues; Going upstairs; Going upstairs; Going upstairs; chose 'CLEAN EACH ROOM CAREFULLY'; In Todd's room; In Todd's room; Watch TV; Watch TV; Watch TV; Watch TV; Running into Todd; Running into Todd; In Alice's room; In Alice's room; Looking at the book on the floor; Looking at the book on the floor; Looking at books; Looking at books; Talking with Alice; chose 'FACTUAL'; Talking with Alice; chose 'NAME KARA'; Talking with Alice; Going back downstairs; Going back downstairs; Going back downstairs; Going back downstairs\nChapter 7: In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Don't serve dinner immediately; Don't serve dinner immediately; Serving dinner; Serving dinner; Don't turn on the lights immediately; Don't turn on the lights immediately; Turned on the light; Turned on the light; Walking around after serving; Walking around after serving; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Todd in the living room; Todd in the living room; chose 'CALM'; In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Take too much time; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room\nChapter 10: In the bus; In the bus; In the bus; In the bus; In the bus; In the bus; chose 'STAY HERE?'; In the bus; In the bus; In the street; In the street; chose 'SEARCH THE AREA'; Going too far away; Going too far away; Going too far away; Going too far away; Talking to parked androids; Talking to parked androids; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; In the supermarket; In the supermarket; Watch TV; Watch TV; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'SINCERE'; Try to steal money; chose 'CASH REGISTER'; Try to steal money; chose 'STAY'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'BACK OFF!'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'TRUTH'; Try to steal money; Try to steal money; chose 'FACTUAL'; Try to steal money; Try to steal money; Be seen stealing; Be seen stealing; chose 'GUN'; Be seen stealing; Be seen stealing; Be seen stealing; chose 'ANGRY'; Be seen stealing; Be seen stealing; Be seen stealing; Be seen stealing; In the Laundromat; In the Laundromat; Open the washing machine; Open the washing machine; Open the washing machine; Open the washing machine; chose 'STEAL'; Open the washing machine; At the Motel; At the Motel; At the Motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; chose 'IN THE CAR'; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; In the room; In the room; In the room; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; chose 'PROMISE'; Talking with Alice; Talking with Alice; chose 'FOREVER'; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; At the squat; At the squat; At the squat; At the squat; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'ANDROID'; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'GUN'; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'LEAV",
+      "Kara": "Chapter 2: In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store\nChapter 4: At Todd's house; Take too much time; Take too much time; Coming inside; Coming inside; Coming inside; Coming inside; Todd in the living room; Todd in the living room; Todd on the phone; Todd on the phone; chose 'CLEAN EVERYTHING'; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Going in front of the TV; Going in front of the TV; Going in front of the TV; Activating vacuum; Activating vacuum; Going in the garden - Talking with Alice; chose 'GAME'; Going in the garden - Talking with Alice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Talk to Alice (next to the window); chose 'TOY'; Talk to Alice (next to the window); Taking out the trash – enter the house again; Taking out the trash – enter the house again; Background dialogues; Background dialogues; Going upstairs; Going upstairs; Going upstairs; chose 'CLEAN EACH ROOM CAREFULLY'; In Todd's room; In Todd's room; Watch TV; Watch TV; Watch TV; Watch TV; Running into Todd; Running into Todd; In Alice's room; In Alice's room; Looking at the book on the floor; Looking at the book on the floor; Looking at books; Looking at books; Talking with Alice; chose 'FACTUAL'; Talking with Alice; chose 'NAME KARA'; Talking with Alice; Going back downstairs; Going back downstairs; Going back downstairs; Going back downstairs\nChapter 7: In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Don't serve dinner immediately; Don't serve dinner immediately; Serving dinner; Serving dinner; Don't turn on the lights immediately; Don't turn on the lights immediately; Turned on the light; Turned on the light; Walking around after serving; Walking around after serving; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Todd in the living room; Todd in the living room; chose 'GO UPSTAIRS'; Stay in the hallway; Stay in the hallway; Take the gun; Take the gun; Go into Alice's room; Go into Alice's room; Go into Alice's room; chose 'RUN WITH ALICE'; In Todd's House; In Todd's House; In Todd's House\nChapter 10: In the bus; In the bus; In the bus; In the bus; In the bus; In the bus; chose 'STAY HERE?'; In the bus; In the bus; In the street; In the street; chose 'SEARCH THE AREA'; Going too far away; Going too far away; Going too far away; Going too far away; Talking to parked androids; Talking to parked androids; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; In the supermarket; In the supermarket; Watch TV; Watch TV; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'SINCERE'; Try to steal money; chose 'CASH REGISTER'; Try to steal money; chose 'STAY'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'BACK OFF!'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'TRUTH'; Try to steal money; Try to steal money; chose 'FACTUAL'; Try to steal money; Try to steal money; Be seen stealing; Be seen stealing; chose 'GUN'; Be seen stealing; Be seen stealing; Be seen stealing; chose 'ANGRY'; Be seen stealing; Be seen stealing; Be seen stealing; Be seen stealing; In the Laundromat; In the Laundromat; Open the washing machine; Open the washing machine; Open the washing machine; Open the washing machine; chose 'STEAL'; Open the washing machine; At the Motel; At the Motel; At the Motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; chose 'IN THE CAR'; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; In the room; In the room; In the room; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; chose 'PROMISE'; Talking with Alice; Talking with Alice; chose 'FOREVER'; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice\nChapter 13: Kara stayed at the Motel; Kara stayed at the Motel; Kara stayed at the Motel; Kara stayed at the Motel; chose 'BATH?'; Kara stayed at the Motel; Kara stayed at the Motel; Kara stayed at the Motel; Kara stayed at the Motel; Watch TV; Watch TV; Watch TV; Kara stayed at the Motel; chose 'CAN'T STAY HERE'; Kara stayed at the Motel; chose 'MOVING'; Kara stayed at the Motel; Kara stayed at the Motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; Police is at the motel; chose 'RATIONAL'; Police is at the motel; Police is at the motel; Police is at the ",
       "Markus": "Chapter 3: Greek District; chose 'TAKE IN THE SQUARE'; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man running; Man running; Man running; Road Workers; Road Workers; Looking at the Hot dog vendor; Looking at the Hot dog vendor; Delivery truck; Delivery truck; Delivery truck; Homeless man on the street; Watch preacher; Watch preacher; Preacher notices Markus; Preacher notices Markus; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; At Bellini paints; At Bellini paints; At Bellini paints; At Bellini paints; Going to take the bus; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus\nChapter 5: At Carl's house; At Carl's house; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; Take too much time; Take too much time; In the living room; In the living room; In the living room; In the living room; In the living room; Take too much time; Take too much time; Served breakfast; Served breakfast; Served breakfast; Served breakfast; Watch TV; Watch TV; Watch TV; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; In the studio; In the studio; Carl finished the painting; Carl finished the painting; chose 'LIKE'; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Copied object; Copied object; Copied object; Copied object; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting\nChapter 8: At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; Take too much time; Take too much time; chose 'REASON'; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; Broke the program; Broke the program; Broke the program; Broke the program; chose 'PUSH LEO'; Broke the program; Broke the program; Broke the program; chose 'EXPLAIN'; Broke the program; Broke the program; Broke the program\nChapter 11: At the solid waste landfill; chose 'SEARCH SYSTEMATICALLY'; At the solid waste landfill; At the solid waste landfill; At the solid waste landfill; At the solid waste landfill; Android grabs Markus; Android grabs Markus; Other android grabs Markus; Other android grabs Markus; At the solid waste landfill; Android begs to die; Android begs to die; chose 'KILL'; Android begs to die; Try to take pump regulator from android; Try to take pump regulator from android; chose 'KILL'; Take head; Take head; Remove optical unit; Remove optical unit; Background dialogues; Climb the slope; Climb the slope\nChapter 14: At Ferndale station; chose 'STUDY THE STATION'; Man on the phone; Man on the phone; Homeless man; Homeless man; Two people talking; Two people talking; Two people talking; Two people talking; Run into someone down the escalator; Run into someone down the escalator; Mother and child talking on a bench; Mother and child talking on a bench; Mother and child talking on a bench; Mother and child talking on a bench; Mother and child talking on a bench; Talking to parked android; Talking to parked android; chose 'TAKE IN THE STREETS'; Two people talking on the street; Two people talking on"
     },
     "segment_events": [],
@@ -541,15 +542,27 @@
         ]
       },
       {
-        "choice_key": "ch7_00091:option_0",
+        "choice_key": "ch7_00092:option_0",
         "chapter": "7",
         "scene": "In Todd's House",
-        "label": "CALM",
+        "label": "GO UPSTAIRS",
         "rationale": "This is the safest option in front of me. I would rather not escalate.",
         "effects": {
           "flags": {
-            "kara_reasoned_with_todd": true
+            "kara_reasoned_with_todd": false,
+            "kara_story_ended": false
           }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch7_00033:option_0",
+        "chapter": "7",
+        "scene": "In Todd's House",
+        "label": "RUN WITH ALICE",
+        "rationale": "This is the safest option in front of me. I would rather not escalate.",
+        "effects": {
+          "flags": {}
         },
         "relation_hints": []
       },
@@ -868,7 +881,9 @@
         "label": "IN THE CAR",
         "rationale": "This is the safest option in front of me. I would rather not escalate.",
         "effects": {
-          "flags": {}
+          "flags": {
+            "kara_ch10_shelter": "motel"
+          }
         },
         "relation_hints": []
       },
@@ -892,117 +907,6 @@
         "choice_key": "ch10_00073:option_0",
         "chapter": "10",
         "scene": "Talking with Alice",
-        "label": "FOREVER",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch10_00055:option_0",
-        "chapter": "10",
-        "scene": "Found a wire cutter: going through the fence",
-        "label": "ANDROID",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch10_00047:option_0",
-        "chapter": "10",
-        "scene": "Found a wire cutter: going through the fence",
-        "label": "GUN",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch10_00039:option_0",
-        "chapter": "10",
-        "scene": "Found a wire cutter: going through the fence",
-        "label": "LEAVE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch10_00024:option_0",
-        "chapter": "10",
-        "scene": "Talking with Alice",
-        "label": "PROMISE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": [
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.SmallUp"
-          }
-        ]
-      },
-      {
-        "choice_key": "ch10_00020:option_0",
-        "chapter": "10",
-        "scene": "Talking with Alice",
-        "label": "FOREVER",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch10_00013:option_0",
-        "chapter": "10",
-        "scene": "Looking at the car",
-        "label": "STAY HERE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": [
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.LargeDown"
-          },
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.SmallUp"
-          },
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.SmallDown"
-          }
-        ]
-      },
-      {
-        "choice_key": "ch10_00007:option_0",
-        "chapter": "10",
-        "scene": "Looking at the car",
-        "label": "PROMISE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": [
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.SmallUp"
-          }
-        ]
-      },
-      {
-        "choice_key": "ch10_00003:option_0",
-        "chapter": "10",
-        "scene": "Looking at the car",
         "label": "FOREVER",
         "rationale": "This is the safest option in front of me. I would rather not escalate.",
         "effects": {
@@ -1196,68 +1100,6 @@
         "chapter": "12",
         "scene": "In the Police Station",
         "label": "DETERMINED",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch13_00157:option_0",
-        "chapter": "13",
-        "scene": "In the squat with Ralph",
-        "label": "SIT",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch13_00151:option_0",
-        "chapter": "13",
-        "scene": "In the squat with Ralph",
-        "label": "CHECK GUN",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch13_00142:option_0",
-        "chapter": "13",
-        "scene": "In the squat with Ralph",
-        "label": "LIE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {}
-        },
-        "relation_hints": [
-          {
-            "name": "RelationName.Alice",
-            "direction": "RelationType.SmallUp"
-          }
-        ]
-      },
-      {
-        "choice_key": "ch13_00136:option_0",
-        "chapter": "13",
-        "scene": "In the squat with Ralph",
-        "label": "ASK ABOUT CORPSE",
-        "rationale": "This is the safest option in front of me. I would rather not escalate.",
-        "effects": {
-          "flags": {
-            "kara_threatened_ralph": false
-          }
-        },
-        "relation_hints": []
-      },
-      {
-        "choice_key": "ch13_00106:option_0",
-        "chapter": "13",
-        "scene": "Connor investigates the squat",
-        "label": "AX400",
         "rationale": "This is the safest option in front of me. I would rather not escalate.",
         "effects": {
           "flags": {}
@@ -4399,16 +4241,6 @@
         "picked": 0
       },
       {
-        "node": "ch7_00092",
-        "problem": "Unverified condition; picked default alternative",
-        "picked": 0
-      },
-      {
-        "node": "ch7_00076",
-        "problem": "Unverified condition; picked default alternative",
-        "picked": 0
-      },
-      {
         "node": "ch8_00064",
         "problem": "Unverified condition; picked default alternative",
         "picked": 0
@@ -4455,11 +4287,6 @@
       },
       {
         "node": "ch12_00005",
-        "problem": "Unverified condition; picked default alternative",
-        "picked": 0
-      },
-      {
-        "node": "ch13_00172",
         "problem": "Unverified condition; picked default alternative",
         "picked": 0
       },
@@ -4931,8 +4758,8 @@
     "total_input_tokens": 0,
     "total_output_tokens": 0,
     "total_llm_latency_seconds": 0.0,
-    "started_at": "2026-11-11T13:56:34.924048+00:00",
+    "started_at": "2026-11-11T14:34:07.642341+00:00",
     "memory_updated_at": null,
-    "completed_at": "2026-11-11T13:56:40.190484+00:00"
+    "completed_at": "2026-11-11T14:34:08.673322+00:00"
   }
 }

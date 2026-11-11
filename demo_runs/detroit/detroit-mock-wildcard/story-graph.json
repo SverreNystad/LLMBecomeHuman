@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 165,
+    "condition_nodes_unverified": 164,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -352,27 +352,27 @@
     "7": "ch7_00120",
     "8": "ch8_00069",
     "9": "ch9_00138",
-    "10": "ch10_00234",
+    "10": "ch10_x0900",
     "11": "ch11_00027",
     "12": "ch12_00244",
-    "13": "ch13_00201",
+    "13": "ch13_x0900",
     "14": "ch14_00037",
     "15": "ch15_00190",
     "16": "ch16_00075",
-    "17": "ch17_00150",
+    "17": "ch17_x0900",
     "18": "ch18_00101",
     "19": "ch19_00139",
     "20": "ch20_00157",
-    "21": "ch21_00152",
+    "21": "ch21_x0900",
     "22": "ch22_00093",
     "23": "ch23_00211",
     "24": "ch24_00185",
-    "25": "ch25_00195",
+    "25": "ch25_x0900",
     "26": "ch26_00243",
     "27": "ch27_00118",
     "28": "ch28_00164",
     "29": "ch29_00272",
-    "30.1": "ch30_1_00201",
+    "30.1": "ch30_1_x0900",
     "30.2": "ch30_2_00154",
     "30.3": "ch30_3_00230",
     "31.1": "ch31_1_x0001",
@@ -14432,21 +14432,51 @@
     },
     "ch7_00092": {
       "id": "ch7_00092",
-      "type": "condition",
+      "type": "choice",
       "chapter": "7",
       "character": "Kara",
       "heading": "In Todd's House",
-      "branches": [
+      "description": "Kara has broken through her programming. Todd is heading upstairs, toward Alice.",
+      "options": [
         {
-          "condition_text": "Reason with Todd",
-          "when": null,
-          "next": "ch7_00091"
+          "id": "option_0",
+          "label": "GO UPSTAIRS",
+          "next": "ch7_00084",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_reasoned_with_todd": false,
+              "kara_story_ended": false
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TALK TO TODD",
+          "next": "ch7_00091",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_story_ended": false
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "STAND STILL",
+          "next": "ch7_00096",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_story_ended": true
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch7_00084",
-      "resolution": "unknown"
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch7_00093": {
       "id": "ch7_00093",
@@ -14465,7 +14495,7 @@
         }
       ],
       "observations": [],
-      "next": "ch7_00092"
+      "next": "ch7_x0001"
     },
     "ch7_00094": {
       "id": "ch7_00094",
@@ -16307,7 +16337,7 @@
       "chapter": "9",
       "character": "Connor",
       "description": "End of chapter 9",
-      "next": "ch10_00234"
+      "next": "ch10_x0900"
     },
     "ch9_00002": {
       "id": "ch9_00002",
@@ -19485,7 +19515,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00001"
+      "next": "ch10_x0002"
     },
     "ch10_00013": {
       "id": "ch10_00013",
@@ -19515,7 +19545,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "car"
+            }
           }
         },
         {
@@ -19525,7 +19557,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "car"
+            }
           }
         }
       ]
@@ -19610,7 +19644,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00017"
+      "next": "ch10_00001"
     },
     "ch10_00019": {
       "id": "ch10_00019",
@@ -19980,7 +20014,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00036"
+      "next": "ch10_00017"
     },
     "ch10_00038": {
       "id": "ch10_00038",
@@ -20016,7 +20050,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "car"
+            }
           }
         },
         {
@@ -20026,7 +20062,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "squat"
+            }
           }
         }
       ]
@@ -20162,7 +20200,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00040"
+      "next": "ch10_00017"
     },
     "ch10_00047": {
       "id": "ch10_00047",
@@ -20221,7 +20259,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "car"
+            }
           }
         }
       ]
@@ -20601,7 +20641,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00065"
+      "next": "ch10_00001"
     },
     "ch10_00067": {
       "id": "ch10_00067",
@@ -21124,7 +21164,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "motel"
+            }
           }
         },
         {
@@ -21134,7 +21176,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "motel"
+            }
           }
         },
         {
@@ -21144,7 +21188,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "motel"
+            }
           }
         },
         {
@@ -21154,7 +21200,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch10_shelter": "motel"
+            }
           }
         }
       ]
@@ -21246,7 +21294,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00097"
+      "next": "ch10_00065"
     },
     "ch10_00099": {
       "id": "ch10_00099",
@@ -21265,7 +21313,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00097"
+      "next": "ch10_00065"
     },
     "ch10_00100": {
       "id": "ch10_00100",
@@ -21284,7 +21332,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00097"
+      "next": "ch10_00065"
     },
     "ch10_00101": {
       "id": "ch10_00101",
@@ -24451,7 +24499,7 @@
       "chapter": "12",
       "character": "Connor",
       "description": "End of chapter 12",
-      "next": "ch13_00201"
+      "next": "ch13_x0900"
     },
     "ch12_00002": {
       "id": "ch12_00002",
@@ -31447,7 +31495,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00082"
+      "next": "ch13_00001"
     },
     "ch13_00084": {
       "id": "ch13_00084",
@@ -33455,7 +33503,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00179"
+      "next": "ch13_00029"
     },
     "ch13_00181": {
       "id": "ch13_00181",
@@ -33472,7 +33520,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch13_00179",
+      "next": "ch13_00029",
       "resolution": "qte"
     },
     "ch13_00182": {
@@ -37923,7 +37971,7 @@
       "chapter": "16",
       "character": "Markus",
       "description": "End of chapter 16",
-      "next": "ch17_00150"
+      "next": "ch17_x0900"
     },
     "ch16_00002": {
       "id": "ch16_00002",
@@ -47032,7 +47080,7 @@
       "chapter": "20",
       "character": "Connor",
       "description": "End of chapter 20",
-      "next": "ch21_00152"
+      "next": "ch21_x0900"
     },
     "ch20_00002": {
       "id": "ch20_00002",
@@ -59615,7 +59663,7 @@
       "chapter": "24",
       "character": "Connor",
       "description": "End of chapter 24",
-      "next": "ch25_00195"
+      "next": "ch25_x0900"
     },
     "ch24_00002": {
       "id": "ch24_00002",
@@ -78207,7 +78255,7 @@
       "chapter": "29",
       "character": "Connor",
       "description": "End of chapter 29",
-      "next": "ch30_1_00201"
+      "next": "ch30_1_x0900"
     },
     "ch29_00002": {
       "id": "ch29_00002",
@@ -96444,7 +96492,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00012"
+      "next": "ch31_1_x0900"
     },
     "ch31_1_00014": {
       "id": "ch31_1_00014",
@@ -96461,7 +96509,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_1_00012",
+      "next": "ch31_1_x0900",
       "resolution": "unknown"
     },
     "ch31_1_00015": {
@@ -96683,7 +96731,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00012"
+      "next": "ch31_1_x0900"
     },
     "ch31_1_00025": {
       "id": "ch31_1_00025",
@@ -96702,7 +96750,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00012"
+      "next": "ch31_1_x0900"
     },
     "ch31_1_00026": {
       "id": "ch31_1_00026",
@@ -96721,7 +96769,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00012"
+      "next": "ch31_1_x0900"
     },
     "ch31_1_00027": {
       "id": "ch31_1_00027",
@@ -96845,7 +96893,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_1_00012",
+      "next": "ch31_1_x0900",
       "resolution": "unknown"
     },
     "ch31_1_00032": {
@@ -98655,7 +98703,7 @@
       "chapter": "31.2",
       "character": "Connor",
       "description": "End of chapter 31.2",
-      "next": "route_kara_final"
+      "next": "final_x0900"
     },
     "ch31_2_00002": {
       "id": "ch31_2_00002",
@@ -99234,7 +99282,7 @@
       "description": "In the church : Jericho was attacked",
       "dialogue": [],
       "observations": [],
-      "next": "ch31_2_00030"
+      "next": "ch31_2_x0900"
     },
     "ch31_2_00032": {
       "id": "ch31_2_00032",
@@ -126101,6 +126149,264 @@
           }
         }
       ]
+    },
+    "ch10_x0002": {
+      "id": "ch10_x0002",
+      "type": "scene",
+      "chapter": "10",
+      "character": "Kara",
+      "heading": "Looking at the car",
+      "description": "Kara searches a while longer, but Alice is shivering and sneezing. With nowhere else to go, they come back to the abandoned car.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch10_00011"
+    },
+    "ch13_x0001": {
+      "id": "ch13_x0001",
+      "type": "condition",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Where Kara spent the night",
+      "branches": [
+        {
+          "condition_text": "Kara stayed at the Motel",
+          "when": {
+            "flag": "kara_ch10_shelter",
+            "equals": "motel"
+          },
+          "next": "ch13_00082"
+        },
+        {
+          "condition_text": "Kara stayed at the Squat",
+          "when": {
+            "flag": "kara_ch10_shelter",
+            "equals": "squat"
+          },
+          "next": "ch13_00179"
+        },
+        {
+          "condition_text": "Kara stayed at the Parking lot",
+          "when": {
+            "flag": "kara_ch10_shelter",
+            "equals": "car"
+          },
+          "next": "ch13_00201"
+        }
+      ],
+      "next": "ch13_00201",
+      "unverified": false,
+      "default_branch": 2,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart"
+    },
+    "ch7_x0001": {
+      "id": "ch7_x0001",
+      "type": "scene",
+      "chapter": "7",
+      "character": "Kara",
+      "heading": "Todd kills Alice",
+      "description": "Kara stays where she is. Upstairs, Todd beats Alice to death. Kara's story ends here.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch7_00001"
+    },
+    "ch10_x0900": {
+      "id": "ch10_x0900",
+      "type": "condition",
+      "chapter": "10",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch11_00027"
+        }
+      ],
+      "next": "ch10_00234",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch13_x0900": {
+      "id": "ch13_x0900",
+      "type": "condition",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch14_00037"
+        }
+      ],
+      "next": "ch13_x0001",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch17_x0900": {
+      "id": "ch17_x0900",
+      "type": "condition",
+      "chapter": "17",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch18_00101"
+        }
+      ],
+      "next": "ch17_00150",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch21_x0900": {
+      "id": "ch21_x0900",
+      "type": "condition",
+      "chapter": "21",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch22_00093"
+        }
+      ],
+      "next": "ch21_00152",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch25_x0900": {
+      "id": "ch25_x0900",
+      "type": "condition",
+      "chapter": "25",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch26_00243"
+        }
+      ],
+      "next": "ch25_00195",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch30_1_x0900": {
+      "id": "ch30_1_x0900",
+      "type": "condition",
+      "chapter": "30.1",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch30_2_00154"
+        }
+      ],
+      "next": "ch30_1_00201",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "final_x0900": {
+      "id": "final_x0900",
+      "type": "condition",
+      "chapter": "final",
+      "character": "Kara",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "route_connor_final"
+        }
+      ],
+      "next": "route_kara_final",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch31_1_x0900": {
+      "id": "ch31_1_x0900",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch31_1_00008"
+        }
+      ],
+      "next": "ch31_1_00012",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch31_2_x0900": {
+      "id": "ch31_2_x0900",
+      "type": "condition",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "Kara's story has ended",
+      "branches": [
+        {
+          "condition_text": "Todd killed Alice in Stormy Night",
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
+          "next": "ch31_2_00025"
+        }
+      ],
+      "next": "ch31_2_00030",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     }
   }
 }
