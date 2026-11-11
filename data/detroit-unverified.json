@@ -935,6 +935,14 @@
           },
           "requires": [
             {
+              "flag": "connor_ch1_exploration",
+              "equals": "thorough"
+            },
+            {
+              "flag": "connor_took_cop_gun",
+              "equals": true
+            },
+            {
               "flag": "connor_lied_about_gun",
               "equals": true
             }
@@ -1617,25 +1625,39 @@
           "id": "option_0",
           "label": "POSSIBLE CAUSE",
           "next": "ch1_00035",
-          "requirements_unverified": [
-            "Looked at the father's tablet"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch1_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
         },
         {
           "id": "option_1",
           "label": "EMMA AND YOU",
           "next": "ch1_00038",
-          "requirements_unverified": [
-            "Looked at Emma's tablet"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch1_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
         },
         {
           "id": "option_2",
@@ -1878,14 +1900,44 @@
       "branches": [
         {
           "condition_text": "Took the gun",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_ch1_exploration",
+                "equals": "thorough"
+              },
+              {
+                "flag": "connor_took_cop_gun",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch1_00059"
+        },
+        {
+          "condition_text": "Did not take the gun",
+          "when": {
+            "any": [
+              {
+                "not": {
+                  "flag": "connor_ch1_exploration",
+                  "equals": "thorough"
+                }
+              },
+              {
+                "flag": "connor_took_cop_gun",
+                "equals": false
+              }
+            ]
+          },
+          "next": "ch1_00051"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch1_00051",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
     },
     "ch1_00061": {
       "id": "ch1_00061",
@@ -2410,19 +2462,28 @@
       "branches": [
         {
           "condition_text": "Knowing the deviant's name",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "connor_ch1_exploration",
+              "equals": "rush"
+            }
+          },
           "next": "ch1_00083"
         },
         {
           "condition_text": "Not knowing the name",
-          "when": null,
+          "when": {
+            "flag": "connor_ch1_exploration",
+            "equals": "rush"
+          },
           "next": "ch1_00085"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch1_00078",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Notes"
     },
     "ch1_00087": {
       "id": "ch1_00087",
@@ -3094,7 +3155,37 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00125"
+      "next": "ch1_x0004",
+      "key": true
+    },
+    "ch1_x0004": {
+      "id": "ch1_x0004",
+      "type": "condition",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Looking at the father's tablet",
+      "branches": [
+        {
+          "condition_text": "Investigating thoroughly",
+          "when": {
+            "flag": "connor_ch1_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch1_00125"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch1_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch1_00090"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
     },
     "ch1_00127": {
       "id": "ch1_00127",
@@ -3105,7 +3196,8 @@
       "description": "Looking at the father's tablet",
       "dialogue": [],
       "observations": [],
-      "next": "ch1_00126"
+      "next": "ch1_00126",
+      "key": true
     },
     "ch1_00128": {
       "id": "ch1_00128",
@@ -3118,7 +3210,42 @@
         "P.L. 544-7 AMERICAN ANDROIDS ACT – 2029 | Androids are strictly forbidden to carry | or use any type of weapon"
       ],
       "dialogue": [],
-      "next": "ch1_00127"
+      "next": "ch1_x0003"
+    },
+    "ch1_x0003": {
+      "id": "ch1_x0003",
+      "type": "choice",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Coming into the living room",
+      "description": "Inspect: Cop's gun",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE GUN",
+          "next": "ch1_00127",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_took_cop_gun": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LEAVE GUN",
+          "next": "ch1_00127",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_took_cop_gun": false
+            }
+          }
+        }
+      ]
     },
     "ch1_00129": {
       "id": "ch1_00129",
@@ -3175,7 +3302,37 @@
         ".355 BULLET WOUND | Lower lung hemorrhage | Internal bleeding"
       ],
       "dialogue": [],
-      "next": "ch1_00131"
+      "next": "ch1_x0002",
+      "key": true
+    },
+    "ch1_x0002": {
+      "id": "ch1_x0002",
+      "type": "condition",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Coming into the living room",
+      "branches": [
+        {
+          "condition_text": "Investigating thoroughly",
+          "when": {
+            "flag": "connor_ch1_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch1_00131"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch1_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch1_00127"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
     },
     "ch1_00133": {
       "id": "ch1_00133",
@@ -3194,7 +3351,8 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00132"
+      "next": "ch1_00132",
+      "key": true
     },
     "ch1_00134": {
       "id": "ch1_00134",
@@ -3213,7 +3371,8 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00133"
+      "next": "ch1_00133",
+      "key": true
     },
     "ch1_00135": {
       "id": "ch1_00135",
@@ -3224,7 +3383,8 @@
       "description": "Coming into the living room",
       "dialogue": [],
       "observations": [],
-      "next": "ch1_00134"
+      "next": "ch1_00134",
+      "key": true
     },
     "ch1_00136": {
       "id": "ch1_00136",
@@ -3243,7 +3403,8 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00135"
+      "next": "ch1_00135",
+      "key": true
     },
     "ch1_00137": {
       "id": "ch1_00137",
@@ -3262,7 +3423,8 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00136"
+      "next": "ch1_00136",
+      "key": true
     },
     "ch1_00138": {
       "id": "ch1_00138",
@@ -3281,7 +3443,8 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00137"
+      "next": "ch1_00137",
+      "key": true
     },
     "ch1_00139": {
       "id": "ch1_00139",
@@ -3292,7 +3455,8 @@
       "description": "Looking at Emma's tablet",
       "dialogue": [],
       "observations": [],
-      "next": "ch1_00138"
+      "next": "ch1_00138",
+      "key": true
     },
     "ch1_00140": {
       "id": "ch1_00140",
@@ -3336,7 +3500,55 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00141"
+      "next": "ch1_x0001"
+    },
+    "ch1_x0001": {
+      "id": "ch1_x0001",
+      "type": "choice",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Investigating",
+      "description": "Captain Allen has given you the basics. The apartment may hold clues about the deviant and what triggered this, but Daniel is growing more agitated on the balcony and every minute counts. How do you investigate?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "INVESTIGATE THOROUGHLY",
+          "next": "ch1_00141",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch1_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK KEY AREAS",
+          "next": "ch1_00139",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch1_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "RUSH TO THE BALCONY",
+          "next": "ch1_00090",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch1_exploration": "rush"
+            }
+          }
+        }
+      ]
     },
     "ch1_00143": {
       "id": "ch1_00143",
