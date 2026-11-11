@@ -86,6 +86,11 @@ def main():
         type=Path,
         help="Optional folder containing story graph JSON files for older runs",
     )
+    dashboard.add_argument(
+        "--images-dir",
+        type=Path,
+        help="Folder with local game art (default: the repository's images/ folder)",
+    )
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8000)
     args = p.parse_args()
@@ -95,7 +100,9 @@ def main():
 
         print(f"Open http://{args.host}:{args.port} to view the benchmark dashboard")
         uvicorn.run(
-            create_app(args.runs_dir, args.graphs_dir), host=args.host, port=args.port
+            create_app(args.runs_dir, args.graphs_dir, args.images_dir),
+            host=args.host,
+            port=args.port,
         )
     elif args.command == "ingest":
         graph = compile_from_repo(args.repo)

@@ -10,7 +10,6 @@ import shutil
 import socket
 import threading
 import time
-from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import quote
 
@@ -296,71 +295,120 @@ def test_chapter_flowchart_browser_interactions():
             browser.close()
 
 
-@contextmanager
-def _served_dashboard(**app_options):
-    """The real dashboard on a free local port, for tests that need its asset routes."""
-    import uvicorn
+def test_backdrop_network_without_art(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+            page.locator(".story-decision").first.wait_for(state="attached")
+            canvas = page.locator("#backdropNetwork canvas")
+            assert canvas.count() == 1
+            # The network is drawn: some pixels are not transparent.
+            page.wait_for_function("""() => {
+              const c = document.querySelector('#backdropNetwork canvas');
+              const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+              for (let i = 3; i < data.length; i += 4) if (data[i]) return true;
+              return false;
+            }""")
+            box = canvas.bounding_box()
+            assert box["width"] == 1280 and box["height"] == 800
+            # No art installed: no scene image is shown.
+            assert page.locator(".backdrop-art-layer.is-shown").count() == 0
+            assert not page.evaluate(
+                "document.getElementById('backdrop').classList.contains('has-art')"
+            )
+            assert not errors
+        finally:
+            browser.close()
 
+
+@pytest.fixture
+def live_dashboard(tmp_path):
+    """The real dashboard on a local port, so pages have an origin (browser storage) and assets load."""
+    uvicorn = pytest.importorskip("uvicorn")
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
+    # An empty images folder: the title screen must work without any art installed.
+    app = create_app(PROJECT / "demo_runs", images_dir=tmp_path)
     server = uvicorn.Server(
-        uvicorn.Config(
-            create_app(PROJECT / "demo_runs", **app_options),
-            host="127.0.0.1",
-            port=port,
-            log_level="warning",
-        )
+        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
     )
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
-    try:
-        for _ in range(100):
-            if server.started:
-                break
-            time.sleep(0.05)
-        yield f"http://127.0.0.1:{port}"
-    finally:
-        server.should_exit = True
-        thread.join(timeout=5)
+    deadline = time.time() + 10
+    while not server.started and time.time() < deadline:
+        time.sleep(0.05)
+    yield f"http://127.0.0.1:{port}/"
+    server.should_exit = True
+    thread.join(timeout=5)
 
 
-def _chromium():
-    playwright = pytest.importorskip("playwright.sync_api")
+def _launch_chromium(p):
     binary = shutil.which("chromium") or shutil.which("chromium-browser")
     if not binary:
         pytest.skip("Chromium executable unavailable")
-    return playwright, binary
+    return p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
 
 
-def test_backdrop_network_without_art():
-    playwright, binary = _chromium()
-    with _served_dashboard() as url:
-        with playwright.sync_playwright() as p:
-            browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-            try:
-                page = browser.new_page(viewport={"width": 1280, "height": 800})
-                page.set_default_timeout(4500)
-                errors = []
-                page.on("pageerror", lambda e: errors.append(str(e)))
-                page.goto(url)
-                page.locator(".story-decision").first.wait_for()
-                canvas = page.locator("#backdropNetwork canvas")
-                assert canvas.count() == 1
-                # The network is drawn: some pixels are not transparent.
-                page.wait_for_function("""() => {
-                  const c = document.querySelector('#backdropNetwork canvas');
-                  const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-                  for (let i = 3; i < data.length; i += 4) if (data[i]) return true;
-                  return false;
-                }""")
-                box = canvas.bounding_box()
-                assert box["width"] == 1280 and box["height"] == 800
-                # No art installed: no scene image is shown.
-                assert page.locator(".backdrop-art-layer.is-shown").count() == 0
-                assert not page.evaluate(
-                    "document.getElementById('backdrop').classList.contains('has-art')"
-                )
-                assert not errors
-            finally:
-                browser.close()
+def test_title_screen_sound_and_marker_card(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+
+            # The title screen shows on load, without art, and any key dismisses it.
+            title = page.locator("#titleScreen")
+            title.wait_for()
+            assert "LLM" in title.inner_text() and "BECOME HUMAN" in title.inner_text().upper()
+            assert "PRESS ANY KEY" in title.inner_text().upper()
+            assert page.evaluate("document.getElementById('appShell').inert")
+            page.wait_for_timeout(400)
+            page.keyboard.press("Enter")
+            title.wait_for(state="detached")
+            assert not page.evaluate("document.getElementById('appShell').inert")
+            # That key press unlocked sound.
+            assert page.evaluate("uiSound.isUnlocked()")
+            assert page.evaluate("uiSound.play('click')") is True
+
+            # Mute persists across a reload.
+            toggle = page.locator(".sound-toggle")
+            assert toggle.get_attribute("aria-pressed") == "false"
+            toggle.click()
+            assert toggle.get_attribute("aria-label") == "Unmute sound"
+            page.reload()
+            page.locator("#titleScreen").wait_for()
+            assert page.locator(".sound-toggle").get_attribute("aria-pressed") == "true"
+            assert page.evaluate("uiSound.isMuted()")
+            page.wait_for_timeout(400)
+            page.mouse.click(700, 450)
+            page.locator("#titleScreen").wait_for(state="detached")
+            assert page.evaluate("uiSound.play('hover')") is False
+
+            # Focusing a decision marker unfolds its rationale; the drawer stays for click.
+            page.locator("#viewFlow").click()
+            marker = page.locator(
+                ".flow-node.kind-option.visited .node-model-button"
+            ).first
+            marker.wait_for()
+            marker.focus()
+            card = page.locator("#unfoldCard.is-open")
+            card.wait_for()
+            assert "CHOSE" in card.inner_text().upper()
+            assert page.locator(".unfold-card-why").inner_text().strip()
+            assert marker.get_attribute("aria-describedby") == "unfoldCard"
+            page.keyboard.press("Escape")
+            page.wait_for_function("!document.querySelector('#unfoldCard.is-open')")
+            assert not errors
+        finally:
+            browser.close()

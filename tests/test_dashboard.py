@@ -453,3 +453,18 @@ def test_dashboard_mounts_are_not_nested_inside_a_read_only_mount():
                 other != target and other.startswith(target + "/")
                 for other, _ in mounts
             ), target
+
+
+def test_title_art_served_when_installed(tmp_path):
+    (tmp_path / "ui").mkdir()
+    (tmp_path / "ui" / "title.webp").write_bytes(b"RIFF\x00\x00\x00\x00WEBPVP8 ")
+    c = TestClient(create_app(PROJECT / "demo_runs", images_dir=tmp_path))
+    response = c.get("/api/art/title")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/webp"
+    assert response.content.startswith(b"RIFF")
+
+
+def test_title_art_missing_is_404(tmp_path):
+    c = TestClient(create_app(PROJECT / "demo_runs", images_dir=tmp_path))
+    assert c.get("/api/art/title").status_code == 404

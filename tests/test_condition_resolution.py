@@ -1,9 +1,12 @@
 """Condition resolution: Quick-Time Events, rules over earlier choices, unknowns."""
 
+import itertools
 import json
 from pathlib import Path
 
-from detroit_benchmark.engine import Runner, validate_graph
+import pytest
+
+from detroit_benchmark.engine import Runner, evaluate_condition, validate_graph
 
 
 def _scene(nid, nxt):
@@ -146,17 +149,29 @@ def test_rule_with_flag_missing_falls_back_to_default_with_warning(tmp_path):
 
 
 DATASET = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
-SORTED_CHAPTERS = {str(i) for i in range(1, 12)}
+SORTED_CHAPTERS = [str(i) for i in range(1, 30)] + [
+    "30.1",
+    "30.2",
+    "30.3",
+    "31.1",
+    "31.2",
+    "32.1",
+    "32.2",
+    "32.3",
+    "32.4",
+    "32.5",
+    "32.6",
+]
 
 
-def test_dataset_conditions_in_chapters_1_to_11_are_sorted():
+@pytest.mark.parametrize("chapter", SORTED_CHAPTERS)
+def test_dataset_conditions_are_sorted(chapter):
     nodes = json.loads(DATASET.read_text(encoding="utf-8"))["nodes"]
     sorted_nodes = [
         n
         for n in nodes.values()
-        if n["type"] == "condition" and n.get("chapter") in SORTED_CHAPTERS
+        if n["type"] == "condition" and n.get("chapter") == chapter
     ]
-    assert sorted_nodes
     for n in sorted_nodes:
         assert n.get("resolution") in ("qte", "rule", "unknown"), n["id"]
         if n["resolution"] == "rule":
@@ -186,6 +201,31 @@ def test_dataset_rule_flags_are_set_by_some_choice():
         if n.get("resolution") == "rule":
             for b in n["branches"]:
                 assert flags_in(b["when"]) <= set_by_choices, n["id"]
+
+
+def test_dataset_rule_branches_never_overlap():
+    # The engine refuses a condition where two branches match at once.
+    nodes = json.loads(DATASET.read_text(encoding="utf-8"))["nodes"]
+    values = {}
+    for n in nodes.values():
+        for o in n.get("options", []):
+            for name, value in (o.get("effects") or {}).get("flags", {}).items():
+                values.setdefault(name, []).append(value)
+
+    def flags_in(expr):
+        if "flag" in expr:
+            return {expr["flag"]}
+        inner = expr.get("all") or expr.get("any") or [expr["not"]]
+        return set().union(*(flags_in(x) for x in inner))
+
+    for n in nodes.values():
+        if n.get("resolution") != "rule":
+            continue
+        names = sorted(set().union(*(flags_in(b["when"]) for b in n["branches"])))
+        for combo in itertools.product(*(set(values[f]) for f in names)):
+            flags = dict(zip(names, combo))
+            hits = [evaluate_condition(b["when"], flags) for b in n["branches"]]
+            assert hits.count(True) <= 1, (n["id"], flags)
 
 
 def test_unknown_condition_keeps_default_and_warns(tmp_path):
