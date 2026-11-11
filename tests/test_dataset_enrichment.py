@@ -9,14 +9,13 @@ import pytest
 from detroit_benchmark.engine import validate_graph
 
 ROOT = Path(__file__).resolve().parents[1]
-DATASET = ROOT / "data" / "detroit-unverified.json"
 WIKI = "https://detroit-become-human.fandom.com"
 SNAKE_CASE = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*")
 
 
-@pytest.fixture(scope="module")
-def graph():
-    return json.loads(DATASET.read_text(encoding="utf-8"))
+@pytest.fixture
+def graph(dataset):
+    return dataset
 
 
 def choice_effects(graph):

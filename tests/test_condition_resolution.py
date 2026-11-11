@@ -3,7 +3,6 @@
 import itertools
 import json
 import re
-from pathlib import Path
 
 import pytest
 
@@ -13,6 +12,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
+from tests.dataset import load_dataset
 
 
 def _scene(nid, nxt):
@@ -178,7 +178,6 @@ def test_rule_with_flag_missing_falls_back_to_default_with_warning(tmp_path):
     assert result["warnings"][0]["node"] == "gate"
 
 
-DATASET = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
 WIKI = "https://detroit-become-human.fandom.com/wiki/"
 SORTED_CHAPTERS = [str(i) for i in range(1, 30)] + [
     "30.1",
@@ -197,7 +196,7 @@ SORTED_CHAPTERS = [str(i) for i in range(1, 30)] + [
 
 @pytest.mark.parametrize("chapter", SORTED_CHAPTERS)
 def test_dataset_conditions_are_sorted(chapter):
-    nodes = json.loads(DATASET.read_text(encoding="utf-8"))["nodes"]
+    nodes = load_dataset()["nodes"]
     sorted_nodes = [
         n
         for n in nodes.values()
@@ -215,7 +214,7 @@ def test_dataset_conditions_are_sorted(chapter):
 
 
 def test_dataset_rule_flags_are_set_by_some_choice():
-    nodes = json.loads(DATASET.read_text(encoding="utf-8"))["nodes"]
+    nodes = load_dataset()["nodes"]
     set_by_choices = {
         name
         for n in nodes.values()
@@ -238,7 +237,7 @@ def test_dataset_rule_flags_are_set_by_some_choice():
 
 def test_dataset_rule_branches_never_overlap():
     # The engine refuses a condition where two branches match at once.
-    nodes = json.loads(DATASET.read_text(encoding="utf-8"))["nodes"]
+    nodes = load_dataset()["nodes"]
     values = {}
     for n in nodes.values():
         for o in n.get("options", []):
@@ -277,8 +276,7 @@ def test_unknown_condition_keeps_default_and_warns(tmp_path):
     assert result["warnings"][0]["problem"].startswith("Unverified condition")
 
 
-def _dataset():
-    return json.loads(DATASET.read_text(encoding="utf-8"))
+_dataset = load_dataset
 
 
 # Quick-Time Events that are really a decision between two courses of action:

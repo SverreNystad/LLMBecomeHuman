@@ -15,9 +15,9 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
+from tests.dataset import DATASET, load_dataset
 
 ROOT = Path(__file__).resolve().parents[1]
-DATASET = ROOT / "data" / "detroit-unverified.json"
 SOURCE = "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
 FLAG = "connor_ch1_exploration"
 
@@ -174,11 +174,6 @@ def test_cycles_are_rejected():
 # --- Chapter 1 dataset -------------------------------------------------------
 
 
-@pytest.fixture(scope="module")
-def dataset():
-    return json.loads(DATASET.read_text(encoding="utf-8"))
-
-
 def _walk(nodes, start, flags, stop):
     """Follow one path, resolving rule conditions with ``flags``; stop at a choice."""
     path, nid = [], start
@@ -282,9 +277,7 @@ EXPLORED_CHAPTERS = {
     "32.2": 1,
 }
 EXPLORATIONS = sorted(
-    nid
-    for nid, node in json.loads(DATASET.read_text(encoding="utf-8"))["nodes"].items()
-    if node.get("exploration")
+    nid for nid, node in load_dataset()["nodes"].items() if node.get("exploration")
 )
 
 
