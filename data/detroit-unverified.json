@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 164,
+    "condition_nodes_unverified": 162,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -8119,31 +8119,49 @@
     },
     "ch5_00053": {
       "id": "ch5_00053",
-      "type": "condition",
+      "type": "choice",
       "chapter": "5",
       "character": "Markus",
       "heading": "Find something to do",
-      "branches": [
+      "description": "Carl asks what you are reading. Which book did you pick?",
+      "options": [
         {
-          "condition_text": "{{ t(\"GUI.ACTION.01M.SHAKESPEARE\") }}",
-          "when": null,
-          "next": "ch5_00044"
+          "id": "option_0",
+          "label": "MACBETH",
+          "next": "ch5_00044",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_book": "macbeth"
+            }
+          }
         },
         {
-          "condition_text": "{{ t(\"GUI.ACTION.01M.PLATO\") }}",
-          "when": null,
-          "next": "ch5_00048"
+          "id": "option_1",
+          "label": "PLATO'S REPUBLIC",
+          "next": "ch5_00048",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_book": "republic"
+            }
+          }
         },
         {
-          "condition_text": "{{ t(\"GUI.ACTION.01M.KEATS\") }}",
-          "when": null,
-          "next": "ch5_00052"
+          "id": "option_2",
+          "label": "KEATS' ODES",
+          "next": "ch5_00052",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_book": "keats"
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch5_00040",
-      "resolution": "unknown"
+      ]
     },
     "ch5_00054": {
       "id": "ch5_00054",
@@ -8638,31 +8656,49 @@
     },
     "ch5_00077": {
       "id": "ch5_00077",
-      "type": "condition",
+      "type": "choice",
       "chapter": "5",
       "character": "Markus",
       "heading": "Find something to do",
-      "branches": [
+      "description": "Carl is resting and has no need of you for now. How do you pass the time?",
+      "options": [
         {
-          "condition_text": "{{ t(\"THOUGHTS.0101M.READBOOK\") }}",
-          "when": null,
-          "next": "ch5_00054"
+          "id": "option_0",
+          "label": "READ A BOOK",
+          "next": "ch5_00054",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_pastime": "read"
+            }
+          }
         },
         {
-          "condition_text": "{{ t(\"THOUGHTS.0101M.PLAYPIANO\") }}",
-          "when": null,
-          "next": "ch5_00055"
+          "id": "option_1",
+          "label": "PLAY THE PIANO",
+          "next": "ch5_00055",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_pastime": "piano"
+            }
+          }
         },
         {
-          "condition_text": "{{ t(\"THOUGHTS.0101M.PLAYCHESS\") }}",
-          "when": null,
-          "next": "ch5_00076"
+          "id": "option_2",
+          "label": "PLAY CHESS",
+          "next": "ch5_00076",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch5_pastime": "chess"
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch5_00040",
-      "resolution": "unknown"
+      ]
     },
     "ch5_00078": {
       "id": "ch5_00078",
