@@ -177,6 +177,10 @@ function chapterNavigation(run, chapter) {
     : '<span></span>';
   return `<nav class="story-nav" aria-label="Chapter navigation">${link(adjacentChapter(run, chapter, -1), 'Previous chapter')}${link(adjacentChapter(run, chapter, 1), 'Next chapter')}</nav>`;
 }
+/* The Chapter Briefing opens the chapter; graphs recorded before briefings have none. */
+function briefingOpener(briefing) {
+  return briefing ? `<p class="story-briefing">${esc(briefing)}</p>` : '';
+}
 function caveatBanner(run) {
   return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
@@ -207,18 +211,20 @@ async function renderStory({keepScroll = false} = {}) {
   if (!run || !chapter || state.view !== 'story') return;
   const version = ++storyVersion, detail = state.details.get(run.id);
   const cacheKey = `${run.id}\u0000${chapter}\u0000${detail?.events?.length || 0}`;
-  let beats = storyCache.get(cacheKey);
-  if (!beats) {
+  let response = storyCache.get(cacheKey);
+  if (!response) {
     if (!keepScroll) $('storyContent').innerHTML = '';
     try {
-      beats = (await api(`/api/runs/${encodeURIComponent(run.id)}/story?chapter=${encodeURIComponent(chapter)}`)).beats || [];
+      response = await api(`/api/runs/${encodeURIComponent(run.id)}/story?chapter=${encodeURIComponent(chapter)}`);
     } catch (error) {
       if (version === storyVersion) $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(error.message)}</strong></div>`;
       return;
     }
-    storyCache.set(cacheKey, beats);
+    storyCache.set(cacheKey, response);
   }
   if (version !== storyVersion) return;
+  const beats = response.beats || [];
+
   if (!beats.length) {renderUnvisitedChapter(run, chapter); if (!keepScroll) scrollStoryToTop(); return;}
 
   const items = buildStoryItems(beats);
@@ -240,7 +246,7 @@ async function renderStory({keepScroll = false} = {}) {
   }
   const context = {protagonist: chapterCharacter(chapter), numbers, keys, tables, run, total: summaries.length};
   const body = state.storyMode === 'key' ? renderCondensed(items, context) : items.map(item => renderItem(item, context)).join('');
-  $('storyContent').innerHTML = caveatBanner(run) + body + chapterNavigation(run, chapter);
+  $('storyContent').innerHTML = caveatBanner(run) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
   renderChapterSummary(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);

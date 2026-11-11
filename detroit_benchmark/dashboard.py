@@ -542,6 +542,32 @@ def _load_saved_graph(
     return _event_only_graph(directory), False, "event_log_only"
 
 
+@lru_cache(maxsize=32)
+def _cached_briefings(
+    directory: str, extra_graphs_dir: str | None, _snapshot_ns: int
+) -> dict[str, str]:
+    """Chapter Briefings from the Run's story graph; graphs older than briefings have none."""
+    path = Path(directory)
+    graph, _, _ = _load_saved_graph(
+        path.parent, path, Path(extra_graphs_dir) if extra_graphs_dir else None
+    )
+    briefings = graph.get("chapter_briefings") or {}
+    return {str(k): v for k, v in briefings.items() if isinstance(v, str)}
+
+
+def _chapter_briefing(
+    directory: Path, extra_graphs_dir: Path | None, chapter: str
+) -> str | None:
+    try:
+        snapshot_ns = (directory / "story-graph.json").stat().st_mtime_ns
+    except OSError:
+        snapshot_ns = 0
+    briefings = _cached_briefings(
+        str(directory), str(extra_graphs_dir) if extra_graphs_dir else None, snapshot_ns
+    )
+    return briefings.get(chapter)
+
+
 def create_app(
     runs_dir: str | Path = "runs", graphs_dir: str | Path | None = None
 ) -> FastAPI:
@@ -588,9 +614,11 @@ def create_app(
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
         # A chapter the run never entered is a normal answer, not an error.
+        directory = _resolve_run(root, run_id)
         return {
             "chapter": chapter,
-            "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, []),
+            "briefing": _chapter_briefing(directory, graph_root, chapter),
+            "beats": _parsed_events(directory)[1].get(chapter, []),
         }
 
     @app.get("/api/runs/{run_id}/events/{event_index}")

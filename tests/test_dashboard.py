@@ -17,6 +17,8 @@ from detroit_benchmark.dashboard import (
     _flowchart_projection,
     create_app,
 )
+from detroit_benchmark.engine import Runner
+from tests.test_benchmark import three_segment_graph
 
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -454,6 +456,29 @@ def test_flowchart_marks_exploration_choices_and_key_inspect_scenes():
     assert nodes["how"]["exploration"] is True
     assert nodes["gun"]["key"] is True
     assert "key" not in nodes["plain"]
+
+
+def played_run(tmp_path, **graph_extra):
+    """A real mock Run of three Chapter Segments (Connor, Kara, Connor)."""
+    graph = {**three_segment_graph(), **graph_extra}
+    Runner(graph, "mock", None, tmp_path / "run").run()
+    c = TestClient(create_app(tmp_path))
+    return c, c.get("/api/runs").json()["runs"][0]
+
+
+def story(c, run, chapter):
+    response = c.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter})
+    assert response.status_code == 200
+    return response.json()
+
+
+def test_story_opens_each_chapter_with_its_briefing(tmp_path):
+    c, run = played_run(
+        tmp_path, chapter_briefings={"1": "A rooftop at dusk.", "2": "A kitchen."}
+    )
+    assert story(c, run, "1")["briefing"] == "A rooftop at dusk."
+    assert story(c, run, "2")["briefing"] == "A kitchen."
+    assert story(c, run, "3")["briefing"] is None
 
 
 @pytest.mark.skipif(
