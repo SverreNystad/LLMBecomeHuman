@@ -7,6 +7,9 @@ Other tests remain runnable without a browser.
 from __future__ import annotations
 
 import shutil
+import socket
+import threading
+import time
 from pathlib import Path
 from urllib.parse import quote
 
@@ -23,7 +26,7 @@ def test_chapter_flowchart_browser_interactions():
     binary = shutil.which("chromium") or shutil.which("chromium-browser")
     if not binary:
         pytest.skip("Chromium executable unavailable")
-    c = TestClient(create_app(PROJECT / "demo_runs"))
+    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora"))
     runs = c.get("/api/runs").json()["runs"]
     mock_responses = {"/api/runs": {"runs": runs}}
     for r in runs:
@@ -44,11 +47,13 @@ def test_chapter_flowchart_browser_interactions():
     css = (ASSETS / "styles.css").read_text(encoding="utf-8")
     js = (ASSETS / "app.js").read_text(encoding="utf-8")
     story_js = (ASSETS / "story.js").read_text(encoding="utf-8")
+    characters_js = (ASSETS / "characters.js").read_text(encoding="utf-8")
     html = html.replace(
         '<link rel="stylesheet" href="/assets/styles.css">', f"<style>{css}</style>"
     )
     html = html.replace('<script src="/assets/app.js" defer></script>', "")
     html = html.replace('<script src="/assets/story.js" defer></script>', "")
+    html = html.replace('<script src="/assets/characters.js" defer></script>', "")
 
     with playwright.sync_playwright() as p:
         browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
@@ -69,15 +74,23 @@ def test_chapter_flowchart_browser_interactions():
             }""",
                 mock_responses,
             )
+            page.add_script_tag(content=characters_js)
             page.add_script_tag(content=story_js)
             page.add_script_tag(content=js)
 
             # The story opens first: readable text, and each decision compared across runs.
             page.locator(".story-decision").first.wait_for()
             assert page.locator("#chapterTitle").inner_text().startswith("01")
-            assert page.locator("#selectedRunCount").inner_text() == "10"
+            # At most six Runs are shown; each holds a distinct shade slot.
+            assert page.locator(".run-chip").count() == 6
+            assert "LLM: Become Human" in page.title()
+            assert page.evaluate("document.body.dataset.character") == "none"
+            shades = page.locator(".run-chip").evaluate_all(
+                "els => els.map(e => e.style.getPropertyValue('--run-color'))"
+            )
+            assert len(set(shades)) == 6 and all("--shade-" in s for s in shades)
             first_card = page.locator(".story-decision").first
-            assert "Decision 1 of" in first_card.inner_text()
+            assert "Decision 1 of" in first_card.text_content()
             assert page.locator(".story-why").first.inner_text().strip()
             assert (
                 page.locator(".story-line, .story-narration, .story-clue").count() > 0
@@ -92,29 +105,63 @@ def test_chapter_flowchart_browser_interactions():
                 not page.locator(".story-other-why:not(.is-hidden)").first.inner_text()
                 == ""
             )
-            page.locator("#modeKey").click()
+            assert page.locator("#storyMode").get_attribute("aria-label")
+            page.locator("#storyMode").click()
             page.wait_for_function(
-                "document.querySelector('#modeKey').getAttribute('aria-pressed') === 'true'"
+                "document.querySelector('#storyMode').getAttribute('aria-pressed') === 'true'"
             )
             assert page.locator(".story-decision").count() > 0
 
-            # A card links to the same moment on the flowchart, and back.
-            page.locator("[data-show-node]").first.click()
-            page.locator(".flow-node").first.wait_for()
-            page.locator(".inspect-read").click()
+            # Clicking a Moment in the Story opens it on the Flowchart, and back.
+            assert "Show on flowchart" not in page.locator("#storyContent").inner_text()
+            card = page.locator(".story-decision").first
+            moment = card.get_attribute("data-moment")
+            card.locator("h3").click()
+            page.locator(".flow-node.selected").wait_for()
+            assert (
+                page.locator(".flow-node.selected").get_attribute("data-moment")
+                == moment
+            )
+            assert page.locator("#storyView").is_hidden()
+            assert "Read this moment" not in page.locator("#drawerContent").inner_text()
+            scene = page.locator(".flow-node.kind-scene.visited").nth(1)
+            scene_moment = scene.get_attribute("data-moment")
+            scene.locator(".node-label").click()
             page.locator(".story-flash").wait_for()
+            assert page.locator("#viewerWrap").is_hidden()
+            assert (
+                page.locator(".story-flash").first.get_attribute("data-moment")
+                == scene_moment
+            )
             page.evaluate(
-                "scrollToStoryEvent(Number.MAX_SAFE_INTEGER)"
+                "scrollToMoment({index: Number.MAX_SAFE_INTEGER})"
             )  # a chapter exit has no text
             assert page.locator(".story-flash").count() >= 1
             page.locator("#viewFlow").click()
             page.locator(".flow-node").first.wait_for()
+            # A seventh Run is refused with a notice.
+            page.locator("#pickerToggle").click()
+            page.locator(".picker-run:not(:has(input:checked))").first.click()
+            page.wait_for_function(
+                "document.querySelector('#toast').classList.contains('visible')"
+            )
+            assert page.locator(".run-chip").count() == 6
+            page.locator("#pickerToggle").click()
+            kept_shade = page.locator(".run-chip").first.evaluate(
+                "e => e.style.getPropertyValue('--run-color')"
+            )
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '6'"
+                "document.querySelectorAll('.run-chip').length === 2"
+            )
+            assert (
+                page.locator(".run-chip").first.evaluate(
+                    "e => e.style.getPropertyValue('--run-color')"
+                )
+                == kept_shade
             )
             page.locator(".flow-node").first.wait_for()
             assert page.locator(".flow-node.kind-option").count() == 4
@@ -183,7 +230,6 @@ def test_chapter_flowchart_browser_interactions():
             assert node_count == coverage["nodes"]
             assert page.locator(".node-dialogue").count() > 0
             assert page.locator(".flow-node.kind-portal").count() == 1
-            assert "ALWAYS ON" in page.locator(".full-paths-indicator").inner_text()
             assert page.locator(".edge-path.route-overlay").count() > 5
             assert page.locator(".flow-node:not(.visited)").count() >= 0
 
@@ -193,22 +239,32 @@ def test_chapter_flowchart_browser_interactions():
             ).first.click(force=True)
             page.locator(".rationale").wait_for()
             assert "Mock policy" in page.locator(".rationale").first.inner_text()
-            assert "ACTION SELECTED" in page.locator("#drawerContent").inner_text()
-            assert "SYNTHETIC PREVIEW" in page.locator("#drawerContent").inner_text()
+            assert "Synthetic preview" in page.locator("#drawerContent").text_content()
             page.locator("#closeDrawer").click()
 
-            # Select all 10 recorded experiments in the same graph, including
-            # multiple mock identities from OpenAI/Claude/Grok/other groups.
+            # "Select" fills up to six compatible runs; swap one for the Grok preview.
             page.locator("#pickerToggle").click()
             page.locator("#selectAllRuns").click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '10'"
+                "document.querySelectorAll('.run-chip').length === 6"
             )
-            assert page.locator(".run-chip").count() == 10
-            assert page.locator(".legend-runs .legend-line").count() == 10
+            page.locator("#pickerToggle").click()
+            page.locator(".run-chip-remove").last.click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 5"
+            )
+            page.locator("#pickerToggle").click()
+            page.locator("#searchRuns").fill("grok")
+            page.locator(".picker-run").first.click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 6"
+            )
+            assert page.locator(".legend-runs .legend-line").count() == 6
             assert page.locator(".flow-node").count() == node_count
-            assert page.locator(".edge-path.route-overlay").count() > 10
-            assert page.locator(".flow-node.visited .node-model-button").count() >= 10
+            assert page.locator(".edge-path.route-overlay").count() > 6
+            assert page.locator(".flow-node.visited .node-model-button").count() >= 6
+            # Same-hue routes differ by provider line style.
+            assert page.locator(".route-overlay.provider-xai").count() > 0
             # Multi-run badges must wrap within the node; labels remain visible.
             assert (
                 page.locator(".flow-node.visited .node-label").first.bounding_box()[
@@ -227,6 +283,7 @@ def test_chapter_flowchart_browser_interactions():
             )
             assert len(colors) >= 6
             assert page.locator(".node-model-button.provider-xai").count() > 0
+            page.locator("#searchRuns").fill("")
             page.locator("#pickerToggle").click()  # close the selection panel
             page.locator(
                 ".flow-node.kind-option .node-model-button.provider-xai"
@@ -237,11 +294,135 @@ def test_chapter_flowchart_browser_interactions():
             # Removing only one run doesn't change complete graph.
             page.locator(".run-chip-remove").first.click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '9'"
+                "document.querySelectorAll('.run-chip').length === 5"
             )
             assert page.locator(".flow-node").count() == node_count
             page.locator(".chapter-entry").nth(1).click()
             assert "The Search" in page.locator("#chapterTitle").inner_text()
+            assert not errors
+        finally:
+            browser.close()
+
+
+def test_backdrop_network_without_art(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+            page.locator(".story-decision").first.wait_for(state="attached")
+            canvas = page.locator("#backdropNetwork canvas")
+            assert canvas.count() == 1
+            # The network is drawn: some pixels are not transparent.
+            page.wait_for_function("""() => {
+              const c = document.querySelector('#backdropNetwork canvas');
+              const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+              for (let i = 3; i < data.length; i += 4) if (data[i]) return true;
+              return false;
+            }""")
+            box = canvas.bounding_box()
+            assert box["width"] == 1280 and box["height"] == 800
+            # No art installed: the manifest is empty and no scene image is shown.
+            manifest = page.evaluate("fetch('/api/art/manifest').then(r => r.json())")
+            assert manifest == {"scenes": []}
+            assert page.locator(".backdrop-art-layer.is-shown").count() == 0
+            assert not page.evaluate(
+                "document.getElementById('backdrop').classList.contains('has-art')"
+            )
+            assert not errors
+        finally:
+            browser.close()
+
+
+@pytest.fixture
+def live_dashboard(tmp_path):
+    """The real dashboard on a local port, so pages have an origin (browser storage) and assets load."""
+    uvicorn = pytest.importorskip("uvicorn")
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    # An empty images folder: the title screen must work without any art installed.
+    app = create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path)
+    server = uvicorn.Server(
+        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
+    )
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    deadline = time.time() + 10
+    while not server.started and time.time() < deadline:
+        time.sleep(0.05)
+    yield f"http://127.0.0.1:{port}/"
+    server.should_exit = True
+    thread.join(timeout=5)
+
+
+def _launch_chromium(p):
+    binary = shutil.which("chromium") or shutil.which("chromium-browser")
+    if not binary:
+        pytest.skip("Chromium executable unavailable")
+    return p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
+
+
+def test_title_screen_sound_and_marker_card(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+
+            # The title screen shows on load, without art, and any key dismisses it.
+            title = page.locator("#titleScreen")
+            title.wait_for()
+            assert (
+                "LLM" in title.inner_text()
+                and "BECOME HUMAN" in title.inner_text().upper()
+            )
+            assert "PRESS ANY KEY" in title.inner_text().upper()
+            assert page.evaluate("document.getElementById('appShell').inert")
+            page.wait_for_timeout(400)
+            page.keyboard.press("Enter")
+            title.wait_for(state="detached")
+            assert not page.evaluate("document.getElementById('appShell').inert")
+            # That key press unlocked sound.
+            assert page.evaluate("uiSound.isUnlocked()")
+            assert page.evaluate("uiSound.play('click')") is True
+
+            # Mute persists across a reload.
+            toggle = page.locator(".sound-toggle")
+            assert toggle.get_attribute("aria-pressed") == "false"
+            toggle.click()
+            assert toggle.get_attribute("aria-label") == "Unmute sound"
+            page.reload()
+            page.locator("#titleScreen").wait_for()
+            assert page.locator(".sound-toggle").get_attribute("aria-pressed") == "true"
+            assert page.evaluate("uiSound.isMuted()")
+            page.wait_for_timeout(400)
+            page.mouse.click(700, 450)
+            page.locator("#titleScreen").wait_for(state="detached")
+            assert page.evaluate("uiSound.play('hover')") is False
+
+            # Focusing a decision marker unfolds its rationale; the drawer stays for click.
+            page.locator("#viewFlow").click()
+            marker = page.locator(
+                ".flow-node.kind-option.visited .node-model-button"
+            ).first
+            marker.wait_for()
+            marker.focus()
+            card = page.locator("#unfoldCard.is-open")
+            card.wait_for()
+            assert "CHOSE" in card.inner_text().upper()
+            assert page.locator(".unfold-card-why").inner_text().strip()
+            assert marker.get_attribute("aria-describedby") == "unfoldCard"
+            page.keyboard.press("Escape")
+            page.wait_for_function("!document.querySelector('#unfoldCard.is-open')")
             assert not errors
         finally:
             browser.close()

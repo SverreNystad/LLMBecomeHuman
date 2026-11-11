@@ -1,0 +1,1777 @@
+{
+  "version": 1,
+  "note": "Images are local-only (gitignored); see README.",
+  "title": "ui/title.webp",
+  "scenes": [
+    {
+      "key": "ch01_penthouse",
+      "file": "scenes/ch01_penthouse.webp",
+      "chapter": "1",
+      "character": "Connor",
+      "headings": [
+        "Coming into the living room"
+      ],
+      "chapter_main": true,
+      "caption": "The Phillips penthouse during the hostage crisis"
+    },
+    {
+      "key": "ch01_swat_sniper_rooftop",
+      "file": "scenes/ch01_swat_sniper_rooftop.webp",
+      "chapter": "1",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "SWAT sniper overlooking the penthouse rooftop"
+    },
+    {
+      "key": "ch02_android_zone_store",
+      "file": "scenes/ch02_android_zone_store.webp",
+      "chapter": "2",
+      "character": "Kara",
+      "headings": [
+        "In the Android Zone store"
+      ],
+      "chapter_main": true,
+      "caption": "Kara in the Android Zone store"
+    },
+    {
+      "key": "ch03_capitol_park_plaza",
+      "file": "scenes/ch03_capitol_park_plaza.webp",
+      "chapter": "3",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Markus crossing a sunny Detroit plaza"
+    },
+    {
+      "key": "ch03_bellini_paints",
+      "file": "scenes/ch03_bellini_paints.webp",
+      "chapter": "3",
+      "character": "Markus",
+      "headings": [
+        "At Bellini paints"
+      ],
+      "chapter_main": false,
+      "caption": "Inside Bellini Paints"
+    },
+    {
+      "key": "ch04_todds_house",
+      "file": "scenes/ch04_todds_house.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "At Todd's house"
+      ],
+      "chapter_main": true,
+      "caption": "Exterior of Todd's house"
+    },
+    {
+      "key": "ch04_todds_living_room",
+      "file": "scenes/ch04_todds_living_room.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "Todd in the living room"
+      ],
+      "chapter_main": false,
+      "caption": "Todd's living room"
+    },
+    {
+      "key": "ch04_todds_kitchen",
+      "file": "scenes/ch04_todds_kitchen.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "Doing the dishes"
+      ],
+      "chapter_main": false,
+      "caption": "Todd's kitchen by day"
+    },
+    {
+      "key": "ch04_todds_laundry_room",
+      "file": "scenes/ch04_todds_laundry_room.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "Rewash clothes - Find Red ice"
+      ],
+      "chapter_main": false,
+      "caption": "Todd's laundry room"
+    },
+    {
+      "key": "ch04_todds_room",
+      "file": "scenes/ch04_todds_room.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "In Todd's room"
+      ],
+      "chapter_main": false,
+      "caption": "Todd's bedroom"
+    },
+    {
+      "key": "ch04_todds_backyard",
+      "file": "scenes/ch04_todds_backyard.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "Going in the garden - Talking with Alice"
+      ],
+      "chapter_main": false,
+      "caption": "Todd's backyard"
+    },
+    {
+      "key": "ch04_alices_room",
+      "file": "scenes/ch04_alices_room.webp",
+      "chapter": "4",
+      "character": "Kara",
+      "headings": [
+        "In Alice's room"
+      ],
+      "chapter_main": false,
+      "caption": "Alice's bedroom with her blanket fort"
+    },
+    {
+      "key": "ch05_carls_house",
+      "file": "scenes/ch05_carls_house.webp",
+      "chapter": "5",
+      "character": "Markus",
+      "headings": [
+        "At Carl's house"
+      ],
+      "chapter_main": true,
+      "caption": "Markus arriving at Carl's mansion"
+    },
+    {
+      "key": "ch05_carls_living_room",
+      "file": "scenes/ch05_carls_living_room.webp",
+      "chapter": "5",
+      "character": "Markus",
+      "headings": [
+        "In the living room"
+      ],
+      "chapter_main": false,
+      "caption": "Carl's living room"
+    },
+    {
+      "key": "ch05_carls_studio",
+      "file": "scenes/ch05_carls_studio.webp",
+      "chapter": "5",
+      "character": "Markus",
+      "headings": [
+        "In the studio"
+      ],
+      "chapter_main": false,
+      "caption": "Carl's painting studio"
+    },
+    {
+      "key": "ch05_carls_bedroom",
+      "file": "scenes/ch05_carls_bedroom.webp",
+      "chapter": "5",
+      "character": "Markus",
+      "headings": [
+        "Going to see Carl"
+      ],
+      "chapter_main": false,
+      "caption": "Carl's bedroom"
+    },
+    {
+      "key": "ch05_carls_breakfast",
+      "file": "scenes/ch05_carls_breakfast.webp",
+      "chapter": "5",
+      "character": "Markus",
+      "headings": [
+        "Served breakfast"
+      ],
+      "chapter_main": false,
+      "caption": "Markus serving Carl's breakfast"
+    },
+    {
+      "key": "ch06_ortiz_house",
+      "file": "scenes/ch06_ortiz_house.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "At the crime scene"
+      ],
+      "chapter_main": true,
+      "caption": "Police outside Ortiz's house at night"
+    },
+    {
+      "key": "ch06_ortiz_crime_scene",
+      "file": "scenes/ch06_ortiz_crime_scene.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "At the crime scene"
+      ],
+      "chapter_main": false,
+      "caption": "Ortiz's living room crime scene"
+    },
+    {
+      "key": "ch06_ortiz_living_room",
+      "file": "scenes/ch06_ortiz_living_room.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "At the crime scene"
+      ],
+      "chapter_main": false,
+      "caption": "Investigators in Ortiz's house"
+    },
+    {
+      "key": "ch06_ortiz_kitchen",
+      "file": "scenes/ch06_ortiz_kitchen.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "In the kitchen"
+      ],
+      "chapter_main": false,
+      "caption": "Ortiz's filthy kitchen with evidence markers"
+    },
+    {
+      "key": "ch06_ortiz_hallway",
+      "file": "scenes/ch06_ortiz_hallway.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Officer in a dark hallway of Ortiz's house"
+    },
+    {
+      "key": "ch06_jimmys_bar",
+      "file": "scenes/ch06_jimmys_bar.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "At Jimmy's Bar"
+      ],
+      "chapter_main": false,
+      "caption": "Connor outside Jimmy's Bar in the rain"
+    },
+    {
+      "key": "ch06_hank_in_bar",
+      "file": "scenes/ch06_hank_in_bar.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "At Jimmy's Bar"
+      ],
+      "chapter_main": false,
+      "caption": "Hank drinking at Jimmy's Bar"
+    },
+    {
+      "key": "ch06_ortiz_attic",
+      "file": "scenes/ch06_ortiz_attic.webp",
+      "chapter": "6",
+      "character": "Connor",
+      "headings": [
+        "Search the attic"
+      ],
+      "chapter_main": false,
+      "caption": "Connor searching the attic for the deviant"
+    },
+    {
+      "key": "ch09_observation_room",
+      "file": "scenes/ch09_observation_room.webp",
+      "chapter": "9",
+      "character": "Connor",
+      "headings": [
+        "In the observation room"
+      ],
+      "chapter_main": true,
+      "caption": "Observation room behind the one-way glass"
+    },
+    {
+      "key": "ch09_interrogation_room",
+      "file": "scenes/ch09_interrogation_room.webp",
+      "chapter": "9",
+      "character": "Connor",
+      "headings": [
+        "Inside the interrogation room"
+      ],
+      "chapter_main": false,
+      "caption": "The interrogation room"
+    },
+    {
+      "key": "ch10_rainy_street",
+      "file": "scenes/ch10_rainy_street.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "In the street"
+      ],
+      "chapter_main": true,
+      "caption": "Kara and Alice on a rainy street at night"
+    },
+    {
+      "key": "ch10_fence_corner",
+      "file": "scenes/ch10_fence_corner.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Fenced corner building in the rain"
+    },
+    {
+      "key": "ch10_abandoned_lot",
+      "file": "scenes/ch10_abandoned_lot.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Overgrown lot with a wrecked car at night"
+    },
+    {
+      "key": "ch10_laundromat",
+      "file": "scenes/ch10_laundromat.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "In the Laundromat"
+      ],
+      "chapter_main": false,
+      "caption": "The laundromat"
+    },
+    {
+      "key": "ch10_motel",
+      "file": "scenes/ch10_motel.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "At the Motel"
+      ],
+      "chapter_main": false,
+      "caption": "Kara and Alice outside the motel"
+    },
+    {
+      "key": "ch10_motel_room",
+      "file": "scenes/ch10_motel_room.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "In the room"
+      ],
+      "chapter_main": false,
+      "caption": "Kara and Alice in the motel room"
+    },
+    {
+      "key": "ch10_motel_bathroom",
+      "file": "scenes/ch10_motel_bathroom.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "In the room"
+      ],
+      "chapter_main": false,
+      "caption": "The motel bathroom"
+    },
+    {
+      "key": "ch10_squat",
+      "file": "scenes/ch10_squat.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "At the squat"
+      ],
+      "chapter_main": false,
+      "caption": "Kara entering the abandoned house"
+    },
+    {
+      "key": "ch10_squat_2",
+      "file": "scenes/ch10_squat_2.webp",
+      "chapter": "10",
+      "character": "Kara",
+      "headings": [
+        "At the squat"
+      ],
+      "chapter_main": false,
+      "caption": "Inside the squat"
+    },
+    {
+      "key": "ch11_landfill",
+      "file": "scenes/ch11_landfill.webp",
+      "chapter": "11",
+      "character": "Markus",
+      "headings": [
+        "At the solid waste landfill"
+      ],
+      "chapter_main": true,
+      "caption": "Markus in the android junkyard"
+    },
+    {
+      "key": "ch11_landfill_slope",
+      "file": "scenes/ch11_landfill_slope.webp",
+      "chapter": "11",
+      "character": "Markus",
+      "headings": [
+        "Climb the slope"
+      ],
+      "chapter_main": false,
+      "caption": "The junkyard slope at night"
+    },
+    {
+      "key": "ch12_police_reception",
+      "file": "scenes/ch12_police_reception.webp",
+      "chapter": "12",
+      "character": "Connor",
+      "headings": [
+        "Talking to the android at the reception"
+      ],
+      "chapter_main": true,
+      "caption": "DPD reception"
+    },
+    {
+      "key": "ch12_police_break_room",
+      "file": "scenes/ch12_police_break_room.webp",
+      "chapter": "12",
+      "character": "Connor",
+      "headings": [
+        "Going into the break room"
+      ],
+      "chapter_main": false,
+      "caption": "DPD break room"
+    },
+    {
+      "key": "ch12_police_station",
+      "file": "scenes/ch12_police_station.webp",
+      "chapter": "12",
+      "character": "Connor",
+      "headings": [
+        "In the station"
+      ],
+      "chapter_main": false,
+      "caption": "DPD bullpen"
+    },
+    {
+      "key": "ch12_zen_garden",
+      "file": "scenes/ch12_zen_garden.webp",
+      "chapter": "12",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda's Zen Garden in bloom"
+    },
+    {
+      "key": "ch13_highway",
+      "file": "scenes/ch13_highway.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Kara and Alice crossing the highway"
+    },
+    {
+      "key": "ch13_fence",
+      "file": "scenes/ch13_fence.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [
+        "Reach the fence"
+      ],
+      "chapter_main": false,
+      "caption": "Kara at the highway fence"
+    },
+    {
+      "key": "ch13_highway_crash",
+      "file": "scenes/ch13_highway_crash.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Cars crashing on the highway"
+    },
+    {
+      "key": "ch13_squat",
+      "file": "scenes/ch13_squat.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [
+        "In the squat with Ralph"
+      ],
+      "chapter_main": false,
+      "caption": "Ralph's squat with graffiti"
+    },
+    {
+      "key": "ch13_squat_2",
+      "file": "scenes/ch13_squat_2.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [
+        "In the squat with Ralph"
+      ],
+      "chapter_main": false,
+      "caption": "Squat living room with fireplace"
+    },
+    {
+      "key": "ch13_squat_3",
+      "file": "scenes/ch13_squat_3.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [
+        "In the squat with Ralph"
+      ],
+      "chapter_main": false,
+      "caption": "Squat room with papers on the walls"
+    },
+    {
+      "key": "ch13_squat_bathroom",
+      "file": "scenes/ch13_squat_bathroom.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Squat bathroom"
+    },
+    {
+      "key": "ch13_squat_4",
+      "file": "scenes/ch13_squat_4.webp",
+      "chapter": "13",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Kara in a dark squat room"
+    },
+    {
+      "key": "ch14_ferndale_station",
+      "file": "scenes/ch14_ferndale_station.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [
+        "At Ferndale station"
+      ],
+      "chapter_main": true,
+      "caption": "Ferndale station entrance"
+    },
+    {
+      "key": "ch14_subway_platform",
+      "file": "scenes/ch14_subway_platform.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [
+        "At Ferndale station"
+      ],
+      "chapter_main": false,
+      "caption": "Subway platform"
+    },
+    {
+      "key": "ch14_ferndale_street",
+      "file": "scenes/ch14_ferndale_street.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Ferndale street"
+    },
+    {
+      "key": "ch14_ferndale_ruins",
+      "file": "scenes/ch14_ferndale_ruins.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Ruined Ferndale buildings"
+    },
+    {
+      "key": "ch14_ferndale_street_2",
+      "file": "scenes/ch14_ferndale_street_2.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Ferndale street under an overpass"
+    },
+    {
+      "key": "ch14_warehouse",
+      "file": "scenes/ch14_warehouse.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Abandoned warehouse"
+    },
+    {
+      "key": "ch14_docks",
+      "file": "scenes/ch14_docks.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [
+        "Finding Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "Markus on the docks"
+    },
+    {
+      "key": "ch14_jericho_ship",
+      "file": "scenes/ch14_jericho_ship.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [
+        "Finding Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "The Jericho freighter"
+    },
+    {
+      "key": "ch14_jericho_interior",
+      "file": "scenes/ch14_jericho_interior.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Dark interior of Jericho"
+    },
+    {
+      "key": "ch14_jericho_interior_2",
+      "file": "scenes/ch14_jericho_interior_2.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Flooded corridor in Jericho"
+    },
+    {
+      "key": "ch14_jericho_interior_3",
+      "file": "scenes/ch14_jericho_interior_3.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Inside Jericho"
+    },
+    {
+      "key": "ch14_jericho_interior_4",
+      "file": "scenes/ch14_jericho_interior_4.webp",
+      "chapter": "14",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Flashlight in Jericho's hold"
+    },
+    {
+      "key": "ch15_chicken_feed",
+      "file": "scenes/ch15_chicken_feed.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [
+        "At the Chicken Feed"
+      ],
+      "chapter_main": true,
+      "caption": "The Chicken Feed food truck"
+    },
+    {
+      "key": "ch15_rupert_hallway",
+      "file": "scenes/ch15_rupert_hallway.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [
+        "Outside Rupert's Apartment"
+      ],
+      "chapter_main": false,
+      "caption": "rA9 graffiti in Rupert's building"
+    },
+    {
+      "key": "ch15_rupert_apartment",
+      "file": "scenes/ch15_rupert_apartment.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [
+        "Investigating"
+      ],
+      "chapter_main": false,
+      "caption": "Rupert's apartment full of pigeons"
+    },
+    {
+      "key": "ch15_rupert_apartment_2",
+      "file": "scenes/ch15_rupert_apartment_2.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [
+        "Investigating"
+      ],
+      "chapter_main": false,
+      "caption": "Rupert's apartment"
+    },
+    {
+      "key": "ch15_chase",
+      "file": "scenes/ch15_chase.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rupert fleeing through the corridor"
+    },
+    {
+      "key": "ch15_rooftop_chase",
+      "file": "scenes/ch15_rooftop_chase.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rooftop chase among pigeons"
+    },
+    {
+      "key": "ch15_rooftop_chase_2",
+      "file": "scenes/ch15_rooftop_chase_2.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rooftop chase"
+    },
+    {
+      "key": "ch15_rooftop_farm",
+      "file": "scenes/ch15_rooftop_farm.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rooftop farm"
+    },
+    {
+      "key": "ch15_rooftop_chase_3",
+      "file": "scenes/ch15_rooftop_chase_3.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rooftops above the city"
+    },
+    {
+      "key": "ch15_vertical_farm",
+      "file": "scenes/ch15_vertical_farm.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Vertical farm"
+    },
+    {
+      "key": "ch15_urban_farm",
+      "file": "scenes/ch15_urban_farm.webp",
+      "chapter": "15",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Urban farm greenhouse roof"
+    },
+    {
+      "key": "ch16_jericho",
+      "file": "scenes/ch16_jericho.webp",
+      "chapter": "16",
+      "character": "Markus",
+      "headings": [
+        "Explore Jericho"
+      ],
+      "chapter_main": true,
+      "caption": "Androids gathered in Jericho"
+    },
+    {
+      "key": "ch16_jericho_fire",
+      "file": "scenes/ch16_jericho_fire.webp",
+      "chapter": "16",
+      "character": "Markus",
+      "headings": [
+        "In Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "Androids around a fire in Jericho"
+    },
+    {
+      "key": "ch17_zlatkos_house",
+      "file": "scenes/ch17_zlatkos_house.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [
+        "At Zlatko's house"
+      ],
+      "chapter_main": true,
+      "caption": "Zlatko's mansion in the rain"
+    },
+    {
+      "key": "ch17_zlatko_interior",
+      "file": "scenes/ch17_zlatko_interior.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's hall"
+    },
+    {
+      "key": "ch17_zlatko_interior_2",
+      "file": "scenes/ch17_zlatko_interior_2.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's living room"
+    },
+    {
+      "key": "ch17_zlatko_interior_3",
+      "file": "scenes/ch17_zlatko_interior_3.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's upper landing"
+    },
+    {
+      "key": "ch17_zlatko_interior_4",
+      "file": "scenes/ch17_zlatko_interior_4.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's house"
+    },
+    {
+      "key": "ch17_zlatko_basement",
+      "file": "scenes/ch17_zlatko_basement.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's basement"
+    },
+    {
+      "key": "ch17_zlatko_lab",
+      "file": "scenes/ch17_zlatko_lab.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's workshop"
+    },
+    {
+      "key": "ch17_zlatko_bathtub",
+      "file": "scenes/ch17_zlatko_bathtub.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [
+        "See android in bathtub"
+      ],
+      "chapter_main": false,
+      "caption": "Bathroom with the android in the tub"
+    },
+    {
+      "key": "ch17_zlatko_lab_2",
+      "file": "scenes/ch17_zlatko_lab_2.webp",
+      "chapter": "17",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Zlatko's lab"
+    },
+    {
+      "key": "ch18_neighbourhood",
+      "file": "scenes/ch18_neighbourhood.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Hank's neighbourhood at night"
+    },
+    {
+      "key": "ch18_hanks_house",
+      "file": "scenes/ch18_hanks_house.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "Arriving at Hank's house"
+      ],
+      "chapter_main": true,
+      "caption": "Hank's house in the rain"
+    },
+    {
+      "key": "ch18_hanks_window",
+      "file": "scenes/ch18_hanks_window.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "Going through the window"
+      ],
+      "chapter_main": false,
+      "caption": "Connor at Hank's house"
+    },
+    {
+      "key": "ch18_hanks_kitchen",
+      "file": "scenes/ch18_hanks_kitchen.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "Investigating Hank's house"
+      ],
+      "chapter_main": false,
+      "caption": "Hank's kitchen with Sumo"
+    },
+    {
+      "key": "ch18_hanks_living_room",
+      "file": "scenes/ch18_hanks_living_room.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "Investigating Hank's house"
+      ],
+      "chapter_main": false,
+      "caption": "Hank's living room"
+    },
+    {
+      "key": "ch18_hanks_bathroom",
+      "file": "scenes/ch18_hanks_bathroom.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Hank in the bathroom"
+    },
+    {
+      "key": "ch18_hanks_bedroom",
+      "file": "scenes/ch18_hanks_bedroom.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "Investigating Hank's house"
+      ],
+      "chapter_main": false,
+      "caption": "Connor in Hank's bedroom"
+    },
+    {
+      "key": "ch18_zen_garden",
+      "file": "scenes/ch18_zen_garden.webp",
+      "chapter": "18",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda questions Connor in the Zen Garden"
+    },
+    {
+      "key": "ch19_cyberlife_warehouse",
+      "file": "scenes/ch19_cyberlife_warehouse.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": true,
+      "caption": "CyberLife container yard in the rain"
+    },
+    {
+      "key": "ch19_cyberlife_warehouse_2",
+      "file": "scenes/ch19_cyberlife_warehouse_2.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": false,
+      "caption": "Container rooftops"
+    },
+    {
+      "key": "ch19_cyberlife_warehouse_3",
+      "file": "scenes/ch19_cyberlife_warehouse_3.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife yard at night"
+    },
+    {
+      "key": "ch19_cyberlife_warehouse_4",
+      "file": "scenes/ch19_cyberlife_warehouse_4.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife warehouse platform"
+    },
+    {
+      "key": "ch19_cyberlife_gatehouse",
+      "file": "scenes/ch19_cyberlife_gatehouse.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": false,
+      "caption": "Gatehouse A"
+    },
+    {
+      "key": "ch19_cyberlife_guard_post",
+      "file": "scenes/ch19_cyberlife_guard_post.webp",
+      "chapter": "19",
+      "character": "Markus",
+      "headings": [
+        "At the CyberLife warehouses"
+      ],
+      "chapter_main": false,
+      "caption": "Guard post"
+    },
+    {
+      "key": "ch20_eden_club",
+      "file": "scenes/ch20_eden_club.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "At the Eden Club"
+      ],
+      "chapter_main": true,
+      "caption": "Eden Club exterior at night"
+    },
+    {
+      "key": "ch20_eden_club_2",
+      "file": "scenes/ch20_eden_club_2.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Traci display tubes"
+    },
+    {
+      "key": "ch20_eden_club_3",
+      "file": "scenes/ch20_eden_club_3.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Eden Club floor"
+    },
+    {
+      "key": "ch20_eden_club_4",
+      "file": "scenes/ch20_eden_club_4.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Eden Club lobby"
+    },
+    {
+      "key": "ch20_eden_club_room",
+      "file": "scenes/ch20_eden_club_room.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "Inside the room"
+      ],
+      "chapter_main": false,
+      "caption": "Crime scene in an Eden Club room"
+    },
+    {
+      "key": "ch20_eden_warehouse",
+      "file": "scenes/ch20_eden_warehouse.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "In the warehouse"
+      ],
+      "chapter_main": false,
+      "caption": "Eden Club warehouse"
+    },
+    {
+      "key": "ch20_eden_warehouse_2",
+      "file": "scenes/ch20_eden_warehouse_2.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "In the warehouse"
+      ],
+      "chapter_main": false,
+      "caption": "Eden Club storage"
+    },
+    {
+      "key": "ch20_traci_fight",
+      "file": "scenes/ch20_traci_fight.webp",
+      "chapter": "20",
+      "character": "Connor",
+      "headings": [
+        "Find the Traci"
+      ],
+      "chapter_main": false,
+      "caption": "Two Tracis fight Connor"
+    },
+    {
+      "key": "ch21_pirates_cove",
+      "file": "scenes/ch21_pirates_cove.webp",
+      "chapter": "21",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Abandoned Pirates' Cove park"
+    },
+    {
+      "key": "ch21_pirates_cove_2",
+      "file": "scenes/ch21_pirates_cove_2.webp",
+      "chapter": "21",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Pirate ship ride"
+    },
+    {
+      "key": "ch21_pirates_cove_interior",
+      "file": "scenes/ch21_pirates_cove_interior.webp",
+      "chapter": "21",
+      "character": "Kara",
+      "headings": [
+        "Inside Pirate's Cove"
+      ],
+      "chapter_main": false,
+      "caption": "Inside Pirates' Cove"
+    },
+    {
+      "key": "ch22_ambassador_bridge",
+      "file": "scenes/ch22_ambassador_bridge.webp",
+      "chapter": "22",
+      "character": "Connor",
+      "headings": [
+        "At Ambassador Bridge"
+      ],
+      "chapter_main": true,
+      "caption": "Hank and Connor under the bridge"
+    },
+    {
+      "key": "ch23_stratford_tower",
+      "file": "scenes/ch23_stratford_tower.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "At Stratford Tower"
+      ],
+      "chapter_main": true,
+      "caption": "Stratford Tower lobby"
+    },
+    {
+      "key": "ch23_stratford_lobby",
+      "file": "scenes/ch23_stratford_lobby.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Stratford Tower reception"
+    },
+    {
+      "key": "ch23_stratford_floor",
+      "file": "scenes/ch23_stratford_floor.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Stratford Tower office floor"
+    },
+    {
+      "key": "ch23_stratford_elevators",
+      "file": "scenes/ch23_stratford_elevators.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Stratford Tower elevators"
+    },
+    {
+      "key": "ch23_stratford_jump",
+      "file": "scenes/ch23_stratford_jump.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Jumping from Stratford Tower"
+    },
+    {
+      "key": "ch23_stratford_roof",
+      "file": "scenes/ch23_stratford_roof.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Stratford Tower roof"
+    },
+    {
+      "key": "ch23_stratford_escape",
+      "file": "scenes/ch23_stratford_escape.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Escape from the tower top"
+    },
+    {
+      "key": "ch23_broadcast_room",
+      "file": "scenes/ch23_broadcast_room.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "On the top floor"
+      ],
+      "chapter_main": false,
+      "caption": "Broadcast control room"
+    },
+    {
+      "key": "ch23_construction_floor",
+      "file": "scenes/ch23_construction_floor.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "Floor 47"
+      ],
+      "chapter_main": false,
+      "caption": "Unfinished floor near the top of Stratford Tower"
+    },
+    {
+      "key": "ch23_jericho_plan",
+      "file": "scenes/ch23_jericho_plan.webp",
+      "chapter": "23",
+      "character": "Markus",
+      "headings": [
+        "In Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "Markus, North, Simon and Josh plan in Jericho"
+    },
+    {
+      "key": "ch24_stratford_tower",
+      "file": "scenes/ch24_stratford_tower.webp",
+      "chapter": "24",
+      "character": "Connor",
+      "headings": [
+        "In the tower"
+      ],
+      "chapter_main": true,
+      "caption": "Connor and Hank in the tower"
+    },
+    {
+      "key": "ch24_stratford_kitchen",
+      "file": "scenes/ch24_stratford_kitchen.webp",
+      "chapter": "24",
+      "character": "Connor",
+      "headings": [
+        "In the kitchen"
+      ],
+      "chapter_main": false,
+      "caption": "Stratford Tower kitchen"
+    },
+    {
+      "key": "ch24_zen_garden",
+      "file": "scenes/ch24_zen_garden.webp",
+      "chapter": "24",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda and Connor in the Zen Garden"
+    },
+    {
+      "key": "ch25_roses_house",
+      "file": "scenes/ch25_roses_house.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Rose's farmhouse in the snow"
+    },
+    {
+      "key": "ch25_roses_greenhouse",
+      "file": "scenes/ch25_roses_greenhouse.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rose's greenhouse"
+    },
+    {
+      "key": "ch25_roses_kitchen",
+      "file": "scenes/ch25_roses_kitchen.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rose's kitchen"
+    },
+    {
+      "key": "ch25_roses_living_room",
+      "file": "scenes/ch25_roses_living_room.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [
+        "At Rose's house"
+      ],
+      "chapter_main": false,
+      "caption": "Rose's living room"
+    },
+    {
+      "key": "ch25_roses_house_2",
+      "file": "scenes/ch25_roses_house_2.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Room in Rose's house"
+    },
+    {
+      "key": "ch25_roses_hallway",
+      "file": "scenes/ch25_roses_hallway.webp",
+      "chapter": "25",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Rose's upstairs hallway"
+    },
+    {
+      "key": "ch26_capitol_park",
+      "file": "scenes/ch26_capitol_park.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [
+        "At Capitol Park"
+      ],
+      "chapter_main": true,
+      "caption": "Capitol Park at night in the snow"
+    },
+    {
+      "key": "ch26_alley",
+      "file": "scenes/ch26_alley.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Snowy alley"
+    },
+    {
+      "key": "ch26_alley_2",
+      "file": "scenes/ch26_alley_2.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Androids in a snowy alley"
+    },
+    {
+      "key": "ch26_cyberlife_store",
+      "file": "scenes/ch26_cyberlife_store.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [
+        "In the store"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife store"
+    },
+    {
+      "key": "ch26_cyberlife_store_2",
+      "file": "scenes/ch26_cyberlife_store_2.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [
+        "In the store"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife store"
+    },
+    {
+      "key": "ch26_statue",
+      "file": "scenes/ch26_statue.webp",
+      "chapter": "26",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Chaos at the Capitol Park statue"
+    },
+    {
+      "key": "ch27_kamskis_house",
+      "file": "scenes/ch27_kamskis_house.webp",
+      "chapter": "27",
+      "character": "Connor",
+      "headings": [
+        "Outside"
+      ],
+      "chapter_main": true,
+      "caption": "Kamski's house by the frozen lake"
+    },
+    {
+      "key": "ch27_kamski_interior",
+      "file": "scenes/ch27_kamski_interior.webp",
+      "chapter": "27",
+      "character": "Connor",
+      "headings": [
+        "Inside"
+      ],
+      "chapter_main": false,
+      "caption": "Inside Kamski's house"
+    },
+    {
+      "key": "ch27_kamski_interior_2",
+      "file": "scenes/ch27_kamski_interior_2.webp",
+      "chapter": "27",
+      "character": "Connor",
+      "headings": [
+        "Inside"
+      ],
+      "chapter_main": false,
+      "caption": "Kamski's pool room"
+    },
+    {
+      "key": "ch27_kamski_pool",
+      "file": "scenes/ch27_kamski_pool.webp",
+      "chapter": "27",
+      "character": "Connor",
+      "headings": [
+        "Inside"
+      ],
+      "chapter_main": false,
+      "caption": "Kamski's pool"
+    },
+    {
+      "key": "ch28_freedom_march",
+      "file": "scenes/ch28_freedom_march.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "In the street"
+      ],
+      "chapter_main": true,
+      "caption": "The freedom march through the streets"
+    },
+    {
+      "key": "ch28_rooftop",
+      "file": "scenes/ch28_rooftop.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "On the roof"
+      ],
+      "chapter_main": false,
+      "caption": "Markus and North on a ruined rooftop"
+    },
+    {
+      "key": "ch28_rooftop_2",
+      "file": "scenes/ch28_rooftop_2.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "On the roof"
+      ],
+      "chapter_main": false,
+      "caption": "Rooftop overlooking snowy Detroit"
+    },
+    {
+      "key": "ch28_mall",
+      "file": "scenes/ch28_mall.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "In the Mall"
+      ],
+      "chapter_main": false,
+      "caption": "The mall"
+    },
+    {
+      "key": "ch28_factory",
+      "file": "scenes/ch28_factory.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Ruined factory in the snow"
+    },
+    {
+      "key": "ch28_street",
+      "file": "scenes/ch28_street.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "In the street"
+      ],
+      "chapter_main": false,
+      "caption": "Snowy street"
+    },
+    {
+      "key": "ch28_markus_speech",
+      "file": "scenes/ch28_markus_speech.webp",
+      "chapter": "28",
+      "character": "Markus",
+      "headings": [
+        "Start the march"
+      ],
+      "chapter_main": false,
+      "caption": "Markus raises his fist to the crowd"
+    },
+    {
+      "key": "ch29_evidence_room",
+      "file": "scenes/ch29_evidence_room.webp",
+      "chapter": "29",
+      "character": "Connor",
+      "headings": [
+        "In the evidence room"
+      ],
+      "chapter_main": true,
+      "caption": "DPD evidence room"
+    },
+    {
+      "key": "ch29_fowlers_office",
+      "file": "scenes/ch29_fowlers_office.webp",
+      "chapter": "29",
+      "character": "Connor",
+      "headings": [
+        "In Fowler's office"
+      ],
+      "chapter_main": false,
+      "caption": "Fowler's office"
+    },
+    {
+      "key": "ch29_zen_garden",
+      "file": "scenes/ch29_zen_garden.webp",
+      "chapter": "29",
+      "character": "Connor",
+      "headings": [
+        "In the Zen Garden"
+      ],
+      "chapter_main": false,
+      "caption": "Amanda gives Connor a last chance"
+    },
+    {
+      "key": "ch30_jericho_attack",
+      "file": "scenes/ch30_jericho_attack.webp",
+      "chapter": "30.1",
+      "character": "Kara",
+      "headings": [
+        "Jericho under attack"
+      ],
+      "chapter_main": true,
+      "caption": "Jericho under attack"
+    },
+    {
+      "key": "ch30_jericho_attack_2",
+      "file": "scenes/ch30_jericho_attack_2.webp",
+      "chapter": "30.1",
+      "character": "Kara",
+      "headings": [
+        "Jericho under attack"
+      ],
+      "chapter_main": false,
+      "caption": "Assault on Jericho"
+    },
+    {
+      "key": "ch30_jericho",
+      "file": "scenes/ch30_jericho.webp",
+      "chapter": "30.1",
+      "character": "Kara",
+      "headings": [
+        "In Jericho"
+      ],
+      "chapter_main": false,
+      "caption": "Jericho's busy hold"
+    },
+    {
+      "key": "ch30_hold",
+      "file": "scenes/ch30_hold.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [
+        "In the hold"
+      ],
+      "chapter_main": false,
+      "caption": "Jericho's hold"
+    },
+    {
+      "key": "ch30_jericho_deck",
+      "file": "scenes/ch30_jericho_deck.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Jericho's deck"
+    },
+    {
+      "key": "ch30_soldiers",
+      "file": "scenes/ch30_soldiers.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Soldiers firing inside Jericho"
+    },
+    {
+      "key": "ch30_corridor",
+      "file": "scenes/ch30_corridor.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [
+        "In the corridor"
+      ],
+      "chapter_main": false,
+      "caption": "Soldiers in a Jericho corridor"
+    },
+    {
+      "key": "ch30_hold_2",
+      "file": "scenes/ch30_hold_2.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Jericho's hold"
+    },
+    {
+      "key": "ch30_collapse",
+      "file": "scenes/ch30_collapse.webp",
+      "chapter": "30.3",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Collapsed section of Jericho"
+    },
+    {
+      "key": "ch31_church",
+      "file": "scenes/ch31_church.webp",
+      "chapter": "31.1",
+      "character": "Markus",
+      "headings": [
+        "In the church : Jericho was attacked"
+      ],
+      "chapter_main": true,
+      "caption": "Androids in the church"
+    },
+    {
+      "key": "ch31_carl_alive",
+      "file": "scenes/ch31_carl_alive.webp",
+      "chapter": "31.1",
+      "character": "Markus",
+      "headings": [
+        "Carl is still alive"
+      ],
+      "chapter_main": false,
+      "caption": "Markus with Carl one last time"
+    },
+    {
+      "key": "ch32_barricade",
+      "file": "scenes/ch32_barricade.webp",
+      "chapter": "32.5",
+      "character": "Markus",
+      "headings": [
+        "At the barricade"
+      ],
+      "chapter_main": true,
+      "caption": "Androids facing soldiers at the barricade"
+    },
+    {
+      "key": "ch32_barricade_2",
+      "file": "scenes/ch32_barricade_2.webp",
+      "chapter": "32.5",
+      "character": "Markus",
+      "headings": [
+        "At the barricade"
+      ],
+      "chapter_main": false,
+      "caption": "Military barricade"
+    },
+    {
+      "key": "ch32_assault",
+      "file": "scenes/ch32_assault.webp",
+      "chapter": "32.6",
+      "character": "Markus",
+      "headings": [
+        "Attacking"
+      ],
+      "chapter_main": false,
+      "caption": "Assault"
+    },
+    {
+      "key": "ch32_cyberlife_front",
+      "file": "scenes/ch32_cyberlife_front.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "At the CyberLife tower"
+      ],
+      "chapter_main": true,
+      "caption": "CyberLife Tower entrance"
+    },
+    {
+      "key": "ch32_cyberlife_tower_bridge",
+      "file": "scenes/ch32_cyberlife_tower_bridge.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "Road to CyberLife Tower"
+    },
+    {
+      "key": "ch32_cyberlife_checkpoint",
+      "file": "scenes/ch32_cyberlife_checkpoint.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "At the CyberLife tower"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife checkpoint"
+    },
+    {
+      "key": "ch32_cyberlife_tower",
+      "file": "scenes/ch32_cyberlife_tower.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "CyberLife Tower from the air"
+    },
+    {
+      "key": "ch32_cyberlife_entrance",
+      "file": "scenes/ch32_cyberlife_entrance.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "At the CyberLife tower"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife Tower entrance"
+    },
+    {
+      "key": "ch32_cyberlife_atrium",
+      "file": "scenes/ch32_cyberlife_atrium.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "CyberLife Tower atrium"
+    },
+    {
+      "key": "ch32_cyberlife_atrium_2",
+      "file": "scenes/ch32_cyberlife_atrium_2.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": false,
+      "caption": "CyberLife Tower atrium"
+    },
+    {
+      "key": "ch32_elevator",
+      "file": "scenes/ch32_elevator.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "In the elevator"
+      ],
+      "chapter_main": false,
+      "caption": "CyberLife Tower elevator"
+    },
+    {
+      "key": "ch32_floor_minus_49",
+      "file": "scenes/ch32_floor_minus_49.webp",
+      "chapter": "32.4",
+      "character": "Connor",
+      "headings": [
+        "Floor -49"
+      ],
+      "chapter_main": false,
+      "caption": "Androids stored on floor -49"
+    }
+  ]
+}

@@ -14,15 +14,20 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .engine import canonical_hash
+from .engine import canonical_hash, chapter_briefing
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
+# Game art is copyrighted, so it stays local (gitignored) and every view works without it.
+IMAGES = Path(__file__).resolve().parents[1] / "images"
+# The scene-art manifest is committed; the images it names live under the images folder.
+SCENE_ART_MANIFEST = Path(__file__).resolve().parents[1] / "data" / "scene-art.json"
 
 # A run with no final summary and no new events for this long is no longer active.
 STALE_RUN_SECONDS = 15 * 60
@@ -240,10 +245,16 @@ def _short_event(event: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _moment_id(node_id: Any) -> str | None:
+    """A Moment is one story graph node: the Story and the Flowchart both address it by this id."""
+    return str(node_id) if node_id is not None else None
+
+
 def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     """What a reader needs from one event, including the dialogue _short_event leaves out."""
     kind = event.get("type")
     beat = {k: event.get(k) for k in ("index", "type", "node_id")}
+    beat["moment"] = _moment_id(event.get("node_id"))
     if kind == "scene":
         scene = event.get("visible_to_agent") or {}
         beat.update(
@@ -277,6 +288,16 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
         )
     elif kind == "ending":
         beat.update(description=event.get("description"))
+    elif kind == "memory_update":
+        # A Memory Update closes a Chapter Segment; _parse_events adds the previous memory.
+        beat.update(
+            type="memory",
+            character=event.get("character"),
+            memory=event.get("memory") or "",
+            length=event.get("length"),
+            max_chars=event.get("max_chars"),
+            truncated=bool(event.get("truncated", False)),
+        )
     else:
         return None
     return beat
@@ -287,10 +308,19 @@ def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, 
     """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
+    visits: Counter = Counter()
+    memories: dict[str, str] = {}
     for event in _event_iter(Path(directory)):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
+            if beat["type"] == "memory":
+                # Each Character's memory is compared only with its own last one.
+                beat["previous"] = memories.get(beat["character"], "")
+                memories[beat["character"]] = beat["memory"]
+            # A node can recur, so each pass through a Moment is numbered from the run's start.
+            visits[beat["moment"]] += 1
+            beat["visit"] = visits[beat["moment"]]
             story.setdefault(str(event.get("chapter") or "Unknown"), []).append(beat)
     return short, story
 
@@ -414,9 +444,12 @@ def _flowchart_projection(
                 "flag",
                 "unverified",
                 "condition_text",
+                "exploration",
+                "key",
             )
             if k in node
         }
+        nodes[node_id]["moment"] = _moment_id(node_id)
         if node.get("type") == "scene":
             nodes[node_id]["observations"] = node.get("observations", [])
             nodes[node_id]["dialogue"] = [
@@ -529,16 +562,85 @@ def _load_saved_graph(
     return _event_only_graph(directory), False, "event_log_only"
 
 
+@lru_cache(maxsize=32)
+def _cached_briefings(
+    directory: str, extra_graphs_dir: str | None, _snapshot_ns: int
+) -> dict[str, str]:
+    """Chapter Briefings from the Run's story graph; graphs older than briefings have none."""
+    path = Path(directory)
+    graph, _, _ = _load_saved_graph(
+        path.parent, path, Path(extra_graphs_dir) if extra_graphs_dir else None
+    )
+    return {
+        str(chapter): briefing
+        for chapter in graph.get("chapter_briefings") or {}
+        if (briefing := chapter_briefing(graph, chapter))
+    }
+
+
+def _chapter_briefing(
+    directory: Path, extra_graphs_dir: Path | None, chapter: str
+) -> str | None:
+    try:
+        snapshot_ns = (directory / "story-graph.json").stat().st_mtime_ns
+    except OSError:
+        snapshot_ns = 0
+    briefings = _cached_briefings(
+        str(directory), str(extra_graphs_dir) if extra_graphs_dir else None, snapshot_ns
+    )
+    return briefings.get(chapter)
+
+
+def _art_file(art_root: Path, relative: Any) -> Path | None:
+    """An installed image inside the art folder, or None; never a path outside it."""
+    if not isinstance(relative, str) or not relative:
+        return None
+    path = (art_root / relative).resolve()
+    if not path.is_relative_to(art_root) or not path.is_file():
+        return None
+    return path
+
+
+def _installed_scene_art(art_root: Path, manifest: Path) -> dict[str, dict[str, Any]]:
+    """Manifest scenes whose image is actually installed, by key."""
+    scenes = (_json_file(manifest) or {}).get("scenes", [])
+    installed: dict[str, dict[str, Any]] = {}
+    for scene in scenes if isinstance(scenes, list) else []:
+        if not isinstance(scene, dict) or not isinstance(scene.get("key"), str):
+            continue
+        if _art_file(art_root, scene.get("file")) is not None:
+            installed[scene["key"]] = scene
+    return installed
+
+
+def _scene_art_key(
+    scenes: dict[str, dict[str, Any]], chapter: str, heading: Any
+) -> str | None:
+    """The installed image for a scene: its heading's image, else the chapter's main one."""
+    main = None
+    for scene in scenes.values():
+        if str(scene.get("chapter")) != chapter:
+            continue
+        if heading in (scene.get("headings") or []):
+            return scene["key"]
+        if scene.get("chapter_main") and main is None:
+            main = scene["key"]
+    return main
+
+
 def create_app(
-    runs_dir: str | Path = "runs", graphs_dir: str | Path | None = None
+    runs_dir: str | Path = "runs",
+    graphs_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
+    art_manifest: str | Path | None = None,
 ) -> FastAPI:
     root = Path(runs_dir).expanduser().resolve()
+    images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
+    manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
-    app = FastAPI(
-        title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs"
-    )
+    app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -575,9 +677,18 @@ def create_app(
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
         # A chapter the run never entered is a normal answer, not an error.
+        directory = _resolve_run(root, run_id)
+        scenes = _installed_scene_art(images_root, manifest_path)
+        moments = [
+            {**moment, "art": _scene_art_key(scenes, chapter, moment.get("heading"))}
+            if moment.get("type") == "scene"
+            else moment
+            for moment in _parsed_events(directory)[1].get(chapter, [])
+        ]
         return {
             "chapter": chapter,
-            "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, []),
+            "briefing": _chapter_briefing(directory, graph_root, chapter),
+            "moments": moments,
         }
 
     @app.get("/api/runs/{run_id}/events/{event_index}")
@@ -651,9 +762,47 @@ def create_app(
             [_detail(root, _resolve_run(root, run_id)) for run_id in run_ids]
         )
 
-    @app.get("/legacy")
-    def legacy_home():
-        return FileResponse(ASSETS / "legacy.html", media_type="text/html")
+    @app.get("/api/art/title")
+    def title_art():
+        art = images_root / "ui" / "title.webp"
+        if not art.is_file():
+            raise HTTPException(status_code=404, detail="No title art installed")
+        return FileResponse(art, media_type="image/webp")
+
+    @app.get("/api/art/manifest")
+    def art_manifest_route():
+        return {
+            "scenes": [
+                {
+                    k: scene.get(k)
+                    for k in (
+                        "key",
+                        "chapter",
+                        "character",
+                        "headings",
+                        "chapter_main",
+                        "caption",
+                    )
+                }
+                | {"url": f"/api/art/scene/{quote(key, safe='')}"}
+                for key, scene in _installed_scene_art(
+                    images_root, manifest_path
+                ).items()
+            ]
+        }
+
+    @app.get("/api/art/scene/{key}")
+    def scene_art(key: str):
+        # Only keys named in the manifest are served, so a request can never pick a path.
+        scene = _installed_scene_art(images_root, manifest_path).get(key)
+        path = _art_file(images_root, scene.get("file")) if scene else None
+        if path is None:
+            raise HTTPException(status_code=404, detail="Scene art not installed")
+        return FileResponse(
+            path,
+            media_type="image/webp",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
 
     @app.get("/")
     def home():

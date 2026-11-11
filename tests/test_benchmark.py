@@ -36,7 +36,7 @@ def test_clean_graph_and_branches(tmp_path):
     assert decision["output"]["rationale"]
 
 
-def test_decision_history_in_next_prompt(tmp_path):
+def test_segment_narrative_includes_earlier_choices_and_dialogue(tmp_path):
     g = graph()
     g["nodes"]["has_code"]["next"] = "second_choice"
     g["nodes"]["second_choice"] = {
@@ -50,53 +50,48 @@ def test_decision_history_in_next_prompt(tmp_path):
             {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
         ],
     }
-    run = Runner(g, "mock", None, tmp_path / "run")
-    run.run()
-    events = [
-        json.loads(line)
-        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
-    ]
-    decisions = [e for e in events if e["type"] == "decision"]
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
     assert len(decisions) == 2
-    past = decisions[1]["input"]["entire_decision_history"]
-    assert past[0]["choice_key"] == "first_decision:inspect"
-    assert past[0]["rationale"] == "Mock policy: first listed choice."
-    assert any(
-        x["heading"] == "Investigation"
-        for x in decisions[1]["input"]["narrative_since_last_choice"]
-    )
-
-
-def test_earlier_scenes_include_dialogue(tmp_path):
-    g = graph()
-    g["nodes"]["has_code"]["next"] = "second_choice"
-    g["nodes"]["second_choice"] = {
-        "id": "second_choice",
-        "type": "choice",
-        "chapter": "demo-2",
-        "character": "Investigator",
-        # "alarm" appears only in the Arrival scene's dialogue, not its description.
-        "heading": "Alarm",
-        "description": "Silence the alarm?",
-        "options": [
-            {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
-        ],
-    }
-    Runner(g, "mock", None, tmp_path / "run", retrieval_limit=1).run()
-    events = [
-        json.loads(line)
-        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    # No chapter exit in this graph, so the whole run is one Chapter Segment.
+    narrative = decisions[1]["input"]["chapter_segment_so_far"]
+    assert [e.get("heading") or e.get("your_choice") for e in narrative] == [
+        "Arrival",
+        "Inspect the sensor",
+        "Investigation",
+        "Control room",
+        "Unlocked",
     ]
-    second = [e for e in events if e["type"] == "decision"][1]
-    [arrival] = second["input"]["relevant_earlier_scenes"]
-    assert arrival["heading"] == "Arrival"
-    assert arrival["dialogue"] == [
+    assert narrative[0]["dialogue"] == [
         {
             "speaker": "Guard",
             "text": "The sensor may explain the alarm.",
             "source_keys": [],
         }
     ]
+    assert narrative[1]["rationale"] == "Mock policy: first listed choice."
+
+
+def test_decision_prompt_contains_only_the_allowed_fields(tmp_path):
+    Runner(three_segment_graph(), "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    for decision in decisions:
+        assert list(decision["input"]) == [
+            "current_scene",
+            "character_memory",
+            "chapter_segment_so_far",
+            "goal",
+            "available_choices",
+        ]
+        assert set(decision["input"]["current_scene"]) == {
+            "chapter",
+            "character",
+            "heading",
+            "description",
+        }
+    # The segment restarts at each chapter exit.
+    third = decisions[2]["input"]["chapter_segment_so_far"]
+    assert [e.get("heading") for e in third] == ["Interrogation"]
 
 
 def test_resume(tmp_path):
@@ -258,31 +253,364 @@ def test_additional_providers_are_wired_without_external_calls(monkeypatch):
         create_model("deepseek", None)
 
 
-def test_recent_scenes_not_repeated_in_earlier_scenes(tmp_path):
-    g = graph()
-    g["nodes"]["has_code"]["next"] = "second_choice"
-    g["nodes"]["second_choice"] = {
-        "id": "second_choice",
-        "type": "choice",
-        "chapter": "demo-2",
-        "character": "Investigator",
-        "heading": "Final choice",
-        "description": "How to proceed?",
-        "options": [
-            {"id": "finish", "label": "Finish", "next": "end", "effects": {"flags": {}}}
+def read_events(run_dir):
+    return [
+        json.loads(line) for line in (run_dir / "events.jsonl").read_text().splitlines()
+    ]
+
+
+def test_overlong_reply_is_retried_once_briefly_then_accepted(tmp_path):
+    long_reply = json.dumps({"choice_id": "inspect", "rationale": "word " * 2000})
+    short_reply = json.dumps({"choice_id": "storage", "rationale": "Brief."})
+    run = Runner(
+        graph(), "mock", None, tmp_path / "run", mock_replies=[long_reply, short_reply]
+    )
+    run.run()
+    [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decision["output"]["choice_id"] == "storage"
+    assert decision["model_info"]["attempts"] == 2
+    assert "answer briefly" in decision["model_info"]["retry_instruction"].lower()
+
+
+def test_second_broken_reply_stops_the_run(tmp_path):
+    long_reply = json.dumps({"choice_id": "inspect", "rationale": "word " * 2000})
+    run = Runner(
+        graph(),
+        "mock",
+        None,
+        tmp_path / "run",
+        mock_replies=[long_reply, "not json at all", "{}"],
+    )
+    with pytest.raises(RuntimeError, match="after one brief retry"):
+        run.run()
+    assert run.mock_replies == ["{}"]  # exactly two attempts consumed
+    assert not [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+
+
+def three_segment_graph():
+    """Connor (chapter 1), Kara (chapter 2), Connor again (chapter 3)."""
+
+    def segment(n, character, heading, label):
+        return {
+            f"s{n}": {
+                "id": f"s{n}",
+                "type": "scene",
+                "chapter": str(n),
+                "character": character,
+                "heading": heading,
+                "description": f"{heading} description.",
+                "dialogue": [{"speaker": "Someone", "text": f"Line in {heading}."}],
+                "observations": [],
+                "next": f"c{n}",
+            },
+            f"c{n}": {
+                "id": f"c{n}",
+                "type": "choice",
+                "chapter": str(n),
+                "character": character,
+                "heading": f"{heading} choice",
+                "description": "What now?",
+                "options": [
+                    {
+                        "id": "a",
+                        "label": label,
+                        "next": f"t{n}",
+                        "effects": {"flags": {}},
+                    },
+                    {
+                        "id": "b",
+                        "label": "Do nothing",
+                        "next": f"t{n}",
+                        "effects": {"flags": {}},
+                    },
+                ],
+            },
+            f"t{n}": {
+                "id": f"t{n}",
+                "type": "scene",
+                "chapter": str(n),
+                "character": character,
+                "heading": f"{heading} aftermath",
+                "description": "It is done.",
+                "dialogue": [],
+                "observations": [],
+                "next": f"x{n}",
+            },
+            f"x{n}": {
+                "id": f"x{n}",
+                "type": "chapter_exit",
+                "chapter": str(n),
+                "character": character,
+                "description": f"End of chapter {n}",
+                "next": f"s{n + 1}" if n < 3 else "end",
+            },
+        }
+
+    nodes = {
+        **segment(1, "Connor", "Rooftop", "Save the girl"),
+        **segment(2, "Kara", "Kitchen", "Protect Alice"),
+        **segment(3, "Connor", "Interrogation", "Press the suspect"),
+        "end": {"id": "end", "type": "ending", "chapter": "3", "description": "Done"},
+    }
+    return {
+        "metadata": {"title": "Three segments", "fidelity": "verified_game_rules"},
+        "start": "s1",
+        "nodes": nodes,
+    }
+
+
+def test_connor_prompt_never_contains_karas_memory(tmp_path):
+    Runner(three_segment_graph(), "mock", None, tmp_path / "run").run()
+    events = read_events(tmp_path / "run")
+    memories = {
+        e["character"]: e["memory"] for e in events if e["type"] == "memory_update"
+    }
+    assert "Kitchen" in memories["Kara"]
+    connor_later = [e for e in events if e["type"] == "decision"][2]
+    assert connor_later["input"]["current_scene"]["character"] == "Connor"
+    assert "Rooftop" in connor_later["input"]["character_memory"]
+    assert "Kitchen" not in json.dumps(connor_later["input"])
+    kara = [e for e in events if e["type"] == "decision"][1]
+    assert kara["input"]["character_memory"] == ""
+
+
+def test_memory_update_at_every_chapter_exit(tmp_path):
+    Runner(three_segment_graph(), "mock", None, tmp_path / "run").run()
+    events = read_events(tmp_path / "run")
+    updates = [e for e in events if e["type"] == "memory_update"]
+    assert [(u["character"], u["chapter"]) for u in updates] == [
+        ("Connor", "1"),
+        ("Kara", "2"),
+        ("Connor", "3"),
+    ]
+    # Each update comes right before its chapter exit.
+    kinds = [e["type"] for e in events]
+    assert kinds.count("chapter_exit") == 3
+    for update in updates:
+        assert kinds[update["index"] + 1] == "chapter_exit"
+    last = updates[2]
+    assert last["input"]["instruction"] == (
+        "This is the only thing you will remember of your time as Connor. "
+        "Rewrite your memory to include this chapter in at most 6000 characters."
+    )
+    assert last["input"]["previous_memory"] == updates[0]["memory"]
+    segment = last["input"]["chapter_segment"]
+    assert segment[0]["dialogue"][0]["text"] == "Line in Interrogation."
+    assert segment[1]["your_choice"] == "Press the suspect"
+    assert segment[1]["rationale"] == "Mock policy: first listed choice."
+    assert last["length"] == len(last["memory"]) and last["truncated"] is False
+
+
+def test_over_limit_memory_gets_one_shorten_retry_then_truncation(tmp_path):
+    choice = json.dumps({"choice_id": "a", "rationale": "Ok."})
+    shortened = json.dumps({"memory": "Saved her."})
+    still_long = json.dumps({"memory": "x" * 80})
+    run = Runner(
+        three_segment_graph(),
+        "mock",
+        None,
+        tmp_path / "run",
+        memory_max_chars=40,
+        mock_replies=[
+            choice,
+            still_long,
+            shortened,  # chapter 1: retry fixes it
+            choice,
+            still_long,
+            still_long,  # chapter 2: still too long, truncated
+        ],
+    )
+    run.run()
+    first, second, _ = [
+        e for e in read_events(tmp_path / "run") if e["type"] == "memory_update"
+    ]
+    assert first["memory"] == "Saved her." and first["truncated"] is False
+    assert first["over_limit_length_before_retry"] == 80
+    assert run.mock_replies == []  # exactly one shorten retry per update
+    assert second["memory"] == "x" * 40
+    assert second["length"] == 40 and second["truncated"] is True
+
+
+def test_resume_keeps_character_memories(tmp_path):
+    d = tmp_path / "run"
+    first = Runner(three_segment_graph(), "mock", None, d)
+    for _ in range(4):  # scene, choice, scene, Memory Update; then "crash"
+        first.step()
+    assert read_events(d)[-1]["type"] == "memory_update"
+    resumed = Runner(three_segment_graph(), "mock", None, d, resume=True)
+    resumed.run()
+    events = read_events(d)
+    connor_later = [e for e in events if e["type"] == "decision"][2]
+    assert "Rooftop" in connor_later["input"]["character_memory"]
+    assert [e["index"] for e in events] == list(range(len(events)))
+
+
+def test_experiment_records_decision_token_and_reasoning_settings(tmp_path):
+    Runner(graph(), "google", "gemini-2.5-flash", tmp_path / "run")
+    experiment = json.loads((tmp_path / "run" / "experiment.json").read_text())
+    limits = experiment["decision_limits"]
+    assert limits["max_output_tokens"] == 400
+    assert limits["rationale_max_sentences"] == 2
+    assert limits["broken_reply_retries"] == 1
+    assert limits["reasoning"] == {"thinking_budget": 0}
+
+
+def fake_chat_module(monkeypatch, module, cls):
+    import sys
+    from types import SimpleNamespace
+
+    captured = {}
+
+    def Fake(**kwargs):
+        captured.update(kwargs)
+        return kwargs
+
+    monkeypatch.setitem(sys.modules, module, SimpleNamespace(**{cls: Fake}))
+    return captured
+
+
+@pytest.mark.parametrize(
+    "provider,model,module,cls,token_key,reasoning",
+    [
+        ("openai", "gpt-4.1-mini", "langchain_openai", "ChatOpenAI", "max_tokens", {}),
+        (
+            "openai",
+            "o4-mini",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"reasoning_effort": "low"},
+        ),
+        (
+            "openai",
+            "gpt-5-mini",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"reasoning_effort": "minimal"},
+        ),
+        (
+            "anthropic",
+            "claude-sonnet-4-5",
+            "langchain_anthropic",
+            "ChatAnthropic",
+            "max_tokens",
+            {},
+        ),
+        (
+            "anthropic",
+            "claude-sonnet-5",
+            "langchain_anthropic",
+            "ChatAnthropic",
+            "max_tokens",
+            {"thinking": {"type": "disabled"}},
+        ),
+        (
+            "google",
+            "gemini-2.5-flash",
+            "langchain_google_genai",
+            "ChatGoogleGenerativeAI",
+            "max_output_tokens",
+            {"thinking_budget": 0},
+        ),
+        (
+            "google",
+            "gemini-3-pro-preview",
+            "langchain_google_genai",
+            "ChatGoogleGenerativeAI",
+            "max_output_tokens",
+            {"thinking_level": "low"},
+        ),
+        (
+            "deepseek",
+            "deepseek-chat",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {},
+        ),
+        (
+            "openrouter",
+            "x/y",
+            "langchain_openai",
+            "ChatOpenAI",
+            "max_tokens",
+            {"extra_body": {"reasoning": {"effort": "low"}}},
+        ),
+    ],
+)
+def test_providers_get_decision_token_limit_and_lowest_reasoning(
+    monkeypatch, provider, model, module, cls, token_key, reasoning
+):
+    from detroit_benchmark.engine import create_model
+
+    captured = fake_chat_module(monkeypatch, module, cls)
+    for env in ("GOOGLE_API_KEY", "DEEPSEEK_API_KEY", "OPENROUTER_API_KEY"):
+        monkeypatch.setenv(env, "test-only-key")
+    create_model(provider, model, 0)
+    assert captured[token_key] == 400
+    for key, value in reasoning.items():
+        assert captured[key] == value
+    for key in ("reasoning_effort", "thinking", "thinking_budget", "thinking_level"):
+        if key not in reasoning:
+            assert key not in captured
+
+
+def test_chapter_briefing_is_in_the_decision_prompt(tmp_path):
+    g = three_segment_graph()
+    g["chapter_briefings"] = {"1": "A rooftop at night. A child is in danger."}
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decisions[0]["input"]["chapter_briefing"].startswith("A rooftop")
+    assert "chapter_briefing" not in decisions[1]["input"]
+
+
+def test_public_news_from_one_character_reaches_the_others(tmp_path):
+    g = three_segment_graph()
+    g["nodes"]["c2"]["options"][0]["effects"] = {
+        "flags": {"kara_protected_alice": True},
+        "news": [
+            {
+                "headline": "Android flees with child",
+                "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night",
+            }
         ],
     }
     Runner(g, "mock", None, tmp_path / "run").run()
-    events = [
-        json.loads(line)
-        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
-    ]
-    first, second = [e["input"] for e in events if e["type"] == "decision"]
-    # Nothing precedes the first choice except its own recent narrative.
-    assert [s["scene_id"] for s in first["narrative_since_last_choice"]] == ["arrival"]
-    assert first["relevant_earlier_scenes"] == []
-    # Later, only scenes from before the last choice are retrieved.
-    recent = {s["scene_id"] for s in second["narrative_since_last_choice"]}
-    earlier = [s["scene_id"] for s in second["relevant_earlier_scenes"]]
-    assert recent == {"sensor_outcome", "ch2", "has_code"}
-    assert earlier == ["arrival"]
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert "news" not in decisions[0]["input"]
+    assert decisions[2]["input"]["news"] == ["Android flees with child"]
+    # Raw flags never leak into the prompt.
+    assert "kara_protected_alice" not in json.dumps(decisions[2]["input"])
+
+
+def test_public_news_in_the_prompt_is_capped_to_the_latest_headlines(tmp_path):
+    from detroit_benchmark.engine import PUBLIC_NEWS_LIMIT
+
+    g = three_segment_graph()
+    source = "https://detroit-become-human.fandom.com/wiki/Stormy_Night"
+    g["nodes"]["c1"]["options"][0]["effects"] = {
+        "flags": {},
+        "news": [
+            {"headline": f"Headline {i}", "source": source}
+            for i in range(PUBLIC_NEWS_LIMIT + 5)
+        ],
+    }
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    news = decisions[1]["input"]["news"]
+    assert len(news) == PUBLIC_NEWS_LIMIT
+    assert news[-1] == f"Headline {PUBLIC_NEWS_LIMIT + 4}"
+
+
+def test_rationale_is_cut_to_two_sentences(tmp_path):
+    reply = json.dumps(
+        {
+            "choice_id": "inspect",
+            "rationale": "First one. Second one! Third one? Fourth.",
+        }
+    )
+    Runner(graph(), "mock", None, tmp_path / "run", mock_replies=[reply]).run()
+    [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decision["output"]["rationale"] == "First one. Second one!"
+    assert decision["untrimmed_rationale"].endswith("Fourth.")

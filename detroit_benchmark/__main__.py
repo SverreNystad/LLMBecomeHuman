@@ -5,7 +5,7 @@ import argparse
 import json
 from pathlib import Path
 from .ingest import apply_overrides, compile_from_repo
-from .engine import Runner, validate_graph
+from .engine import DEFAULT_MEMORY_MAX_CHARS, Runner, validate_graph
 
 
 def read_json(p):
@@ -60,6 +60,12 @@ def main():
     play.add_argument("--max-steps", type=int, default=30000)
     play.add_argument("--max-prompt-chars", type=int, default=350000)
     play.add_argument(
+        "--memory-max-chars",
+        type=int,
+        default=DEFAULT_MEMORY_MAX_CHARS,
+        help="Size limit of each Character Memory, in characters",
+    )
+    play.add_argument(
         "--temperature",
         type=lambda v: None if v.lower() == "none" else float(v),
         default=0,
@@ -80,6 +86,11 @@ def main():
         type=Path,
         help="Optional folder containing story graph JSON files for older runs",
     )
+    dashboard.add_argument(
+        "--images-dir",
+        type=Path,
+        help="Folder with local game art (default: the repository's images/ folder)",
+    )
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8000)
     args = p.parse_args()
@@ -89,7 +100,9 @@ def main():
 
         print(f"Open http://{args.host}:{args.port} to view the benchmark dashboard")
         uvicorn.run(
-            create_app(args.runs_dir, args.graphs_dir), host=args.host, port=args.port
+            create_app(args.runs_dir, args.graphs_dir, args.images_dir),
+            host=args.host,
+            port=args.port,
         )
     elif args.command == "ingest":
         graph = compile_from_repo(args.repo)
@@ -125,6 +138,7 @@ def main():
             initial_flags=read_json(args.initial_flags) if args.initial_flags else None,
             max_steps=args.max_steps,
             max_prompt_chars=args.max_prompt_chars,
+            memory_max_chars=args.memory_max_chars,
             temperature=args.temperature,
             resume=args.resume,
         )
