@@ -512,7 +512,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch1_00004"
+      "next": "ch1_00004",
+      "resolution": "qte"
     },
     "ch1_00006": {
       "id": "ch1_00006",
@@ -523,18 +524,42 @@
       "branches": [
         {
           "condition_text": "Probability of success at 100%",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_daniel_final_plea",
+                "equals": "reassure"
+              },
+              {
+                "flag": "connor_daniel_final_plea",
+                "equals": "use_gun"
+              }
+            ]
+          },
           "next": "ch1_00003"
         },
         {
           "condition_text": "Probability of success too low",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_daniel_final_plea",
+                "equals": "truth"
+              },
+              {
+                "flag": "connor_daniel_final_plea",
+                "equals": "sacrifice"
+              }
+            ]
+          },
           "next": "ch1_00005"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch1_00001"
+      "next": "ch1_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
     },
     "ch1_00007": {
       "id": "ch1_00007",
@@ -589,7 +614,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_final_plea": "reassure"
+            }
           }
         },
         {
@@ -599,7 +626,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_final_plea": "truth"
+            }
           }
         },
         {
@@ -607,12 +636,21 @@
           "label": "USE GUN",
           "next": "ch1_00006",
           "requirements_unverified": [
-            "Kept the gun and close enough to Daniel"
+            "Close enough to Daniel"
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
-          }
+            "flags": {
+              "connor_daniel_final_plea": "use_gun"
+            }
+          },
+          "requires": [
+            {
+              "flag": "connor_lied_about_gun",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
         },
         {
           "id": "option_3",
@@ -623,7 +661,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_final_plea": "sacrifice"
+            }
           }
         }
       ]
@@ -874,7 +914,7 @@
           "label": "USE GUN",
           "next": "ch1_00016",
           "requirements_unverified": [
-            "Kept the gun and close enough to Daniel"
+            "Close enough to Daniel"
           ],
           "relation_hints": [
             {
@@ -892,7 +932,14 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_lied_about_gun",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
         },
         {
           "id": "option_1",
@@ -1784,7 +1831,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_lied_about_gun": true
+            }
           }
         },
         {
@@ -1794,7 +1843,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_lied_about_gun": false
+            }
           }
         }
       ]
@@ -1833,7 +1884,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch1_00051"
+      "next": "ch1_00051",
+      "resolution": "unknown"
     },
     "ch1_00061": {
       "id": "ch1_00061",
@@ -2369,7 +2421,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch1_00078"
+      "next": "ch1_00078",
+      "resolution": "unknown"
     },
     "ch1_00087": {
       "id": "ch1_00087",
@@ -6130,7 +6183,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch4_00020"
+      "next": "ch4_00020",
+      "resolution": "unknown"
     },
     "ch4_00023": {
       "id": "ch4_00023",
@@ -8088,7 +8142,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch5_00040"
+      "next": "ch5_00040",
+      "resolution": "unknown"
     },
     "ch5_00054": {
       "id": "ch5_00054",
@@ -8606,7 +8661,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch5_00040"
+      "next": "ch5_00040",
+      "resolution": "unknown"
     },
     "ch5_00078": {
       "id": "ch5_00078",
@@ -8995,7 +9051,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch5_00094"
+      "next": "ch5_00094",
+      "resolution": "unknown"
     },
     "ch5_00101": {
       "id": "ch5_00101",
@@ -9290,7 +9347,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch5_00111"
+      "next": "ch5_00111",
+      "resolution": "unknown"
     },
     "ch5_00117": {
       "id": "ch5_00117",
@@ -10830,23 +10888,34 @@
       "branches": [
         {
           "condition_text": "Chose to spill Hank's drink",
-          "when": null,
+          "when": {
+            "flag": "connor_hank_bar_choice",
+            "equals": "spill"
+          },
           "next": "ch6_00057"
         },
         {
           "condition_text": "Chose to buy Hank a drink",
-          "when": null,
+          "when": {
+            "flag": "connor_hank_bar_choice",
+            "equals": "buy_drink"
+          },
           "next": "ch6_00061"
         },
         {
           "condition_text": "Chose to wait outside",
-          "when": null,
+          "when": {
+            "flag": "connor_hank_bar_choice",
+            "equals": "wait_outside"
+          },
           "next": "ch6_00064"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch6_00056"
+      "next": "ch6_00056",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart"
     },
     "ch6_00066": {
       "id": "ch6_00066",
@@ -11819,13 +11888,18 @@
       "branches": [
         {
           "condition_text": "Didn't pick [ FIRM ]",
-          "when": null,
+          "when": {
+            "flag": "connor_firm_with_hank",
+            "equals": false
+          },
           "next": "ch6_00120"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch6_00118"
+      "next": "ch6_00118",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Notes"
     },
     "ch6_00122": {
       "id": "ch6_00122",
@@ -12059,7 +12133,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_firm_with_hank": false
+            }
           }
         },
         {
@@ -12074,7 +12150,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_firm_with_hank": true
+            }
           }
         },
         {
@@ -12089,7 +12167,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_firm_with_hank": false
+            }
           }
         }
       ]
@@ -12296,7 +12376,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_hank_bar_choice": "spill"
+            }
           }
         },
         {
@@ -12311,7 +12393,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_hank_bar_choice": "buy_drink"
+            }
           }
         },
         {
@@ -12321,7 +12405,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_hank_bar_choice": "wait_outside"
+            }
           }
         }
       ]
@@ -12932,7 +13018,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00001"
+      "next": "ch7_00001",
+      "resolution": "qte"
     },
     "ch7_00008": {
       "id": "ch7_00008",
@@ -13166,7 +13253,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00001"
+      "next": "ch7_00001",
+      "resolution": "unknown"
     },
     "ch7_00019": {
       "id": "ch7_00019",
@@ -13752,7 +13840,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00001"
+      "next": "ch7_00001",
+      "resolution": "qte"
     },
     "ch7_00048": {
       "id": "ch7_00048",
@@ -13898,11 +13987,17 @@
           "condition_text": "Escape failed, Kara was destroyed",
           "when": null,
           "next": "ch7_00054"
+        },
+        {
+          "condition_text": "Kara and Alice get away from Todd",
+          "when": null,
+          "next": "ch7_00001"
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch7_00001"
+      "default_branch": 1,
+      "next": "ch7_00001",
+      "resolution": "qte"
     },
     "ch7_00056": {
       "id": "ch7_00056",
@@ -13938,7 +14033,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00055"
+      "next": "ch7_00055",
+      "resolution": "qte"
     },
     "ch7_00058": {
       "id": "ch7_00058",
@@ -13993,7 +14089,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00055"
+      "next": "ch7_00055",
+      "resolution": "qte"
     },
     "ch7_00061": {
       "id": "ch7_00061",
@@ -14037,7 +14134,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00055"
+      "next": "ch7_00055",
+      "resolution": "qte"
     },
     "ch7_00063": {
       "id": "ch7_00063",
@@ -14113,7 +14211,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00055"
+      "next": "ch7_00055",
+      "resolution": "qte"
     },
     "ch7_00067": {
       "id": "ch7_00067",
@@ -14307,7 +14406,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00001"
+      "next": "ch7_00001",
+      "resolution": "unknown"
     },
     "ch7_00077": {
       "id": "ch7_00077",
@@ -14440,18 +14540,26 @@
       "branches": [
         {
           "condition_text": "Going upstairs before Todd",
-          "when": null,
+          "when": {
+            "flag": "kara_reasoned_with_todd",
+            "equals": false
+          },
           "next": "ch7_00040"
         },
         {
           "condition_text": "Going upstairs after Todd",
-          "when": null,
+          "when": {
+            "flag": "kara_reasoned_with_todd",
+            "equals": true
+          },
           "next": "ch7_00083"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch7_00001"
+      "next": "ch7_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch7_00085": {
       "id": "ch7_00085",
@@ -14582,7 +14690,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_reasoned_with_todd": true
+            }
           }
         },
         {
@@ -14592,7 +14702,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_reasoned_with_todd": true
+            }
           }
         },
         {
@@ -14602,7 +14714,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_reasoned_with_todd": true
+            }
           }
         }
       ]
@@ -14622,7 +14736,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00084"
+      "next": "ch7_00084",
+      "resolution": "unknown"
     },
     "ch7_00093": {
       "id": "ch7_00093",
@@ -14716,11 +14831,17 @@
           "condition_text": "Don't go / Don't become a deviant",
           "when": null,
           "next": "ch7_00096"
+        },
+        {
+          "condition_text": "Kara breaks her programming",
+          "when": null,
+          "next": "ch7_00092"
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch7_00092"
+      "default_branch": 1,
+      "next": "ch7_00092",
+      "resolution": "qte"
     },
     "ch7_00098": {
       "id": "ch7_00098",
@@ -14811,7 +14932,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch7_00099"
+      "next": "ch7_00099",
+      "resolution": "unknown"
     },
     "ch7_00103": {
       "id": "ch7_00103",
@@ -16127,7 +16249,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch8_00045"
+      "next": "ch8_00045",
+      "resolution": "unknown"
     },
     "ch8_00052": {
       "id": "ch8_00052",
@@ -16373,7 +16496,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch8_00061"
+      "next": "ch8_00061",
+      "resolution": "unknown"
     },
     "ch8_00065": {
       "id": "ch8_00065",
@@ -16728,18 +16852,26 @@
       "branches": [
         {
           "condition_text": "Deviant shoots itself",
-          "when": null,
+          "when": {
+            "flag": "connor_pressured_deviant",
+            "equals": false
+          },
           "next": "ch9_00013"
         },
         {
           "condition_text": "Deviant shoots Connor and itself",
-          "when": null,
+          "when": {
+            "flag": "connor_pressured_deviant",
+            "equals": true
+          },
           "next": "ch9_00014"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch9_00001"
+      "next": "ch9_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch9_00016": {
       "id": "ch9_00016",
@@ -16959,13 +17091,18 @@
       "branches": [
         {
           "condition_text": "Used the CONVINCE approach to get a confession",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_approach",
+            "equals": "convince"
+          },
           "next": "ch9_00026"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch9_00001"
+      "next": "ch9_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch9_00028": {
       "id": "ch9_00028",
@@ -17267,7 +17404,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch9_00001"
+      "next": "ch9_00001",
+      "resolution": "unknown"
     },
     "ch9_00042": {
       "id": "ch9_00042",
@@ -17930,7 +18068,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch9_00058"
+      "next": "ch9_00058",
+      "resolution": "unknown"
     },
     "ch9_00073": {
       "id": "ch9_00073",
@@ -18066,7 +18205,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch9_00058"
+      "next": "ch9_00058",
+      "resolution": "unknown"
     },
     "ch9_00080": {
       "id": "ch9_00080",
@@ -18431,7 +18571,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_approach": "pressure",
+              "connor_pressured_deviant": true
+            }
           }
         },
         {
@@ -18446,7 +18589,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_approach": "probe"
+            }
           }
         },
         {
@@ -18456,7 +18601,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_approach": "convince"
+            }
           }
         },
         {
@@ -18468,7 +18615,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_interrogation_approach": "give_up"
+            }
           }
         }
       ]
@@ -19080,7 +19229,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_pressured_deviant": false
+            }
           }
         },
         {
@@ -19092,7 +19243,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_pressured_deviant": false
+            }
           }
         },
         {
@@ -19104,7 +19257,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_pressured_deviant": false
+            }
           }
         },
         {
@@ -19114,7 +19269,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_pressured_deviant": false
+            }
           }
         }
       ]
@@ -20786,7 +20943,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch10_00066"
+      "next": "ch10_00066",
+      "resolution": "unknown"
     },
     "ch10_00071": {
       "id": "ch10_00071",
@@ -21400,23 +21558,58 @@
       "branches": [
         {
           "condition_text": "Still in android uniform and no money",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_stole_clothes",
+                "equals": false
+              },
+              {
+                "flag": "kara_has_money",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch10_00098"
         },
         {
           "condition_text": "Stole the clothes in the laundromat but don't have money",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_stole_clothes",
+                "equals": true
+              },
+              {
+                "flag": "kara_has_money",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch10_00099"
         },
         {
           "condition_text": "Didn't steal the clothes but got money",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_stole_clothes",
+                "equals": false
+              },
+              {
+                "flag": "kara_has_money",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch10_00100"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch10_00097"
+      "next": "ch10_00097",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Motel_branch"
     },
     "ch10_00102": {
       "id": "ch10_00102",
@@ -21497,11 +21690,17 @@
           "condition_text": "Fail to steal",
           "when": null,
           "next": "ch10_00105"
+        },
+        {
+          "condition_text": "Kara takes the clothes unnoticed",
+          "when": null,
+          "next": "ch10_00104"
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch10_00104"
+      "default_branch": 1,
+      "next": "ch10_00104",
+      "resolution": "qte"
     },
     "ch10_00107": {
       "id": "ch10_00107",
@@ -21561,7 +21760,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_stole_clothes": true
+            }
           }
         },
         {
@@ -21576,7 +21777,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_stole_clothes": false
+            }
           }
         }
       ]
@@ -22028,7 +22231,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         },
         {
@@ -22333,7 +22538,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         },
         {
@@ -22343,7 +22550,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         }
       ]
@@ -22414,13 +22623,18 @@
       "branches": [
         {
           "condition_text": "Kara stole the money without convincing the clerk",
-          "when": null,
+          "when": {
+            "flag": "kara_convinced_clerk",
+            "equals": false
+          },
           "next": "ch10_00148"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch10_00147"
+      "next": "ch10_00147",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Supermarket_branch"
     },
     "ch10_00150": {
       "id": "ch10_00150",
@@ -22534,7 +22748,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": true
+            }
           }
         },
         {
@@ -22544,7 +22760,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": false
+            }
           }
         }
       ]
@@ -22602,7 +22820,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": false
+            }
           }
         },
         {
@@ -22612,7 +22832,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": false
+            }
           }
         },
         {
@@ -22622,7 +22844,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": false
+            }
           }
         },
         {
@@ -22742,7 +22966,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_convinced_clerk": false
+            }
           }
         }
       ]
@@ -23069,7 +23295,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         },
         {
@@ -23079,7 +23307,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         },
         {
@@ -23089,7 +23319,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         },
         {
@@ -23104,7 +23336,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_has_money": true
+            }
           }
         }
       ]
@@ -23281,7 +23515,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch10_00134"
+      "next": "ch10_00134",
+      "resolution": "unknown"
     },
     "ch10_00189": {
       "id": "ch10_00189",
@@ -23466,18 +23701,26 @@
       "branches": [
         {
           "condition_text": "Kara is in android uniform",
-          "when": null,
+          "when": {
+            "flag": "kara_stole_clothes",
+            "equals": false
+          },
           "next": "ch10_00192"
         },
         {
           "condition_text": "Kara stole clothes",
-          "when": null,
+          "when": {
+            "flag": "kara_stole_clothes",
+            "equals": true
+          },
           "next": "ch10_00197"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch10_00189"
+      "next": "ch10_00189",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Laundromat_branch"
     },
     "ch10_00199": {
       "id": "ch10_00199",
@@ -23983,7 +24226,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_stole_clothes": false,
+              "kara_has_money": false
+            }
           }
         },
         {
@@ -23993,7 +24239,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_stole_clothes": false,
+              "kara_has_money": false
+            }
           }
         }
       ]
