@@ -651,10 +651,6 @@ def create_app(
             [_detail(root, _resolve_run(root, run_id)) for run_id in run_ids]
         )
 
-    @app.get("/legacy")
-    def legacy_home():
-        return FileResponse(ASSETS / "legacy.html", media_type="text/html")
-
     @app.get("/")
     def home():
         return FileResponse(ASSETS / "index.html", media_type="text/html")

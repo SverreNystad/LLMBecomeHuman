@@ -13,31 +13,18 @@
     <aside class="chapter-rail" aria-label="Chapter navigation">
       <div class="brand-lockup">
         <div class="atlas-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-        <div class="brand-type"><strong>DECISION<span>ATLAS</span></strong><small>NARRATIVE BENCHMARK / 01</small></div>
+        <div class="brand-type"><strong>DECISION<span>ATLAS</span></strong></div>
       </div>
-      <div class="rail-section-heading"><span>STORY PROGRESSION</span><span id="chapterTotal">00</span></div>
-      <div class="rail-chapters" id="chapterList" role="navigation" aria-label="Chapters"><div class="sidebar-loading">Loading chapter index…</div></div>
-      <div class="rail-bottom">
-        <div class="source-panel">
-          <div class="source-symbol">⌁</div>
-          <div><span class="source-label">SOURCE MATERIAL</span><strong id="storyName">Select a recorded run</strong></div>
-        </div>
-        <div class="rail-footer"><span class="live-indicator"></span><span id="liveStatus">LOCAL BENCHMARK</span><a href="/legacy" title="Previous dashboard">LEGACY VIEW ↗</a></div>
-      </div>
+      <div class="rail-chapters" id="chapterList" role="navigation" aria-label="Chapters"></div>
     </aside>
 
     <div class="main-panel">
-      <header class="app-topbar">
-        <div class="breadcrumb"><span>EXPERIMENTS</span><span class="breadcrumb-chevron">/</span><strong id="breadcrumbChapter">CHAPTER 01</strong></div>
-        <div class="topbar-right"><span id="refreshStatus" class="refresh-label">SYNCHRONIZING</span><span class="top-dot"></span><span class="private-tag">PRIVATE · LOCAL</span><button id="refreshBtn" class="icon-tool" title="Refresh data" aria-label="Refresh data" type="button"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 7l2 4M4 13l2 4a7 7 0 0 0 12.4-2"/></svg></button></div>
-      </header>
-
       <main class="workspace">
         <div class="chapter-heading">
           <div class="chapter-heading-text">
-            <div class="chapter-kicker"><span class="kicker-bar"></span><span id="chapterIndexLabel">CHAPTER 01</span></div>
-            <h1 id="chapterTitle">Every decision leaves a trace.</h1>
-            <div class="chapter-summary"><span id="chapterSubtitle">Select a playthrough to begin.</span><span class="summary-dot">●</span><span id="chapterMetrics"></span></div>
+            <div class="chapter-kicker"><span class="kicker-bar"></span><span id="chapterIndexLabel"></span></div>
+            <h1 id="chapterTitle"></h1>
+            <div class="chapter-summary"><span id="chapterSubtitle"></span></div>
           </div>
           <div class="view-tabs" role="group" aria-label="Choose a view">
             <button type="button" id="viewStory" data-view="story" aria-pressed="true">Story</button>
@@ -45,24 +32,19 @@
           </div>
         </div>
 
-        <section class="control-strip" aria-label="Playthrough selection">
+        <section class="control-strip" aria-label="Models">
           <div class="picker-anchor" id="pickerContainer">
-            <button id="pickerToggle" type="button" class="picker-toggle" aria-expanded="false" aria-controls="pickerPanel" aria-label="Choose model playthroughs"><span class="picker-toggle-mark">✣</span><span><small>VISIBLE PLAYTHROUGHS</small><strong><span id="selectedRunCount">0</span> RUNS SELECTED</strong></span><span class="picker-chevron">⌄</span></button>
-            <div class="picker-panel is-hidden" id="pickerPanel" role="group" aria-label="Select saved model runs">
-              <div class="picker-panel-title"><strong>COMPARE PLAYTHROUGHS</strong><span>SELECT ANY NUMBER</span></div>
-              <div class="picker-search-wrap"><span aria-hidden="true">⌕</span><input id="searchRuns" type="search" autocomplete="off" placeholder="Search by model, provider or run…" aria-label="Search saved playthroughs"></div>
-              <div class="picker-actions"><button id="selectAllRuns" type="button">SELECT ALL COMPATIBLE</button><button id="clearRuns" type="button">CLEAR</button></div>
+            <button id="pickerToggle" type="button" class="picker-toggle" aria-expanded="false" aria-controls="pickerPanel" aria-label="Choose models"><strong>Models</strong><span class="picker-chevron">⌄</span></button>
+            <div class="picker-panel is-hidden" id="pickerPanel" role="group" aria-label="Choose models">
+              <div class="picker-search-wrap"><span aria-hidden="true">⌕</span><input id="searchRuns" type="search" autocomplete="off" placeholder="Search" aria-label="Search models"></div>
+              <div class="picker-actions"><button id="selectAllRuns" type="button">Select all</button><button id="clearRuns" type="button">Clear</button></div>
               <div class="picker-list" id="pickerList"></div>
-              <p id="pickerHelp" class="picker-help"></p>
             </div>
           </div>
-          <div id="selectedRunChips" class="selected-run-chips" aria-label="Currently displayed models"></div>
-          <div class="strip-spacer"></div>
-          <div class="full-paths-indicator flow-only" title="Every extracted branch from the saved story graph remains visible"><span class="full-paths-symbol">✣</span> ALL SCRIPT PATHS <span class="indicator-locked">ALWAYS ON</span></div>
-          <button class="toolbar-button flow-only" id="fitBtn" title="Fit chapter to view" type="button"><svg viewBox="0 0 24 24"><path d="M8 3H4v4m12-4h4v4M4 17v4h4m12-4v4h-4"/></svg><span>FIT VIEW</span></button>
+          <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>
         </section>
 
-        <section class="story-view" id="storyView" aria-label="Story reader">
+        <section class="story-view" id="storyView" aria-label="Story">
           <div class="story-toolbar">
             <label class="reader-picker">Following <select id="readerRun"></select></label>
             <div class="story-mode" role="group" aria-label="How much of the story to show">
@@ -71,26 +53,24 @@
             </div>
             <div class="decision-strip" id="decisionStrip" aria-label="Jump to a decision"></div>
           </div>
-          <div class="story-scroll" id="storyScroll" tabindex="0"><div class="story-content" id="storyContent"><div class="story-empty">Select a playthrough to begin.</div></div></div>
+          <div class="story-scroll" id="storyScroll" tabindex="0"><div class="story-content" id="storyContent"></div></div>
         </section>
 
         <div class="viewer-wrap is-hidden" id="viewerWrap">
-          <section class="flow-viewport" id="viewport" aria-label="Interactive chapter flowchart">
+          <section class="flow-viewport" id="viewport" aria-label="Flowchart">
             <div class="canvas-background" aria-hidden="true"></div>
             <div id="graphWorld" class="graph-world"><svg id="graphEdges" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg><div id="graphNodes" class="graph-nodes"></div></div>
             <div id="graphNotice" class="graph-notice is-hidden" role="status"></div>
-            <div id="graphEmpty" class="graph-empty" role="status"><div class="empty-glyph">◇</div><strong>Select a playthrough to begin</strong><p>Every extracted script branch appears in the flowchart. Model routes are highlighted on top.</p></div>
-            <details class="canvas-legend" id="canvasLegend"><summary class="legend-title">ALL SCRIPT PATHS</summary><div class="legend-line"><span class="legend-dash unvisited"></span>Not explored</div></details>
-            <div class="canvas-zoombar" aria-label="Zoom controls"><button id="zoomIn" aria-label="Zoom in" type="button">+</button><span id="zoomLabel">100%</span><button id="zoomOut" aria-label="Zoom out" type="button">−</button><button id="zoomReset" class="reset-button" aria-label="Fit flowchart" title="Fit flowchart" type="button">⌗</button></div>
-            <div class="canvas-instructions">DRAG TO PAN <span>·</span> SCROLL TO ZOOM <span>·</span> CLICK A MODEL MARK TO INSPECT</div>
+            <div id="graphEmpty" class="graph-empty" role="status"></div>
+            <details class="canvas-legend" id="canvasLegend"><summary class="legend-title">Models</summary></details>
+            <div class="canvas-zoombar" aria-label="Zoom"><button id="zoomIn" aria-label="Zoom in" type="button">+</button><span id="zoomLabel">100%</span><button id="zoomOut" aria-label="Zoom out" type="button">−</button><button id="zoomReset" class="reset-button" aria-label="Fit" title="Fit" type="button">⌗</button></div>
           </section>
 
-          <aside id="reasoningDrawer" class="reasoning-drawer is-hidden" aria-label="Model decision details">
-            <div class="drawer-top"><span>DECISION RECORD <span id="drawerEventIndex">/ —</span></span><button id="closeDrawer" class="drawer-close" type="button" aria-label="Close decision inspector">×</button></div>
+          <aside id="reasoningDrawer" class="reasoning-drawer is-hidden" aria-label="Decision">
+            <div class="drawer-top"><span></span><button id="closeDrawer" class="drawer-close" type="button" aria-label="Close">×</button></div>
             <div id="drawerContent" class="drawer-content"></div>
           </aside>
         </div>
-        <div class="below-canvas flow-only"><span><b id="visibleCount">0</b> VISITED <span class="below-divider">/</span> <b id="totalCount">0</b> GRAPH NODES</span><div id="integrityNotice" class="integrity-note">CHOOSE A RUN TO LOAD THE BENCHMARK</div><span class="keyboard-note">ESC · CLOSE INSPECTOR</span></div>
       </main>
     </div>
   </div>

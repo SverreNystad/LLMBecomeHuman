@@ -54,7 +54,6 @@ Chapter titles are kept in `dashboard.py`, not the story graph, because changing
 - **Pan / zoom:** Long chapters open at a readable zoom on their first node. Drag the canvas, scroll to zoom, or choose Fit View to see the whole chapter. All chapters, even unvisited ones, are reachable from the chapter rail. Cross-chapter portals navigate without losing run selections.
 - **Run status:** A run with no final summary and no new events for 15 minutes shows as stopped rather than running.
 - **Live updates:** The dashboard polls for new events and refreshes active runs without discarding your run selection or canvas position. The service is read-only and uses no model API keys.
-- **Legacy dashboard:** The previous experiment summary remains available at `/legacy`.
 
 ### Additional providers
 
@@ -93,7 +92,7 @@ For existing runs created before this change, the backend tries to match the run
 uv run python -m detroit_benchmark dashboard --runs-dir runs --graphs-dir ./data
 ```
 
-If it cannot find a matching graph, the backend can provide an event-only reconstruction for the legacy UI, but the **flowchart refuses to present it as complete** and instead asks for the original graph. Unrecorded destinations are *not invented*.
+If it cannot find a matching graph, the backend can provide an event-only reconstruction, but the **flowchart refuses to present it as complete** and instead asks for the original graph. Unrecorded destinations are *not invented*.
 
 ## API additions
 
@@ -105,7 +104,6 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status                                |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (legacy; the multi-run frontend fetches multiple logs independently) |
-| `GET /legacy`                          | Previous full benchmark dashboard                                                                                |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 
 The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.

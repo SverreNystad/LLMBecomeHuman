@@ -75,7 +75,7 @@ def test_chapter_flowchart_browser_interactions():
             # The story opens first: readable text, and each decision compared across runs.
             page.locator(".story-decision").first.wait_for()
             assert page.locator("#chapterTitle").inner_text().startswith("01")
-            assert page.locator("#selectedRunCount").inner_text() == "10"
+            assert page.locator(".run-chip").count() == 10
             first_card = page.locator(".story-decision").first
             assert "Decision 1 of" in first_card.inner_text()
             assert page.locator(".story-why").first.inner_text().strip()
@@ -114,7 +114,7 @@ def test_chapter_flowchart_browser_interactions():
             page.locator(".run-chip-remove").last.click()
             page.locator(".run-chip-remove").last.click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '6'"
+                "document.querySelectorAll('.run-chip').length === 6"
             )
             page.locator(".flow-node").first.wait_for()
             assert page.locator(".flow-node.kind-option").count() == 4
@@ -183,7 +183,6 @@ def test_chapter_flowchart_browser_interactions():
             assert node_count == coverage["nodes"]
             assert page.locator(".node-dialogue").count() > 0
             assert page.locator(".flow-node.kind-portal").count() == 1
-            assert "ALWAYS ON" in page.locator(".full-paths-indicator").inner_text()
             assert page.locator(".edge-path.route-overlay").count() > 5
             assert page.locator(".flow-node:not(.visited)").count() >= 0
 
@@ -193,8 +192,7 @@ def test_chapter_flowchart_browser_interactions():
             ).first.click(force=True)
             page.locator(".rationale").wait_for()
             assert "Mock policy" in page.locator(".rationale").first.inner_text()
-            assert "ACTION SELECTED" in page.locator("#drawerContent").inner_text()
-            assert "SYNTHETIC PREVIEW" in page.locator("#drawerContent").inner_text()
+            assert "Synthetic preview" in page.locator("#drawerContent").inner_text()
             page.locator("#closeDrawer").click()
 
             # Select all 10 recorded experiments in the same graph, including
@@ -202,7 +200,7 @@ def test_chapter_flowchart_browser_interactions():
             page.locator("#pickerToggle").click()
             page.locator("#selectAllRuns").click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '10'"
+                "document.querySelectorAll('.run-chip').length === 10"
             )
             assert page.locator(".run-chip").count() == 10
             assert page.locator(".legend-runs .legend-line").count() == 10
@@ -237,7 +235,7 @@ def test_chapter_flowchart_browser_interactions():
             # Removing only one run doesn't change complete graph.
             page.locator(".run-chip-remove").first.click()
             page.wait_for_function(
-                "document.querySelector('#selectedRunCount')?.textContent === '9'"
+                "document.querySelectorAll('.run-chip').length === 9"
             )
             assert page.locator(".flow-node").count() == node_count
             page.locator(".chapter-entry").nth(1).click()

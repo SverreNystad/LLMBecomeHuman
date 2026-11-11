@@ -77,16 +77,15 @@ function renderRule(item) {
   const beat = item.beat;
   if (beat.type === 'route') {
     if (!beat.assumed) return '';
-    return `<p class="story-rule" data-index="${item.index}"><b>Route assumed:</b> <code>${esc(beat.flag)}</code> was set to ${esc(String(beat.value))}. This did not come from a model's decision.</p>`;
+    return `<p class="story-rule" data-index="${item.index}">Assumed: ${esc(beat.flag)} = ${esc(String(beat.value))}</p>`;
   }
   const branches = state.graph?.nodes?.[beat.node_id]?.branches || [];
   const taken = branches[beat.branch_index]?.condition_text;
   if (!beat.used_unverified_default || !taken) return '';
-  const others = [...new Set(branches.map(branch => branch.condition_text).filter(text => text && text !== taken))];
-  return `<p class="story-rule" data-index="${item.index}"><b>Outcome assumed:</b> ${esc(taken)}. ${others.length ? `The transcript also has: ${esc(others.join('; '))}. ` : ''}The game's rule is unknown, so a model's decision did not pick this.</p>`;
+  return `<p class="story-rule" data-index="${item.index}">Assumed: ${esc(taken)}</p>`;
 }
 function modelMark(run, decision, label) {
-  return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || 'No explanation recorded.')}" data-why-label="${esc(label)}" style="--run-color:${routeColor(run)}" title="${esc(run.model)} chose this. Show its reason." aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}</button>`;
+  return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || '—')}" data-why-label="${esc(label)}" style="--run-color:${routeColor(run)}" title="${esc(run.model)}" aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}</button>`;
 }
 function agreementLabel(byChoice) {
   const counts = [...byChoice.values()].map(group => group.length).sort((a, b) => b - a);
@@ -97,20 +96,20 @@ function agreementLabel(byChoice) {
     : `<span class="story-agreement splits">Models split ${counts.join(' / ')}</span>`;
 }
 function renderDecision(item, number, total, key, tables, run) {
-  const beat = item.beat, {byChoice, missing} = compareDecision(key, tables);
+  const beat = item.beat, {byChoice} = compareDecision(key, tables);
   const who = beat.character && beat.character !== 'multiple' ? beat.character : null;
   const options = (beat.available_choices || []).map(option => {
     const chosen = option.id === beat.choice_id, group = byChoice.get(option.id) || [];
     const others = group.filter(entry => entry.run.id !== run.id);
-    return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}${chosen ? '<small>This run chose this</small>' : ''}</span><span class="story-option-models">${others.map(entry => modelMark(entry.run, entry.decision, option.label || option.id)).join('')}</span></li>`;
+    return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}</span><span class="story-option-models">${others.map(entry => modelMark(entry.run, entry.decision, option.label || option.id)).join('')}</span></li>`;
   }).join('');
   return `<article class="story-decision" id="story-decision-${number}" data-index="${item.index}" style="--run-color:${routeColor(run)}">
     <header><span class="story-decision-count">Decision ${number} of ${total}</span>${agreementLabel(byChoice)}</header>
     <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
     <ul class="story-options">${options}</ul>
-    <div class="story-why"><div class="story-why-label">${esc(run.model)}'s stated reason</div><p>${esc(beat.rationale || 'No explanation recorded.')}</p></div>
+    <div class="story-why"><div class="story-why-label">${esc(run.model)}</div><p>${esc(beat.rationale || '—')}</p></div>
     <div class="story-other-why is-hidden" aria-live="polite"></div>
-    <footer><span>${missing.length ? `${missing.length} selected ${missing.length === 1 ? 'run' : 'runs'} never reached this decision` : ''}</span><button type="button" class="story-link" data-show-node="${esc(beat.node_id)}">Show on flowchart</button></footer>
+    <footer><button type="button" class="story-link" data-show-node="${esc(beat.node_id)}">Show on flowchart</button></footer>
   </article>`;
 }
 function renderItem(item, context) {
@@ -139,7 +138,7 @@ function renderCondensed(items, context) {
       const firstHidden = segment.findIndex(item => hidden.has(item));
       const lastHidden = segment.length - 1 - [...segment].reverse().findIndex(item => hidden.has(item));
       output.push(...segment.slice(0, firstHidden).map(item => renderItem(item, context)));
-      output.push(`<details class="story-gap"><summary>Show ${hidden.size} more story ${hidden.size === 1 ? 'beat' : 'beats'}</summary>${segment.slice(firstHidden, lastHidden + 1).map(item => renderItem(item, context)).join('')}</details>`);
+      output.push(`<details class="story-gap"><summary>Show more</summary>${segment.slice(firstHidden, lastHidden + 1).map(item => renderItem(item, context)).join('')}</details>`);
       output.push(...segment.slice(lastHidden + 1).map(item => renderItem(item, context)));
     }
     segment = [];
@@ -170,12 +169,10 @@ function chapterNavigation(run, chapter) {
   return `<nav class="story-nav" aria-label="Chapter navigation">${link(adjacentChapter(run, chapter, -1), 'Previous chapter')}${link(adjacentChapter(run, chapter, 1), 'Next chapter')}</nav>`;
 }
 function caveatBanner(run) {
-  if (run.synthetic) return '<p class="story-caveat"><b>Synthetic preview.</b> A deterministic mock agent made these choices, not the named model.</p>';
-  if (!run.unverified && run.fidelity === 'verified_game_rules') return '';
-  return '<p class="story-caveat"><b>Reconstructed story.</b> This comes from a fan transcript, not the game. Optional and alternate scenes can run back to back, and amber notes mark outcomes the benchmark had to assume. Only the decision cards are model choices.</p>';
+  return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
 function renderStoryToolbar(run) {
-  $('readerRun').innerHTML = activeRuns().map(item => `<option value="${esc(item.id)}" ${item.id === run?.id ? 'selected' : ''}>${esc(item.model)} (${esc(runStatusLabel(item))})</option>`).join('');
+  $('readerRun').innerHTML = activeRuns().map(item => `<option value="${esc(item.id)}" ${item.id === run?.id ? 'selected' : ''}>${esc(item.model)}${runStatusLabel(item) ? ` (${esc(runStatusLabel(item))})` : ''}</option>`).join('');
   $('readerRun').disabled = !run;
   $('modeFull').setAttribute('aria-pressed', String(state.storyMode === 'full'));
   $('modeKey').setAttribute('aria-pressed', String(state.storyMode === 'key'));
@@ -184,23 +181,17 @@ function renderStoryToolbar(run) {
 function renderDecisionStrip(decisions) {
   $('decisionStrip').innerHTML = decisions.length
     ? decisions.map(({number, split, label}) => `<button type="button" class="${split ? 'is-split' : ''}" data-jump-decision="${number}" title="Decision ${number}: ${esc(label)}${split ? ' (models split)' : ''}" aria-label="Go to decision ${number}${split ? ', models split' : ''}">${number}</button>`).join('')
-    : '<span class="decision-strip-empty">No decisions in this chapter</span>';
+    : '';
 }
-function renderChapterSummary(chapter, decisions) {
-  const character = chapterCharacter(chapter), splits = decisions.filter(item => item.split).length;
-  const parts = [`${niceNum(decisions.length)} ${decisions.length === 1 ? 'decision' : 'decisions'}`];
-  if (activeViews().length > 1 && decisions.length) parts.push(`models split on ${niceNum(splits)}`);
-  $('chapterSubtitle').textContent = character ? `Playing as ${character}` : 'Story';
-  $('chapterMetrics').textContent = parts.join(' · ');
+function renderChapterSummary(chapter) {
+  $('chapterSubtitle').textContent = chapterCharacter(chapter) || '';
 }
 function renderUnvisitedChapter(run, chapter) {
   const visitors = activeRuns().filter(item => (item.chapters_visited || []).includes(chapter));
-  const message = visitors.length
-    ? `Runs that did: ${visitors.map(item => esc(item.model)).join(', ')}. Pick one under "Following" to read it.`
-    : 'None of the selected runs entered it, so the logs have no story to show here. The flowchart still shows its script branches.';
-  $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(run.model)} never reached this chapter</strong><p>${message}</p></div>${chapterNavigation(run, chapter)}`;
+  const message = visitors.length ? `Reached by ${visitors.map(item => esc(item.model)).join(', ')}` : '';
+  $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
   renderDecisionStrip([]);
-  renderChapterSummary(chapter, []);
+  renderChapterSummary(chapter);
 }
 async function renderStory({keepScroll = false} = {}) {
   const run = readerRun(), chapter = state.chapter;
@@ -210,11 +201,11 @@ async function renderStory({keepScroll = false} = {}) {
   const cacheKey = `${run.id}\u0000${chapter}\u0000${detail?.events?.length || 0}`;
   let beats = storyCache.get(cacheKey);
   if (!beats) {
-    if (!keepScroll) $('storyContent').innerHTML = '<div class="story-empty">Loading chapter…</div>';
+    if (!keepScroll) $('storyContent').innerHTML = '';
     try {
       beats = (await api(`/api/runs/${encodeURIComponent(run.id)}/story?chapter=${encodeURIComponent(chapter)}`)).beats || [];
     } catch (error) {
-      if (version === storyVersion) $('storyContent').innerHTML = `<div class="story-empty"><strong>Could not load this chapter</strong><p>${esc(error.message)}</p></div>`;
+      if (version === storyVersion) $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(error.message)}</strong></div>`;
       return;
     }
     storyCache.set(cacheKey, beats);
@@ -243,7 +234,7 @@ async function renderStory({keepScroll = false} = {}) {
   const body = state.storyMode === 'key' ? renderCondensed(items, context) : items.map(item => renderItem(item, context)).join('');
   $('storyContent').innerHTML = caveatBanner(run) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
-  renderChapterSummary(chapter, summaries);
+  renderChapterSummary(chapter);
   if (state.pendingStoryIndex != null) scrollToStoryEvent(state.pendingStoryIndex);
   else if (!keepScroll) scrollStoryToTop();
 }

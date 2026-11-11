@@ -114,12 +114,37 @@ def test_in_progress_and_partially_written_jsonl(tmp_path):
 def test_serves_frontend_and_assets():
     c = client()
     assert c.get("/").status_code == 200
-    assert "Decision Atlas" in c.get("/").text
     assert "renderDecisionInspector" in c.get("/assets/app.js").text
-    assert "CHAPTER" in c.get("/").text
-    assert "renderComparison" in c.get("/assets/legacy-app.js").text
-    assert c.get("/legacy").status_code == 200
     assert c.get("/assets/styles.css").status_code == 200
+
+
+def test_legacy_view_is_gone():
+    c = client()
+    assert c.get("/legacy").status_code == 404
+    for asset in ("legacy.html", "legacy-app.js", "legacy-styles.css"):
+        assert c.get(f"/assets/{asset}").status_code == 404, asset
+    assert "/legacy" not in c.get("/").text
+
+
+def test_frontend_has_no_internal_detail_copy():
+    c = client()
+    page = "\n".join(
+        c.get(path).text
+        for path in ("/", "/assets/app.js", "/assets/story.js")
+    ).lower()
+    for phrase in (
+        "all script paths",
+        "always on",
+        "private · local",
+        "synchronizing",
+        "script steps",
+        "graph nodes",
+        "drag to pan",
+        "esc · close",
+        "every script branch",
+        "refreshbtn",
+    ):
+        assert phrase not in page, phrase
 
 
 def test_compare_requires_two_runs():
@@ -327,7 +352,6 @@ def test_browsers_must_revalidate_the_frontend():
     c = client()
     for path in (
         "/",
-        "/legacy",
         "/assets/app.js",
         "/assets/story.js",
         "/assets/styles.css",
