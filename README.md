@@ -34,6 +34,22 @@ Open **http://localhost:8000** to see the saved runs in `runs/` and the syntheti
 ![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
 ![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)
 
+### Concept art (optional, local only)
+
+Behind the dashboard a slow node network moves in the style of the chapter's Character. If you have the game's concept art, the dashboard can also show the current scene's image behind it, faded so the text stays readable. The art is copyrighted and is **not distributed** with this repository: `images/` is gitignored (only the three Character portraits are committed) and the Docker image never includes it.
+
+[`data/scene-art.json`](data/scene-art.json) lists every scene image: its file, chapter, Character, the scene headings it belongs to, and whether it is the chapter's main image. To install the art, put your own WebP files at the paths it names, relative to `images/`:
+
+```text
+images/
+  ui/title.webp
+  scenes/ch01_penthouse.webp
+  scenes/ch02_android_zone_store.webp
+  ...
+```
+
+Missing files are simply skipped, and with no art at all the network is the whole background. `docker compose` mounts `images/` read-only; locally, `--images-dir` points the dashboard at another folder. While reading a Story the background follows the scene you are reading; in the Flowchart it follows the node you hover or select, else the chapter's main image.
+
 ### Making a new agent playthrough
 
 To conduct a new agent playthrough, run the `runner` service with a JSON story file. The `examples/` folder has a small synthetic game for testing, and the `data/` folder has the Detroit transcript.

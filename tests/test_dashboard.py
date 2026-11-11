@@ -540,3 +540,81 @@ def test_title_art_served_when_installed(tmp_path):
 def test_title_art_missing_is_404(tmp_path):
     c = TestClient(create_app(PROJECT / "demo_runs", images_dir=tmp_path))
     assert c.get("/api/art/title").status_code == 404
+
+
+def _scene_art_app(tmp_path, installed=("ch01_installed",)):
+    """A tmp images folder and manifest: one scene installed, one listed but missing."""
+    images = tmp_path / "images"
+    (images / "scenes").mkdir(parents=True)
+    (tmp_path / "secret.txt").write_text("not art", encoding="utf-8")
+    scenes = []
+    for key in ("ch01_installed", "ch01_missing"):
+        scenes.append(
+            {
+                "key": key,
+                "file": f"scenes/{key}.webp",
+                "chapter": "1",
+                "character": "Connor",
+                "headings": ["Coming into the living room"],
+                "chapter_main": key == "ch01_installed",
+                "caption": key,
+            }
+        )
+        if key in installed:
+            (images / "scenes" / f"{key}.webp").write_bytes(b"RIFF\x00\x00\x00\x00WEBP")
+    # A manifest entry pointing outside the images folder is never served.
+    scenes.append({"key": "escape", "file": "../secret.txt", "chapter": "1"})
+    manifest = tmp_path / "scene-art.json"
+    manifest.write_text(json.dumps({"title": "ui/title.webp", "scenes": scenes}))
+    return TestClient(
+        create_app(PROJECT / "demo_runs", images_dir=images, art_manifest=manifest)
+    )
+
+
+def test_scene_art_manifest_lists_only_installed_images(tmp_path):
+    scenes = _scene_art_app(tmp_path).get("/api/art/manifest").json()["scenes"]
+    assert [s["key"] for s in scenes] == ["ch01_installed"]
+    assert scenes[0]["url"] == "/api/art/scene/ch01_installed"
+    assert scenes[0]["headings"] == ["Coming into the living room"]
+    assert scenes[0]["chapter_main"] is True
+    assert "file" not in scenes[0]
+
+
+def test_scene_art_is_served_if_installed_else_404(tmp_path):
+    c = _scene_art_app(tmp_path)
+    found = c.get("/api/art/scene/ch01_installed")
+    assert found.status_code == 200
+    assert found.headers["content-type"] == "image/webp"
+    assert found.content.startswith(b"RIFF")
+    assert c.get("/api/art/scene/ch01_missing").status_code == 404
+    assert c.get("/api/art/scene/not_in_manifest").status_code == 404
+
+
+def test_scene_art_rejects_path_traversal(tmp_path):
+    c = _scene_art_app(tmp_path)
+    assert c.get("/api/art/scene/escape").status_code == 404
+    for key in ("..%2Fsecret.txt", "..%2F..%2Fsecret.txt", "%2Fetc%2Fpasswd"):
+        response = c.get(f"/api/art/scene/{key}")
+        assert response.status_code == 404, key
+        assert b"not art" not in response.content
+
+
+def test_scene_art_without_images_or_manifest(tmp_path):
+    c = TestClient(
+        create_app(
+            PROJECT / "demo_runs",
+            images_dir=tmp_path / "none",
+            art_manifest=tmp_path / "none.json",
+        )
+    )
+    assert c.get("/api/art/manifest").json() == {"scenes": []}
+    assert c.get("/api/art/scene/ch01_penthouse").status_code == 404
+
+
+def test_committed_scene_art_manifest_is_well_formed():
+    manifest = json.loads((PROJECT / "data" / "scene-art.json").read_text())
+    keys = [scene["key"] for scene in manifest["scenes"]]
+    assert len(keys) == len(set(keys))
+    for scene in manifest["scenes"]:
+        assert scene["file"] == f"scenes/{scene['key']}.webp"
+        assert isinstance(scene["headings"], list)

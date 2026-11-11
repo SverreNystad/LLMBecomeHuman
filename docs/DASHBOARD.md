@@ -104,6 +104,8 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (the frontend fetches each log on its own) |
+| `GET /api/art/manifest`                | Scene-art entries from `data/scene-art.json` whose image is installed locally                                    |
+| `GET /api/art/scene/{key}`             | One installed scene image (WebP) by manifest key, else 404                                                       |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.

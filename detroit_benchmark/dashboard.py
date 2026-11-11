@@ -17,6 +17,7 @@ from functools import lru_cache
 from .engine import canonical_hash
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, Response
@@ -25,6 +26,8 @@ from fastapi.staticfiles import StaticFiles
 ASSETS = Path(__file__).parent / "dashboard_assets"
 # Game art is copyrighted, so it stays local (gitignored) and every view works without it.
 IMAGES = Path(__file__).resolve().parents[1] / "images"
+# The scene-art manifest is committed; the images it names live under the images folder.
+SCENE_ART_MANIFEST = Path(__file__).resolve().parents[1] / "data" / "scene-art.json"
 
 # A run with no final summary and no new events for this long is no longer active.
 STALE_RUN_SECONDS = 15 * 60
@@ -585,13 +588,37 @@ def _chapter_briefing(
     return briefings.get(chapter)
 
 
+def _art_file(art_root: Path, relative: Any) -> Path | None:
+    """An installed image inside the art folder, or None; never a path outside it."""
+    if not isinstance(relative, str) or not relative:
+        return None
+    path = (art_root / relative).resolve()
+    if not path.is_relative_to(art_root) or not path.is_file():
+        return None
+    return path
+
+
+def _installed_scene_art(art_root: Path, manifest: Path) -> dict[str, dict[str, Any]]:
+    """Manifest scenes whose image is actually installed, by key."""
+    scenes = (_json_file(manifest) or {}).get("scenes", [])
+    installed: dict[str, dict[str, Any]] = {}
+    for scene in scenes if isinstance(scenes, list) else []:
+        if not isinstance(scene, dict) or not isinstance(scene.get("key"), str):
+            continue
+        if _art_file(art_root, scene.get("file")) is not None:
+            installed[scene["key"]] = scene
+    return installed
+
+
 def create_app(
     runs_dir: str | Path = "runs",
     graphs_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
+    art_manifest: str | Path | None = None,
 ) -> FastAPI:
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
+    manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
@@ -718,6 +745,32 @@ def create_app(
         if not art.is_file():
             raise HTTPException(status_code=404, detail="No title art installed")
         return FileResponse(art, media_type="image/webp")
+
+    @app.get("/api/art/manifest")
+    def art_manifest_route():
+        return {
+            "scenes": [
+                {
+                    k: scene.get(k)
+                    for k in ("key", "chapter", "character", "headings", "chapter_main", "caption")
+                }
+                | {"url": f"/api/art/scene/{quote(key, safe='')}"}
+                for key, scene in _installed_scene_art(images_root, manifest_path).items()
+            ]
+        }
+
+    @app.get("/api/art/scene/{key}")
+    def scene_art(key: str):
+        # Only keys named in the manifest are served, so a request can never pick a path.
+        scene = _installed_scene_art(images_root, manifest_path).get(key)
+        path = _art_file(images_root, scene.get("file")) if scene else None
+        if path is None:
+            raise HTTPException(status_code=404, detail="Scene art not installed")
+        return FileResponse(
+            path,
+            media_type="image/webp",
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
 
     @app.get("/")
     def home():

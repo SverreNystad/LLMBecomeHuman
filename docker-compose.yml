@@ -27,6 +27,8 @@ services:
       # Show bundled synthetic previews alongside real saved runs.
       - ./demo_runs:/app/saved_runs/previews:ro
       - ./data:/app/data:ro
+      # Optional local concept art (gitignored, never baked into the image).
+      - ./images:/app/images:ro
     restart: unless-stopped
 
   # On-demand worker/CLI, not automatically started by `up` (avoids accidental API bills).

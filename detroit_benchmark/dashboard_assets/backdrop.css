@@ -1,0 +1,33 @@
+/* Background layer: scene art (bottom), veil, then the node network on top.
+ * Styles only #backdrop and its children; the tokens come from styles.css.
+ */
+.backdrop-art { z-index: 0; }
+.backdrop-veil { z-index: 1; }
+.backdrop-network { z-index: 2; transition: opacity 1.2s var(--ease); }
+.backdrop-canvas { display: block; width: 100%; height: 100%; }
+
+/* Scene art: desaturated, softened and scaled past the blur's fringe. */
+.backdrop-art-layer {
+  position: absolute;
+  inset: -24px;
+  background: center / cover no-repeat;
+  filter: grayscale(.7) blur(3px) contrast(.9) brightness(1.08);
+  opacity: 0;
+  transition: opacity 1.4s var(--ease);
+}
+.backdrop-art-layer.is-shown { opacity: 1; }
+
+/* With art, a light veil keeps the near-white UI readable: strongest behind the
+ * chapter rail and the heading, a hint of the Character's colour at the top right. */
+#backdrop.has-art .backdrop-veil {
+  background:
+    radial-gradient(ellipse at 70% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+    linear-gradient(90deg, color-mix(in srgb, var(--bg) 88%, transparent) 0, color-mix(in srgb, var(--bg) 72%, transparent) 260px, color-mix(in srgb, var(--bg) 58%, transparent) 70%, color-mix(in srgb, var(--bg) 66%, transparent)),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg) 30%, transparent), transparent 22%);
+}
+/* Over art, the network is a faint overlay rather than the whole background. */
+#backdrop.has-art .backdrop-network { opacity: .55; }
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-art-layer, .backdrop-network { transition: none; }
+}

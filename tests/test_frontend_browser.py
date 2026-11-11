@@ -295,6 +295,40 @@ def test_chapter_flowchart_browser_interactions():
             browser.close()
 
 
+def test_backdrop_network_without_art(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+            page.locator(".story-decision").first.wait_for(state="attached")
+            canvas = page.locator("#backdropNetwork canvas")
+            assert canvas.count() == 1
+            # The network is drawn: some pixels are not transparent.
+            page.wait_for_function("""() => {
+              const c = document.querySelector('#backdropNetwork canvas');
+              const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+              for (let i = 3; i < data.length; i += 4) if (data[i]) return true;
+              return false;
+            }""")
+            box = canvas.bounding_box()
+            assert box["width"] == 1280 and box["height"] == 800
+            # No art installed: the manifest is empty and no scene image is shown.
+            manifest = page.evaluate("fetch('/api/art/manifest').then(r => r.json())")
+            assert manifest == {"scenes": []}
+            assert page.locator(".backdrop-art-layer.is-shown").count() == 0
+            assert not page.evaluate(
+                "document.getElementById('backdrop').classList.contains('has-art')"
+            )
+            assert not errors
+        finally:
+            browser.close()
+
+
 @pytest.fixture
 def live_dashboard(tmp_path):
     """The real dashboard on a local port, so pages have an origin (browser storage) and assets load."""
