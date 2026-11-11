@@ -29,7 +29,7 @@ cp .env.example .env              # add API keys only for the providers you will
 docker compose up --build
 ```
 
-Open **http://localhost:8000** to see the saved runs in `runs/` and the synthetic previews in `demo_runs/`. To use a different port, set `DASHBOARD_PORT` in `.env`.
+Open **http://localhost:8000** to see the saved runs in `runs/` and the synthetic previews in `demo_runs/`: `aurora/` has small runs of a made-up story, and `detroit/` has three full Detroit runs by a mock model (always first option, always last option, seeded random), for seeing the whole story without paying for a model. Locally, `--runs-dir demo_runs/detroit` opens just those. To use a different port, set `DASHBOARD_PORT` in `.env`.
 
 ![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
 ![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)

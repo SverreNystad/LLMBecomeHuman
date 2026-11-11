@@ -26,7 +26,7 @@ def test_chapter_flowchart_browser_interactions():
     binary = shutil.which("chromium") or shutil.which("chromium-browser")
     if not binary:
         pytest.skip("Chromium executable unavailable")
-    c = TestClient(create_app(PROJECT / "demo_runs"))
+    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora"))
     runs = c.get("/api/runs").json()["runs"]
     mock_responses = {"/api/runs": {"runs": runs}}
     for r in runs:
@@ -346,7 +346,7 @@ def live_dashboard(tmp_path):
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
     # An empty images folder: the title screen must work without any art installed.
-    app = create_app(PROJECT / "demo_runs", images_dir=tmp_path)
+    app = create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path)
     server = uvicorn.Server(
         uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
     )

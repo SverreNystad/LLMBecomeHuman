@@ -1,0 +1,596 @@
+{
+  "status": "complete",
+  "provider": "mock",
+  "model": "Defiant mock [synthetic]",
+  "goal": "SYNTHETIC MOCK: preview the dashboard",
+  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "fidelity": "unverified_transcript_approximation",
+  "unverified": true,
+  "chapters_visited": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+    "22",
+    "23",
+    "24",
+    "25",
+    "26",
+    "27",
+    "28",
+    "29",
+    "30.1",
+    "30.2",
+    "30.3",
+    "31.1",
+    "31.2",
+    "32.2",
+    "32.3",
+    "32.6"
+  ],
+  "number_of_choices": 276,
+  "events_recorded": 2951,
+  "final_flags": {
+    "connor_ch1_exploration": "rush",
+    "connor_daniel_final_plea": "sacrifice",
+    "markus_ch3_exploration": "rush",
+    "kara_ch4_exploration": "rush",
+    "kara_ch4_upstairs_exploration": "rush",
+    "connor_hank_bar_choice": "wait_outside",
+    "connor_firm_with_hank": false,
+    "connor_ch6_exploration": "rush",
+    "kara_reasoned_with_todd": true,
+    "markus_pushed_leo": false,
+    "connor_ch9_exploration": "rush",
+    "connor_pressured_deviant": false,
+    "connor_interrogation_approach": "give_up",
+    "connor_interrogation_ending": "let_self_destruct",
+    "kara_stole_clothes": false,
+    "kara_has_money": true,
+    "kara_ch10_exploration": "rush",
+    "kara_convinced_clerk": false,
+    "markus_ch11_exploration": "rush",
+    "connor_ch12_exploration": "rush",
+    "connor_knows_sumo_name": false,
+    "kara_threatened_ralph": false,
+    "connor_highway_pursuit": false,
+    "markus_ch14_exploration": "rush",
+    "markus_ch14_trail_exploration": "rush",
+    "connor_ch15_exploration": "rush",
+    "connor_nest_rooftop": "saved_hank",
+    "markus_ch16_exploration": "rush",
+    "kara_ch17_exploration": "rush",
+    "connor_ch18_exploration": "rush",
+    "markus_warehouse_parts_stolen": true,
+    "markus_warehouse_androids_freed": false,
+    "connor_ch20_exploration": "rush",
+    "connor_eden_tracis": "spared",
+    "connor_ch20_warehouse_exploration": "rush",
+    "kara_ch21_exploration": "rush",
+    "markus_ch23_exploration": "rush",
+    "markus_stratford_guards_shot": true,
+    "markus_stratford_guard_shot_first": "phone",
+    "markus_stratford_operator_shot": false,
+    "markus_broadcast_demand": "territory",
+    "markus_broadcast_threatening": true,
+    "markus_broadcast_peaceful": false,
+    "markus_simon_fate": "escaped",
+    "connor_ch24_exploration": "rush",
+    "connor_public_enemy_chase": "take_gun",
+    "kara_ch25_exploration": "rush",
+    "kara_luther_hiding_place": "kitchen",
+    "kara_told_cop_about_alice": false,
+    "markus_ch26_exploration": "rush",
+    "markus_capitol_park_violent": true,
+    "markus_capitol_park_police_killed": true,
+    "connor_ch27_exploration": "rush",
+    "connor_shot_chloe": false,
+    "markus_ch28_exploration": "rush",
+    "markus_march_violent": false,
+    "markus_march_dispersed": true,
+    "connor_gavin_reply": "leave",
+    "kara_helped_luther": false,
+    "kara_captured": true,
+    "connor_deviant": false,
+    "connor_saved_chased_androids": false,
+    "connor_cargo_hall_response": "run",
+    "markus_took_detonator": false,
+    "markus_jericho_blown_up": true,
+    "markus_saved_chased_androids": false,
+    "markus_saved_north": false,
+    "markus_chose_revolution": true,
+    "markus_peaceful": false,
+    "kara_ch32_exploration": "rush",
+    "connor_shot_deviant_leader": true
+  },
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "total_llm_latency_seconds": 0.0,
+  "warnings": [
+    {
+      "node": "ch4_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00116",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00100",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00077",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch5_00053",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00102",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00092",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch7_00076",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch8_00064",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch8_00051",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch9_00041",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00188",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch10_00070",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00241",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00203",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch12_00005",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00172",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch13_00069",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch15_00116",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00037",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch17_00007",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch18_00093",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00127",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch19_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch21_00135",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00024",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch22_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00130",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch23_00048",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00152",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00047",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch24_00042",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00186",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00148",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00049",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00043",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00038",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00023",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch25_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00104",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00099",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00098",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00075",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch26_00063",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00225",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00150",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00140",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch29_00029",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00191",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00187",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00181",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00174",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00153",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00149",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00137",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00135",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00130",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00125",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00117",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00106",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_1_00095",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_2_00018",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00209",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00203",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00195",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00167",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00158",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00153",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00056",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00043",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch30_3_00004",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00031",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_1_00014",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00053",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00038",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00022",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch31_2_00006",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_2_00021",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_2_00010",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_2_00005",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_3_00066",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_3_00009",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00120",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00117",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00111",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00093",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00092",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00070",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00066",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00044",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00037",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    },
+    {
+      "node": "ch32_6_00033",
+      "problem": "Unverified condition; picked default alternative",
+      "picked": 0
+    }
+  ],
+  "end_description": "End of transcript-derived playthrough. Ending fidelity unverified.",
+  "started_at": "2026-11-11T13:56:40.351466+00:00",
+  "completed_at": "2026-11-11T13:56:44.229239+00:00"
+}

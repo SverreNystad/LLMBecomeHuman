@@ -1,0 +1,24 @@
+{
+  "provider": "mock",
+  "model_id": "Wildcard mock [synthetic]",
+  "goal": "SYNTHETIC MOCK: preview the dashboard",
+  "temperature": 0,
+  "decision_limits": {
+    "max_output_tokens": 400,
+    "rationale_max_sentences": 2,
+    "broken_reply_retries": 1,
+    "reasoning": {}
+  },
+  "character_memory": {
+    "max_chars": 6000,
+    "memory_update_max_output_tokens": 2500
+  },
+  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "fidelity": "unverified_transcript_approximation",
+  "allow_unverified": true,
+  "initial_flags": {},
+  "story_title": "Detroit: Become Human transcript-derived benchmark",
+  "synthetic": true,
+  "started_at": "2026-11-11T13:56:44.397847+00:00",
+  "display_provider": "google"
+}

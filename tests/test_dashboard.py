@@ -24,7 +24,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 
 
 def client():
-    return TestClient(create_app(PROJECT / "demo_runs"))
+    return TestClient(create_app(PROJECT / "demo_runs" / "aurora"))
 
 
 def test_lists_demo_runs():
@@ -39,6 +39,19 @@ def test_lists_demo_runs():
     assert {"openai", "anthropic", "xai", "google", "deepseek", "mistral"} <= {
         r["display_provider"] for r in runs
     }
+
+
+def test_demo_runs_include_three_full_detroit_mock_runs():
+    runs = TestClient(create_app(PROJECT / "demo_runs" / "detroit")).get("/api/runs")
+    runs = runs.json()["runs"]
+    assert {r["name"] for r in runs} == {
+        "detroit-mock-cautious",
+        "detroit-mock-defiant",
+        "detroit-mock-wildcard",
+    }
+    assert {r["status"] for r in runs} == {"complete"}
+    assert all(r["synthetic"] for r in runs)
+    assert len({r["display_provider"] for r in runs}) == 3
 
 
 def test_detail_reflects_saved_decisions():
@@ -97,7 +110,7 @@ def test_path_traversal_rejected():
 
 
 def test_in_progress_and_partially_written_jsonl(tmp_path):
-    source = PROJECT / "demo_runs" / "demo-first-option"
+    source = PROJECT / "demo_runs" / "aurora" / "demo-first-option"
     target = tmp_path / "live"
     shutil.copytree(source, target)
     (target / "summary.json").unlink()
@@ -190,7 +203,9 @@ def test_new_runner_stores_full_graph_snapshot(tmp_path):
 
 
 def test_old_runs_without_graph_return_partial_not_invented_paths(tmp_path):
-    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", tmp_path / "old")
+    shutil.copytree(
+        PROJECT / "demo_runs" / "aurora" / "demo-first-option", tmp_path / "old"
+    )
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     # The demo can be matched from the shipped example graph, so modify the hash
@@ -213,7 +228,7 @@ def test_old_runs_without_graph_return_partial_not_invented_paths(tmp_path):
 
 
 def test_demo_family_is_only_cosmetic_and_never_claims_real_model_usage(tmp_path):
-    source = PROJECT / "demo_runs" / "preview-grok-a"
+    source = PROJECT / "demo_runs" / "aurora" / "preview-grok-a"
     target = tmp_path / "preview"
     shutil.copytree(source, target)
     c = TestClient(create_app(tmp_path))
@@ -274,7 +289,7 @@ def test_story_and_flowchart_share_moment_ids():
 
 def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", target)
+    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
     with (target / "events.jsonl").open("a") as f:
         for index in (9000, 9001):
             f.write(
@@ -300,7 +315,7 @@ def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", target)
+    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
     with (target / "events.jsonl").open("a") as f:
         f.write(
             json.dumps(
@@ -342,7 +357,7 @@ def test_story_for_unvisited_chapter_is_empty_not_an_error():
 
 def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", target)
+    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     assert (
@@ -376,7 +391,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
 
 def test_run_without_recent_events_is_reported_as_stopped(tmp_path):
     target = tmp_path / "dead"
-    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", target)
+    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
     (target / "summary.json").unlink()
     checkpoint = json.loads((target / "checkpoint.json").read_text())
     checkpoint["state"]["status"] = "running"
@@ -532,7 +547,7 @@ def test_dashboard_mounts_are_not_nested_inside_a_read_only_mount():
 def test_title_art_served_when_installed(tmp_path):
     (tmp_path / "ui").mkdir()
     (tmp_path / "ui" / "title.webp").write_bytes(b"RIFF\x00\x00\x00\x00WEBPVP8 ")
-    c = TestClient(create_app(PROJECT / "demo_runs", images_dir=tmp_path))
+    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path))
     response = c.get("/api/art/title")
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/webp"
@@ -540,7 +555,7 @@ def test_title_art_served_when_installed(tmp_path):
 
 
 def test_title_art_missing_is_404(tmp_path):
-    c = TestClient(create_app(PROJECT / "demo_runs", images_dir=tmp_path))
+    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path))
     assert c.get("/api/art/title").status_code == 404
 
 
@@ -570,7 +585,9 @@ def _scene_art_app(tmp_path, installed=("ch01_installed",), runs=None):
     manifest.write_text(json.dumps({"title": "ui/title.webp", "scenes": scenes}))
     return TestClient(
         create_app(
-            runs or PROJECT / "demo_runs", images_dir=images, art_manifest=manifest
+            runs or PROJECT / "demo_runs" / "aurora",
+            images_dir=images,
+            art_manifest=manifest,
         )
     )
 
@@ -606,7 +623,7 @@ def test_scene_art_rejects_path_traversal(tmp_path):
 def test_scene_art_without_images_or_manifest(tmp_path):
     c = TestClient(
         create_app(
-            PROJECT / "demo_runs",
+            PROJECT / "demo_runs" / "aurora",
             images_dir=tmp_path / "none",
             art_manifest=tmp_path / "none.json",
         )

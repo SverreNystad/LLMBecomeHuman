@@ -1570,17 +1570,6 @@
       "caption": "Jericho's busy hold"
     },
     {
-      "key": "ch30_jericho_arrival",
-      "file": "scenes/ch30_jericho_arrival.webp",
-      "chapter": "30.1",
-      "character": "Kara",
-      "headings": [
-        "Arriving at Jericho"
-      ],
-      "chapter_main": false,
-      "caption": "A freighter loading by the river at night"
-    },
-    {
       "key": "ch30_hold",
       "file": "scenes/ch30_hold.webp",
       "chapter": "30.3",

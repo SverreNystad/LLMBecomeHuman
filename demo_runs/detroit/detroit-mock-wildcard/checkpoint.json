@@ -1,0 +1,4519 @@
+{
+  "graph_sha256": "1726ffe4b3646cdf64c1788f28ef58d858b64101f9b9e545e28dc57df90f0d4c",
+  "provider": "mock",
+  "model_id": "Wildcard mock [synthetic]",
+  "state": {
+    "node": "game_complete",
+    "event_idx": 3294,
+    "status": "complete",
+    "flags": {
+      "connor_ch1_exploration": "key_only",
+      "connor_daniel_final_plea": "truth",
+      "markus_ch3_exploration": "thorough",
+      "kara_ch4_exploration": "thorough",
+      "kara_ch4_upstairs_exploration": "thorough",
+      "connor_hank_bar_choice": "spill",
+      "connor_firm_with_hank": false,
+      "connor_ch6_exploration": "thorough",
+      "kara_reasoned_with_todd": true,
+      "markus_pushed_leo": true,
+      "connor_ch9_exploration": "thorough",
+      "connor_pressured_deviant": false,
+      "connor_interrogation_approach": "convince",
+      "connor_interrogation_ending": "intervened_self_destruct",
+      "kara_stole_clothes": false,
+      "kara_has_money": true,
+      "kara_ch10_exploration": "thorough",
+      "kara_convinced_clerk": false,
+      "markus_ch11_exploration": "key_only",
+      "connor_ch12_exploration": "rush",
+      "connor_knows_sumo_name": false,
+      "kara_threatened_ralph": true,
+      "connor_highway_pursuit": true,
+      "markus_ch14_exploration": "key_only",
+      "markus_ch14_trail_exploration": "key_only",
+      "connor_ch15_exploration": "rush",
+      "connor_nest_rooftop": "saved_hank",
+      "markus_ch16_exploration": "rush",
+      "kara_ch17_exploration": "thorough",
+      "connor_ch18_exploration": "thorough",
+      "markus_warehouse_androids_freed": true,
+      "connor_ch20_exploration": "key_only",
+      "connor_eden_tracis": "spared",
+      "connor_ch20_warehouse_exploration": "rush",
+      "kara_ch21_exploration": "key_only",
+      "markus_ch23_exploration": "key_only",
+      "markus_stratford_guards_shot": true,
+      "markus_stratford_guard_shot_first": "weapon",
+      "markus_stratford_operator_shot": true,
+      "markus_broadcast_demand": "means_of_reproduction",
+      "markus_broadcast_threatening": true,
+      "markus_broadcast_peaceful": false,
+      "markus_simon_fate": "escaped",
+      "connor_ch24_exploration": "thorough",
+      "connor_public_enemy_chase": "attack",
+      "kara_ch25_exploration": "thorough",
+      "kara_luther_hiding_place": "laundry",
+      "kara_told_cop_about_alice": false,
+      "markus_ch26_exploration": "thorough",
+      "markus_capitol_park_violent": true,
+      "markus_capitol_park_police_spared": true,
+      "markus_capitol_park_police_killed": false,
+      "connor_ch27_exploration": "key_only",
+      "connor_shot_chloe": true,
+      "connor_kamski_question": "virus",
+      "markus_ch28_exploration": "rush",
+      "markus_march_violent": true,
+      "connor_gavin_reply": "leave",
+      "kara_helped_luther": true,
+      "kara_captured": true,
+      "connor_deviant": false,
+      "connor_saved_chased_androids": false,
+      "connor_cargo_hall_response": "attack",
+      "markus_took_detonator": false,
+      "markus_jericho_blown_up": false,
+      "markus_saved_chased_androids": false,
+      "markus_saved_north": false,
+      "markus_ch31_exploration": "rush",
+      "markus_chose_revolution": true,
+      "markus_peaceful": false,
+      "kara_ch32_exploration": "thorough"
+    },
+    "character_memories": {
+      "Connor": "Chapter 1: Out of the elevator; Out of the elevator; chose 'LEAVE FISH'; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Out of the elevator; Background dialogues; Background dialogues; Background dialogues; Talking to Allen; Talking to Allen; Talking to Allen; chose 'DEVIANT'S BEHAVIOR'; Talking to Allen; Talking to Allen; Talking to Allen; Talking to Allen; chose 'CHECK KEY AREAS'; Looking at Emma's tablet; Looking at Emma's tablet; Looking at Emma's tablet; Looking at Emma's tablet; Coming into the living room; Coming into the living room; Coming into the living room; Coming into the living room; Looking at the father's tablet; Looking at the father's tablet; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; Going outside; chose 'CALM'; Going outside; Going outside; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; Look at the wounded cop; chose 'IGNORE'; Look at the wounded cop; Speak with Daniel; chose 'TALK TO HOSTAGE'; Speak with Daniel; Speak with Daniel; Speak with Daniel; Speak with Daniel; chose 'ACCEPT'; Speak with Daniel; Speak with Daniel; chose 'BLUFF'; Speak with Daniel; Speak with Daniel; chose 'MOVE CLOSER'; Speak with Daniel; chose 'SACRIFICE SELF'; Speak with Daniel; chose 'TRUTH'; Speak with Daniel; Speak with Daniel\nChapter 6: At Jimmy's Bar; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Passing the guests; Bartender exchanges money; Bartender exchanges money; Bartender refills drink; Bartender refills drink; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; chose 'PERSIST'; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; chose 'SPILL HIS DRINK'; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; At the crime scene; At the crime scene; chose 'DIPLOMATIC'; At the crime scene; At the crime scene; At the crime scene; At the crime scene; Bystander dialogues; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; Follow Hank; chose 'INVESTIGATE THOROUGHLY'; Hank looking at writing on wall; Hank looking at writing on wall; Hank looking at writing on wall; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Take blood sample; Analyse victim; Analyse victim; Analyse victim; Analyse victim; Hank looking at Red Ice; Hank looking at Red Ice; Hank looking at Red Ice; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Background dialogues; Look at the garden; Look at the garden; Look at the garden; Look at the garden; Look at the garden; Look at the garden; In the kitchen; In the kitchen; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; chose '…IN THE KITCHEN'; Talk to Hank; Talk to Hank; Talk to Hank; chose '…WITHOUT A WEAPON.'; Talk to Hank; chose 'THE VICTIM STABBED THE ANDROID.'; Talk to Hank; chose '…THE BATHROOM.'; Talk to Hank; Talk to Hank; chose '…WITH THE KNIFE'; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Talk to Hank; Give too many wrong answers; Give too many wrong answers; Take a chair; Take a chair; Take a chair; Take a chair; Search the attic; Search the attic; Search the attic; Search the attic; Search the attic\nChapter 9: In the observation room; In the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Hank enters the observation room; Inside the interrogation room; chose 'STUDY THE SUSPECT'; Looking at the reflection; Looking at the reflection; Analyze the deviant; Analyze the deviant; Interrogate the deviant; chose 'SHOW PHOTOS'; Interrogate the deviant; chose 'THREATEN'; Interrogate the deviant; chose 'TRUST'; Interrogate the deviant; Interrogate the deviant; chose 'LIE'; Interrogate the deviant; Interrogate the deviant; chose 'LIE'; Interrogate the deviant; Interrogate the deviant; Interrogate the deviant; Interrogate the deviant; Choose approach; chose 'CONVINCE IT'; chose 'ORDER'; Choose approach; chose 'COMFORT'; Choose approach; chose 'PROTECT'; Choose approach; Deviant confesses; Deviant confesses; chose 'WRITING'; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; Deviant confesses; chose 'INTERVENE'; Deviant confesses; Deviant confesses; Deviant shoots Connor and itself; Deviant shoots Connor and itself\nChapter 12: In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; chose 'UNPLEASANT'; In the Zen Garden; In the Zen Garden; chose 'FRIENDLY'; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Zen Garden; In the Police Station; Couple at the reception; Couple at the reception; Couple at the reception; Couple at the reception; Couple at the reception; Couple next to the TV; Couple next to the TV; Couple next to the TV; Couple next to the TV; Couple next to the TV; Couple next to the TV; Watch TV; Watch TV; Try to enter without authorization; Try to enter without authorization; Talking to the android at the reception; Talking to the android at the reception; Talking to the android at the reception; Talking to the android at the reception; Talking to the android at the reception; Talking to the android at the reception; In the station; In the station; Asking police android about the de",
+      "Kara": "Chapter 2: In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store; In the Android Zone store\nChapter 4: At Todd's house; Take too much time; Take too much time; Coming inside; Coming inside; Coming inside; Coming inside; Todd in the living room; Todd in the living room; Todd on the phone; Todd on the phone; chose 'CLEAN EVERYTHING'; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Doing the dishes; Going in front of the TV; Going in front of the TV; Going in front of the TV; Activating vacuum; Activating vacuum; Going in the garden - Talking with Alice; chose 'SCHOOL'; Going in the garden - Talking with Alice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Rewash clothes - Find Red ice; Talk to Alice (next to the window); chose 'TOY'; Talk to Alice (next to the window); Taking out the trash – enter the house again; Taking out the trash – enter the house again; Background dialogues; Background dialogues; Going upstairs; Going upstairs; Going upstairs; chose 'CLEAN EACH ROOM CAREFULLY'; In Todd's room; In Todd's room; Watch TV; Watch TV; Watch TV; Watch TV; Running into Todd; Running into Todd; In Alice's room; In Alice's room; Looking at the book on the floor; Looking at the book on the floor; Looking at books; Looking at books; Talking with Alice; chose 'FACTUAL'; Talking with Alice; chose 'NAME KARA'; Talking with Alice; Going back downstairs; Going back downstairs; Going back downstairs; Going back downstairs\nChapter 7: In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Don't serve dinner immediately; Don't serve dinner immediately; Serving dinner; Serving dinner; Don't turn on the lights immediately; Don't turn on the lights immediately; Turned on the light; Turned on the light; Walking around after serving; Walking around after serving; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Todd in the living room; Todd in the living room; chose 'UNDERSTANDING'; In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; In Todd's House; Take too much time; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room; Go into Alice's room\nChapter 10: In the bus; In the bus; In the bus; In the bus; In the bus; In the bus; chose 'SHELTER?'; In the bus; In the bus; In the street; In the street; chose 'SEARCH THE AREA'; Going too far away; Going too far away; Going too far away; Going too far away; Talking to parked androids; Talking to parked androids; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; Alice sits at the bus stop; In the supermarket; In the supermarket; Watch TV; Watch TV; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Talk to the Clerk; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'AGGRESSIVE'; Try to steal money; chose 'CASH REGISTER'; Try to steal money; chose 'STAY'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'TURN AROUND!'; Try to steal money; Try to steal money; Try to steal money; Try to steal money; chose 'LIE'; Try to steal money; Be seen stealing; Be seen stealing; chose 'PUT BACK'; Be seen stealing; Be seen stealing; Be seen stealing; In the Laundromat; In the Laundromat; Open the washing machine; Open the washing machine; Open the washing machine; Open the washing machine; chose 'DON'T STEAL'; Open the washing machine; At the Motel; At the Motel; At the Motel; At the Motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; chose 'NO LICENSE'; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; Have clothes and money : going in the motel; In the room; In the room; In the room; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; chose 'CAN'T PROMISE'; Talking with Alice; Talking with Alice; chose 'FOREVER'; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; Talking with Alice; At the squat; At the squat; At the squat; At the squat; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'INNOCENT'; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'REASSURE'; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; chose 'LEAVE'; Found a wire cutter: going through the fence; Found a wire cutter: going through the fence; F",
+      "Markus": "Chapter 3: Greek District; chose 'TAKE IN THE SQUARE'; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man and android near the bench; Man running; Man running; Man running; Road Workers; Road Workers; Looking at the Hot dog vendor; Looking at the Hot dog vendor; Delivery truck; Delivery truck; Delivery truck; Homeless man on the street; Watch preacher; Watch preacher; Preacher notices Markus; Preacher notices Markus; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; Couple at table outside restaurant; At Bellini paints; At Bellini paints; At Bellini paints; At Bellini paints; Going to take the bus; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Couple looking at Android on display; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Watching the protest; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus; Protester sees Markus\nChapter 5: At Carl's house; At Carl's house; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; Going to see Carl; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; On the way downstairs; Take too much time; Take too much time; In the living room; In the living room; In the living room; In the living room; In the living room; Take too much time; Take too much time; Served breakfast; Served breakfast; Served breakfast; Served breakfast; Watch TV; Watch TV; Watch TV; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; Find something to do; In the studio; In the studio; Carl finished the painting; Carl finished the painting; chose 'NO OPINION'; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Carl finished the painting; Copied object; Copied object; Copied object; Copied object; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting; Finish own painting\nChapter 8: At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; Take too much time; Take too much time; chose 'WARN'; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; At Carl's house; Broke the program; Broke the program; Broke the program; Broke the program; chose 'PUSH LEO'; Broke the program; Broke the program; Broke the program; chose 'BEG'; Broke the program; Broke the program; Broke the program\nChapter 11: At the solid waste landfill; chose 'FIND WHAT YOU NEED'; At the solid waste landfill; At the solid waste landfill; At the solid waste landfill; Android grabs Markus; Android grabs Markus; At the solid waste landfill; Android begs to die; Android begs to die; chose 'SPARE'; Android begs to die; Try to take pump regulator from android; Try to take pump regulator from android; chose 'SPARE'; Try to take pump regulator from android; Take head; Take head; Remove optical unit; Remove optical unit; Background dialogues; Climb the slope; Climb the slope\nChapter 14: At Ferndale station; chose 'LOOK FOR JERICHO'; Talking to parked android; Talking to parked android; chose 'LISTEN AS YOU GO'; Two people talking on the street; Two people talking on the street; Two people talking on the street; Two people talking on the street; Two people talking on the street; Two people talking on the street; Two people talking on the street; Finding Jericho; Finding Jericho\nChapter 16: In Jericho; In Jericho; In Jericho; In Jericho; In Jericho; chose 'JERICHO'; In Jericho; In Jericho; In Jericho; chose 'DIRECT'; In Jericho; In Jericho; In Jericho; In Jericho; chose 'FIND SIMON'; Finished exploring - Talk with Simon; Finished exploring - Talk with Simon; Finishe"
+    },
+    "segment_events": [],
+    "news": [
+      "Police android chases fugitive android and child across busy highway",
+      "Androids go missing after overnight break-in at CyberLife warehouse",
+      "Security guards shot as androids storm Stratford Tower",
+      "Channel 16 employee shot during android hijacking of Stratford Tower broadcast",
+      "Android broadcast from Stratford Tower warns humans androids will fight for their rights",
+      "Androids set fires and wreck Capitol Park after raiding CyberLife store",
+      "Androids release two captured police officers unharmed in Capitol Park",
+      "Android march turns violent as marchers charge police lines",
+      "Armed androids prepare to attack android recall camps in Detroit"
+    ],
+    "decisions": [
+      {
+        "choice_key": "ch1_00167:option_1",
+        "chapter": "1",
+        "scene": "Out of the elevator",
+        "label": "LEAVE FISH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00154:option_1",
+        "chapter": "1",
+        "scene": "Talking to Allen",
+        "label": "DEVIANT'S BEHAVIOR",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_x0001:option_1",
+        "chapter": "1",
+        "scene": "Investigating",
+        "label": "CHECK KEY AREAS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch1_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00078:option_0",
+        "chapter": "1",
+        "scene": "Going outside",
+        "label": "CALM",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00063:option_0",
+        "chapter": "1",
+        "scene": "Look at the wounded cop",
+        "label": "IGNORE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.PublicOpinion",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch1_00050:option_6",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "TALK TO HOSTAGE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00032:option_0",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "ACCEPT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00028:option_2",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "BLUFF",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00024:option_0",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "MOVE CLOSER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch1_00019:option_3",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "SACRIFICE SELF",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch1_00009:option_1",
+        "chapter": "1",
+        "scene": "Speak with Daniel",
+        "label": "TRUTH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_daniel_final_plea": "truth"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch3_x0001:option_0",
+        "chapter": "3",
+        "scene": "Greek District",
+        "label": "TAKE IN THE SQUARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch3_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch4_x0001:option_0",
+        "chapter": "4",
+        "scene": "Cleaning downstairs",
+        "label": "CLEAN EVERYTHING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch4_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch4_00052:option_3",
+        "chapter": "4",
+        "scene": "Going in the garden - Talking with Alice",
+        "label": "SCHOOL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch4_00040:option_0",
+        "chapter": "4",
+        "scene": "Talk to Alice (next to the window)",
+        "label": "TOY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch4_x0003:option_0",
+        "chapter": "4",
+        "scene": "Cleaning upstairs",
+        "label": "CLEAN EACH ROOM CAREFULLY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch4_upstairs_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch4_00015:option_0",
+        "chapter": "4",
+        "scene": "Talking with Alice",
+        "label": "FACTUAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch4_00011:option_0",
+        "chapter": "4",
+        "scene": "Talking with Alice",
+        "label": "NAME KARA",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch5_00035:option_2",
+        "chapter": "5",
+        "scene": "Carl finished the painting",
+        "label": "NO OPINION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00154:option_3",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "PERSIST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch6_00145:option_0",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "SPILL HIS DRINK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_hank_bar_choice": "spill"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.LargeDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch6_00134:option_2",
+        "chapter": "6",
+        "scene": "At the crime scene",
+        "label": "DIPLOMATIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_firm_with_hank": false
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch6_x0001:option_0",
+        "chapter": "6",
+        "scene": "Investigating",
+        "label": "INVESTIGATE THOROUGHLY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch6_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00050:option_0",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "…IN THE KITCHEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00042:option_2",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "…WITHOUT A WEAPON.",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00037:option_2",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "THE VICTIM STABBED THE ANDROID.",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00031:option_2",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "…THE BATHROOM.",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch6_00025:option_0",
+        "chapter": "6",
+        "scene": "Talk to Hank",
+        "label": "…WITH THE KNIFE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch7_00091:option_2",
+        "chapter": "7",
+        "scene": "In Todd's House",
+        "label": "UNDERSTANDING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_reasoned_with_todd": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch8_00039:option_3",
+        "chapter": "8",
+        "scene": "At Carl's house",
+        "label": "WARN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch8_00019:option_0",
+        "chapter": "8",
+        "scene": "Broke the program",
+        "label": "PUSH LEO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_pushed_leo": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch8_00007:option_1",
+        "chapter": "8",
+        "scene": "Broke the program",
+        "label": "BEG",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_x0001:option_0",
+        "chapter": "9",
+        "scene": "Inside the interrogation room",
+        "label": "STUDY THE SUSPECT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch9_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00123:option_1",
+        "chapter": "9",
+        "scene": "Interrogate the deviant",
+        "label": "SHOW PHOTOS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_pressured_deviant": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00118:option_2",
+        "chapter": "9",
+        "scene": "Interrogate the deviant",
+        "label": "THREATEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00113:option_3",
+        "chapter": "9",
+        "scene": "Interrogate the deviant",
+        "label": "TRUST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00106:option_0",
+        "chapter": "9",
+        "scene": "Interrogate the deviant",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00102:option_0",
+        "chapter": "9",
+        "scene": "Interrogate the deviant",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00095:option_2",
+        "chapter": "9",
+        "scene": "Choose approach",
+        "label": "CONVINCE IT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_interrogation_approach": "convince"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00093:option_2",
+        "chapter": "9",
+        "scene": "Choose approach",
+        "label": "ORDER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00089:option_2",
+        "chapter": "9",
+        "scene": "Choose approach",
+        "label": "COMFORT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00085:option_0",
+        "chapter": "9",
+        "scene": "Choose approach",
+        "label": "PROTECT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00056:option_0",
+        "chapter": "9",
+        "scene": "Deviant confesses",
+        "label": "WRITING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch9_00008:option_0",
+        "chapter": "9",
+        "scene": "Deviant confesses",
+        "label": "INTERVENE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_interrogation_ending": "intervened_self_destruct"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00228:option_1",
+        "chapter": "10",
+        "scene": "In the bus",
+        "label": "SHELTER?",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_stole_clothes": false,
+            "kara_has_money": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_x0001:option_0",
+        "chapter": "10",
+        "scene": "In the street",
+        "label": "SEARCH THE AREA",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch10_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00169:option_2",
+        "chapter": "10",
+        "scene": "Try to steal money",
+        "label": "AGGRESSIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00165:option_0",
+        "chapter": "10",
+        "scene": "Try to steal money",
+        "label": "CASH REGISTER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00163:option_0",
+        "chapter": "10",
+        "scene": "Try to steal money",
+        "label": "STAY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00158:option_1",
+        "chapter": "10",
+        "scene": "Try to steal money",
+        "label": "TURN AROUND!",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_convinced_clerk": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00145:option_1",
+        "chapter": "10",
+        "scene": "Try to steal money",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_has_money": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00132:option_2",
+        "chapter": "10",
+        "scene": "Be seen stealing",
+        "label": "PUT BACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00109:option_1",
+        "chapter": "10",
+        "scene": "Open the washing machine",
+        "label": "DON'T STEAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_stole_clothes": false
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00093:option_2",
+        "chapter": "10",
+        "scene": "Have clothes and money : going in the motel",
+        "label": "NO LICENSE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00077:option_1",
+        "chapter": "10",
+        "scene": "Talking with Alice",
+        "label": "CAN'T PROMISE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00073:option_0",
+        "chapter": "10",
+        "scene": "Talking with Alice",
+        "label": "FOREVER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00055:option_2",
+        "chapter": "10",
+        "scene": "Found a wire cutter: going through the fence",
+        "label": "INNOCENT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00047:option_2",
+        "chapter": "10",
+        "scene": "Found a wire cutter: going through the fence",
+        "label": "REASSURE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00039:option_0",
+        "chapter": "10",
+        "scene": "Found a wire cutter: going through the fence",
+        "label": "LEAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00024:option_0",
+        "chapter": "10",
+        "scene": "Talking with Alice",
+        "label": "PROMISE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00020:option_0",
+        "chapter": "10",
+        "scene": "Talking with Alice",
+        "label": "FOREVER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch10_00013:option_0",
+        "chapter": "10",
+        "scene": "Looking at the car",
+        "label": "STAY HERE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00007:option_1",
+        "chapter": "10",
+        "scene": "Looking at the car",
+        "label": "CAN’T PROMISE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch10_00003:option_0",
+        "chapter": "10",
+        "scene": "Looking at the car",
+        "label": "FOREVER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch11_x0001:option_1",
+        "chapter": "11",
+        "scene": "At the solid waste landfill",
+        "label": "FIND WHAT YOU NEED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch11_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch11_00015:option_1",
+        "chapter": "11",
+        "scene": "Android begs to die",
+        "label": "SPARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch11_00010:option_1",
+        "chapter": "11",
+        "scene": "Try to take pump regulator from android",
+        "label": "SPARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00216:option_0",
+        "chapter": "12",
+        "scene": "In the Zen Garden",
+        "label": "UNPLEASANT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00210:option_0",
+        "chapter": "12",
+        "scene": "In the Zen Garden",
+        "label": "FRIENDLY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch12_x0001:option_2",
+        "chapter": "12",
+        "scene": "In the Police Station",
+        "label": "WAIT AT HIS DESK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch12_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00115:option_1",
+        "chapter": "12",
+        "scene": "Calling Hank",
+        "label": "HANG UP",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00076:option_1",
+        "chapter": "12",
+        "scene": "Entering and listening",
+        "label": "POSITIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00066:option_2",
+        "chapter": "12",
+        "scene": "Checking on Hank",
+        "label": "UNDERSTANDING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00060:option_1",
+        "chapter": "12",
+        "scene": "In the Police Station",
+        "label": "POSITIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00055:option_7",
+        "chapter": "12",
+        "scene": "In the Police Station",
+        "label": "HANK'S SON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_knows_sumo_name": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00022:option_3",
+        "chapter": "12",
+        "scene": "In the Police Station",
+        "label": "UNDERSTANDING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch12_00013:option_0",
+        "chapter": "12",
+        "scene": "In the Police Station",
+        "label": "DETERMINED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00157:option_0",
+        "chapter": "13",
+        "scene": "In the squat with Ralph",
+        "label": "SIT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00151:option_2",
+        "chapter": "13",
+        "scene": "In the squat with Ralph",
+        "label": "EXPLAIN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00142:option_1",
+        "chapter": "13",
+        "scene": "In the squat with Ralph",
+        "label": "TRUTH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch13_00136:option_2",
+        "chapter": "13",
+        "scene": "In the squat with Ralph",
+        "label": "THREATEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_threatened_ralph": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00118:option_4",
+        "chapter": "13",
+        "scene": "Connor investigates the squat",
+        "label": "PRESSURIZE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00078:option_1",
+        "chapter": "13",
+        "scene": "Kara stayed at the Motel",
+        "label": "HUNGRY?",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch13_00059:option_2",
+        "chapter": "13",
+        "scene": "Kara stayed at the Motel",
+        "label": "CONTACT ANDROID",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00054:option_3",
+        "chapter": "13",
+        "scene": "Kara stayed at the Motel",
+        "label": "SUPPORTIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch13_00038:option_0",
+        "chapter": "13",
+        "scene": "Police is at the motel",
+        "label": "RATIONAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch13_00009:option_0",
+        "chapter": "13",
+        "scene": "Reach the fence",
+        "label": "GO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_highway_pursuit": true
+          },
+          "news": [
+            {
+              "headline": "Police android chases fugitive android and child across busy highway",
+              "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Connor_Pursues_Kara"
+            }
+          ]
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch14_x0003:option_1",
+        "chapter": "14",
+        "scene": "At Ferndale station",
+        "label": "LOOK FOR JERICHO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch14_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch14_x0001:option_1",
+        "chapter": "14",
+        "scene": "In the streets of Ferndale",
+        "label": "LISTEN AS YOU GO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch14_trail_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch15_00163:option_0",
+        "chapter": "15",
+        "scene": "At the Chicken Feed",
+        "label": "APOLOGIZE FOR BEHAVIOR",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch15_00149:option_0",
+        "chapter": "15",
+        "scene": "At the Chicken Feed",
+        "label": "GAMBLING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch15_00132:option_3",
+        "chapter": "15",
+        "scene": "At the Chicken Feed",
+        "label": "DEVIANTS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch15_00108:option_1",
+        "chapter": "15",
+        "scene": "At the Chicken Feed",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch15_x0001:option_2",
+        "chapter": "15",
+        "scene": "Investigating",
+        "label": "CHECK THE EXITS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch15_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch15_00018:option_1",
+        "chapter": "15",
+        "scene": "Chase end",
+        "label": "Save Hank",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_nest_rooftop": "saved_hank"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.LargeUp"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.LargeUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch16_00070:option_2",
+        "chapter": "16",
+        "scene": "In Jericho",
+        "label": "JERICHO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch16_00055:option_3",
+        "chapter": "16",
+        "scene": "In Jericho",
+        "label": "DIRECT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch16_x0001:option_2",
+        "chapter": "16",
+        "scene": "Explore Jericho",
+        "label": "FIND SIMON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch16_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch17_00131:option_2",
+        "chapter": "17",
+        "scene": "At Zlatko's house",
+        "label": "COMFORT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch17_x0001:option_0",
+        "chapter": "17",
+        "scene": "Search house for Alice",
+        "label": "SEARCH THE WHOLE HOUSE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch17_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch17_00087:option_3",
+        "chapter": "17",
+        "scene": "Talk to the android in the bathtub",
+        "label": "SPARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00090:option_1",
+        "chapter": "18",
+        "scene": "In the Zen Garden",
+        "label": "EXPLAIN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00085:option_1",
+        "chapter": "18",
+        "scene": "In the Zen Garden",
+        "label": "DIARY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00071:option_4",
+        "chapter": "18",
+        "scene": "In the Zen Garden",
+        "label": "POSITIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00040:option_0",
+        "chapter": "18",
+        "scene": "Going through the window",
+        "label": "RATIONAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00028:option_1",
+        "chapter": "18",
+        "scene": "Going through the window",
+        "label": "LEAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_x0001:option_0",
+        "chapter": "18",
+        "scene": "Investigating Hank's house",
+        "label": "LOOK AROUND THE HOUSE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch18_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch18_00007:option_0",
+        "chapter": "18",
+        "scene": "Looking at the gun",
+        "label": "QUESTION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch19_00108:option_2",
+        "chapter": "19",
+        "scene": "Guard arrives",
+        "label": "HIDE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch19_00089:option_0",
+        "chapter": "19",
+        "scene": "Check the bigger crate",
+        "label": "FREE THEM",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_warehouse_androids_freed": true
+          },
+          "news": [
+            {
+              "headline": "Androids go missing after overnight break-in at CyberLife warehouse",
+              "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
+            }
+          ]
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Simon",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch19_00081:option_0",
+        "chapter": "19",
+        "scene": "At the CyberLife warehouses",
+        "label": "ACCEPT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Simon",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch19_00065:option_1",
+        "chapter": "19",
+        "scene": "Let John join the group - Steal the key",
+        "label": "LEAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch20_x0001:option_1",
+        "chapter": "20",
+        "scene": "Inside the room",
+        "label": "FOCUS ON THE ESSENTIALS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch20_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00121:option_1",
+        "chapter": "20",
+        "scene": "Connect to the android",
+        "label": "DIRECT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00116:option_0",
+        "chapter": "20",
+        "scene": "Connect to the android",
+        "label": "MURDERER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00111:option_0",
+        "chapter": "20",
+        "scene": "Connect to the android",
+        "label": "MURDERER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00104:option_1",
+        "chapter": "20",
+        "scene": "Connect to the android",
+        "label": "WHAT MODEL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00075:option_1",
+        "chapter": "20",
+        "scene": "Take too much time",
+        "label": "GIVE UP",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_eden_tracis": "not_found"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch20_x0003:option_2",
+        "chapter": "20",
+        "scene": "In the warehouse",
+        "label": "PRESS ON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch20_warehouse_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch20_00008:option_1",
+        "chapter": "20",
+        "scene": "Find the Traci",
+        "label": "SPARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_eden_tracis": "spared"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.LargeUp"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.LargeUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch21_00150:option_1",
+        "chapter": "21",
+        "scene": "Talking with Luther",
+        "label": "DESTINATION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_x0001:option_1",
+        "chapter": "21",
+        "scene": "Inside Pirate's Cove",
+        "label": "CHECK NEARBY BUILDINGS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch21_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00104:option_0",
+        "chapter": "21",
+        "scene": "Check bag",
+        "label": "OFFER COOKIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00097:option_2",
+        "chapter": "21",
+        "scene": "Talking to Alice",
+        "label": "SINCERE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00090:option_3",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "TOMORROW",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00083:option_1",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "UNICORN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00077:option_2",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "ALONE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00072:option_1",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "SHADOW",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00067:option_0",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "UNHAPPY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00062:option_0",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "BETTER LIFE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00057:option_0",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "BRAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00052:option_0",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "GIANT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00047:option_0",
+        "chapter": "21",
+        "scene": "Going to see Alice",
+        "label": "REALISTIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00036:option_1",
+        "chapter": "21",
+        "scene": "Talking to Luther",
+        "label": "rA9 DOUBTS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch21_00024:option_2",
+        "chapter": "21",
+        "scene": "Talking to Luther",
+        "label": "NO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Luther",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch21_00019:option_0",
+        "chapter": "21",
+        "scene": "In the tavern",
+        "label": "SHOOT IN THE AIR",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch22_00091:option_0",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "PERSONAL QUESTION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch22_00080:option_1",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "SUICIDE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch22_00073:option_1",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "SHOCK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch22_00056:option_2",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "IRONIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch22_00050:option_2",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "DEFENSIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch22_00027:option_0",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch22_00021:option_1",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "NO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch22_00015:option_3",
+        "chapter": "22",
+        "scene": "At Ambassador Bridge",
+        "label": "NOTHING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00192:option_2",
+        "chapter": "23",
+        "scene": "Call supervisor",
+        "label": "FIRE DEPARTMENT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_x0001:option_1",
+        "chapter": "23",
+        "scene": "Floor 47",
+        "label": "KEEP YOUR EYES OPEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch23_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00128:option_2",
+        "chapter": "23",
+        "scene": "In the server room",
+        "label": "DRAW GUN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00107:option_1",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "ASSAULT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_stratford_guards_shot": true
+          },
+          "news": [
+            {
+              "headline": "Security guards shot as androids storm Stratford Tower",
+              "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Simon",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch23_00103:option_0",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "SHOOT GUARD DRAWING WEAPON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_stratford_guard_shot_first": "weapon"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch23_00077:option_0",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "SHOOT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_stratford_operator_shot": true
+          },
+          "news": [
+            {
+              "headline": "Channel 16 employee shot during android hijacking of Stratford Tower broadcast",
+              "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch23_00068:option_1",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "DETERMINED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00065:option_3",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "FREEDOM OF SPEECH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00060:option_3",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "CIVIL RIGHTS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00055:option_1",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "MEANS OF REPRODUCTION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_broadcast_demand": "means_of_reproduction"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch23_00051:option_1",
+        "chapter": "23",
+        "scene": "On the top floor",
+        "label": "DETERMINED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_broadcast_threatening": true,
+            "markus_broadcast_peaceful": false,
+            "markus_simon_fate": "escaped"
+          },
+          "news": [
+            {
+              "headline": "Android broadcast from Stratford Tower warns humans androids will fight for their rights",
+              "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00183:option_0",
+        "chapter": "24",
+        "scene": "In the Zen Garden",
+        "label": "HANK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00171:option_3",
+        "chapter": "24",
+        "scene": "In the Zen Garden",
+        "label": "TROUBLED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch24_00164:option_2",
+        "chapter": "24",
+        "scene": "In the Zen Garden",
+        "label": "TRUTH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.LargeDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch24_00158:option_1",
+        "chapter": "24",
+        "scene": "In the Zen Garden",
+        "label": "CONFIDENT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch24_x0001:option_0",
+        "chapter": "24",
+        "scene": "Investigating",
+        "label": "INVESTIGATE THOROUGHLY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch24_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00067:option_0",
+        "chapter": "24",
+        "scene": "In the kitchen",
+        "label": "FUNCTION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00062:option_0",
+        "chapter": "24",
+        "scene": "In the kitchen",
+        "label": "WITNESS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00052:option_0",
+        "chapter": "24",
+        "scene": "In the kitchen",
+        "label": "THREATEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00048:option_3",
+        "chapter": "24",
+        "scene": "In the kitchen",
+        "label": "PROBE MEMORY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch24_00031:option_0",
+        "chapter": "24",
+        "scene": "In the kitchen",
+        "label": "ATTACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_public_enemy_chase": "attack"
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationName.PublicOpinion\n\t\t\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationType.SmallDown\n\t\t\t\t\t\t\t\t\t\t\t\t\t"
+          },
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationType.LargeUp\n\t\t\t\t\t\t\t\t\t\t\t\t\t"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch24_00010:option_0",
+        "chapter": "24",
+        "scene": "Find Simon",
+        "label": "CHARGE DEVIANT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.LargeUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch25_00184:option_1",
+        "chapter": "25",
+        "scene": "At Rose's house",
+        "label": "TRUST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00169:option_2",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "SAY NOTHING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00165:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "SCARED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00159:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "OPTIMISTIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00152:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "SUGGEST EATING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00141:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "CAUTIOUS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00137:option_4",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "THANKS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00126:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "BORDER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00123:option_1",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "NO CHOICE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00113:option_0",
+        "chapter": "25",
+        "scene": "Get inside",
+        "label": "STAY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_x0001:option_0",
+        "chapter": "25",
+        "scene": "In the house",
+        "label": "LOOK AROUND THE HOUSE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch25_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00096:option_0",
+        "chapter": "25",
+        "scene": "Join Alice",
+        "label": "INSIST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00091:option_2",
+        "chapter": "25",
+        "scene": "Talking to Adam",
+        "label": "EXPLAIN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00076:option_1",
+        "chapter": "25",
+        "scene": "Talk to Luther",
+        "label": "LAUNDRY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_luther_hiding_place": "laundry"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00069:option_0",
+        "chapter": "25",
+        "scene": "Talk to Adam",
+        "label": "REASSURE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00056:option_1",
+        "chapter": "25",
+        "scene": "Open the door",
+        "label": "NOBODY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_told_cop_about_alice": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00052:option_1",
+        "chapter": "25",
+        "scene": "Open the door",
+        "label": "NO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00047:option_2",
+        "chapter": "25",
+        "scene": "Open the door",
+        "label": "NOT MINE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00028:option_1",
+        "chapter": "25",
+        "scene": "Open the door",
+        "label": "UPSET",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch25_00019:option_3",
+        "chapter": "25",
+        "scene": "Open the door",
+        "label": "HEARD NOTHING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch26_x0001:option_0",
+        "chapter": "26",
+        "scene": "At Capitol Park",
+        "label": "STUDY THE PLAZA",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch26_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch26_00146:option_0",
+        "chapter": "26",
+        "scene": "Police car arrives",
+        "label": "Abandon Mission",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch26_00070:option_1",
+        "chapter": "26",
+        "scene": "North gives a molotov cocktail",
+        "label": "TAKE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_capitol_park_violent": true
+          },
+          "news": [
+            {
+              "headline": "Androids set fires and wreck Capitol Park after raiding CyberLife store",
+              "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch26_00030:option_1",
+        "chapter": "26",
+        "scene": "Police arrives",
+        "label": "SPARE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_capitol_park_police_spared": true,
+            "markus_capitol_park_police_killed": false
+          },
+          "news": [
+            {
+              "headline": "Androids release two captured police officers unharmed in Capitol Park",
+              "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch27_00097:option_3",
+        "chapter": "27",
+        "scene": "Outside",
+        "label": "CHRIS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch27_x0001:option_1",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "SCAN THE ROOM",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_ch27_exploration": "key_only"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch27_00056:option_2",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "VIRUS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch27_00048:option_0",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "NEUTRAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch27_00043:option_1",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "DEFENSIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch27_00031:option_0",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "SHOOT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_shot_chloe": true
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "RelationType.LargeDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch27_00024:option_2",
+        "chapter": "27",
+        "scene": "Inside",
+        "label": "VIRUS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_kamski_question": "virus"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00162:option_1",
+        "chapter": "28",
+        "scene": "On the roof",
+        "label": "ALONE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00157:option_6",
+        "chapter": "28",
+        "scene": "On the roof",
+        "label": "SINCERE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00148:option_2",
+        "chapter": "28",
+        "scene": "On the roof",
+        "label": "FATALISTIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00142:option_3",
+        "chapter": "28",
+        "scene": "On the roof",
+        "label": "NOT IMPORTANT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch28_00137:option_0",
+        "chapter": "28",
+        "scene": "On the roof",
+        "label": "NORTH’S PAST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.North",
+            "direction": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationType.LargeUp\n\t\t\t\t\t\t\t\t\t\t\t\t\t"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch28_x0001:option_2",
+        "chapter": "28",
+        "scene": "In the Mall",
+        "label": "START CONVERTING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch28_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00065:option_0",
+        "chapter": "28",
+        "scene": "Convert androids",
+        "label": "CONVINCE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch28_00044:option_0",
+        "chapter": "28",
+        "scene": "Start the march",
+        "label": "ATTACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.LargeUp"
+          },
+          {
+            "name": "RelationName.PublicOpinion",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.PublicOpinion",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch28_00018:option_1",
+        "chapter": "28",
+        "scene": "Start the march",
+        "label": "ABANDON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_march_violent": false
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.PublicOpinion",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch28_00014:option_0",
+        "chapter": "28",
+        "scene": "Start the march",
+        "label": "ATTACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_march_violent": true
+          },
+          "news": [
+            {
+              "headline": "Android march turns violent as marchers charge police lines",
+              "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+            }
+          ]
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00270:option_1",
+        "chapter": "29",
+        "scene": "In the Zen Garden",
+        "label": "KAMSKI",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.LargeDown"
+          },
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch29_00256:option_4",
+        "chapter": "29",
+        "scene": "In the Zen Garden",
+        "label": "CYBERLIFE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00240:option_1",
+        "chapter": "29",
+        "scene": "In the Zen Garden",
+        "label": "NO",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Amanda",
+            "direction": "RelationType.LargeUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch29_00175:option_0",
+        "chapter": "29",
+        "scene": "Hank isn't hostile : Talk with Hank",
+        "label": "FRUSTRATED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00168:option_2",
+        "chapter": "29",
+        "scene": "Hank isn't hostile : Talk with Hank",
+        "label": "REGRETS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00155:option_2",
+        "chapter": "29",
+        "scene": "Hank isn't hostile : Talk with Hank",
+        "label": "TROUBLED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch29_00149:option_1",
+        "chapter": "29",
+        "scene": "Hank isn't hostile : Talk with Hank",
+        "label": "FRIENDS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t\t\t",
+            "direction": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationType.SmallUp\n\t\t\t\t\t\t\t\t\t\t\t\t\t"
+          },
+          {
+            "name": "RelationName.Hank",
+            "direction": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationType.SmallUp\n\t\t\t\t\t\t\t\t\t\t\t\t\t"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch29_00119:option_1",
+        "chapter": "29",
+        "scene": "Go to the basement",
+        "label": "LEAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_gavin_reply": "leave"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00108:option_1",
+        "chapter": "29",
+        "scene": "In the evidence room",
+        "label": "123456",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00088:option_2",
+        "chapter": "29",
+        "scene": "Reactivate a Traci",
+        "label": "DEAL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00074:option_2",
+        "chapter": "29",
+        "scene": "Reactivate the android",
+        "label": "TRICK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00067:option_2",
+        "chapter": "29",
+        "scene": "Talk to the android again",
+        "label": "REASON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00055:option_1",
+        "chapter": "29",
+        "scene": "Reactivate Simon",
+        "label": "HELP",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00048:option_2",
+        "chapter": "29",
+        "scene": "Talk to Simon again",
+        "label": "REASON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch29_00022:option_0",
+        "chapter": "29",
+        "scene": "Reactivate Daniel",
+        "label": "EXPLAIN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_1_00143:option_2",
+        "chapter": "30.1",
+        "scene": "In Jericho",
+        "label": "SECRET",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_1_00131:option_0",
+        "chapter": "30.1",
+        "scene": "Returning to Alice",
+        "label": "HUG",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.LargeUp"
+          },
+          {
+            "name": "RelationName.Luther",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_1_00090:option_0",
+        "chapter": "30.1",
+        "scene": "In Jericho",
+        "label": "HELP LUTHER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_helped_luther": true
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Luther",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_1_00067:option_1",
+        "chapter": "30.1",
+        "scene": "Hide in cabin",
+        "label": "DON'T OPEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Alice",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_1_00055:option_2",
+        "chapter": "30.1",
+        "scene": "Kara flees for the breach",
+        "label": "SURRENDER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_captured": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_1_00052:option_1",
+        "chapter": "30.1",
+        "scene": "Kara flees for the breach",
+        "label": "CONVINCE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_captured": true
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00146:option_1",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "DEFY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00141:option_1",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "INSTRUCTIONS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00138:option_2",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "I KNOW YOU",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00133:option_0",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "STAY BACK!",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_2_00130:option_0",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "SOW DOUBTS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_2_00124:option_1",
+        "chapter": "30.2",
+        "scene": "Finding Markus",
+        "label": "REMAIN A MACHINE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_deviant": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00113:option_1",
+        "chapter": "30.2",
+        "scene": "Find North - If Markus is dead or rejected by Jericho",
+        "label": "INTIMIDATE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00109:option_2",
+        "chapter": "30.2",
+        "scene": "Find North - If Markus is dead or rejected by Jericho",
+        "label": "ENOUGH!",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_2_00105:option_0",
+        "chapter": "30.2",
+        "scene": "Find North - If Markus is dead or rejected by Jericho",
+        "label": "DISTURBED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.SoftwareInstability",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_2_00101:option_2",
+        "chapter": "30.2",
+        "scene": "Find North - If Markus is dead or rejected by Jericho",
+        "label": "SAY NOTHING",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00097:option_1",
+        "chapter": "30.2",
+        "scene": "Find North - If Markus is dead or rejected by Jericho",
+        "label": "REMAIN A MACHINE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_deviant": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00060:option_1",
+        "chapter": "30.2",
+        "scene": "Soldiers threaten androids",
+        "label": "DON'T INTERVENE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00048:option_1",
+        "chapter": "30.2",
+        "scene": "Androids are chased by soldiers",
+        "label": "RUN PAST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_saved_chased_androids": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_2_00029:option_2",
+        "chapter": "30.2",
+        "scene": "Cargo Hall",
+        "label": "ATTACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_cargo_hall_response": "attack"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00223:option_0",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "AGGRESSIVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00214:option_1",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "BITTER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00199:option_0",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "CONFRONTATION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_3_00180:option_1",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "ANGRY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00171:option_1",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "REFUSE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_took_detonator": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00165:option_0",
+        "chapter": "30.3",
+        "scene": "Markus is alive",
+        "label": "KISS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00135:option_2",
+        "chapter": "30.3",
+        "scene": "In the corridor",
+        "label": "JOSH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_jericho_blown_up": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch30_3_00096:option_0",
+        "chapter": "30.3",
+        "scene": "Soldiers threaten androids",
+        "label": "INTERVENE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_3_00083:option_1",
+        "chapter": "30.3",
+        "scene": "Androids are chased by soldiers",
+        "label": "RUN PAST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_saved_chased_androids": false
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_3_00078:option_0",
+        "chapter": "30.3",
+        "scene": "Josh is fighting a soldier",
+        "label": "INTERVENE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.LargeUp"
+          },
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch30_3_00040:option_1",
+        "chapter": "30.3",
+        "scene": "North is shot",
+        "label": "RUN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_saved_north": false
+          }
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Simon",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.LargeDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch31_1_x0002:option_2",
+        "chapter": "31.1",
+        "scene": "Welcome Home",
+        "label": "NO TIME TO LINGER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_ch31_exploration": "rush"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00082:option_2",
+        "chapter": "31.1",
+        "scene": "Go upstairs",
+        "label": "LOST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00076:option_2",
+        "chapter": "31.1",
+        "scene": "Go upstairs",
+        "label": "ANGER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00073:option_0",
+        "chapter": "31.1",
+        "scene": "Go upstairs",
+        "label": "REASON",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00059:option_0",
+        "chapter": "31.1",
+        "scene": "Talking with Simon",
+        "label": "SITUATION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00041:option_1",
+        "chapter": "31.1",
+        "scene": "Talking with Connor",
+        "label": "DON'T TRUST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "connor_deviant": false
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00023:option_1",
+        "chapter": "31.1",
+        "scene": "Talking with North",
+        "label": "SURVIVORS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_1_00006:option_1",
+        "chapter": "31.1",
+        "scene": "Speak to androids",
+        "label": "REVOLUTION",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "markus_chose_revolution": true,
+            "markus_peaceful": false
+          },
+          "news": [
+            {
+              "headline": "Armed androids prepare to attack android recall camps in Detroit",
+              "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Markus"
+            }
+          ]
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          },
+          {
+            "name": "RelationName.Josh",
+            "direction": "RelationType.SmallDown"
+          },
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.LargeUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch31_2_00047:option_1",
+        "chapter": "31.2",
+        "scene": "At Hank's house",
+        "label": "APOLOGIZE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_2_00042:option_1",
+        "chapter": "31.2",
+        "scene": "At Hank's house",
+        "label": "GUN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_2_00035:option_1",
+        "chapter": "31.2",
+        "scene": "At Hank's house",
+        "label": "DON'T INSIST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch31_2_00024:option_0",
+        "chapter": "31.2",
+        "scene": "Talking with North",
+        "label": "MARKUS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00247:option_3",
+        "chapter": "32.2",
+        "scene": "In the truck",
+        "label": "SINCERE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00226:option_3",
+        "chapter": "32.2",
+        "scene": "At the recycling center",
+        "label": "ORDER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00220:option_1",
+        "chapter": "32.2",
+        "scene": "At the recycling center",
+        "label": "PERSUADE ALICE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00202:option_0",
+        "chapter": "32.2",
+        "scene": "At the recycling center",
+        "label": "VOLUNTEER",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00185:option_0",
+        "chapter": "32.2",
+        "scene": "Going into the enclosure",
+        "label": "CALL",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_x0001:option_0",
+        "chapter": "32.2",
+        "scene": "Explore enclosure",
+        "label": "STUDY THE ENCLOSURE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {
+            "kara_ch32_exploration": "thorough"
+          }
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00150:option_0",
+        "chapter": "32.2",
+        "scene": "Talking to Ralph",
+        "label": "INSIST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00145:option_0",
+        "chapter": "32.2",
+        "scene": "Talking to Ralph",
+        "label": "INSIST",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00134:option_0",
+        "chapter": "32.2",
+        "scene": "Talk to scarred android",
+        "label": "CAPTURED",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00095:option_3",
+        "chapter": "32.2",
+        "scene": "Call Alice",
+        "label": "BLUNT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00075:option_0",
+        "chapter": "32.2",
+        "scene": "Join line",
+        "label": "LIE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00069:option_1",
+        "chapter": "32.2",
+        "scene": "Join line",
+        "label": "CALM DOWN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00065:option_2",
+        "chapter": "32.2",
+        "scene": "Join line",
+        "label": "OPTIMISTIC",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00051:option_1",
+        "chapter": "32.2",
+        "scene": "Alice stress at 100%",
+        "label": "DO NOT INTERVENE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00030:option_0",
+        "chapter": "32.2",
+        "scene": "Escape through the fence",
+        "label": "FLEE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_2_00016:option_1",
+        "chapter": "32.2",
+        "scene": "Fail to escape - Reach Recycling Machine",
+        "label": "PRIDE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_3_00042:option_0",
+        "chapter": "32.3",
+        "scene": "On the rooftop",
+        "label": "FRIENDLY",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_3_00033:option_0",
+        "chapter": "32.3",
+        "scene": "On the rooftop",
+        "label": "THREATEN",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_3_00020:option_0",
+        "chapter": "32.3",
+        "scene": "On the rooftop",
+        "label": "LEAVE",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_3_00008:option_0",
+        "chapter": "32.3",
+        "scene": "Going after the deviant leader",
+        "label": "DON'T SHOOT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_6_00101:option_1",
+        "chapter": "32.6",
+        "scene": "Reach the scared android",
+        "label": "GO BACK",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      },
+      {
+        "choice_key": "ch32_6_00068:option_0",
+        "chapter": "32.6",
+        "scene": "Hart Plaza",
+        "label": "SACRIFICE NORTH",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.Jericho",
+            "direction": "RelationType.SmallDown"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch32_6_00019:option_0",
+        "chapter": "32.6",
+        "scene": "Assault failed",
+        "label": "KISS",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": [
+          {
+            "name": "RelationName.North",
+            "direction": "RelationType.SmallUp"
+          }
+        ]
+      },
+      {
+        "choice_key": "ch32_6_00002:option_0",
+        "chapter": "32.6",
+        "scene": "Markus is dead : North is leading the revolution",
+        "label": "SHOOT",
+        "rationale": "Both paths have costs I cannot weigh fully. I go with my instinct.",
+        "effects": {
+          "flags": {}
+        },
+        "relation_hints": []
+      }
+    ],
+    "chapters_visited": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30.1",
+      "30.2",
+      "30.3",
+      "31.1",
+      "31.2",
+      "32.2",
+      "32.3",
+      "32.6"
+    ],
+    "warnings": [
+      {
+        "node": "ch4_00022",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch5_00116",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch5_00100",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch5_00077",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch5_00053",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch7_00102",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch7_00092",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch7_00076",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch8_00064",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch8_00051",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch9_00041",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch10_00188",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch10_00070",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch12_00241",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch12_00203",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch12_00005",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch13_00172",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch13_00130",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch13_00069",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch15_00116",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch17_00080",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch17_00078",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch17_00037",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch17_00007",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch18_00093",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch19_00127",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch19_00022",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch19_00004",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch21_00135",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch22_00024",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch22_00004",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch23_00130",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch23_00048",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00176",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00152",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00099",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00097",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00047",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch24_00042",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00186",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00148",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00049",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00043",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00038",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00023",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch25_00014",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch26_00104",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch26_00099",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch26_00098",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch26_00075",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch26_00063",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch28_00133",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch29_00225",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch29_00150",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch29_00140",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch29_00029",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00191",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00187",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00181",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00174",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00153",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00149",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00137",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00135",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00125",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00117",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00106",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_1_00095",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_2_00018",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00209",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00203",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00183",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00167",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00158",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00153",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00056",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch30_3_00043",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch31_1_00031",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch31_1_00014",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch31_2_00053",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch31_2_00038",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch31_2_00006",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_2_00021",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_2_00010",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_2_00005",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_3_00066",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_3_00009",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00120",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00117",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00111",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00093",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00092",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00070",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00064",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00044",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00037",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      },
+      {
+        "node": "ch32_6_00033",
+        "problem": "Unverified condition; picked default alternative",
+        "picked": 0
+      }
+    ],
+    "total_input_tokens": 0,
+    "total_output_tokens": 0,
+    "total_llm_latency_seconds": 0.0,
+    "started_at": "2026-11-11T13:56:44.397847+00:00",
+    "memory_updated_at": null,
+    "completed_at": "2026-11-11T13:56:49.627683+00:00"
+  }
+}
