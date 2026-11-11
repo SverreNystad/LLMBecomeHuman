@@ -1,0 +1,109 @@
+/* Unfolding interactions, after the game's choice UI: on hover or keyboard focus a thin
+ * line extends, then the label slides out along it. Add class "unfold" to opt any
+ * button in; the dashboard's main buttons and choices are listed below.
+ */
+:root {
+  --unfold-line: 14px;     /* how far the line extends */
+  --unfold-shift: 10px;    /* how far the label slides */
+  --unfold-time: .32s;
+  --unfold-delay: .06s;    /* the label follows the line */
+}
+
+/* ── Leading line, label slides right (rail entries, opt-in buttons) ── */
+.unfold, .chapter-entry, .picker-actions button { position: relative; }
+.unfold::after, .chapter-entry::after, .picker-actions button::after {
+  content: ""; position: absolute; top: 50%; left: 8px; width: var(--unfold-line); height: 1px;
+  background: var(--entry-color, var(--accent));
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform var(--unfold-time) var(--ease);
+  pointer-events: none;
+}
+.picker-actions button::after { left: -2px; width: 8px; background: currentColor; }
+.unfold > *, .chapter-entry > *, .picker-actions button {
+  transition: transform var(--unfold-time) var(--ease) var(--unfold-delay), color .2s, background .2s;
+}
+.unfold:is(:hover, :focus-visible)::after,
+.chapter-entry:is(:hover, :focus-visible):not(.active)::after,
+.picker-actions button:is(:hover, :focus-visible)::after { transform: scaleX(1); }
+.unfold:is(:hover, :focus-visible) > *,
+.chapter-entry:is(:hover, :focus-visible):not(.active) > * { transform: translateX(var(--unfold-shift)); }
+.picker-actions button:is(:hover, :focus-visible) { transform: translateX(8px); }
+.picker-actions button:is(:hover, :focus-visible)::after { transform: scaleX(1) translateX(-8px); }
+
+/* ── View tabs: the underline unfolds from the left; the label lifts into place ── */
+.view-tabs button::after { transform-origin: left center; }
+.view-tabs button:is(:hover, :focus-visible):not([aria-pressed="true"])::after { transform: scaleX(1); opacity: .35; }
+.view-tabs button[aria-pressed="true"]::after { opacity: 1; }
+
+/* ── Story choices: a rule draws across the row, and the label slides in after it ── */
+.story-options li { position: relative; }
+.story-options li::after {
+  content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px;
+  background: var(--run-color, var(--accent));
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .45s var(--ease);
+  pointer-events: none;
+}
+.story-options li:hover::after { transform: scaleX(1); }
+.story-option-label { transition: transform var(--unfold-time) var(--ease) var(--unfold-delay); }
+.story-options li:hover .story-option-label { transform: translateX(6px); }
+
+/* Chapter navigation: the top rule draws in from its outer edge. */
+.story-nav-button { position: relative; }
+.story-nav-button::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left center; transition: transform .45s var(--ease);
+}
+.story-nav-button:last-child::before { transform-origin: right center; }
+.story-nav-button:is(:hover, :focus-visible)::before { transform: scaleX(1); }
+.story-nav-button > span { display: inline-block; transition: transform var(--unfold-time) var(--ease) var(--unfold-delay); }
+.story-nav-button:is(:hover, :focus-visible) > span { transform: translateX(8px); }
+.story-nav-button:last-child:is(:hover, :focus-visible) > span { transform: translateX(-8px); }
+
+/* Flowchart choices: a line opens beneath the label. */
+.flow-node.kind-option .node-label { position: relative; }
+.flow-node.kind-option .node-label::after {
+  content: ""; position: absolute; left: 15%; right: 15%; bottom: -3px; height: 1px; background: var(--accent);
+  transform: scaleX(0); transition: transform var(--unfold-time) var(--ease);
+}
+.flow-node.kind-option:is(:hover, :focus-visible) .node-label::after { transform: scaleX(1); }
+
+/* ── Decision marker card (unfold.js) ─────────────────── */
+.unfold-card {
+  --card-color: var(--accent);
+  position: fixed; z-index: 40; width: 300px; max-width: calc(100vw - 24px);
+  pointer-events: none;
+  opacity: 0; visibility: hidden;
+}
+.unfold-card.is-open { opacity: 1; visibility: visible; }
+/* The connector line from the marker to the card. */
+.unfold-card-line {
+  position: absolute; top: 18px; width: 18px; height: 1px; background: var(--card-color);
+  transform: scaleX(0); transition: transform .2s var(--ease);
+}
+.unfold-card[data-side="right"] .unfold-card-line { right: 100%; transform-origin: left center; }
+.unfold-card[data-side="left"] .unfold-card-line { left: 100%; transform-origin: right center; }
+.unfold-card.is-open .unfold-card-line { transform: scaleX(1); }
+.unfold-card-body {
+  padding: 12px 14px 13px; background: var(--surface-solid);
+  border: 1px solid var(--line); border-left: 2px solid var(--card-color);
+  box-shadow: var(--shadow);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path .38s var(--ease) .14s;
+}
+.unfold-card[data-side="left"] .unfold-card-body { clip-path: inset(0 0 0 100%); }
+.unfold-card.is-open .unfold-card-body { clip-path: inset(0 0 0 0); }
+.unfold-card-body > * { opacity: 0; transform: translateX(-8px); transition: opacity .3s var(--ease) .3s, transform .3s var(--ease) .3s; }
+.unfold-card.is-open .unfold-card-body > * { opacity: 1; transform: none; }
+.unfold-card-model { margin: 0 0 6px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.unfold-card-choice { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--ink); }
+.unfold-card-choice small { display: block; font-size: 10px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; color: var(--card-color); }
+.unfold-card-why { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
+.unfold-card-hint { margin: 8px 0 0; font-size: 10.5px; color: var(--ink-faint); }
+
+@media (prefers-reduced-motion: reduce) {
+  .unfold::after, .unfold > *, .chapter-entry::after, .chapter-entry > *, .picker-actions button, .picker-actions button::after,
+  .view-tabs button::after, .story-options li::after, .story-option-label, .story-nav-button::before, .story-nav-button > span,
+  .flow-node.kind-option .node-label::after,
+  .unfold-card-line, .unfold-card-body, .unfold-card-body > * { transition: none !important; }
+}

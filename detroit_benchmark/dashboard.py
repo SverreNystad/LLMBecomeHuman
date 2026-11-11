@@ -23,6 +23,8 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
+# Game art is copyrighted, so it stays local (gitignored) and every view works without it.
+IMAGES = Path(__file__).resolve().parents[1] / "images"
 
 # A run with no final summary and no new events for this long is no longer active.
 STALE_RUN_SECONDS = 15 * 60
@@ -541,9 +543,12 @@ def _load_saved_graph(
 
 
 def create_app(
-    runs_dir: str | Path = "runs", graphs_dir: str | Path | None = None
+    runs_dir: str | Path = "runs",
+    graphs_dir: str | Path | None = None,
+    images_dir: str | Path | None = None,
 ) -> FastAPI:
     root = Path(runs_dir).expanduser().resolve()
+    images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
@@ -661,6 +666,13 @@ def create_app(
         return _compare(
             [_detail(root, _resolve_run(root, run_id)) for run_id in run_ids]
         )
+
+    @app.get("/api/art/title")
+    def title_art():
+        art = images_root / "ui" / "title.webp"
+        if not art.is_file():
+            raise HTTPException(status_code=404, detail="No title art installed")
+        return FileResponse(art, media_type="image/webp")
 
     @app.get("/")
     def home():
