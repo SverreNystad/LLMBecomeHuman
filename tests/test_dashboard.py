@@ -17,6 +17,8 @@ from detroit_benchmark.dashboard import (
     _flowchart_projection,
     create_app,
 )
+from detroit_benchmark.engine import Runner
+from tests.test_benchmark import three_segment_graph
 
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -436,6 +438,76 @@ def test_flowchart_includes_scene_script_without_source_keys():
     node = _flowchart_projection(graph, complete=True, source="t")["nodes"]["a"]
     assert node["dialogue"] == [{"speaker": "Allen", "text": "Hold."}]
     assert node["observations"] == ["Loaded"]
+
+
+def test_flowchart_marks_exploration_choices_and_key_inspect_scenes():
+    graph = {
+        "metadata": {},
+        "nodes": {
+            "how": {
+                "id": "how", "type": "choice", "chapter": "1",
+                "exploration": True, "options": [],
+            },
+            "gun": {"id": "gun", "type": "scene", "chapter": "1", "key": True},
+            "plain": {"id": "plain", "type": "scene", "chapter": "1"},
+        },
+    }
+    nodes = _flowchart_projection(graph, complete=True, source="t")["nodes"]
+    assert nodes["how"]["exploration"] is True
+    assert nodes["gun"]["key"] is True
+    assert "key" not in nodes["plain"]
+
+
+def played_run(tmp_path, **graph_extra):
+    """A real mock Run of three Chapter Segments (Connor, Kara, Connor)."""
+    graph = {**three_segment_graph(), **graph_extra}
+    Runner(graph, "mock", None, tmp_path / "run").run()
+    c = TestClient(create_app(tmp_path))
+    return c, c.get("/api/runs").json()["runs"][0]
+
+
+def story(c, run, chapter):
+    response = c.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter})
+    assert response.status_code == 200
+    return response.json()
+
+
+def test_story_opens_each_chapter_with_its_briefing(tmp_path):
+    c, run = played_run(
+        tmp_path, chapter_briefings={"1": "A rooftop at dusk.", "2": "A kitchen."}
+    )
+    assert story(c, run, "1")["briefing"] == "A rooftop at dusk."
+    assert story(c, run, "2")["briefing"] == "A kitchen."
+    assert story(c, run, "3")["briefing"] is None
+
+
+def test_story_ends_each_chapter_segment_with_a_memory_snapshot(tmp_path):
+    c, run = played_run(tmp_path)
+    first = story(c, run, "1")["beats"][-1]
+    assert first["type"] == "memory"
+    assert first["character"] == "Connor"
+    assert "Rooftop" in first["memory"]
+    assert first["previous"] == ""
+    assert first["truncated"] is False
+
+    kara = story(c, run, "2")["beats"][-1]
+    assert kara["character"] == "Kara"
+    assert kara["previous"] == ""  # Kara's own first memory, not Connor's
+
+    later = story(c, run, "3")["beats"]
+    memory = next(b for b in later if b["type"] == "memory")
+    assert memory["previous"] == first["memory"]
+    assert "Interrogation" in memory["memory"]
+
+
+def test_old_runs_have_no_briefing_and_no_memory():
+    c = client()
+    run = c.get("/api/runs").json()["runs"][0]
+    chapter = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]["chapter"]
+    body = story(c, run, chapter)
+    assert body["beats"]
+    assert body["briefing"] is None
+    assert not [b for b in body["beats"] if b["type"] == "memory"]
 
 
 @pytest.mark.skipif(

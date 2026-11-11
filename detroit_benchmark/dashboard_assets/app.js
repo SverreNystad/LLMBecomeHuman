@@ -241,7 +241,7 @@ function renderChapterList() {
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
     return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
-      <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span><span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
+      <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
   document.querySelector('.chapter-entry.active')?.scrollIntoView({block:'nearest'});
@@ -522,7 +522,9 @@ function drawGraph(graph, paths) {
   for(const node of graph.nodes.values()) {
     const users=paths.filter(view=>view.path.visited.has(node.id));
     const n=document.createElement('div');
-    n.className=['flow-node',`kind-${node.type}`,users.length?'visited':'',state.selected?.id===node.id?'selected':''].filter(Boolean).join(' ');
+    // Exploration Choices and key inspect scenes carry their own marks (story-marks.css).
+    const exploration=Boolean(node.node?.exploration), hasKey=Boolean(node.members?.some(member=>member.key));
+    n.className=['flow-node',`kind-${node.type}`,users.length?'visited':'',state.selected?.id===node.id?'selected':'',exploration?'is-exploration':'',hasKey?'has-key':''].filter(Boolean).join(' ');
     n.style.left=node.x+'px';n.style.top=node.y+'px';n.style.width=node.width+'px';n.style.height=node.height+'px';
     n.style.setProperty('--node-accent',users.length?routeColor(users[0].run):'#cad8df');
     n.role='button';n.tabIndex=0;n.dataset.nodeId=node.id;
@@ -538,7 +540,10 @@ function drawGraph(graph, paths) {
     const left=document.createElement('i');left.className='node-socket left';left.setAttribute('aria-hidden','true');n.appendChild(left);
     const right=document.createElement('i');right.className='node-socket right';right.setAttribute('aria-hidden','true');n.appendChild(right);
     if(node.type==='choice'||node.type==='junction'){
-      const mini=document.createElement('span');mini.className='node-mini';mini.textContent=node.type==='choice'?'DECISION':'STATE CHECK';n.appendChild(mini);
+      const mini=document.createElement('span');mini.className='node-mini';
+      if(exploration){mini.innerHTML=`<span class="node-glyph">${MAGNIFIER}</span>EXPLORATION`;mini.title='Exploration Choice: how thoroughly to search';}
+      else mini.textContent=node.type==='choice'?'DECISION':'STATE CHECK';
+      n.appendChild(mini);
     }
     if(users.length){
       const logos=document.createElement('div');logos.className='node-logos';

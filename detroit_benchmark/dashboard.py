@@ -285,6 +285,16 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
         )
     elif kind == "ending":
         beat.update(description=event.get("description"))
+    elif kind == "memory_update":
+        # A Memory Update closes a Chapter Segment; _parse_events adds the previous memory.
+        beat.update(
+            type="memory",
+            character=event.get("character"),
+            memory=event.get("memory") or "",
+            length=event.get("length"),
+            max_chars=event.get("max_chars"),
+            truncated=bool(event.get("truncated", False)),
+        )
     else:
         return None
     return beat
@@ -296,10 +306,15 @@ def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, 
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
     visits: Counter = Counter()
+    memories: dict[str, str] = {}
     for event in _event_iter(Path(directory)):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
+            if beat["type"] == "memory":
+                # Each Character's memory is compared only with its own last one.
+                beat["previous"] = memories.get(beat["character"], "")
+                memories[beat["character"]] = beat["memory"]
             # A node can recur, so each pass through a Moment is numbered from the run's start.
             visits[beat["moment"]] += 1
             beat["visit"] = visits[beat["moment"]]
@@ -426,6 +441,8 @@ def _flowchart_projection(
                 "flag",
                 "unverified",
                 "condition_text",
+                "exploration",
+                "key",
             )
             if k in node
         }
@@ -542,6 +559,32 @@ def _load_saved_graph(
     return _event_only_graph(directory), False, "event_log_only"
 
 
+@lru_cache(maxsize=32)
+def _cached_briefings(
+    directory: str, extra_graphs_dir: str | None, _snapshot_ns: int
+) -> dict[str, str]:
+    """Chapter Briefings from the Run's story graph; graphs older than briefings have none."""
+    path = Path(directory)
+    graph, _, _ = _load_saved_graph(
+        path.parent, path, Path(extra_graphs_dir) if extra_graphs_dir else None
+    )
+    briefings = graph.get("chapter_briefings") or {}
+    return {str(k): v for k, v in briefings.items() if isinstance(v, str)}
+
+
+def _chapter_briefing(
+    directory: Path, extra_graphs_dir: Path | None, chapter: str
+) -> str | None:
+    try:
+        snapshot_ns = (directory / "story-graph.json").stat().st_mtime_ns
+    except OSError:
+        snapshot_ns = 0
+    briefings = _cached_briefings(
+        str(directory), str(extra_graphs_dir) if extra_graphs_dir else None, snapshot_ns
+    )
+    return briefings.get(chapter)
+
+
 def create_app(
     runs_dir: str | Path = "runs",
     graphs_dir: str | Path | None = None,
@@ -591,9 +634,11 @@ def create_app(
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
         # A chapter the run never entered is a normal answer, not an error.
+        directory = _resolve_run(root, run_id)
         return {
             "chapter": chapter,
-            "beats": _parsed_events(_resolve_run(root, run_id))[1].get(chapter, []),
+            "briefing": _chapter_briefing(directory, graph_root, chapter),
+            "beats": _parsed_events(directory)[1].get(chapter, []),
         }
 
     @app.get("/api/runs/{run_id}/events/{event_index}")
