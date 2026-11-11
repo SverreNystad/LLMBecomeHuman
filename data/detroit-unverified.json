@@ -2553,36 +2553,6 @@
       "observations": [],
       "next": "ch1_00089"
     },
-    "ch1_00091": {
-      "id": "ch1_00091",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Allen",
-          "text": "What the fuck are you doing?  You gonna talk to it or what?",
-          "source_keys": [
-            "X0101X.LIVINGROOM.ENDTIMER.PC.X01SWATCAPTAIN.GOTALKV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00090"
-    },
-    "ch1_00092": {
-      "id": "ch1_00092",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch1_00091"
-    },
     "ch1_00093": {
       "id": "ch1_00093",
       "type": "scene",
@@ -2600,7 +2570,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00092"
+      "next": "ch1_00090"
     },
     "ch1_00094": {
       "id": "ch1_00094",
@@ -2612,153 +2582,6 @@
       "dialogue": [],
       "observations": [],
       "next": "ch1_00093"
-    },
-    "ch1_00095": {
-      "id": "ch1_00095",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle elsewhere",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Allen",
-          "text": "Get those TV assholes out of here! I only wanna see our choppers in the area!",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.FA.X01SWATCAPTAIN.ORDERS06V2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00094"
-    },
-    "ch1_00096": {
-      "id": "ch1_00096",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle elsewhere",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Daniel",
-          "text": "What are you doing here?  There’s NOTHING you can do!",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.VO.X01ANDROID.SHOUTS06"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00095"
-    },
-    "ch1_00097": {
-      "id": "ch1_00097",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle elsewhere",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Allen",
-          "text": "Fuck,  we gotta do something or that bastard is gonna jump off with the kid…",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.FA.X01SWATCAPTAIN.ORDERS05V2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00096"
-    },
-    "ch1_00098": {
-      "id": "ch1_00098",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle elsewhere",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Daniel",
-          "text": "I’ll jump.  I swear, I’ll do it!",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.VO.X01ANDROID.SHOUTS04"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00097"
-    },
-    "ch1_00099": {
-      "id": "ch1_00099",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle elsewhere",
-      "description": "Standing idle elsewhere",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch1_00098"
-    },
-    "ch1_00100": {
-      "id": "ch1_00100",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle in the kitchen",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "SWAT",
-          "text": "What are you looking at?!  Don’t stand there!",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.VO.X01SWAT04.TOOCLOSE01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00099"
-    },
-    "ch1_00101": {
-      "id": "ch1_00101",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Standing idle in the kitchen",
-      "description": "Standing idle in the kitchen",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch1_00100"
-    },
-    "ch1_00102": {
-      "id": "ch1_00102",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Be in the way",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "SWAT",
-          "text": "Get out of the fucking way!",
-          "source_keys": [
-            "X0101X.LIVINGROOM.GUNSHOTS.VO.X01SWAT06.TOOCLOSE02"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch1_00101"
-    },
-    "ch1_00103": {
-      "id": "ch1_00103",
-      "type": "scene",
-      "chapter": "1",
-      "character": "Connor",
-      "heading": "Be in the way",
-      "description": "Be in the way",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch1_00102"
     },
     "ch1_00104": {
       "id": "ch1_00104",
@@ -2777,7 +2600,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00103"
+      "next": "ch1_00094"
     },
     "ch1_00105": {
       "id": "ch1_00105",
@@ -5624,7 +5447,8 @@
         }
       ],
       "observations": [],
-      "next": "ch3_00055"
+      "next": "ch3_x0002",
+      "key": true
     },
     "ch3_00057": {
       "id": "ch3_00057",
@@ -5635,7 +5459,8 @@
       "description": "Preacher notices Markus",
       "dialogue": [],
       "observations": [],
-      "next": "ch3_00056"
+      "next": "ch3_00056",
+      "key": true
     },
     "ch3_00058": {
       "id": "ch3_00058",
@@ -5656,7 +5481,8 @@
         }
       ],
       "observations": [],
-      "next": "ch3_00057"
+      "next": "ch3_00057",
+      "key": true
     },
     "ch3_00059": {
       "id": "ch3_00059",
@@ -5667,7 +5493,8 @@
       "description": "Watch preacher",
       "dialogue": [],
       "observations": [],
-      "next": "ch3_00058"
+      "next": "ch3_00058",
+      "key": true
     },
     "ch3_00060": {
       "id": "ch3_00060",
@@ -5935,7 +5762,7 @@
       "description": "Greek District",
       "dialogue": [],
       "observations": [],
-      "next": "ch3_00075"
+      "next": "ch3_x0001"
     },
     "ch4_00001": {
       "id": "ch4_00001",
@@ -6518,7 +6345,8 @@
         "ANTIDEPRESSANT | Contains Tianeptine | Risk of behavioral disorders"
       ],
       "dialogue": [],
-      "next": "ch4_00029"
+      "next": "ch4_x0004",
+      "key": true
     },
     "ch4_00031": {
       "id": "ch4_00031",
@@ -6529,7 +6357,8 @@
       "description": "In Todd's room",
       "dialogue": [],
       "observations": [],
-      "next": "ch4_00030"
+      "next": "ch4_00030",
+      "key": true
     },
     "ch4_00032": {
       "id": "ch4_00032",
@@ -6548,7 +6377,7 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00031"
+      "next": "ch4_x0003"
     },
     "ch4_00033": {
       "id": "ch4_00033",
@@ -7021,55 +6850,6 @@
       "observations": [],
       "next": "ch4_00057"
     },
-    "ch4_00059": {
-      "id": "ch4_00059",
-      "type": "scene",
-      "chapter": "4",
-      "character": "Kara",
-      "heading": "Looking at the TV for too long",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "I’ll get back to work.",
-          "source_keys": [
-            "X0101K.TV.ENDTIMER.PC.X01KKARA.GOLEFT"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch4_00058"
-    },
-    "ch4_00060": {
-      "id": "ch4_00060",
-      "type": "scene",
-      "chapter": "4",
-      "character": "Kara",
-      "heading": "Looking at the TV for too long",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Todd",
-          "text": "Whatta ya lookin' at? Get the fuck outta here!  GET THE FUCK OUTTA HERE!",
-          "source_keys": [
-            "X0101K.TV.ENDTIMER.PC.X01KINTDAD.GO01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch4_00059"
-    },
-    "ch4_00061": {
-      "id": "ch4_00061",
-      "type": "scene",
-      "chapter": "4",
-      "character": "Kara",
-      "heading": "Looking at the TV for too long",
-      "description": "Looking at the TV for too long",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch4_00060"
-    },
     "ch4_00062": {
       "id": "ch4_00062",
       "type": "scene",
@@ -7087,7 +6867,8 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00061"
+      "next": "ch4_x0002",
+      "key": true
     },
     "ch4_00063": {
       "id": "ch4_00063",
@@ -7106,7 +6887,8 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00062"
+      "next": "ch4_00062",
+      "key": true
     },
     "ch4_00064": {
       "id": "ch4_00064",
@@ -7125,7 +6907,8 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00063"
+      "next": "ch4_00063",
+      "key": true
     },
     "ch4_00065": {
       "id": "ch4_00065",
@@ -7144,7 +6927,8 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00064"
+      "next": "ch4_00064",
+      "key": true
     },
     "ch4_00066": {
       "id": "ch4_00066",
@@ -7163,7 +6947,8 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00065"
+      "next": "ch4_00065",
+      "key": true
     },
     "ch4_00067": {
       "id": "ch4_00067",
@@ -7176,7 +6961,8 @@
         "DISHWASHER NOT WORKING | Missing component #573BV | 154 sale offers available"
       ],
       "dialogue": [],
-      "next": "ch4_00066"
+      "next": "ch4_00066",
+      "key": true
     },
     "ch4_00068": {
       "id": "ch4_00068",
@@ -7187,7 +6973,8 @@
       "description": "Doing the dishes",
       "dialogue": [],
       "observations": [],
-      "next": "ch4_00067"
+      "next": "ch4_00067",
+      "key": true
     },
     "ch4_00069": {
       "id": "ch4_00069",
@@ -7206,7 +6993,7 @@
         }
       ],
       "observations": [],
-      "next": "ch4_00068"
+      "next": "ch4_x0001"
     },
     "ch4_00070": {
       "id": "ch4_00070",
@@ -10909,313 +10696,6 @@
       "observations": [],
       "next": "ch6_00053"
     },
-    "ch6_00055": {
-      "id": "ch6_00055",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Okay, time's up. I’m outta here. Have a nice evening, Sherlock.  Don't let the door hit you on the way out.",
-          "source_keys": [
-            "X0201C.HANK.ENDOFTIMER.PC.X02CHANK.ENDING"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00054"
-    },
-    "ch6_00056": {
-      "id": "ch6_00056",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "Take too much time again",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch6_00055"
-    },
-    "ch6_00057": {
-      "id": "ch6_00057",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "You spill a man’s drink, you piss him off all evening, and then you ask for a favor? Fuck you.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE02"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00056"
-    },
-    "ch6_00058": {
-      "id": "ch6_00058",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Whatever!",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01.5"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00056"
-    },
-    "ch6_00059": {
-      "id": "ch6_00059",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Thank you, Lieutenant.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CCONNOR.BYE01.6"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00058"
-    },
-    "ch6_00060": {
-      "id": "ch6_00060",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Five minutes.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01.4"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00059"
-    },
-    "ch6_00061": {
-      "id": "ch6_00061",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Please, Lieutenant. Remember the drink I bought you at the bar? Just five minutes.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CCONNOR.BYE01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00060"
-    },
-    "ch6_00062": {
-      "id": "ch6_00062",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Whatever!",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01.5"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00056"
-    },
-    "ch6_00063": {
-      "id": "ch6_00063",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Thank you, Lieutenant.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CCONNOR.BYE01.6"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00062"
-    },
-    "ch6_00064": {
-      "id": "ch6_00064",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Five minutes.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01.4"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00063"
-    },
-    "ch6_00065": {
-      "id": "ch6_00065",
-      "type": "condition",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "branches": [
-        {
-          "condition_text": "Chose to spill Hank's drink",
-          "when": {
-            "flag": "connor_hank_bar_choice",
-            "equals": "spill"
-          },
-          "next": "ch6_00057"
-        },
-        {
-          "condition_text": "Chose to buy Hank a drink",
-          "when": {
-            "flag": "connor_hank_bar_choice",
-            "equals": "buy_drink"
-          },
-          "next": "ch6_00061"
-        },
-        {
-          "condition_text": "Chose to wait outside",
-          "when": {
-            "flag": "connor_hank_bar_choice",
-            "equals": "wait_outside"
-          },
-          "next": "ch6_00064"
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "next": "ch6_00056",
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart"
-    },
-    "ch6_00066": {
-      "id": "ch6_00066",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "I just need five minutes to finish my investigation.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CCONNOR.BYE01.2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00065"
-    },
-    "ch6_00067": {
-      "id": "ch6_00067",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Much as it breaks my heart, this is where we part ways.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01.3"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00066"
-    },
-    "ch6_00068": {
-      "id": "ch6_00068",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Wait, Lieutenant! I can’t stay if you leave.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CCONNOR.BYE01.1"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00067"
-    },
-    "ch6_00069": {
-      "id": "ch6_00069",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "All right… I’m outta here. Thanks for the ride. Great party.",
-          "source_keys": [
-            "X0201C.HANK.LEAVE.PC.X02CHANK.BYE01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch6_00068"
-    },
-    "ch6_00070": {
-      "id": "ch6_00070",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch6_00069"
-    },
     "ch6_00071": {
       "id": "ch6_00071",
       "type": "scene",
@@ -11227,7 +10707,8 @@
         "DENT | Cause: violent impact | Traces of Thirium"
       ],
       "dialogue": [],
-      "next": "ch6_00070"
+      "next": "ch6_00054",
+      "key": true
     },
     "ch6_00072": {
       "id": "ch6_00072",
@@ -11238,7 +10719,8 @@
       "description": "In the kitchen",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00071"
+      "next": "ch6_00071",
+      "key": true
     },
     "ch6_00073": {
       "id": "ch6_00073",
@@ -11569,7 +11051,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00090"
+      "next": "ch6_x0002",
+      "key": true
     },
     "ch6_00092": {
       "id": "ch6_00092",
@@ -11588,7 +11071,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00091"
+      "next": "ch6_00091",
+      "key": true
     },
     "ch6_00093": {
       "id": "ch6_00093",
@@ -11604,7 +11088,8 @@
         "FINGERPRINTS | Database match: ORTIZ, Carlos | Criminal record: Theft and aggravated assault"
       ],
       "dialogue": [],
-      "next": "ch6_00092"
+      "next": "ch6_00092",
+      "key": true
     },
     "ch6_00094": {
       "id": "ch6_00094",
@@ -11615,7 +11100,8 @@
       "description": "Analyse victim",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00093"
+      "next": "ch6_00093",
+      "key": true
     },
     "ch6_00095": {
       "id": "ch6_00095",
@@ -11628,7 +11114,8 @@
         "DRIED BLOOD | DNA Analysis: ORTIZ, Carlos | Sample date: >19 days"
       ],
       "dialogue": [],
-      "next": "ch6_00094"
+      "next": "ch6_00094",
+      "key": true
     },
     "ch6_00096": {
       "id": "ch6_00096",
@@ -11647,7 +11134,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00095"
+      "next": "ch6_00095",
+      "key": true
     },
     "ch6_00097": {
       "id": "ch6_00097",
@@ -11666,7 +11154,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00096"
+      "next": "ch6_00096",
+      "key": true
     },
     "ch6_00098": {
       "id": "ch6_00098",
@@ -11685,7 +11174,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00097"
+      "next": "ch6_00097",
+      "key": true
     },
     "ch6_00099": {
       "id": "ch6_00099",
@@ -11704,7 +11194,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00098"
+      "next": "ch6_00098",
+      "key": true
     },
     "ch6_00100": {
       "id": "ch6_00100",
@@ -11723,7 +11214,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00099"
+      "next": "ch6_00099",
+      "key": true
     },
     "ch6_00101": {
       "id": "ch6_00101",
@@ -11734,7 +11226,8 @@
       "description": "Take blood sample",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00100"
+      "next": "ch6_00100",
+      "key": true
     },
     "ch6_00102": {
       "id": "ch6_00102",
@@ -11753,7 +11246,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00101"
+      "next": "ch6_00101",
+      "key": true
     },
     "ch6_00103": {
       "id": "ch6_00103",
@@ -11773,7 +11267,8 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00102"
+      "next": "ch6_00102",
+      "key": true
     },
     "ch6_00104": {
       "id": "ch6_00104",
@@ -11784,7 +11279,8 @@
       "description": "Hank looking at writing on wall",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00103"
+      "next": "ch6_00103",
+      "key": true
     },
     "ch6_00105": {
       "id": "ch6_00105",
@@ -11803,7 +11299,7 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00104"
+      "next": "ch6_x0001"
     },
     "ch6_00106": {
       "id": "ch6_00106",
@@ -19448,15 +18944,22 @@
           "id": "option_0",
           "label": "FEAR",
           "next": "ch9_00119",
-          "requirements_unverified": [
-            "Analyzed the deviant"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
             }
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch9_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress"
         },
         {
           "id": "option_1",
@@ -19476,15 +18979,22 @@
           "id": "option_2",
           "label": "WOUNDS",
           "next": "ch9_00121",
-          "requirements_unverified": [
-            "Analyzed the deviant"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
             }
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch9_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress"
         },
         {
           "id": "option_3",
@@ -19526,7 +19036,8 @@
         "DRIED BLOOD | DNA Analysis: ORTIZ CARLOS | Sample date: > 19 days"
       ],
       "dialogue": [],
-      "next": "ch9_00124"
+      "next": "ch9_00124",
+      "key": true
     },
     "ch9_00126": {
       "id": "ch9_00126",
@@ -19537,7 +19048,8 @@
       "description": "Analyze the deviant",
       "dialogue": [],
       "observations": [],
-      "next": "ch9_00125"
+      "next": "ch9_00125",
+      "key": true
     },
     "ch9_00127": {
       "id": "ch9_00127",
@@ -19578,7 +19090,7 @@
       "description": "Inside the interrogation room",
       "dialogue": [],
       "observations": [],
-      "next": "ch9_00128"
+      "next": "ch9_x0001"
     },
     "ch9_00130": {
       "id": "ch9_00130",
@@ -24017,94 +23529,6 @@
       "observations": [],
       "next": "ch10_00202"
     },
-    "ch10_00204": {
-      "id": "ch10_00204",
-      "type": "scene",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "We're better off staying, Alice.  The important thing is for us to be safe...  And it’s just for tonight. You're gonna be all right, Alice…  You'll be all right…",
-          "source_keys": [
-            "X0301K.CAR.OPEN.PC.X03KKARA.STAYHERE",
-            "X0301K.STREET.GAMEOVER.FA.X03KKARA.ALLRIGHTFA"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch10_00203"
-    },
-    "ch10_00205": {
-      "id": "ch10_00205",
-      "type": "scene",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "I'll find something…",
-          "source_keys": [
-            "X0301K.STREET.GAMEOVER.PC.X03KKARA.FALL.3"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch10_00204"
-    },
-    "ch10_00206": {
-      "id": "ch10_00206",
-      "type": "scene",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Alice",
-          "text": "Can't go on, Kara…  Too cold…",
-          "source_keys": [
-            "X0301K.STREET.GAMEOVER.PC.X03KALICE.FALL"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch10_00205"
-    },
-    "ch10_00207": {
-      "id": "ch10_00207",
-      "type": "scene",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "Alice?  Alice, are you okay?",
-          "source_keys": [
-            "X0301K.STREET.GAMEOVER.PC.X03KKARA.FALL"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch10_00206"
-    },
-    "ch10_00208": {
-      "id": "ch10_00208",
-      "type": "scene",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch10_00207"
-    },
     "ch10_00209": {
       "id": "ch10_00209",
       "type": "scene",
@@ -24122,7 +23546,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00208"
+      "next": "ch10_00203",
+      "key": true
     },
     "ch10_00210": {
       "id": "ch10_00210",
@@ -24141,7 +23566,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00209"
+      "next": "ch10_00209",
+      "key": true
     },
     "ch10_00211": {
       "id": "ch10_00211",
@@ -24160,7 +23586,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00210"
+      "next": "ch10_00210",
+      "key": true
     },
     "ch10_00212": {
       "id": "ch10_00212",
@@ -24179,7 +23606,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00211"
+      "next": "ch10_00211",
+      "key": true
     },
     "ch10_00213": {
       "id": "ch10_00213",
@@ -24198,7 +23626,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00212"
+      "next": "ch10_00212",
+      "key": true
     },
     "ch10_00214": {
       "id": "ch10_00214",
@@ -24217,7 +23646,8 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00213"
+      "next": "ch10_00213",
+      "key": true
     },
     "ch10_00215": {
       "id": "ch10_00215",
@@ -24228,7 +23658,8 @@
       "description": "Alice sits at the bus stop",
       "dialogue": [],
       "observations": [],
-      "next": "ch10_00214"
+      "next": "ch10_00214",
+      "key": true
     },
     "ch10_00216": {
       "id": "ch10_00216",
@@ -24346,7 +23777,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00221"
+      "next": "ch10_x0001"
     },
     "ch10_00223": {
       "id": "ch10_00223",
@@ -125348,6 +124779,410 @@
       "type": "ending",
       "chapter": "final",
       "description": "End of transcript-derived playthrough. Ending fidelity unverified."
+    },
+    "ch3_x0002": {
+      "id": "ch3_x0002",
+      "type": "condition",
+      "chapter": "3",
+      "character": "Markus",
+      "heading": "Couple at table outside restaurant",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch3_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch3_00055"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch3_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch3_00043"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Shades_of_Color#Flowchart"
+    },
+    "ch3_x0001": {
+      "id": "ch3_x0001",
+      "type": "choice",
+      "chapter": "3",
+      "character": "Markus",
+      "heading": "Greek District",
+      "description": "You step off the bus into a busy square. A street preacher rails against androids to a small crowd, a hot dog vendor glares at any android that comes too close, and a CyberLife store displays new models behind its glass. Bellini Paints is just around the corner. Carl is waiting for his paints, but he didn't say to hurry. How do you spend your time here?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Shades_of_Color#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN THE SQUARE",
+          "next": "ch3_00075",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch3_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GLANCE AROUND",
+          "next": "ch3_00059",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch3_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GO STRAIGHT TO BELLINI",
+          "next": "ch3_00043",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch3_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch4_x0002": {
+      "id": "ch4_x0002",
+      "type": "condition",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "Going in front of the TV",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "kara_ch4_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch4_00058"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "kara_ch4_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch4_00053"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart"
+    },
+    "ch4_x0001": {
+      "id": "ch4_x0001",
+      "type": "choice",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "Cleaning downstairs",
+      "description": "Todd has slumped onto the couch in front of the TV and told you to clean the house, starting downstairs. Dirty plates crowd the kitchen, trash spills by the back door, books and magazines litter the living room, and old laundry hangs on the line in the backyard. How do you go about it?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "CLEAN EVERYTHING",
+          "next": "ch4_00068",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "DO THE ESSENTIALS",
+          "next": "ch4_00068",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "ONLY WHAT SHOWS",
+          "next": "ch4_00053",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch4_x0004": {
+      "id": "ch4_x0004",
+      "type": "condition",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "Watch TV",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "kara_ch4_upstairs_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch4_00029"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "kara_ch4_upstairs_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch4_00023"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart"
+    },
+    "ch4_x0003": {
+      "id": "ch4_x0003",
+      "type": "choice",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "Cleaning upstairs",
+      "description": "Upstairs, three rooms are waiting: a filthy bathroom, Todd's cluttered bedroom with pill bottles on the nightstand, and Alice's room at the end of the hall. How do you clean the upper floor?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "CLEAN EACH ROOM CAREFULLY",
+          "next": "ch4_00031",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_upstairs_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TIDY UP",
+          "next": "ch4_00031",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_upstairs_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "MOVE THROUGH QUICKLY",
+          "next": "ch4_00023",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch4_upstairs_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch6_x0002": {
+      "id": "ch6_x0002",
+      "type": "condition",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank looking at Red Ice",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch6_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch6_00090"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch6_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch6_00072"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart"
+    },
+    "ch6_x0001": {
+      "id": "ch6_x0001",
+      "type": "choice",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Investigating",
+      "description": "Carlos Ortiz has been dead for weeks, stabbed many times. Red Ice sits on the table, a bloodied bat lies in the kitchen, and something is written on the wall in the victim's blood. Hank is impatient and won't wait long. How do you investigate?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "INVESTIGATE THOROUGHLY",
+          "next": "ch6_00104",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch6_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK KEY EVIDENCE",
+          "next": "ch6_00104",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch6_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "REPORT TO HANK",
+          "next": "ch6_00054",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch6_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch9_x0001": {
+      "id": "ch9_x0001",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Inside the interrogation room",
+      "description": "The deviant sits hunched at the table, wrists bound, head bowed. Dried thirium streaks its arms and its face is marked with blows. Hank and the others watch through the mirror. Do you study the suspect before you begin?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "STUDY THE SUSPECT",
+          "next": "ch9_00128",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch9_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "ANALYZE IT QUICKLY",
+          "next": "ch9_00126",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch9_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "START THE INTERROGATION",
+          "next": "ch9_00124",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch9_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch10_x0001": {
+      "id": "ch10_x0001",
+      "type": "choice",
+      "chapter": "10",
+      "character": "Kara",
+      "heading": "In the street",
+      "description": "It's pouring rain and Alice is shivering. The street is lined with closed shops, a lit store, a motel sign and a few androids waiting at a bus stop. You need somewhere for Alice to spend the night. How do you look for it?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH THE AREA",
+          "next": "ch10_00221",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LOOK AROUND QUICKLY",
+          "next": "ch10_00215",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GET ALICE OUT OF THE RAIN",
+          "next": "ch10_00203",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_exploration": "rush"
+            }
+          }
+        }
+      ]
     }
   }
 }

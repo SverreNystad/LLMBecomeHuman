@@ -8,7 +8,13 @@ from pathlib import Path
 import pytest
 
 from detroit_benchmark.dashboard import _flowchart_projection
-from detroit_benchmark.engine import Runner, validate_graph
+from detroit_benchmark.engine import (
+    Runner,
+    _edges,
+    _reachable,
+    evaluate_condition,
+    validate_graph,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 DATASET = ROOT / "data" / "detroit-unverified.json"
@@ -209,31 +215,120 @@ def test_chapter_1_exploration_is_offered_after_talking_to_allen(dataset):
     ]
 
 
-def test_chapter_1_exploration_forks_rejoin_at_going_outside(dataset):
-    nodes, explore = _ch1_exploration(dataset)
+def _exploration_paths(nodes, explore):
+    """Scenes each option shows before rejoining the rush path, by flag value.
+
+    Conditions decided by the exploration flag follow that branch; any other
+    condition or choice follows every edge, so every possible scene counts.
+    """
+    (flag,) = set.intersection(
+        *(set(o["effects"]["flags"]) for o in explore["options"])
+    )
+    rejoin = next(
+        o["next"] for o in explore["options"] if o["effects"]["flags"][flag] == "rush"
+    )
     paths = {}
     for option in explore["options"]:
-        value = option["effects"]["flags"][FLAG]
-        nid, scenes = option["next"], []
-        # The thorough path also holds the take/leave gun choice; both rejoin.
-        while nid != "ch1_00090":
-            part, nid = _walk(nodes, nid, {FLAG: value}, "ch1_00090")
-            scenes += [p for p in part if nodes[p]["type"] == "scene"]
-            if nid != "ch1_00090":
-                assert nodes[nid]["type"] == "choice", nid
-                assert len({o["next"] for o in nodes[nid]["options"]}) == 1
-                nid = nodes[nid]["options"][0]["next"]
+        value = option["effects"]["flags"][flag]
+        scenes, seen, queue, rejoined = [], set(), [option["next"]], False
+        while queue:
+            nid = queue.pop(0)
+            if nid == rejoin:
+                rejoined = True
+                continue
+            if nid in seen:
+                continue
+            seen.add(nid)
+            node = nodes[nid]
+            if node["type"] == "scene":
+                scenes.append(nid)
+            dests = _edges(node)
+            if node["type"] == "condition":
+                hits = [
+                    evaluate_condition(b["when"], {flag: value})
+                    for b in node["branches"]
+                ]
+                if True in hits:
+                    dests = [node["branches"][hits.index(True)]["next"]]
+            queue.extend(dests)
+        assert rejoined, (explore["id"], value)
         paths[value] = scenes
+    return paths
+
+
+EXPLORED_CHAPTERS = {
+    "1": 1,
+    "3": 1,
+    "4": 2,
+    "6": 1,
+    "9": 1,
+    "10": 1,
+}
+EXPLORATIONS = sorted(
+    nid
+    for nid, node in json.loads(DATASET.read_text(encoding="utf-8"))["nodes"].items()
+    if node.get("exploration")
+)
+
+
+def test_every_marked_investigation_has_an_exploration_choice(dataset):
+    found = {}
+    for nid in EXPLORATIONS:
+        chapter = dataset["nodes"][nid]["chapter"]
+        found[chapter] = found.get(chapter, 0) + 1
+    assert found == EXPLORED_CHAPTERS
+
+
+@pytest.mark.parametrize("explore_id", EXPLORATIONS)
+def test_exploration_forks_rejoin_and_show_less_when_hurrying(dataset, explore_id):
+    nodes = dataset["nodes"]
+    explore = nodes[explore_id]
+    paths = _exploration_paths(nodes, explore)
     assert paths["rush"] == []
     assert paths["key_only"] and all(nodes[s].get("key") for s in paths["key_only"])
     assert set(paths["key_only"]) < set(paths["thorough"])
+    # One coherent sequence: no time-out scenes from running out the clock.
+    headings = {nodes[s]["heading"] for s in paths["thorough"]}
+    assert not any("too much time" in h.lower() for h in headings), headings
+    assert explore["source"].startswith("https://detroit-become-human.fandom.com/wiki/")
+    assert all(o["label"].isupper() for o in explore["options"])
+
+
+def test_chapter_1_key_areas_show_the_tablets_and_body(dataset):
+    nodes, explore = _ch1_exploration(dataset)
+    paths = _exploration_paths(nodes, explore)
     shown_key = {nodes[s]["heading"] for s in paths["key_only"]}
     assert {
         "Looking at Emma's tablet",
         "Looking at the father's tablet",
     } <= shown_key
     assert "Inspect: Body" in {nodes[s]["description"] for s in paths["key_only"]}
-    assert "Take too much time" not in {nodes[s]["heading"] for s in paths["key_only"]}
+    thorough = [nodes[s]["heading"] for s in paths["thorough"]]
+    assert not {"Standing idle in the kitchen", "Standing idle elsewhere"} & set(
+        thorough
+    )
+
+
+def test_every_story_node_is_reachable(dataset):
+    nodes = dataset["nodes"]
+    assert set(_reachable(nodes, dataset["start"])) == set(nodes)
+
+
+@pytest.mark.parametrize(
+    "choice_id, label, flag",
+    [
+        ("ch9_00123", "FEAR", "connor_ch9_exploration"),
+        ("ch9_00123", "WOUNDS", "connor_ch9_exploration"),
+    ],
+)
+def test_rushing_loses_options_the_wiki_ties_to_searching(
+    dataset, choice_id, label, flag
+):
+    option = next(
+        o for o in dataset["nodes"][choice_id]["options"] if o["label"] == label
+    )
+    assert {"not": {"flag": flag, "equals": "rush"}} in option["requires"]
+    assert option["source"].startswith("https://detroit-become-human.fandom.com/wiki/")
 
 
 def test_rushing_loses_the_tablet_dialogue_options(dataset):
