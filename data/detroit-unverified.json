@@ -49290,7 +49290,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_eden_tracis": "not_found"
+            }
           }
         }
       ]
@@ -56319,23 +56321,34 @@
       "branches": [
         {
           "condition_text": "Chose MEANS OF REPRODUCTION",
-          "when": null,
+          "when": {
+            "flag": "markus_broadcast_demand",
+            "equals": "means_of_reproduction"
+          },
           "next": "ch23_00003"
         },
         {
           "condition_text": "Chose RIGHT TO PROPERTY",
-          "when": null,
+          "when": {
+            "flag": "markus_broadcast_demand",
+            "equals": "right_to_property"
+          },
           "next": "ch23_00004"
         },
         {
           "condition_text": "Chose TERRITORY",
-          "when": null,
+          "when": {
+            "flag": "markus_broadcast_demand",
+            "equals": "territory"
+          },
           "next": "ch23_00005"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch23_00002"
+      "next": "ch23_00002",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Flowchart"
     },
     "ch23_00007": {
       "id": "ch23_00007",
@@ -56384,18 +56397,50 @@
       "branches": [
         {
           "condition_text": "Chose DETERMINED or killed humans",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "markus_broadcast_peaceful",
+                "equals": false
+              },
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": true
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch23_00007"
         },
         {
           "condition_text": "Chose CALM and didn't kill anyone",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_broadcast_peaceful",
+                "equals": true
+              },
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": false
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch23_00008"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch23_00006"
+      "next": "ch23_00006",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Public_Opinion"
     },
     "ch23_00010": {
       "id": "ch23_00010",
@@ -56523,28 +56568,74 @@
       "branches": [
         {
           "condition_text": "Killed the operator",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": true
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch23_00012"
         },
         {
           "condition_text": "Killed a guard",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": false
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch23_00013"
         },
         {
           "condition_text": "Killed a guard and the operator",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": true
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch23_00014"
         },
         {
           "condition_text": "Didn't kill anyone",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": false
+              },
+              {
+                "flag": "markus_stratford_guards_shot",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch23_00015"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch23_00011"
+      "next": "ch23_00011",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Flowchart"
     },
     "ch23_00017": {
       "id": "ch23_00017",
@@ -56792,7 +56883,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_simon_fate": "executed"
+            }
           }
         },
         {
@@ -56802,7 +56895,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_simon_fate": "left_behind"
+            }
           }
         }
       ]
@@ -56911,7 +57006,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_simon_fate": "left_behind"
+            }
           }
         }
       ]
@@ -57069,8 +57166,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch23_00020"
+      "default_branch": 1,
+      "next": "ch23_00020",
+      "resolution": "qte"
     },
     "ch23_00042": {
       "id": "ch23_00042",
@@ -57111,7 +57209,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_simon_fate": "killed_in_broadcast"
+            }
           }
         },
         {
@@ -57244,7 +57344,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch23_00020"
+      "next": "ch23_00020",
+      "resolution": "unknown"
     },
     "ch23_00049": {
       "id": "ch23_00049",
@@ -57300,7 +57401,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_broadcast_peaceful": true
+              "markus_broadcast_peaceful": true,
+              "markus_simon_fate": "escaped"
             },
             "news": [
               {
@@ -57318,7 +57420,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_broadcast_threatening": true
+              "markus_broadcast_threatening": true,
+              "markus_broadcast_peaceful": false,
+              "markus_simon_fate": "escaped"
             },
             "news": [
               {
@@ -57402,7 +57506,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_broadcast_demand": "right_to_property"
+            }
           }
         },
         {
@@ -57412,7 +57518,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_broadcast_demand": "means_of_reproduction"
+            }
           }
         },
         {
@@ -57422,7 +57530,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_broadcast_demand": "territory"
+            }
           }
         }
       ]
@@ -57950,7 +58060,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_stratford_operator_shot": false
+            }
           }
         }
       ]
@@ -58203,7 +58315,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch23_00082"
+      "next": "ch23_00082",
+      "resolution": "qte"
     },
     "ch23_00091": {
       "id": "ch23_00091",
@@ -58453,7 +58566,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch23_00082"
+      "next": "ch23_00082",
+      "resolution": "unknown"
     },
     "ch23_00104": {
       "id": "ch23_00104",
@@ -58550,7 +58664,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_stratford_guards_shot": false
+            }
           }
         },
         {
@@ -59043,7 +59159,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch23_00115"
+      "next": "ch23_00115",
+      "resolution": "unknown"
     },
     "ch23_00131": {
       "id": "ch23_00131",
@@ -60612,8 +60729,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch24_00001"
+      "default_branch": 1,
+      "next": "ch24_00001",
+      "resolution": "qte"
     },
     "ch24_00010": {
       "id": "ch24_00010",
@@ -60748,13 +60866,18 @@
       "branches": [
         {
           "condition_text": "Simon was left behind alive in The Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "left_behind"
+          },
           "next": "ch24_00015"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00013"
+      "next": "ch24_00013",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00017": {
       "id": "ch24_00017",
@@ -60827,13 +60950,18 @@
       "branches": [
         {
           "condition_text": "Simon is dead",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "executed"
+          },
           "next": "ch24_00020"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00019"
+      "next": "ch24_00019",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00022": {
       "id": "ch24_00022",
@@ -61018,7 +61146,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_public_enemy_chase": "attack"
+            }
           }
         },
         {
@@ -61037,7 +61167,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_public_enemy_chase": "save_hank"
+            }
           }
         },
         {
@@ -61052,7 +61184,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_public_enemy_chase": "take_gun"
+            }
           }
         }
       ]
@@ -61153,7 +61287,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00024"
+      "next": "ch24_00024",
+      "resolution": "qte"
     },
     "ch24_00037": {
       "id": "ch24_00037",
@@ -61270,7 +61405,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00024"
+      "next": "ch24_00024",
+      "resolution": "unknown"
     },
     "ch24_00043": {
       "id": "ch24_00043",
@@ -61363,7 +61499,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00042"
+      "next": "ch24_00042",
+      "resolution": "unknown"
     },
     "ch24_00048": {
       "id": "ch24_00048",
@@ -62391,7 +62528,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00090"
+      "next": "ch24_00090",
+      "resolution": "unknown"
     },
     "ch24_00098": {
       "id": "ch24_00098",
@@ -62427,7 +62565,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00090"
+      "next": "ch24_00090",
+      "resolution": "unknown"
     },
     "ch24_00100": {
       "id": "ch24_00100",
@@ -62476,7 +62615,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00099"
+      "next": "ch24_00099",
+      "resolution": "unknown"
     },
     "ch24_00103": {
       "id": "ch24_00103",
@@ -62500,13 +62640,18 @@
       "branches": [
         {
           "condition_text": "Employee was shot",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_operator_shot",
+            "equals": true
+          },
           "next": "ch24_00103"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00102"
+      "next": "ch24_00102",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00105": {
       "id": "ch24_00105",
@@ -62791,18 +62936,26 @@
       "branches": [
         {
           "condition_text": "SWAT killed Simon",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "killed_in_broadcast"
+          },
           "next": "ch24_00118"
         },
         {
           "condition_text": "Simon was killed on the roof",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "executed"
+          },
           "next": "ch24_00119"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00117"
+      "next": "ch24_00117",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00121": {
       "id": "ch24_00121",
@@ -62927,18 +63080,26 @@
       "branches": [
         {
           "condition_text": "Station employee wasn't shot in The Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_operator_shot",
+            "equals": false
+          },
           "next": "ch24_00125"
         },
         {
           "condition_text": "Station employee was shot in The Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_operator_shot",
+            "equals": true
+          },
           "next": "ch24_00126"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00124"
+      "next": "ch24_00124",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00128": {
       "id": "ch24_00128",
@@ -62987,18 +63148,26 @@
       "branches": [
         {
           "condition_text": "Knocked out the guards in The Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_guards_shot",
+            "equals": false
+          },
           "next": "ch24_00128"
         },
         {
           "condition_text": "Attacked the guards in The Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_guards_shot",
+            "equals": true
+          },
           "next": "ch24_00129"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00127"
+      "next": "ch24_00127",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00131": {
       "id": "ch24_00131",
@@ -63419,7 +63588,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00144"
+      "next": "ch24_00144",
+      "resolution": "unknown"
     },
     "ch24_00153": {
       "id": "ch24_00153",
@@ -63735,13 +63905,18 @@
       "branches": [
         {
           "condition_text": "Connor spared the Tracis in The Eden Club",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "spared"
+          },
           "next": "ch24_00165"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00159"
+      "next": "ch24_00159",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Amanda"
     },
     "ch24_00167": {
       "id": "ch24_00167",
@@ -63986,7 +64161,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00172"
+      "next": "ch24_00172",
+      "resolution": "unknown"
     },
     "ch24_00177": {
       "id": "ch24_00177",
@@ -64092,23 +64268,42 @@
       "branches": [
         {
           "condition_text": "Connor didn't find the Tracis in The Eden Club",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "not_found"
+          },
           "next": "ch24_00178"
         },
         {
           "condition_text": "Connor found the Tracis in The Eden Club and let them go",
-          "when": null,
+          "when": {
+            "flag": "connor_eden_tracis",
+            "equals": "spared"
+          },
           "next": "ch24_00180"
         },
         {
           "condition_text": "Connor found the Tracis in The Eden Club and they died",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_one"
+              },
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_in_back"
+              }
+            ]
+          },
           "next": "ch24_00181"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00172"
+      "next": "ch24_00172",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Amanda"
     },
     "ch24_00183": {
       "id": "ch24_00183",
@@ -64443,7 +64638,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00002"
+      "next": "ch25_00002",
+      "resolution": "unknown"
     },
     "ch25_00015": {
       "id": "ch25_00015",
@@ -64648,7 +64844,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00020"
+      "next": "ch25_00020",
+      "resolution": "unknown"
     },
     "ch25_00024": {
       "id": "ch25_00024",
@@ -64898,18 +65095,42 @@
       "branches": [
         {
           "condition_text": "Luther is hidden upstairs and chose NOBODY",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_luther_hiding_place",
+                "equals": "upstairs"
+              },
+              {
+                "flag": "kara_told_cop_about_alice",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch25_00034"
         },
         {
           "condition_text": "Luther is hidden upstairs and chose ALICE",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_luther_hiding_place",
+                "equals": "upstairs"
+              },
+              {
+                "flag": "kara_told_cop_about_alice",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch25_00035"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch25_00032"
+      "next": "ch25_00032",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00037": {
       "id": "ch25_00037",
@@ -64945,7 +65166,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00036"
+      "next": "ch25_00036",
+      "resolution": "unknown"
     },
     "ch25_00039": {
       "id": "ch25_00039",
@@ -65043,7 +65265,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00038"
+      "next": "ch25_00038",
+      "resolution": "unknown"
     },
     "ch25_00044": {
       "id": "ch25_00044",
@@ -65176,7 +65399,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00043"
+      "next": "ch25_00043",
+      "resolution": "unknown"
     },
     "ch25_00050": {
       "id": "ch25_00050",
@@ -65318,7 +65542,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_told_cop_about_alice": true
+            }
           }
         },
         {
@@ -65328,7 +65554,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_told_cop_about_alice": false
+            }
           }
         }
       ]
@@ -65707,7 +65935,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_luther_hiding_place": "upstairs"
+            }
           }
         },
         {
@@ -65717,7 +65947,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_luther_hiding_place": "laundry"
+            }
           }
         },
         {
@@ -65727,7 +65959,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_luther_hiding_place": "kitchen"
+            }
           }
         }
       ]
@@ -67157,7 +67391,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00144"
+      "next": "ch25_00144",
+      "resolution": "unknown"
     },
     "ch25_00149": {
       "id": "ch25_00149",
@@ -67981,7 +68216,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch25_00180"
+      "next": "ch25_00180",
+      "resolution": "unknown"
     },
     "ch25_00187": {
       "id": "ch25_00187",
@@ -68296,18 +68532,28 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch26_00007"
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch26_00008"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00006"
+      "next": "ch26_00006",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00010": {
       "id": "ch26_00010",
@@ -68462,18 +68708,26 @@
       "branches": [
         {
           "condition_text": "Killed Chris and his partner",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": true
+          },
           "next": "ch26_00015"
         },
         {
           "condition_text": "Didn't kill Chris and his partner",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": false
+          },
           "next": "ch26_00017"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00013"
+      "next": "ch26_00013",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch26_00019": {
       "id": "ch26_00019",
@@ -68560,18 +68814,26 @@
       "branches": [
         {
           "condition_text": "Sent a pacifist message",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_violent",
+            "equals": false
+          },
           "next": "ch26_00020"
         },
         {
           "condition_text": "Sent an aggressive message",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_violent",
+            "equals": true
+          },
           "next": "ch26_00022"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00018"
+      "next": "ch26_00018",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch26_00024": {
       "id": "ch26_00024",
@@ -68726,7 +68988,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_capitol_park_police_spared": true
+              "markus_capitol_park_police_spared": true,
+              "markus_capitol_park_police_killed": false
             },
             "news": [
               {
@@ -69109,18 +69372,26 @@
       "branches": [
         {
           "condition_text": "Sent a pacifist message",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_violent",
+            "equals": false
+          },
           "next": "ch26_00041"
         },
         {
           "condition_text": "Sent an aggressive message",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_violent",
+            "equals": true
+          },
           "next": "ch26_00048"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00037"
+      "next": "ch26_00037",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch26_00050": {
       "id": "ch26_00050",
@@ -69169,18 +69440,28 @@
       "branches": [
         {
           "condition_text": "Simon is here",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch26_00050"
         },
         {
           "condition_text": "Simon was left behind or died in Stratford Tower",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch26_00051"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00049"
+      "next": "ch26_00049",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00053": {
       "id": "ch26_00053",
@@ -69368,7 +69649,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00060"
+      "next": "ch26_00060",
+      "resolution": "unknown"
     },
     "ch26_00064": {
       "id": "ch26_00064",
@@ -69489,7 +69771,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_capitol_park_peaceful": true
+              "markus_capitol_park_peaceful": true,
+              "markus_capitol_park_violent": false
             },
             "news": [
               {
@@ -69612,7 +69895,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00072"
+      "next": "ch26_00072",
+      "resolution": "unknown"
     },
     "ch26_00076": {
       "id": "ch26_00076",
@@ -70027,7 +70311,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00094"
+      "next": "ch26_00094",
+      "resolution": "unknown"
     },
     "ch26_00099": {
       "id": "ch26_00099",
@@ -70044,7 +70329,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00091"
+      "next": "ch26_00091",
+      "resolution": "unknown"
     },
     "ch26_00100": {
       "id": "ch26_00100",
@@ -70129,7 +70415,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00102"
+      "next": "ch26_00102",
+      "resolution": "unknown"
     },
     "ch26_00105": {
       "id": "ch26_00105",
@@ -71126,7 +71413,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00149"
+      "next": "ch26_00149",
+      "resolution": "qte"
     },
     "ch26_00157": {
       "id": "ch26_00157",
@@ -71305,7 +71593,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00160"
+      "next": "ch26_00160",
+      "resolution": "qte"
     },
     "ch26_00167": {
       "id": "ch26_00167",
@@ -71652,18 +71941,28 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch26_00185"
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch26_00186"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00184"
+      "next": "ch26_00184",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00188": {
       "id": "ch26_00188",
@@ -71968,7 +72267,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch26_00199"
+      "next": "ch26_00199",
+      "resolution": "qte"
     },
     "ch26_00206": {
       "id": "ch26_00206",
@@ -72484,18 +72784,28 @@
       "branches": [
         {
           "condition_text": "Simon is here",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch26_00224"
         },
         {
           "condition_text": "Simon was left behind or died in Stratford Tower",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch26_00232"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00214"
+      "next": "ch26_00214",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00234": {
       "id": "ch26_00234",
@@ -72601,18 +72911,26 @@
       "branches": [
         {
           "condition_text": "Sent a peaceful message in Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_broadcast_peaceful",
+            "equals": true
+          },
           "next": "ch26_00235"
         },
         {
           "condition_text": "Sent a violent message in Stratford Tower",
-          "when": null,
+          "when": {
+            "flag": "markus_broadcast_peaceful",
+            "equals": false
+          },
           "next": "ch26_00238"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00233"
+      "next": "ch26_00233",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00240": {
       "id": "ch26_00240",
@@ -72661,18 +72979,28 @@
       "branches": [
         {
           "condition_text": "Simon is here",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch26_00240"
         },
         {
           "condition_text": "Simon was left behind or died in Stratford Tower",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch26_00241"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00239"
+      "next": "ch26_00239",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Notes"
     },
     "ch26_00243": {
       "id": "ch26_00243",
@@ -72930,18 +73258,26 @@
       "branches": [
         {
           "condition_text": "Connor shot Chloe",
-          "when": null,
+          "when": {
+            "flag": "connor_shot_chloe",
+            "equals": true
+          },
           "next": "ch27_00008"
         },
         {
           "condition_text": "Connor didn't shoot Chloe",
-          "when": null,
+          "when": {
+            "flag": "connor_shot_chloe",
+            "equals": false
+          },
           "next": "ch27_00013"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch27_00001"
+      "next": "ch27_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart"
     },
     "ch27_00015": {
       "id": "ch27_00015",
@@ -73121,7 +73457,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kamski_question": "ra9"
+            }
           }
         },
         {
@@ -73131,7 +73469,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kamski_question": "jericho"
+            }
           }
         },
         {
@@ -73141,7 +73481,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kamski_question": "virus"
+            }
           }
         }
       ]
@@ -73285,7 +73627,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_shot_chloe": true
+            }
           }
         },
         {
@@ -73300,7 +73644,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_shot_chloe": false
+            }
           }
         }
       ]
@@ -74647,18 +74993,26 @@
       "branches": [
         {
           "condition_text": "Chris was spared",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": false
+          },
           "next": "ch27_00093"
         },
         {
           "condition_text": "Chris was killed",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": true
+          },
           "next": "ch27_00095"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch27_00085"
+      "next": "ch27_00085",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Arrive_with_Hank"
     },
     "ch27_00097": {
       "id": "ch27_00097",
@@ -74885,7 +75239,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch27_00097"
+      "next": "ch27_00097",
+      "resolution": "unknown"
     },
     "ch27_00107": {
       "id": "ch27_00107",
@@ -75067,18 +75422,26 @@
       "branches": [
         {
           "condition_text": "Chris died in Capitol Park",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": true
+          },
           "next": "ch27_00111"
         },
         {
           "condition_text": "Chris was spared",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": false
+          },
           "next": "ch27_00115"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch27_00097"
+      "next": "ch27_00097",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Arrive_with_Hank"
     },
     "ch27_00117": {
       "id": "ch27_00117",
@@ -75089,18 +75452,28 @@
       "branches": [
         {
           "condition_text": "Hank arrives alone",
-          "when": null,
+          "when": {
+            "flag": "connor_public_enemy_chase",
+            "equals": "save_hank"
+          },
           "next": "ch27_00106"
         },
         {
           "condition_text": "Hank and Connor arrive together",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "connor_public_enemy_chase",
+              "equals": "save_hank"
+            }
+          },
           "next": "ch27_00116"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch27_00097"
+      "next": "ch27_00097",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart"
     },
     "ch27_00118": {
       "id": "ch27_00118",
@@ -75361,7 +75734,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch28_00001"
+      "next": "ch28_00001",
+      "resolution": "qte"
     },
     "ch28_00013": {
       "id": "ch28_00013",
@@ -75416,7 +75790,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_peaceful": true
+              "markus_march_peaceful": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -75434,7 +75809,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_dispersed": true
+              "markus_march_dispersed": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -75554,7 +75930,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": false
+            }
           }
         }
       ]
@@ -75736,7 +76114,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch28_00001"
+      "next": "ch28_00001",
+      "resolution": "unknown"
     },
     "ch28_00028": {
       "id": "ch28_00028",
@@ -75822,7 +76201,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_stood_under_fire": true
+              "markus_march_stood_under_fire": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -75857,7 +76237,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_fled": true
+              "markus_march_fled": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76011,7 +76392,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_fired_upon": true
+              "markus_march_fired_upon": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76029,7 +76411,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_dispersed": true
+              "markus_march_dispersed": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76151,7 +76534,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_stood_under_fire": true
+              "markus_march_stood_under_fire": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76169,7 +76553,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_fled": true
+              "markus_march_fled": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76214,7 +76599,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": false
+            }
           }
         },
         {
@@ -76242,7 +76629,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_dispersed": true
+              "markus_march_dispersed": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76383,7 +76771,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_peaceful": true
+              "markus_march_peaceful": true,
+              "markus_march_violent": false
             },
             "news": [
               {
@@ -76417,7 +76806,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_march_violent": false
+            }
           }
         }
       ]
@@ -76605,18 +76996,26 @@
       "branches": [
         {
           "condition_text": "Shot the cops in Capitol Park",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": true
+          },
           "next": "ch28_00053"
         },
         {
           "condition_text": "Didn't shoot the cops in Capitol Park",
-          "when": null,
+          "when": {
+            "flag": "markus_capitol_park_police_killed",
+            "equals": false
+          },
           "next": "ch28_00053"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch28_00053"
+      "next": "ch28_00053",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch28_00055": {
       "id": "ch28_00055",
@@ -77066,18 +77465,28 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch28_00078"
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch28_00079"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch28_00077"
+      "next": "ch28_00077",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
     },
     "ch28_00081": {
       "id": "ch28_00081",
@@ -77562,18 +77971,28 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "escaped"
+          },
           "next": "ch28_00106"
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_simon_fate",
+              "equals": "escaped"
+            }
+          },
           "next": "ch28_00107"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch28_00105"
+      "next": "ch28_00105",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
     },
     "ch28_00109": {
       "id": "ch28_00109",
@@ -77802,7 +78221,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch28_00115"
+      "next": "ch28_00115",
+      "resolution": "unknown"
     },
     "ch28_00122": {
       "id": "ch28_00122",
@@ -78116,7 +78536,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch28_00115"
+      "next": "ch28_00115",
+      "resolution": "unknown"
     },
     "ch28_00134": {
       "id": "ch28_00134",
@@ -78724,13 +79145,18 @@
           "id": "option_2",
           "label": "REGRET POLICEMAN",
           "next": "ch28_00152",
-          "requirements_unverified": [
-            "Markus killed Chris and his partner in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_capitol_park_police_killed",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
         },
         {
           "id": "option_3",
@@ -79021,7 +79447,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00004"
+      "next": "ch29_00004",
+      "resolution": "unknown"
     },
     "ch29_00007": {
       "id": "ch29_00007",
@@ -79089,13 +79516,26 @@
       "branches": [
         {
           "condition_text": "Connor chose IRONIC or LEAVE when stopped by Gavin",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_gavin_reply",
+                "equals": "ironic"
+              },
+              {
+                "flag": "connor_gavin_reply",
+                "equals": "leave"
+              }
+            ]
+          },
           "next": "ch29_00009"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00004"
+      "next": "ch29_00004",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     },
     "ch29_00011": {
       "id": "ch29_00011",
@@ -79467,7 +79907,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00017"
+      "next": "ch29_00017",
+      "resolution": "unknown"
     },
     "ch29_00030": {
       "id": "ch29_00030",
@@ -81073,7 +81514,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_gavin_reply": "ironic"
+            }
           }
         },
         {
@@ -81083,7 +81526,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_gavin_reply": "low_profile"
+            }
           }
         },
         {
@@ -81093,7 +81538,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_gavin_reply": "calm"
+            }
           }
         }
       ]
@@ -81142,7 +81589,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_gavin_reply": "leave"
+            }
           }
         }
       ]
@@ -81498,7 +81947,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00121"
+      "next": "ch29_00121",
+      "resolution": "unknown"
     },
     "ch29_00139": {
       "id": "ch29_00139",
@@ -81539,7 +81989,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00121"
+      "next": "ch29_00121",
+      "resolution": "unknown"
     },
     "ch29_00141": {
       "id": "ch29_00141",
@@ -81785,7 +82236,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00144"
+      "next": "ch29_00144",
+      "resolution": "unknown"
     },
     "ch29_00151": {
       "id": "ch29_00151",
@@ -82003,18 +82455,34 @@
       "branches": [
         {
           "condition_text": "Connor saved Hank on the roof in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "saved_hank"
+          },
           "next": "ch29_00158"
         },
         {
           "condition_text": "Connor saved Hank at the Stratford Tower in Public Enemy",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "chased_rupert"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          },
           "next": "ch29_00159"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00155"
+      "next": "ch29_00155",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     },
     "ch29_00161": {
       "id": "ch29_00161",
@@ -82025,18 +82493,42 @@
       "branches": [
         {
           "condition_text": "Connor didn't shoot Chloe",
-          "when": null,
+          "when": {
+            "flag": "connor_shot_chloe",
+            "equals": false
+          },
           "next": "ch29_00157"
         },
         {
           "condition_text": "Connor shot Chloe and saved Hank before",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_shot_chloe",
+                "equals": true
+              },
+              {
+                "any": [
+                  {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "saved_hank"
+                  },
+                  {
+                    "flag": "connor_public_enemy_chase",
+                    "equals": "save_hank"
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch29_00160"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00155"
+      "next": "ch29_00155",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     },
     "ch29_00162": {
       "id": "ch29_00162",
@@ -82447,7 +82939,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00121"
+      "next": "ch29_00121",
+      "resolution": "unknown"
     },
     "ch29_00179": {
       "id": "ch29_00179",
@@ -82608,7 +83101,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00178"
+      "next": "ch29_00178",
+      "resolution": "unknown"
     },
     "ch29_00185": {
       "id": "ch29_00185",
@@ -82769,18 +83263,34 @@
       "branches": [
         {
           "condition_text": "Connor saved Hank on the roof in The Nest",
-          "when": null,
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "saved_hank"
+          },
           "next": "ch29_00189"
         },
         {
           "condition_text": "Connor saved Hank at the Stratford Tower in Public Enemy",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "chased_rupert"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          },
           "next": "ch29_00190"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00188"
+      "next": "ch29_00188",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     },
     "ch29_00192": {
       "id": "ch29_00192",
@@ -83209,7 +83719,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00178"
+      "next": "ch29_00178",
+      "resolution": "unknown"
     },
     "ch29_00207": {
       "id": "ch29_00207",
@@ -83499,18 +84010,44 @@
       "branches": [
         {
           "condition_text": "Connor doesn't know where Jericho is",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_shot_chloe",
+                "equals": false
+              },
+              {
+                "not": {
+                  "flag": "connor_kamski_question",
+                  "equals": "jericho"
+                }
+              }
+            ]
+          },
           "next": "ch29_00175"
         },
         {
           "condition_text": "Connor knows how to find Jericho",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_shot_chloe",
+                "equals": true
+              },
+              {
+                "flag": "connor_kamski_question",
+                "equals": "jericho"
+              }
+            ]
+          },
           "next": "ch29_00218"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00121"
+      "next": "ch29_00121",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#In_the_Police_Station"
     },
     "ch29_00220": {
       "id": "ch29_00220",
@@ -83615,7 +84152,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch29_00220"
+      "next": "ch29_00220",
+      "resolution": "unknown"
     },
     "ch29_00226": {
       "id": "ch29_00226",
@@ -83973,18 +84511,60 @@
       "branches": [
         {
           "condition_text": "Connor shot the Tracis in The Eden Club or shot Chloe in Meet Kamski (or both)",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "any": [
+                  {
+                    "flag": "connor_eden_tracis",
+                    "equals": "shot_one"
+                  },
+                  {
+                    "flag": "connor_eden_tracis",
+                    "equals": "shot_in_back"
+                  }
+                ]
+              },
+              {
+                "flag": "connor_shot_chloe",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch29_00241"
         },
         {
           "condition_text": "Connor didn't shoot Chloe in Meet Kamski",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_shot_chloe",
+                "equals": false
+              },
+              {
+                "not": {
+                  "any": [
+                    {
+                      "flag": "connor_eden_tracis",
+                      "equals": "shot_one"
+                    },
+                    {
+                      "flag": "connor_eden_tracis",
+                      "equals": "shot_in_back"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
           "next": "ch29_00242"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00234"
+      "next": "ch29_00234",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Relationship_Changes"
     },
     "ch29_00244": {
       "id": "ch29_00244",
@@ -84542,18 +85122,26 @@
       "branches": [
         {
           "condition_text": "Asked Kamski about rA9",
-          "when": null,
+          "when": {
+            "flag": "connor_kamski_question",
+            "equals": "ra9"
+          },
           "next": "ch29_00264"
         },
         {
           "condition_text": "Asked Kamski about VIRUS",
-          "when": null,
+          "when": {
+            "flag": "connor_kamski_question",
+            "equals": "virus"
+          },
           "next": "ch29_00266"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00256"
+      "next": "ch29_00256",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart"
     },
     "ch29_00268": {
       "id": "ch29_00268",
@@ -84583,18 +85171,36 @@
       "branches": [
         {
           "condition_text": "Connor didn't shoot Chloe in Meet Kamski",
-          "when": null,
+          "when": {
+            "flag": "connor_shot_chloe",
+            "equals": false
+          },
           "next": "ch29_00263"
         },
         {
           "condition_text": "Connor shot Chloe in Meet Kamski and didn't ask about Jericho",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "connor_shot_chloe",
+                "equals": true
+              },
+              {
+                "not": {
+                  "flag": "connor_kamski_question",
+                  "equals": "jericho"
+                }
+              }
+            ]
+          },
           "next": "ch29_00268"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00256"
+      "next": "ch29_00256",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart"
     },
     "ch29_00270": {
       "id": "ch29_00270",
@@ -84608,9 +85214,7 @@
           "id": "option_0",
           "label": "JERICHO",
           "next": "ch29_00258",
-          "requirements_unverified": [
-            "Killed Chloe and asked about Jericho in Meet Kamski , swaps with KAMSKI"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Amanda",
@@ -84627,15 +85231,24 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_shot_chloe",
+              "equals": true
+            },
+            {
+              "flag": "connor_kamski_question",
+              "equals": "jericho"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Arrive_with_Hank"
         },
         {
           "id": "option_1",
           "label": "KAMSKI",
           "next": "ch29_00269",
-          "requirements_unverified": [
-            "Swaps with JERICHO"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Amanda",
@@ -84660,7 +85273,24 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_shot_chloe",
+                  "equals": false
+                },
+                {
+                  "not": {
+                    "flag": "connor_kamski_question",
+                    "equals": "jericho"
+                  }
+                }
+              ]
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Arrive_with_Hank"
         }
       ]
     },
@@ -84784,7 +85414,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": false
+            }
           }
         }
       ]
@@ -84996,7 +85628,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": true
+            }
           }
         }
       ]
@@ -85304,7 +85938,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00001"
+      "next": "ch30_1_00001",
+      "resolution": "unknown"
     },
     "ch30_1_00032": {
       "id": "ch30_1_00032",
@@ -85455,7 +86090,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": true
+            }
           }
         },
         {
@@ -85650,18 +86287,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive - Luther sacrifices himself",
-          "when": null,
+          "when": {
+            "flag": "kara_helped_luther",
+            "equals": true
+          },
           "next": "ch30_1_00045"
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
+          "when": {
+            "flag": "kara_helped_luther",
+            "equals": false
+          },
           "next": "ch30_1_00047"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_1_00001"
+      "next": "ch30_1_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Kara"
     },
     "ch30_1_00049": {
       "id": "ch30_1_00049",
@@ -85745,7 +86390,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": true
+            }
           }
         },
         {
@@ -85765,7 +86412,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": true
+            }
           }
         }
       ]
@@ -85843,7 +86492,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_captured": true
+            }
           }
         }
       ]
@@ -85974,7 +86625,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00058"
+      "next": "ch30_1_00058",
+      "resolution": "qte"
     },
     "ch30_1_00063": {
       "id": "ch30_1_00063",
@@ -86313,7 +86965,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00071"
+      "next": "ch30_1_00071",
+      "resolution": "qte"
     },
     "ch30_1_00080": {
       "id": "ch30_1_00080",
@@ -86546,7 +87199,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_helped_luther": true
+            }
           }
         },
         {
@@ -86565,7 +87220,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_helped_luther": false
+            }
           }
         }
       ]
@@ -86666,7 +87323,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00071"
+      "next": "ch30_1_00071",
+      "resolution": "unknown"
     },
     "ch30_1_00096": {
       "id": "ch30_1_00096",
@@ -86879,7 +87537,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00095"
+      "next": "ch30_1_00095",
+      "resolution": "unknown"
     },
     "ch30_1_00107": {
       "id": "ch30_1_00107",
@@ -86915,7 +87574,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00106"
+      "next": "ch30_1_00106",
+      "resolution": "unknown"
     },
     "ch30_1_00109": {
       "id": "ch30_1_00109",
@@ -87068,7 +87728,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00113"
+      "next": "ch30_1_00113",
+      "resolution": "unknown"
     },
     "ch30_1_00118": {
       "id": "ch30_1_00118",
@@ -87218,7 +87879,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00123"
+      "next": "ch30_1_00123",
+      "resolution": "unknown"
     },
     "ch30_1_00126": {
       "id": "ch30_1_00126",
@@ -87303,7 +87965,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00126"
+      "next": "ch30_1_00126",
+      "resolution": "unknown"
     },
     "ch30_1_00131": {
       "id": "ch30_1_00131",
@@ -87426,7 +88089,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00132"
+      "next": "ch30_1_00132",
+      "resolution": "unknown"
     },
     "ch30_1_00136": {
       "id": "ch30_1_00136",
@@ -87462,7 +88126,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00135"
+      "next": "ch30_1_00135",
+      "resolution": "unknown"
     },
     "ch30_1_00138": {
       "id": "ch30_1_00138",
@@ -87706,7 +88371,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00146"
+      "next": "ch30_1_00146",
+      "resolution": "unknown"
     },
     "ch30_1_00150": {
       "id": "ch30_1_00150",
@@ -87785,7 +88451,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00150"
+      "next": "ch30_1_00150",
+      "resolution": "unknown"
     },
     "ch30_1_00154": {
       "id": "ch30_1_00154",
@@ -88105,7 +88772,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00165"
+      "next": "ch30_1_00165",
+      "resolution": "unknown"
     },
     "ch30_1_00169": {
       "id": "ch30_1_00169",
@@ -88184,7 +88852,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00169"
+      "next": "ch30_1_00169",
+      "resolution": "unknown"
     },
     "ch30_1_00173": {
       "id": "ch30_1_00173",
@@ -88225,7 +88894,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00139"
+      "next": "ch30_1_00139",
+      "resolution": "unknown"
     },
     "ch30_1_00175": {
       "id": "ch30_1_00175",
@@ -88361,7 +89031,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00174"
+      "next": "ch30_1_00174",
+      "resolution": "unknown"
     },
     "ch30_1_00182": {
       "id": "ch30_1_00182",
@@ -88457,7 +89128,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00185"
+      "next": "ch30_1_00185",
+      "resolution": "unknown"
     },
     "ch30_1_00188": {
       "id": "ch30_1_00188",
@@ -88523,7 +89195,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_1_00188"
+      "next": "ch30_1_00188",
+      "resolution": "unknown"
     },
     "ch30_1_00192": {
       "id": "ch30_1_00192",
@@ -88806,7 +89479,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00004"
+      "next": "ch30_2_00004",
+      "resolution": "unknown"
     },
     "ch30_2_00008": {
       "id": "ch30_2_00008",
@@ -88866,7 +89540,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00001"
+      "next": "ch30_2_00001",
+      "resolution": "qte"
     },
     "ch30_2_00011": {
       "id": "ch30_2_00011",
@@ -88972,18 +89647,28 @@
       "branches": [
         {
           "condition_text": "Attacked the soldier",
-          "when": null,
+          "when": {
+            "flag": "connor_cargo_hall_response",
+            "equals": "attack"
+          },
           "next": "ch30_2_00014"
         },
         {
           "condition_text": "Didn't attack the soldier",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "connor_cargo_hall_response",
+              "equals": "attack"
+            }
+          },
           "next": "ch30_2_00015"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_2_00001"
+      "next": "ch30_2_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Connor"
     },
     "ch30_2_00017": {
       "id": "ch30_2_00017",
@@ -89024,7 +89709,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00001"
+      "next": "ch30_2_00001",
+      "resolution": "unknown"
     },
     "ch30_2_00019": {
       "id": "ch30_2_00019",
@@ -89185,7 +89871,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00019"
+      "next": "ch30_2_00019",
+      "resolution": "unknown"
     },
     "ch30_2_00028": {
       "id": "ch30_2_00028",
@@ -89221,7 +89908,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_cargo_hall_response": "lie"
+            }
           }
         },
         {
@@ -89231,7 +89920,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_cargo_hall_response": "perkins_excuse"
+            }
           }
         },
         {
@@ -89241,7 +89932,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_cargo_hall_response": "attack"
+            }
           }
         },
         {
@@ -89251,7 +89944,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_cargo_hall_response": "run"
+            }
           }
         }
       ]
@@ -89456,7 +90151,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00038"
+      "next": "ch30_2_00038",
+      "resolution": "unknown"
     },
     "ch30_2_00042": {
       "id": "ch30_2_00042",
@@ -89571,7 +90267,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00046"
+      "next": "ch30_2_00046",
+      "resolution": "qte"
     },
     "ch30_2_00049": {
       "id": "ch30_2_00049",
@@ -90151,7 +90848,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_2_00075"
+      "next": "ch30_2_00075",
+      "resolution": "unknown"
     },
     "ch30_2_00081": {
       "id": "ch30_2_00081",
@@ -90471,7 +91169,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant": true
+            }
           }
         },
         {
@@ -90481,7 +91181,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant": false
+            }
           }
         }
       ]
@@ -91114,7 +91816,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant": true
+            }
           }
         },
         {
@@ -91124,7 +91828,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant": false
+            }
           }
         }
       ]
@@ -91915,7 +92621,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00001"
+      "next": "ch30_3_00001",
+      "resolution": "unknown"
     },
     "ch30_3_00005": {
       "id": "ch30_3_00005",
@@ -92078,18 +92785,26 @@
       "branches": [
         {
           "condition_text": "Explosives were activated",
-          "when": null,
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": true
+          },
           "next": "ch30_3_00007"
         },
         {
           "condition_text": "Explosives weren't activated",
-          "when": null,
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": false
+          },
           "next": "ch30_3_00012"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00001"
+      "next": "ch30_3_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00014": {
       "id": "ch30_3_00014",
@@ -92274,7 +92989,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00014"
+      "next": "ch30_3_00014",
+      "resolution": "qte"
     },
     "ch30_3_00024": {
       "id": "ch30_3_00024",
@@ -92310,7 +93026,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00023"
+      "next": "ch30_3_00023",
+      "resolution": "qte"
     },
     "ch30_3_00026": {
       "id": "ch30_3_00026",
@@ -92359,13 +93076,18 @@
       "branches": [
         {
           "condition_text": "Connor became deviant - Connor protects Markus and North",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch30_3_00027"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00023"
+      "next": "ch30_3_00023",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00029": {
       "id": "ch30_3_00029",
@@ -92471,18 +93193,26 @@
       "branches": [
         {
           "condition_text": "Connor became a deviant - North dies, Connor rescues Markus",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch30_3_00031"
         },
         {
           "condition_text": "Connor stayed a machine - Markus dies, North escapes",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": false
+          },
           "next": "ch30_3_00033"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00014"
+      "next": "ch30_3_00014",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00035": {
       "id": "ch30_3_00035",
@@ -92504,7 +93234,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00014"
+      "next": "ch30_3_00014",
+      "resolution": "qte"
     },
     "ch30_3_00036": {
       "id": "ch30_3_00036",
@@ -92544,8 +93275,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_3_00014"
+      "default_branch": 1,
+      "next": "ch30_3_00014",
+      "resolution": "qte"
     },
     "ch30_3_00038": {
       "id": "ch30_3_00038",
@@ -92633,7 +93365,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_saved_north": true
+            }
           }
         },
         {
@@ -92656,7 +93390,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_saved_north": false
+            }
           }
         }
       ]
@@ -92719,7 +93455,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00040"
+      "next": "ch30_3_00040",
+      "resolution": "unknown"
     },
     "ch30_3_00044": {
       "id": "ch30_3_00044",
@@ -92785,7 +93522,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00044"
+      "next": "ch30_3_00044",
+      "resolution": "unknown"
     },
     "ch30_3_00048": {
       "id": "ch30_3_00048",
@@ -92959,7 +93697,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00047"
+      "next": "ch30_3_00047",
+      "resolution": "unknown"
     },
     "ch30_3_00057": {
       "id": "ch30_3_00057",
@@ -93060,7 +93799,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00059"
+      "next": "ch30_3_00059",
+      "resolution": "unknown"
     },
     "ch30_3_00063": {
       "id": "ch30_3_00063",
@@ -93115,7 +93855,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00058"
+      "next": "ch30_3_00058",
+      "resolution": "unknown"
     },
     "ch30_3_00066": {
       "id": "ch30_3_00066",
@@ -93145,18 +93886,26 @@
       "branches": [
         {
           "condition_text": "Connor became a deviant",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch30_3_00066"
         },
         {
           "condition_text": "Connor remained a machine",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": false
+          },
           "next": "ch30_3_00058"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00058"
+      "next": "ch30_3_00058",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00068": {
       "id": "ch30_3_00068",
@@ -93302,8 +94051,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_3_00069"
+      "default_branch": 1,
+      "next": "ch30_3_00069",
+      "resolution": "qte"
     },
     "ch30_3_00076": {
       "id": "ch30_3_00076",
@@ -93325,7 +94075,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00069"
+      "next": "ch30_3_00069",
+      "resolution": "qte"
     },
     "ch30_3_00077": {
       "id": "ch30_3_00077",
@@ -93484,7 +94235,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00080"
+      "next": "ch30_3_00080",
+      "resolution": "qte"
     },
     "ch30_3_00084": {
       "id": "ch30_3_00084",
@@ -93701,7 +94453,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00092"
+      "next": "ch30_3_00092",
+      "resolution": "qte"
     },
     "ch30_3_00096": {
       "id": "ch30_3_00096",
@@ -94110,13 +94863,18 @@
       "branches": [
         {
           "condition_text": "Connor became deviant",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch30_3_00116"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00112"
+      "next": "ch30_3_00112",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00118": {
       "id": "ch30_3_00118",
@@ -94171,7 +94929,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00112"
+      "next": "ch30_3_00112",
+      "resolution": "unknown"
     },
     "ch30_3_00121": {
       "id": "ch30_3_00121",
@@ -94391,13 +95150,18 @@
       "branches": [
         {
           "condition_text": "Connor became deviant",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch30_3_00131"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00123"
+      "next": "ch30_3_00123",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00133": {
       "id": "ch30_3_00133",
@@ -94452,7 +95216,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_jericho_blown_up": false
+            }
           }
         },
         {
@@ -94464,7 +95230,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_jericho_blown_up": false
+            }
           }
         },
         {
@@ -94476,7 +95244,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_jericho_blown_up": false
+            }
           }
         },
         {
@@ -94486,7 +95256,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_jericho_blown_up": false
+            }
           }
         },
         {
@@ -94836,7 +95608,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00138"
+      "next": "ch30_3_00138",
+      "resolution": "unknown"
     },
     "ch30_3_00154": {
       "id": "ch30_3_00154",
@@ -94935,7 +95708,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00154"
+      "next": "ch30_3_00154",
+      "resolution": "unknown"
     },
     "ch30_3_00159": {
       "id": "ch30_3_00159",
@@ -95104,7 +95878,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00161"
+      "next": "ch30_3_00161",
+      "resolution": "unknown"
     },
     "ch30_3_00168": {
       "id": "ch30_3_00168",
@@ -95178,7 +95953,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_took_detonator": true
+            }
           }
         },
         {
@@ -95188,7 +95965,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_took_detonator": false
+            }
           }
         }
       ]
@@ -95448,7 +96227,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00181"
+      "next": "ch30_3_00181",
+      "resolution": "unknown"
     },
     "ch30_3_00184": {
       "id": "ch30_3_00184",
@@ -95560,7 +96340,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00187"
+      "next": "ch30_3_00187",
+      "resolution": "unknown"
     },
     "ch30_3_00190": {
       "id": "ch30_3_00190",
@@ -95677,7 +96458,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00180"
+      "next": "ch30_3_00180",
+      "resolution": "unknown"
     },
     "ch30_3_00196": {
       "id": "ch30_3_00196",
@@ -95884,7 +96666,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00200"
+      "next": "ch30_3_00200",
+      "resolution": "unknown"
     },
     "ch30_3_00204": {
       "id": "ch30_3_00204",
@@ -95994,7 +96777,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch30_3_00160"
+      "next": "ch30_3_00160",
+      "resolution": "unknown"
     },
     "ch30_3_00210": {
       "id": "ch30_3_00210",
@@ -96198,23 +96982,50 @@
       "branches": [
         {
           "condition_text": "Lead a peaceful march in Freedom March and made a pacifist speech in Stratford Tower",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_march_violent",
+                "equals": false
+              },
+              {
+                "flag": "markus_broadcast_peaceful",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch30_3_00215"
         },
         {
           "condition_text": "Lead a peaceful march in Freedom March and made an aggressive speech in Stratford Tower",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_march_violent",
+                "equals": false
+              },
+              {
+                "flag": "markus_broadcast_peaceful",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch30_3_00216"
         },
         {
           "condition_text": "Attacked the Police during the march in Freedom March",
-          "when": null,
+          "when": {
+            "flag": "markus_march_violent",
+            "equals": true
+          },
           "next": "ch30_3_00217"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00214"
+      "next": "ch30_3_00214",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch30_3_00219": {
       "id": "ch30_3_00219",
@@ -96574,7 +97385,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_chose_demonstration": true
+              "markus_chose_demonstration": true,
+              "markus_peaceful": true
             },
             "news": [
               {
@@ -96605,7 +97417,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_chose_revolution": true
+              "markus_chose_revolution": true,
+              "markus_peaceful": false
             },
             "news": [
               {
@@ -96749,7 +97562,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_1_00012"
+      "next": "ch31_1_00012",
+      "resolution": "unknown"
     },
     "ch31_1_00015": {
       "id": "ch31_1_00015",
@@ -97132,7 +97946,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_1_00012"
+      "next": "ch31_1_00012",
+      "resolution": "unknown"
     },
     "ch31_1_00032": {
       "id": "ch31_1_00032",
@@ -97327,7 +98142,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant": false
+            }
           }
         }
       ]
@@ -97428,13 +98245,18 @@
       "branches": [
         {
           "condition_text": "North died in Crossroads",
-          "when": null,
+          "when": {
+            "flag": "markus_saved_north",
+            "equals": false
+          },
           "next": "ch31_1_00046"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch31_1_00044"
+      "next": "ch31_1_00044",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch31_1_00048": {
       "id": "ch31_1_00048",
@@ -97708,13 +98530,18 @@
       "branches": [
         {
           "condition_text": "North is dead",
-          "when": null,
+          "when": {
+            "flag": "markus_saved_north",
+            "equals": false
+          },
           "next": "ch31_1_00059"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch31_1_00049"
+      "next": "ch31_1_00049",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch31_1_00061": {
       "id": "ch31_1_00061",
@@ -99027,7 +99854,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_2_00003"
+      "next": "ch31_2_00003",
+      "resolution": "unknown"
     },
     "ch31_2_00007": {
       "id": "ch31_2_00007",
@@ -99331,7 +100159,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_2_00015"
+      "next": "ch31_2_00015",
+      "resolution": "unknown"
     },
     "ch31_2_00023": {
       "id": "ch31_2_00023",
@@ -99472,13 +100301,18 @@
       "branches": [
         {
           "condition_text": "Connor went after Kara and Alice on the highway in On The Run",
-          "when": null,
+          "when": {
+            "flag": "connor_highway_pursuit",
+            "equals": true
+          },
           "next": "ch31_2_00028"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch31_2_00025"
+      "next": "ch31_2_00025",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Connor_on_Sacred_Ground"
     },
     "ch31_2_00030": {
       "id": "ch31_2_00030",
@@ -99647,7 +100481,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_2_00035"
+      "next": "ch31_2_00035",
+      "resolution": "unknown"
     },
     "ch31_2_00039": {
       "id": "ch31_2_00039",
@@ -99982,7 +100817,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch31_2_00048"
+      "next": "ch31_2_00048",
+      "resolution": "unknown"
     },
     "ch31_2_00054": {
       "id": "ch31_2_00054",
@@ -100123,7 +100959,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00001"
+      "next": "ch32_1_00001",
+      "resolution": "unknown"
     },
     "ch32_1_00008": {
       "id": "ch32_1_00008",
@@ -100207,7 +101044,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00007"
+      "next": "ch32_1_00007",
+      "resolution": "unknown"
     },
     "ch32_1_00012": {
       "id": "ch32_1_00012",
@@ -100545,7 +101383,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00012"
+      "next": "ch32_1_00012",
+      "resolution": "unknown"
     },
     "ch32_1_00030": {
       "id": "ch32_1_00030",
@@ -100662,7 +101501,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00032"
+      "next": "ch32_1_00032",
+      "resolution": "unknown"
     },
     "ch32_1_00036": {
       "id": "ch32_1_00036",
@@ -101207,18 +102047,26 @@
       "branches": [
         {
           "condition_text": "Markus is demonstrating peacefully",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": true
+          },
           "next": "ch32_1_00054"
         },
         {
           "condition_text": "Markus is leading a violent revolution",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": false
+          },
           "next": "ch32_1_00063"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00012"
+      "next": "ch32_1_00012",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
     },
     "ch32_1_00065": {
       "id": "ch32_1_00065",
@@ -101581,18 +102429,26 @@
       "branches": [
         {
           "condition_text": "Markus is demonstrating peacefully",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": true
+          },
           "next": "ch32_1_00080"
         },
         {
           "condition_text": "Markus is leading a violent revolution",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": false
+          },
           "next": "ch32_1_00081"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00069"
+      "next": "ch32_1_00069",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
     },
     "ch32_1_00083": {
       "id": "ch32_1_00083",
@@ -102014,18 +102870,26 @@
       "branches": [
         {
           "condition_text": "Markus is demonstrating peacefully",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": true
+          },
           "next": "ch32_1_00102"
         },
         {
           "condition_text": "Markus is leading a violent revolution",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": false
+          },
           "next": "ch32_1_00103"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00101"
+      "next": "ch32_1_00101",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
     },
     "ch32_1_00105": {
       "id": "ch32_1_00105",
@@ -102507,28 +103371,66 @@
       "branches": [
         {
           "condition_text": "Kara was injured",
-          "when": null,
+          "when": {
+            "flag": "kara_coastguard_response",
+            "equals": "protect_alice"
+          },
           "next": "ch32_1_00118"
         },
         {
           "condition_text": "Alice was injured",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "accelerate"
+              },
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "hide"
+              }
+            ]
+          },
           "next": "ch32_1_00123"
         },
         {
           "condition_text": "Alice and Kara were injured",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "protect_alice"
+              },
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "accelerate"
+              }
+            ]
+          },
           "next": "ch32_1_00124"
         },
         {
           "condition_text": "Alice and Kara make it",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "plunge"
+              },
+              {
+                "flag": "kara_coastguard_response",
+                "equals": "use_luther"
+              }
+            ]
+          },
           "next": "ch32_1_00129"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00113"
+      "next": "ch32_1_00113",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_River"
     },
     "ch32_1_00131": {
       "id": "ch32_1_00131",
@@ -102808,7 +103710,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00140"
+      "next": "ch32_1_00140",
+      "resolution": "unknown"
     },
     "ch32_1_00144": {
       "id": "ch32_1_00144",
@@ -102902,7 +103805,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00140"
+      "next": "ch32_1_00140",
+      "resolution": "unknown"
     },
     "ch32_1_00149": {
       "id": "ch32_1_00149",
@@ -103054,7 +103958,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00140"
+      "next": "ch32_1_00140",
+      "resolution": "unknown"
     },
     "ch32_1_00157": {
       "id": "ch32_1_00157",
@@ -103262,7 +104167,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "accelerate"
+            }
           }
         },
         {
@@ -103272,7 +104179,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "protect_alice"
+            }
           }
         },
         {
@@ -103282,7 +104191,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "hide"
+            }
           }
         },
         {
@@ -103292,7 +104203,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "surrender"
+            }
           }
         },
         {
@@ -103302,7 +104215,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "plunge"
+            }
           }
         },
         {
@@ -103314,7 +104229,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "use_luther"
+            }
           }
         },
         {
@@ -103324,7 +104241,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_coastguard_response": "surrender"
+            }
           }
         }
       ]
@@ -103589,7 +104508,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00176"
+      "next": "ch32_1_00176",
+      "resolution": "unknown"
     },
     "ch32_1_00180": {
       "id": "ch32_1_00180",
@@ -103797,7 +104717,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00188"
+      "next": "ch32_1_00188",
+      "resolution": "unknown"
     },
     "ch32_1_00192": {
       "id": "ch32_1_00192",
@@ -104707,7 +105628,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00230"
+      "next": "ch32_1_00230",
+      "resolution": "unknown"
     },
     "ch32_1_00240": {
       "id": "ch32_1_00240",
@@ -104756,13 +105678,20 @@
       "branches": [
         {
           "condition_text": "Didn't pick [ YOUR STORY ]",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "kara_todd_approach",
+              "equals": "your_story"
+            }
+          },
           "next": "ch32_1_00241"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00230"
+      "next": "ch32_1_00230",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
     },
     "ch32_1_00243": {
       "id": "ch32_1_00243",
@@ -104980,7 +105909,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "appeal"
+            }
           }
         },
         {
@@ -104990,7 +105921,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "threaten"
+            }
           }
         },
         {
@@ -105000,7 +105933,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "confront"
+            }
           }
         },
         {
@@ -105010,7 +105945,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "convince"
+            }
           }
         },
         {
@@ -105020,7 +105957,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "break_free"
+            }
           }
         },
         {
@@ -105032,7 +105971,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_todd_approach": "your_story"
+            }
           }
         }
       ]
@@ -105700,7 +106641,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00284"
+      "next": "ch32_1_00284",
+      "resolution": "unknown"
     },
     "ch32_1_00288": {
       "id": "ch32_1_00288",
@@ -105940,7 +106882,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00299"
+      "next": "ch32_1_00299",
+      "resolution": "unknown"
     },
     "ch32_1_00302": {
       "id": "ch32_1_00302",
@@ -105995,7 +106938,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00302"
+      "next": "ch32_1_00302",
+      "resolution": "unknown"
     },
     "ch32_1_00305": {
       "id": "ch32_1_00305",
@@ -106218,7 +107162,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00311"
+      "next": "ch32_1_00311",
+      "resolution": "unknown"
     },
     "ch32_1_00314": {
       "id": "ch32_1_00314",
@@ -106497,7 +107442,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00321"
+      "next": "ch32_1_00321",
+      "resolution": "unknown"
     },
     "ch32_1_00327": {
       "id": "ch32_1_00327",
@@ -106700,7 +107646,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00332"
+      "next": "ch32_1_00332",
+      "resolution": "unknown"
     },
     "ch32_1_00336": {
       "id": "ch32_1_00336",
@@ -106885,7 +107832,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00336"
+      "next": "ch32_1_00336",
+      "resolution": "unknown"
     },
     "ch32_1_00346": {
       "id": "ch32_1_00346",
@@ -107013,7 +107961,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00346"
+      "next": "ch32_1_00346",
+      "resolution": "qte"
     },
     "ch32_1_00353": {
       "id": "ch32_1_00353",
@@ -107417,7 +108366,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00346"
+      "next": "ch32_1_00346",
+      "resolution": "qte"
     },
     "ch32_1_00373": {
       "id": "ch32_1_00373",
@@ -107897,7 +108847,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00346"
+      "next": "ch32_1_00346",
+      "resolution": "qte"
     },
     "ch32_1_00397": {
       "id": "ch32_1_00397",
@@ -108168,7 +109119,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00346"
+      "next": "ch32_1_00346",
+      "resolution": "unknown"
     },
     "ch32_1_00410": {
       "id": "ch32_1_00410",
@@ -108536,7 +109488,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_1_00346"
+      "next": "ch32_1_00346",
+      "resolution": "unknown"
     },
     "ch32_1_00429": {
       "id": "ch32_1_00429",
@@ -108630,7 +109583,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00001"
+      "next": "ch32_2_00001",
+      "resolution": "unknown"
     },
     "ch32_2_00006": {
       "id": "ch32_2_00006",
@@ -108720,7 +109674,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00006"
+      "next": "ch32_2_00006",
+      "resolution": "unknown"
     },
     "ch32_2_00011": {
       "id": "ch32_2_00011",
@@ -108963,7 +109918,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00006"
+      "next": "ch32_2_00006",
+      "resolution": "unknown"
     },
     "ch32_2_00022": {
       "id": "ch32_2_00022",
@@ -109029,7 +109985,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00022"
+      "next": "ch32_2_00022",
+      "resolution": "unknown"
     },
     "ch32_2_00026": {
       "id": "ch32_2_00026",
@@ -110621,13 +111578,18 @@
       "branches": [
         {
           "condition_text": "Markus is leading a revolution",
-          "when": null,
+          "when": {
+            "flag": "markus_peaceful",
+            "equals": false
+          },
           "next": "ch32_2_00110"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_2_00106"
+      "next": "ch32_2_00106",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice"
     },
     "ch32_2_00112": {
       "id": "ch32_2_00112",
@@ -110892,7 +111854,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00112"
+      "next": "ch32_2_00112",
+      "resolution": "unknown"
     },
     "ch32_2_00126": {
       "id": "ch32_2_00126",
@@ -112451,7 +113414,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00205"
+      "next": "ch32_2_00205",
+      "resolution": "unknown"
     },
     "ch32_2_00208": {
       "id": "ch32_2_00208",
@@ -112582,7 +113546,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00212"
+      "next": "ch32_2_00212",
+      "resolution": "unknown"
     },
     "ch32_2_00215": {
       "id": "ch32_2_00215",
@@ -112993,7 +113958,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00231"
+      "next": "ch32_2_00231",
+      "resolution": "unknown"
     },
     "ch32_2_00234": {
       "id": "ch32_2_00234",
@@ -113067,7 +114033,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_2_00234"
+      "next": "ch32_2_00234",
+      "resolution": "unknown"
     },
     "ch32_2_00238": {
       "id": "ch32_2_00238",
@@ -113490,7 +114457,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00001"
+      "next": "ch32_3_00001",
+      "resolution": "unknown"
     },
     "ch32_3_00010": {
       "id": "ch32_3_00010",
@@ -113561,7 +114529,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00010",
+      "resolution": "qte"
     },
     "ch32_3_00014": {
       "id": "ch32_3_00014",
@@ -113689,7 +114658,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00010",
+      "resolution": "qte"
     },
     "ch32_3_00020": {
       "id": "ch32_3_00020",
@@ -113909,7 +114879,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00020"
+      "next": "ch32_3_00020",
+      "resolution": "unknown"
     },
     "ch32_3_00031": {
       "id": "ch32_3_00031",
@@ -114376,7 +115347,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00010",
+      "resolution": "qte"
     },
     "ch32_3_00051": {
       "id": "ch32_3_00051",
@@ -114542,7 +115514,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00054"
+      "next": "ch32_3_00054",
+      "resolution": "unknown"
     },
     "ch32_3_00059": {
       "id": "ch32_3_00059",
@@ -114718,7 +115691,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00010",
+      "resolution": "unknown"
     },
     "ch32_3_00067": {
       "id": "ch32_3_00067",
@@ -114940,7 +115914,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00006"
+      "next": "ch32_4_00006",
+      "resolution": "unknown"
     },
     "ch32_4_00012": {
       "id": "ch32_4_00012",
@@ -115222,7 +116197,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00001"
+      "next": "ch32_4_00001",
+      "resolution": "unknown"
     },
     "ch32_4_00026": {
       "id": "ch32_4_00026",
@@ -116184,7 +117160,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00026",
+      "resolution": "unknown"
     },
     "ch32_4_00072": {
       "id": "ch32_4_00072",
@@ -116460,7 +117437,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00026",
+      "resolution": "qte"
     },
     "ch32_4_00085": {
       "id": "ch32_4_00085",
@@ -116994,7 +117972,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00026",
+      "resolution": "unknown"
     },
     "ch32_4_00109": {
       "id": "ch32_4_00109",
@@ -117030,7 +118009,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00108"
+      "next": "ch32_4_00108",
+      "resolution": "unknown"
     },
     "ch32_4_00111": {
       "id": "ch32_4_00111",
@@ -117085,7 +118065,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00108"
+      "next": "ch32_4_00108",
+      "resolution": "unknown"
     },
     "ch32_4_00114": {
       "id": "ch32_4_00114",
@@ -117262,7 +118243,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00114"
+      "next": "ch32_4_00114",
+      "resolution": "unknown"
     },
     "ch32_4_00123": {
       "id": "ch32_4_00123",
@@ -117535,7 +118517,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00001"
+      "next": "ch32_5_00001",
+      "resolution": "unknown"
     },
     "ch32_5_00004": {
       "id": "ch32_5_00004",
@@ -117871,28 +118854,42 @@
       "branches": [
         {
           "condition_text": "Markus sacrificed himself",
-          "when": null,
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "sacrifice"
+          },
           "next": "ch32_5_00008"
         },
         {
           "condition_text": "Markus kissed North",
-          "when": null,
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "kiss"
+          },
           "next": "ch32_5_00013"
         },
         {
           "condition_text": "Androids sang",
-          "when": null,
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "sing"
+          },
           "next": "ch32_5_00019"
         },
         {
           "condition_text": "Markus died any other way",
-          "when": null,
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "dirty_bomb"
+          },
           "next": "ch32_5_00020"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00001"
+      "next": "ch32_5_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade"
     },
     "ch32_5_00022": {
       "id": "ch32_5_00022",
@@ -117919,7 +118916,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00001"
+      "next": "ch32_5_00001",
+      "resolution": "unknown"
     },
     "ch32_5_00023": {
       "id": "ch32_5_00023",
@@ -118181,7 +119179,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00035"
+      "next": "ch32_5_00035",
+      "resolution": "unknown"
     },
     "ch32_5_00038": {
       "id": "ch32_5_00038",
@@ -118260,7 +119259,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00035"
+      "next": "ch32_5_00035",
+      "resolution": "unknown"
     },
     "ch32_5_00042": {
       "id": "ch32_5_00042",
@@ -118331,13 +119331,12 @@
           "id": "option_0",
           "label": "DIRTY BOMB",
           "next": "ch32_5_00035",
-          "requirements_unverified": [
-            "Took the bomb in Crossroads"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_dirty_bomb_threat": true
+              "markus_dirty_bomb_threat": true,
+              "markus_barricade_response": "dirty_bomb"
             },
             "news": [
               {
@@ -118345,7 +119344,14 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_took_detonator",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
         },
         {
           "id": "option_1",
@@ -118357,7 +119363,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_barricade_kiss": true
+              "markus_barricade_kiss": true,
+              "markus_barricade_response": "kiss"
             },
             "news": [
               {
@@ -118375,7 +119382,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_barricade_song": true
+              "markus_barricade_song": true,
+              "markus_barricade_response": "sing"
             },
             "news": [
               {
@@ -118392,7 +119400,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_barricade_response": "sacrifice"
+            }
           }
         }
       ]
@@ -118677,7 +119687,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00055"
+      "next": "ch32_5_00055",
+      "resolution": "unknown"
     },
     "ch32_5_00061": {
       "id": "ch32_5_00061",
@@ -118824,7 +119835,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00061"
+      "next": "ch32_5_00061",
+      "resolution": "unknown"
     },
     "ch32_5_00069": {
       "id": "ch32_5_00069",
@@ -119222,7 +120234,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00081"
+      "next": "ch32_5_00081",
+      "resolution": "unknown"
     },
     "ch32_5_00087": {
       "id": "ch32_5_00087",
@@ -119505,7 +120518,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00094"
+      "next": "ch32_5_00094",
+      "resolution": "unknown"
     },
     "ch32_5_00100": {
       "id": "ch32_5_00100",
@@ -119632,7 +120646,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00100"
+      "next": "ch32_5_00100",
+      "resolution": "unknown"
     },
     "ch32_5_00106": {
       "id": "ch32_5_00106",
@@ -120216,13 +121231,18 @@
       "branches": [
         {
           "condition_text": "Connor at the CyberLife tower",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch32_5_00133"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00131"
+      "next": "ch32_5_00131",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
     },
     "ch32_5_00135": {
       "id": "ch32_5_00135",
@@ -120309,13 +121329,18 @@
       "branches": [
         {
           "condition_text": "Connor at the CyberLife tower",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
           "next": "ch32_5_00138"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00131"
+      "next": "ch32_5_00131",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
     },
     "ch32_5_00140": {
       "id": "ch32_5_00140",
@@ -120375,7 +121400,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00131"
+      "next": "ch32_5_00131",
+      "resolution": "unknown"
     },
     "ch32_5_00143": {
       "id": "ch32_5_00143",
@@ -120498,7 +121524,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00147"
+      "next": "ch32_5_00147",
+      "resolution": "unknown"
     },
     "ch32_5_00150": {
       "id": "ch32_5_00150",
@@ -120631,7 +121658,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00152"
+      "next": "ch32_5_00152",
+      "resolution": "unknown"
     },
     "ch32_5_00157": {
       "id": "ch32_5_00157",
@@ -121220,7 +122248,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00177"
+      "next": "ch32_5_00177",
+      "resolution": "unknown"
     },
     "ch32_5_00183": {
       "id": "ch32_5_00183",
@@ -121603,7 +122632,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_5_00177"
+      "next": "ch32_5_00177",
+      "resolution": "unknown"
     },
     "ch32_5_00203": {
       "id": "ch32_5_00203",
@@ -121900,13 +122930,18 @@
       "branches": [
         {
           "condition_text": "Connor is not a deviant",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": false
+          },
           "next": "ch32_6_00005"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00001"
+      "next": "ch32_6_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
     },
     "ch32_6_00007": {
       "id": "ch32_6_00007",
@@ -122179,13 +123214,18 @@
           "id": "option_1",
           "label": "DIRTY BOMB",
           "next": "ch32_6_00014",
-          "requirements_unverified": [
-            "Took the detonator in Crossroads"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_took_detonator",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
         },
         {
           "id": "option_2",
@@ -122337,13 +123377,18 @@
       "branches": [
         {
           "condition_text": "Took dirty bomb",
-          "when": null,
+          "when": {
+            "flag": "markus_took_detonator",
+            "equals": true
+          },
           "next": "ch32_6_00024"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00011",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
     "ch32_6_00026": {
       "id": "ch32_6_00026",
@@ -122489,13 +123534,18 @@
           "id": "option_2",
           "label": "DIRTY BOMB",
           "next": "ch32_6_00011",
-          "requirements_unverified": [
-            "Took the detonator"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_took_detonator",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
         }
       ]
     },
@@ -122543,7 +123593,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00011",
+      "resolution": "unknown"
     },
     "ch32_6_00034": {
       "id": "ch32_6_00034",
@@ -122627,7 +123678,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00033"
+      "next": "ch32_6_00033",
+      "resolution": "unknown"
     },
     "ch32_6_00038": {
       "id": "ch32_6_00038",
@@ -122762,7 +123814,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00040"
+      "next": "ch32_6_00040",
+      "resolution": "unknown"
     },
     "ch32_6_00045": {
       "id": "ch32_6_00045",
@@ -122798,7 +123851,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00044"
+      "next": "ch32_6_00044",
+      "resolution": "qte"
     },
     "ch32_6_00047": {
       "id": "ch32_6_00047",
@@ -122828,13 +123882,18 @@
       "branches": [
         {
           "condition_text": "Connor is not deviant",
-          "when": null,
+          "when": {
+            "flag": "connor_deviant",
+            "equals": false
+          },
           "next": "ch32_6_00047"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00044"
+      "next": "ch32_6_00044",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
     },
     "ch32_6_00049": {
       "id": "ch32_6_00049",
@@ -123085,7 +124144,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00061"
+      "next": "ch32_6_00061",
+      "resolution": "unknown"
     },
     "ch32_6_00065": {
       "id": "ch32_6_00065",
@@ -123121,7 +124181,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00061"
+      "next": "ch32_6_00061",
+      "resolution": "unknown"
     },
     "ch32_6_00067": {
       "id": "ch32_6_00067",
@@ -123211,7 +124272,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00068"
+      "next": "ch32_6_00068",
+      "resolution": "unknown"
     },
     "ch32_6_00071": {
       "id": "ch32_6_00071",
@@ -123633,7 +124695,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00061"
+      "next": "ch32_6_00061",
+      "resolution": "unknown"
     },
     "ch32_6_00093": {
       "id": "ch32_6_00093",
@@ -123650,7 +124713,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00061"
+      "next": "ch32_6_00061",
+      "resolution": "unknown"
     },
     "ch32_6_00094": {
       "id": "ch32_6_00094",
@@ -123984,7 +125048,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00108"
+      "next": "ch32_6_00108",
+      "resolution": "unknown"
     },
     "ch32_6_00112": {
       "id": "ch32_6_00112",
@@ -124106,7 +125171,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00113"
+      "next": "ch32_6_00113",
+      "resolution": "unknown"
     },
     "ch32_6_00118": {
       "id": "ch32_6_00118",
@@ -124162,7 +125228,8 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00118"
+      "next": "ch32_6_00118",
+      "resolution": "unknown"
     },
     "ch32_6_00121": {
       "id": "ch32_6_00121",

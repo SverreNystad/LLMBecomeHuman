@@ -149,7 +149,19 @@ def test_rule_with_flag_missing_falls_back_to_default_with_warning(tmp_path):
 
 
 DATASET = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
-SORTED_CHAPTERS = [str(i) for i in range(1, 23)]
+SORTED_CHAPTERS = [str(i) for i in range(1, 30)] + [
+    "30.1",
+    "30.2",
+    "30.3",
+    "31.1",
+    "31.2",
+    "32.1",
+    "32.2",
+    "32.3",
+    "32.4",
+    "32.5",
+    "32.6",
+]
 
 
 @pytest.mark.parametrize("chapter", SORTED_CHAPTERS)
