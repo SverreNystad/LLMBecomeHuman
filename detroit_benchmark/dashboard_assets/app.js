@@ -90,6 +90,18 @@ function setCharacterTheme(character){
   document.body.dataset.character=key;
   document.dispatchEvent(new CustomEvent('characterchange',{detail:{character:key,chapter:state.chapter}}));
 }
+/* Tells the background which scene is in view, so it can show that scene's art. */
+let lastScene='';
+function emitScene(headings=[]){
+  const key=JSON.stringify([state.chapter,headings]);
+  if(key===lastScene)return;
+  lastScene=key;
+  document.dispatchEvent(new CustomEvent('scenechange',{detail:{chapter:state.chapter,heading:headings[0]||null,headings}}));
+}
+function emitFlowScene(nodeId){
+  const node=nodeId&&state.rendered?.graph.nodes.get(nodeId);
+  emitScene(node?[...new Set((node.members||[node.node]).map(n=>n?.heading).filter(Boolean))]:[]);
+}
 function toast(msg) {
   const box=$('toast');box.textContent=msg;box.classList.add('visible');
   clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>box.classList.remove('visible'),3400);
@@ -571,6 +583,7 @@ function renderChapter(fit=true){
  const chapter=state.chapter;
  $('chapterIndexLabel').textContent=chapterNumber(chapter)?`Chapter ${chapterNumber(chapter)}`:'Endings';
  setCharacterTheme(chapterCharacter(chapter));
+ emitScene();
  $('chapterTitle').textContent=chapterTitle(chapter);
  if(state.view==='story'){state.rendered=null;renderStory({keepScroll:!fit});return;}
  renderFlowchart(fit);
@@ -597,6 +610,7 @@ function renderFlowchart(fit=true){
  setupRunFocus();applyRunFocus();
  if(fit)requestAnimationFrame(openChapterView);else applyTransform();
  if(state.selected&&!graph.nodes.has(state.selected.id))closeDrawer();
+ emitFlowScene(state.selected?.id);
 }
 function applyTransform(){ $('graphWorld').style.transform=`translate3d(${state.panX}px,${state.panY}px,0) scale(${state.scale})`; }
 function openChapterView(){
@@ -650,7 +664,7 @@ function zoom(factor,clientX,clientY){
   state.panY=y-(y-state.panY)/old*next;
   state.scale=next;applyTransform();
 }
-function closeDrawer(){state.selected=null;$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
+function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
 function renderInspectorShell(node,runId,view){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
@@ -666,7 +680,7 @@ async function inspect(nodeId,runId,{glide=false}={}){
  const view=modelView(runId), path=state.rendered?.paths.find(p=>p.run.id===runId)?.path;
  const events=path?.byId.get(nodeId)||[];
  const selectedEvent=events.findLast?.(e=>e.type==='decision')||events[events.length-1];
- state.selected={id:nodeId,runId};
+ state.selected={id:nodeId,runId};emitFlowScene(nodeId);
  $('reasoningDrawer').classList.remove('is-hidden');requestAnimationFrame(()=>centerSelectedNode({glide}));
  document.querySelectorAll('.flow-node').forEach(el=>{
   el.classList.toggle('selected',el.dataset.nodeId===nodeId);
@@ -718,6 +732,9 @@ function renderSceneInspector(node,ev,runId,view){
 ${prior}`;
 }
 function setupInteractions(){
+ // The background follows the hovered node, else the selected one.
+ $('graphNodes').addEventListener('mouseover',e=>{const n=e.target.closest('.flow-node');if(n)emitFlowScene(n.dataset.nodeId);});
+ $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));
  $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});

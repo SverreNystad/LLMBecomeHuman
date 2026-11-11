@@ -317,7 +317,9 @@ def test_backdrop_network_without_art(live_dashboard):
             }""")
             box = canvas.bounding_box()
             assert box["width"] == 1280 and box["height"] == 800
-            # No art installed: no scene image is shown.
+            # No art installed: the manifest is empty and no scene image is shown.
+            manifest = page.evaluate("fetch('/api/art/manifest').then(r => r.json())")
+            assert manifest == {"scenes": []}
             assert page.locator(".backdrop-art-layer.is-shown").count() == 0
             assert not page.evaluate(
                 "document.getElementById('backdrop').classList.contains('has-art')"

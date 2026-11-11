@@ -238,11 +238,29 @@ async function renderStory({keepScroll = false} = {}) {
   renderChapterSummary(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);
   else if (!keepScroll) scrollStoryToTop();
+  trackStoryScene();
 }
 function scrollStoryToTop() {
   // Phones scroll the whole panel rather than the story pane.
   $('storyScroll').scrollTop = 0;
   document.querySelector('.main-panel').scrollTop = 0;
+}
+/* The scene being read: the last section heading above the upper third of the pane. */
+function emitStoryScene() {
+  if (state.view !== 'story') return;
+  const box = $('storyScroll').getBoundingClientRect();
+  const line = Math.max(box.top, 0) + Math.min(box.height, innerHeight) / 3;
+  let heading = null;
+  for (const el of document.querySelectorAll('#storyContent .story-section')) {
+    if (!el.getClientRects().length) continue;  // inside a collapsed gap
+    if (heading !== null && el.getBoundingClientRect().top > line) break;
+    heading = el.textContent;
+  }
+  emitScene(heading ? [heading] : []);
+}
+let storySceneFrame = 0;
+function trackStoryScene() {
+  if (!storySceneFrame) storySceneFrame = requestAnimationFrame(() => {storySceneFrame = 0; emitStoryScene();});
 }
 /* Opens the Story at a Moment: the first element of any of `moments`, else the first beat at
  * or after event `index`. Chapter exits have no text, so they land on the chapter's last beat. */
@@ -296,6 +314,8 @@ function setupStoryInteractions() {
     if (button) $(`story-decision-${button.dataset.jumpDecision}`)?.scrollIntoView({block: 'start', behavior: 'smooth'});
   });
   $('readerRun').addEventListener('change', event => setReaderRun(event.target.value));
+  $('storyScroll').addEventListener('scroll', trackStoryScene, {passive: true});
+  document.querySelector('.main-panel').addEventListener('scroll', trackStoryScene, {passive: true});
   $('storyMode').addEventListener('click', () => {
     state.storyMode = state.storyMode === 'key' ? 'full' : 'key';
     renderStory();

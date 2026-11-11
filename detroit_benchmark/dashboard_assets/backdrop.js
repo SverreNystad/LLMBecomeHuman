@@ -331,3 +331,76 @@
   resize();
   schedule();
 })();
+
+/* Scene art: the current scene's concept art, if installed locally, under the network.
+ *
+ * Listens for `scenechange` ({chapter, heading, headings}) from the Story and Flowchart.
+ * A heading listed for that chapter in the manifest wins, else the chapter's main image,
+ * else no art. Images crossfade between two layers once loaded.
+ */
+(() => {
+  const host = document.getElementById('backdropArt'), backdrop = document.getElementById('backdrop');
+  if (!host || !backdrop) return;
+  const SETTLE_MS = 180;  // hovering across nodes or scrolling quickly should not flicker
+  const layers = [0, 1].map(() => {
+    const layer = document.createElement('div');
+    layer.className = 'backdrop-art-layer';
+    host.appendChild(layer);
+    return layer;
+  });
+  const byChapter = new Map();
+  let wanted = {chapter: null, headings: []}, shownKey = null, front = 0, timer = 0, request = 0;
+
+  function sceneFor({chapter, headings}) {
+    const entry = byChapter.get(String(chapter ?? ''));
+    if (!entry) return null;
+    for (const heading of headings) if (entry.byHeading.has(heading)) return entry.byHeading.get(heading);
+    return entry.main;
+  }
+  function show(scene) {
+    const key = scene?.key || null;
+    if (key === shownKey) return;
+    shownKey = key;
+    const ticket = ++request;
+    if (!scene) {
+      layers.forEach(layer => layer.classList.remove('is-shown'));
+      backdrop.classList.remove('has-art');
+      return;
+    }
+    const image = new Image();
+    image.onload = () => {
+      if (ticket !== request) return;
+      const next = layers[1 - front];
+      next.style.backgroundImage = `url("${scene.url}")`;
+      next.dataset.key = scene.key;
+      next.classList.add('is-shown');
+      layers[front].classList.remove('is-shown');
+      front = 1 - front;
+      backdrop.classList.add('has-art');
+    };
+    image.onerror = () => { if (ticket === request) shownKey = null; };
+    image.src = scene.url;
+  }
+  const update = () => { clearTimeout(timer); timer = setTimeout(() => show(sceneFor(wanted)), SETTLE_MS); };
+
+  document.addEventListener('scenechange', event => {
+    const detail = event.detail || {};
+    const headings = detail.headings?.length ? detail.headings : detail.heading ? [detail.heading] : [];
+    wanted = {chapter: detail.chapter ?? null, headings};
+    update();
+  });
+
+  fetch('/api/art/manifest')
+    .then(response => (response.ok ? response.json() : {scenes: []}))
+    .then(manifest => {
+      for (const scene of manifest.scenes || []) {
+        const chapter = String(scene.chapter);
+        if (!byChapter.has(chapter)) byChapter.set(chapter, {main: null, byHeading: new Map()});
+        const entry = byChapter.get(chapter);
+        if (scene.chapter_main && !entry.main) entry.main = scene;
+        for (const heading of scene.headings || []) if (!entry.byHeading.has(heading)) entry.byHeading.set(heading, scene);
+      }
+      update();
+    })
+    .catch(() => {});  // no art: the network alone is the background
+})();
