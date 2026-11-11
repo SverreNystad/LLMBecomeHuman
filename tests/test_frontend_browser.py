@@ -7,6 +7,10 @@ Other tests remain runnable without a browser.
 from __future__ import annotations
 
 import shutil
+import socket
+import threading
+import time
+from contextlib import contextmanager
 from pathlib import Path
 from urllib.parse import quote
 
@@ -290,3 +294,73 @@ def test_chapter_flowchart_browser_interactions():
             assert not errors
         finally:
             browser.close()
+
+
+@contextmanager
+def _served_dashboard(**app_options):
+    """The real dashboard on a free local port, for tests that need its asset routes."""
+    import uvicorn
+
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    server = uvicorn.Server(
+        uvicorn.Config(
+            create_app(PROJECT / "demo_runs", **app_options),
+            host="127.0.0.1",
+            port=port,
+            log_level="warning",
+        )
+    )
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    try:
+        for _ in range(100):
+            if server.started:
+                break
+            time.sleep(0.05)
+        yield f"http://127.0.0.1:{port}"
+    finally:
+        server.should_exit = True
+        thread.join(timeout=5)
+
+
+def _chromium():
+    playwright = pytest.importorskip("playwright.sync_api")
+    binary = shutil.which("chromium") or shutil.which("chromium-browser")
+    if not binary:
+        pytest.skip("Chromium executable unavailable")
+    return playwright, binary
+
+
+def test_backdrop_network_without_art():
+    playwright, binary = _chromium()
+    with _served_dashboard() as url:
+        with playwright.sync_playwright() as p:
+            browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
+            try:
+                page = browser.new_page(viewport={"width": 1280, "height": 800})
+                page.set_default_timeout(4500)
+                errors = []
+                page.on("pageerror", lambda e: errors.append(str(e)))
+                page.goto(url)
+                page.locator(".story-decision").first.wait_for()
+                canvas = page.locator("#backdropNetwork canvas")
+                assert canvas.count() == 1
+                # The network is drawn: some pixels are not transparent.
+                page.wait_for_function("""() => {
+                  const c = document.querySelector('#backdropNetwork canvas');
+                  const data = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+                  for (let i = 3; i < data.length; i += 4) if (data[i]) return true;
+                  return false;
+                }""")
+                box = canvas.bounding_box()
+                assert box["width"] == 1280 and box["height"] == 800
+                # No art installed: no scene image is shown.
+                assert page.locator(".backdrop-art-layer.is-shown").count() == 0
+                assert not page.evaluate(
+                    "document.getElementById('backdrop').classList.contains('has-art')"
+                )
+                assert not errors
+            finally:
+                browser.close()
