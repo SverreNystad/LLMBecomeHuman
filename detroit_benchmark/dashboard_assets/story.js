@@ -37,38 +37,41 @@ function compareDecision(key, tables) {
 function buildStoryItems(beats) {
   const items = [];
   let heading = null;
-  const startSection = (text, index) => {
-    if (text && text !== heading) items.push({kind: 'heading', text, index});
+  const startSection = (text, index, moment) => {
+    if (text && text !== heading) items.push({kind: 'heading', text, index, moment});
     if (text) heading = text;
   };
   for (const beat of beats) {
+    const moment = beat.moment ?? beat.node_id ?? beat.id;
     if (beat.type === 'scene') {
-      startSection(beat.heading, beat.index);
+      startSection(beat.heading, beat.index, moment);
       const description = beat.description && beat.description !== beat.heading ? beat.description : '';
       if (beat.observations?.length) {
-        items.push({kind: 'clue', index: beat.index, title: description.replace(/^Inspect:\s*/i, ''), lines: beat.observations});
+        items.push({kind: 'clue', index: beat.index, moment, title: description.replace(/^Inspect:\s*/i, ''), lines: beat.observations});
       } else if (description) {
-        items.push({kind: 'narration', index: beat.index, text: description});
+        items.push({kind: 'narration', index: beat.index, moment, text: description});
       }
-      for (const line of beat.dialogue || []) items.push({kind: 'line', index: beat.index, speaker: line.speaker, text: line.text});
+      for (const line of beat.dialogue || []) items.push({kind: 'line', index: beat.index, moment, speaker: line.speaker, text: line.text});
     } else if (beat.type === 'decision') {
-      startSection(beat.heading, beat.index);
-      items.push({kind: 'decision', index: beat.index, beat});
+      startSection(beat.heading, beat.index, moment);
+      items.push({kind: 'decision', index: beat.index, moment, beat});
     } else if (beat.type === 'condition' || beat.type === 'route') {
-      items.push({kind: 'rule', index: beat.index, beat});
+      items.push({kind: 'rule', index: beat.index, moment, beat});
     } else if (beat.type === 'ending') {
-      items.push({kind: 'ending', index: beat.index, text: beat.description});
+      items.push({kind: 'ending', index: beat.index, moment, text: beat.description});
     }
   }
   return items;
 }
 
+/* Every story element names its event and its Moment, so the Flowchart can open it. */
+const momentAttrs = item => `data-index="${item.index}"${item.moment != null ? ` data-moment="${esc(item.moment)}"` : ''}`;
 function renderLine(item, protagonist) {
   const lead = protagonist && item.speaker === protagonist;
-  return `<p class="story-line ${lead ? 'is-protagonist' : ''}" data-index="${item.index}"><span class="story-speaker">${esc(item.speaker || 'Unknown')}</span><span class="story-text">${esc(item.text)}</span></p>`;
+  return `<p class="story-line ${lead ? 'is-protagonist' : ''}" ${momentAttrs(item)}><span class="story-speaker">${esc(item.speaker || 'Unknown')}</span><span class="story-text">${esc(item.text)}</span></p>`;
 }
 function renderClue(item) {
-  return `<div class="story-clue" data-index="${item.index}"><div class="story-clue-title">Inspected${item.title ? `: ${esc(item.title)}` : ''}</div>${item.lines.map(line => {
+  return `<div class="story-clue" ${momentAttrs(item)}><div class="story-clue-title">Inspected${item.title ? `: ${esc(item.title)}` : ''}</div>${item.lines.map(line => {
     const [first, ...rest] = String(line).split(' | ');
     return `<p><b>${esc(first)}</b>${rest.length ? `<span>${esc(rest.join(' · '))}</span>` : ''}</p>`;
   }).join('')}</div>`;
@@ -77,12 +80,12 @@ function renderRule(item) {
   const beat = item.beat;
   if (beat.type === 'route') {
     if (!beat.assumed) return '';
-    return `<p class="story-rule" data-index="${item.index}">Assumed: ${esc(beat.flag)} = ${esc(String(beat.value))}</p>`;
+    return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(beat.flag)} = ${esc(String(beat.value))}</p>`;
   }
   const branches = state.graph?.nodes?.[beat.node_id]?.branches || [];
   const taken = branches[beat.branch_index]?.condition_text;
   if (!beat.used_unverified_default || !taken) return '';
-  return `<p class="story-rule" data-index="${item.index}">Assumed: ${esc(taken)}</p>`;
+  return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`;
 }
 function modelMark(run, decision, label) {
   return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || '—')}" data-why-label="${esc(label)}" style="--run-color:${routeColor(run)}" title="${esc(run.model)}" aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}</button>`;
@@ -103,23 +106,22 @@ function renderDecision(item, number, total, key, tables, run) {
     const others = group.filter(entry => entry.run.id !== run.id);
     return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}</span><span class="story-option-models">${others.map(entry => modelMark(entry.run, entry.decision, option.label || option.id)).join('')}</span></li>`;
   }).join('');
-  return `<article class="story-decision" id="story-decision-${number}" data-index="${item.index}" style="--run-color:${routeColor(run)}">
+  return `<article class="story-decision" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
     <header><span class="story-decision-count">Decision ${number} of ${total}</span>${agreementLabel(byChoice)}</header>
     <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
     <ul class="story-options">${options}</ul>
     <div class="story-why"><div class="story-why-label">${esc(run.model)}</div><p>${esc(beat.rationale || '—')}</p></div>
     <div class="story-other-why is-hidden" aria-live="polite"></div>
-    <footer><button type="button" class="story-link" data-show-node="${esc(beat.node_id)}">Show on flowchart</button></footer>
   </article>`;
 }
 function renderItem(item, context) {
   switch (item.kind) {
-    case 'heading': return `<h2 class="story-section" data-index="${item.index}">${esc(item.text)}</h2>`;
+    case 'heading': return `<h2 class="story-section" ${momentAttrs(item)}>${esc(item.text)}</h2>`;
     case 'line': return renderLine(item, context.protagonist);
     case 'clue': return renderClue(item);
-    case 'narration': return `<p class="story-narration" data-index="${item.index}">${esc(item.text)}</p>`;
+    case 'narration': return `<p class="story-narration" ${momentAttrs(item)}>${esc(item.text)}</p>`;
     case 'rule': return renderRule(item);
-    case 'ending': return `<p class="story-ending" data-index="${item.index}">${esc(item.text)}</p>`;
+    case 'ending': return `<p class="story-ending" ${momentAttrs(item)}>${esc(item.text)}</p>`;
     case 'decision': return renderDecision(item, context.numbers.get(item), context.total, context.keys.get(item), context.tables, context.run);
     default: return '';
   }
@@ -234,7 +236,7 @@ async function renderStory({keepScroll = false} = {}) {
   $('storyContent').innerHTML = caveatBanner(run) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
   renderChapterSummary(chapter);
-  if (state.pendingStoryIndex != null) scrollToStoryEvent(state.pendingStoryIndex);
+  if (state.pendingMoment) scrollToMoment(state.pendingMoment);
   else if (!keepScroll) scrollStoryToTop();
 }
 function scrollStoryToTop() {
@@ -242,17 +244,25 @@ function scrollStoryToTop() {
   $('storyScroll').scrollTop = 0;
   document.querySelector('.main-panel').scrollTop = 0;
 }
-function scrollToStoryEvent(index) {
-  state.pendingStoryIndex = null;
-  // Chapter exits have no text of their own, so they land on the chapter's last beat.
+/* Opens the Story at a Moment: the first element of any of `moments`, else the first beat at
+ * or after event `index`. Chapter exits have no text, so they land on the chapter's last beat. */
+function scrollToMoment({moments = [], index = Infinity} = {}) {
+  state.pendingMoment = null;
+  const wanted = new Set(moments.map(String));
   const beats = [...document.querySelectorAll('#storyContent [data-index]')];
-  const target = beats.find(el => Number(el.dataset.index) >= index) || beats.at(-1);
+  const target = beats.find(el => wanted.has(el.dataset.moment))
+    || beats.find(el => Number(el.dataset.index) >= index) || beats.at(-1);
   if (!target) return;
   const collapsed = target.closest('details');
   if (collapsed) collapsed.open = true;
-  target.scrollIntoView({block: 'center'});
+  target.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
   target.classList.add('story-flash');
   setTimeout(() => target.classList.remove('story-flash'), 1800);
+}
+function showMomentOnFlowchart(moment) {
+  const run = readerRun();
+  setView('flow');
+  inspect(moment, run?.id, {glide: true});
 }
 function setReaderRun(id) {
   state.readerRunId = id;
@@ -276,12 +286,10 @@ function setupStoryInteractions() {
     if (mark) return showOtherReason(mark);
     const chapter = event.target.closest('[data-go-chapter]');
     if (chapter) return changeChapter(chapter.dataset.goChapter);
-    const node = event.target.closest('[data-show-node]');
-    if (node) {
-      const run = readerRun();
-      setView('flow');
-      inspect(node.dataset.showNode, run?.id);
-    }
+    if (event.target.closest('button, a, summary, select, input')) return;
+    if (String(window.getSelection?.() || '')) return;  // selecting text is not a click on a Moment
+    const moment = event.target.closest('[data-moment]');
+    if (moment) showMomentOnFlowchart(moment.dataset.moment);
   });
   $('decisionStrip').addEventListener('click', event => {
     const button = event.target.closest('[data-jump-decision]');

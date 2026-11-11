@@ -19,7 +19,7 @@ const state = {
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
   toastTimer: null, selectionHydrated: false, shadeSlots: new Map(), focusedId: null, viewTouched: false,
-  view: 'story', readerRunId: null, storyMode: 'full', pendingStoryIndex: null
+  view: 'story', readerRunId: null, storyMode: 'full', pendingMoment: null
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
 const modelName = provider => ({openai:'OpenAI',anthropic:'Anthropic',xai:'xAI',grok:'xAI',google:'Google',gemini:'Google',deepseek:'DeepSeek',mistral:'Mistral',openrouter:'OpenRouter',mock:'Mock agent'})[provider] || provider || 'Other';
@@ -526,6 +526,7 @@ function drawGraph(graph, paths) {
     n.style.left=node.x+'px';n.style.top=node.y+'px';n.style.width=node.width+'px';n.style.height=node.height+'px';
     n.style.setProperty('--node-accent',users.length?routeColor(users[0].run):'#cad8df');
     n.role='button';n.tabIndex=0;n.dataset.nodeId=node.id;
+    if(node.type!=='portal')n.dataset.moment=node.parent||node.members?.[0]?.id||node.id;
     n.dataset.visitedCount=String(users.length);
     n.setAttribute('aria-label',`${node.label}. ${users.length} of ${views.length} selected runs visited this node.`);
     n.title=`${node.label} · ${users.length} / ${views.length} runs visited`;
@@ -547,12 +548,23 @@ function drawGraph(graph, paths) {
     n.addEventListener('click',e=>{
       e.stopPropagation();
       if(node.type==='portal'&&node.destinationChapter&&chapters().includes(node.destinationChapter))changeChapter(node.destinationChapter);
-      else inspect(node.id,users[0]?.run.id||activeRuns()[0]?.id);
+      else showMomentInStory(node,users.map(view=>view.run.id));
     });
     n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();n.click();}});
     nodesEl.appendChild(n);
   }
   return bounds;
+}
+/* Opens the Story at a Flowchart node, following a Run that passed through it. A node no
+ * selected Run reached has no Story to show, so its script opens beside the Flowchart. */
+function showMomentInStory(node,visitorIds){
+ const reader=readerRun()?.id, runId=visitorIds.includes(reader)?reader:visitorIds[0];
+ if(!runId){inspect(node.id,activeRuns()[0]?.id);return;}
+ const events=state.rendered?.paths.find(p=>p.run.id===runId)?.path.byId.get(node.id)||[];
+ const moments=node.members?node.members.map(member=>member.id):[node.parent||node.id];
+ state.pendingMoment={moments,index:events[0]?.index??Infinity};
+ state.readerRunId=runId;
+ setView('story');renderChapterList();
 }
 function renderChapter(fit=true){
  if(!state.graph||!state.chapter)return;
@@ -612,7 +624,7 @@ function fitGraph(){
   state.panY=(viewport.height-b.height*state.scale)/2;
   applyTransform();
 }
-function centerSelectedNode() {
+function centerSelectedNode({glide=false}={}) {
   if (!state.selected || !state.rendered) return;
   const node=state.rendered.graph.nodes.get(state.selected.id);
   if(!node)return;
@@ -621,6 +633,11 @@ function centerSelectedNode() {
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
   state.panY=box.height*.50-(node.y+node.height/2)*state.scale;
+  const world=$('graphWorld');
+  if(glide&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    world.classList.add('is-gliding');clearTimeout(state.glideTimer);
+    state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
+  }
   applyTransform();
 }
 function zoom(factor,clientX,clientY){
@@ -635,15 +652,14 @@ function zoom(factor,clientX,clientY){
 }
 function closeDrawer(){state.selected=null;$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
-function renderInspectorShell(node,runId,view,visited=true){
+function renderInspectorShell(node,runId,view){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
  $('reasoningDrawer').style.setProperty('--inspect-color',color);
  return `<div class="inspect-model-line"><span class="inspect-logo" style="border-color:${color};color:${color}">${modelIcon(provider)}</span><div><div class="inspect-model-name">${esc(modelName(provider))}</div><div class="inspect-run-name">${esc(run?.model||'Unknown')} · ${esc(run?.name||'')}</div></div></div>
   ${run?.synthetic?'<p class="inspect-note synthetic-disclaimer">Synthetic preview</p>':''}
-    <h2 class="inspect-title">${esc(node.label)}</h2>
-  ${visited?`<button type="button" class="story-link inspect-read" data-read-run="${esc(runId)}">Read this moment in the story</button>`:''}`;
+    <h2 class="inspect-title">${esc(node.label)}</h2>`;
 }
-async function inspect(nodeId,runId){
+async function inspect(nodeId,runId,{glide=false}={}){
  const rendered=state.rendered?.graph;
  const node=rendered?.nodes.get(rendered.groupOf.get(nodeId)||nodeId);if(!node)return;
  nodeId=node.id;
@@ -651,10 +667,13 @@ async function inspect(nodeId,runId){
  const events=path?.byId.get(nodeId)||[];
  const selectedEvent=events.findLast?.(e=>e.type==='decision')||events[events.length-1];
  state.selected={id:nodeId,runId};
- $('reasoningDrawer').classList.remove('is-hidden');requestAnimationFrame(centerSelectedNode);
- document.querySelectorAll('.flow-node').forEach(el=>el.classList.toggle('selected',el.dataset.nodeId===nodeId));
+ $('reasoningDrawer').classList.remove('is-hidden');requestAnimationFrame(()=>centerSelectedNode({glide}));
+ document.querySelectorAll('.flow-node').forEach(el=>{
+  el.classList.toggle('selected',el.dataset.nodeId===nodeId);
+  el.classList.toggle('moment-focus',glide&&el.dataset.nodeId===nodeId);
+ });
  if(!selectedEvent){
-  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view,false)+`<div class="nondecision-msg">Not taken by this model.</div>${sceneScriptSection(node)}`;
+  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`<div class="nondecision-msg">Not taken by this model.</div>${sceneScriptSection(node)}`;
   return;
  }
  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+'';
@@ -717,14 +736,6 @@ function setupInteractions(){
  $('zoomOut').addEventListener('click',()=>zoom(1/1.2));
  $('zoomReset').addEventListener('click',fitToButton);
  $('closeDrawer').addEventListener('click',closeDrawer);
- $('drawerContent').addEventListener('click',e=>{
-  const link=e.target.closest('[data-read-run]');if(!link)return;
-  const path=state.rendered?.paths.find(p=>p.run.id===link.dataset.readRun)?.path;
-  const events=path?.byId.get(state.selected?.id)||[];
-  state.pendingStoryIndex=events[0]?.index??null;
-  state.readerRunId=link.dataset.readRun;
-  setView('story');renderChapterList();
- });
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();if(state.pickerOpen){state.pickerOpen=false;updateSelectors();}}});
  const vp=$('viewport');let drag=null;
  vp.addEventListener('pointerdown',e=>{

@@ -41,6 +41,7 @@ Read one Run, chapter by chapter.
 - **Decision cards:** the options, the followed Run's choice and its reason, and whether the models agreed. Click another model's mark to read its reason.
 - **Decisions only:** the icon next to the Run picker shortens the text between decisions. The rest expands on click.
 - **Number strip:** jumps to a decision. Highlighted numbers are decisions where the models split.
+- **Moments:** click any line, scene or decision to open that Moment on the Flowchart, centred and highlighted.
 
 Chapter titles live in `dashboard.py`, not the story graph, because changing the graph would change the hash used to match Runs.
 
@@ -48,6 +49,7 @@ Chapter titles live in `dashboard.py`, not the story graph, because changing the
 
 - **Every branch:** the full saved chapter graph is drawn in grey, and each selected Run's route is drawn on top in its shade.
 - **Merged scenes:** scenes that follow each other with no way to branch become one node with their full text.
+- **Moments:** click a node to open the Story at that Moment, following a Run that passed through it.
 - **Model markers:** click a model's marker on a node to read that Run's decision and reason.
 - **Compatibility:** only Runs that share a story graph can be shown together. Clear the selection to switch stories.
 - **Pan and zoom:** drag, scroll, or use the controls at the top right.
@@ -98,13 +100,13 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `GET /api/runs`                        | Discover available recorded experiments                                                                          |
 | `GET /api/runs/{id}`                   | Events, timeline, and compact decision records                                                                   |
-| `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order                              |
-| `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status                                |
+| `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order, each with its `moment` id    |
+| `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (the frontend fetches each log on its own) |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 
-The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
+Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
 ## Visual previews
 

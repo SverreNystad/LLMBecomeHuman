@@ -106,13 +106,23 @@ def test_chapter_flowchart_browser_interactions():
             )
             assert page.locator(".story-decision").count() > 0
 
-            # A card links to the same moment on the flowchart, and back.
-            page.locator("[data-show-node]").first.click()
-            page.locator(".flow-node").first.wait_for()
-            page.locator(".inspect-read").click()
+            # Clicking a Moment in the Story opens it on the Flowchart, and back.
+            assert "Show on flowchart" not in page.locator("#storyContent").inner_text()
+            card = page.locator(".story-decision").first
+            moment = card.get_attribute("data-moment")
+            card.locator("h3").click()
+            page.locator(".flow-node.selected").wait_for()
+            assert page.locator(".flow-node.selected").get_attribute("data-moment") == moment
+            assert page.locator("#storyView").is_hidden()
+            assert "Read this moment" not in page.locator("#drawerContent").inner_text()
+            scene = page.locator(".flow-node.kind-scene.visited").nth(1)
+            scene_moment = scene.get_attribute("data-moment")
+            scene.locator(".node-label").click()
             page.locator(".story-flash").wait_for()
+            assert page.locator("#viewerWrap").is_hidden()
+            assert page.locator(".story-flash").first.get_attribute("data-moment") == scene_moment
             page.evaluate(
-                "scrollToStoryEvent(Number.MAX_SAFE_INTEGER)"
+                "scrollToMoment({index: Number.MAX_SAFE_INTEGER})"
             )  # a chapter exit has no text
             assert page.locator(".story-flash").count() >= 1
             page.locator("#viewFlow").click()
