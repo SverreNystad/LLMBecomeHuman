@@ -42,6 +42,11 @@ def canonical_hash(obj) -> str:
     ).hexdigest()
 
 
+# How a condition node picks its branch: a Quick-Time Event always succeeds,
+# a rule is evaluated over earlier choices' flags, unknown falls back to default.
+CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
+
+
 def validate_graph(graph: dict, strict: bool = False) -> dict:
     nodes = graph.get("nodes", {})
     errors = []
@@ -68,7 +73,19 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             edges = [b.get("next") for b in node.get("branches", [])] + [
                 node.get("next")
             ]
-            if any(b.get("when") is None for b in node.get("branches", [])):
+            resolution = node.get("resolution", "unknown")
+            branches = node.get("branches", [])
+            if resolution not in CONDITION_RESOLUTIONS:
+                errors.append(f"{nid}: unknown resolution {resolution!r}")
+            elif resolution == "qte":
+                if not 0 <= node.get("default_branch", 0) < len(branches):
+                    errors.append(f"{nid}: quick-time event without a success branch")
+            elif resolution == "rule":
+                if not node.get("source"):
+                    errors.append(f"{nid}: rule without a source")
+                if any(b.get("when") is None for b in branches):
+                    errors.append(f"{nid}: rule branch without a when expression")
+            elif any(b.get("when") is None for b in branches):
                 warnings.append(f"{nid}: unverified condition")
         elif typ == "route":
             edges = [node.get("if_true"), node.get("if_false")]
@@ -546,6 +563,19 @@ class Runner:
             self._record("scene", node, {"visible_to_agent": scene})
         elif kind == "choice":
             self._choice(node)
+        elif kind == "condition" and node.get("resolution") == "qte":
+            # Quick-Time Events test reflexes, not judgement: always succeed.
+            idx = node.get("default_branch", 0)
+            self.state["node"] = node["branches"][idx]["next"]
+            self._record(
+                "condition",
+                node,
+                {
+                    "branch_index": idx,
+                    "quick_time_event": "success",
+                    "used_unverified_default": False,
+                },
+            )
         elif kind == "condition":
             values = [
                 evaluate_condition(b.get("when"), self.state["flags"])
