@@ -30,11 +30,6 @@
 .picker-actions button:is(:hover, :focus-visible) { transform: translateX(8px); }
 .picker-actions button:is(:hover, :focus-visible)::after { transform: scaleX(1) translateX(-8px); }
 
-/* ── View tabs: the underline unfolds from the left; the label lifts into place ── */
-.view-tabs button::after { transform-origin: left center; }
-.view-tabs button:is(:hover, :focus-visible):not([aria-pressed="true"])::after { transform: scaleX(1); opacity: .35; }
-.view-tabs button[aria-pressed="true"]::after { opacity: 1; }
-
 /* ── Story choices: a rule draws across the row, and the label slides in after it ── */
 .story-options li { position: relative; }
 .story-options li::after {
@@ -69,41 +64,57 @@
 .flow-node.kind-option:is(:hover, :focus-visible) .node-label::after { transform: scaleX(1); }
 
 /* ── Decision marker card (unfold.js) ─────────────────── */
+/* A small in-world screen: frosted dark glass framed by corner brackets in the model's
+ * color. It stays open under the pointer and opens the full record on click. */
 .unfold-card {
   --card-color: var(--accent);
   position: fixed; z-index: 40; width: 300px; max-width: calc(100vw - 24px);
-  pointer-events: none;
+  pointer-events: none; cursor: pointer; outline: none;
   opacity: 0; visibility: hidden;
 }
-.unfold-card.is-open { opacity: 1; visibility: visible; }
+.unfold-card.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+/* An invisible bridge over the gap, so moving from the marker to the card never closes it. */
+.unfold-card::before { content: ""; position: absolute; top: 0; bottom: 0; width: 18px; }
+.unfold-card[data-side="right"]::before { right: 100%; }
+.unfold-card[data-side="left"]::before { left: 100%; }
 /* The connector line from the marker to the card. */
 .unfold-card-line {
-  position: absolute; top: 18px; width: 18px; height: 1px; background: var(--card-color);
+  position: absolute; top: 18px; width: 16px; height: 1px; background: var(--card-color);
+  box-shadow: 0 0 6px var(--card-color);
   transform: scaleX(0); transition: transform .2s var(--ease);
 }
 .unfold-card[data-side="right"] .unfold-card-line { right: 100%; transform-origin: left center; }
 .unfold-card[data-side="left"] .unfold-card-line { left: 100%; transform-origin: right center; }
 .unfold-card.is-open .unfold-card-line { transform: scaleX(1); }
 .unfold-card-body {
-  padding: 12px 14px 13px; background: var(--surface-solid);
-  border: 1px solid var(--line); border-left: 2px solid var(--card-color);
-  box-shadow: var(--shadow);
-  clip-path: inset(0 100% 0 0);
-  transition: clip-path .38s var(--ease) .14s;
+  position: relative; padding: 13px 16px 14px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 3px),
+    linear-gradient(160deg, rgba(24, 32, 44, .9), rgba(10, 14, 20, .94));
+  backdrop-filter: blur(14px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--card-color) 45%, transparent);
+  box-shadow: 0 14px 40px rgba(5, 10, 18, .35), 0 0 0 1px rgba(255, 255, 255, .04) inset, 0 0 24px -8px var(--card-color);
+  color: #e8eef5;
 }
-.unfold-card[data-side="left"] .unfold-card-body { clip-path: inset(0 0 0 100%); }
-.unfold-card.is-open .unfold-card-body { clip-path: inset(0 0 0 0); }
-.unfold-card-body > * { opacity: 0; transform: translateX(-8px); transition: opacity .3s var(--ease) .3s, transform .3s var(--ease) .3s; }
+.unfold-card.is-open .unfold-card-body { animation: glitch-in .34s steps(5, end) .08s both; }
+.unfold-card-corner { position: absolute; width: 12px; height: 12px; border: 0 solid var(--card-color); pointer-events: none; filter: drop-shadow(0 0 3px var(--card-color)); }
+.unfold-card-corner.tl { left: -3px; top: -3px; border-left-width: 2px; border-top-width: 2px; }
+.unfold-card-corner.br { right: -3px; bottom: -3px; border-right-width: 2px; border-bottom-width: 2px; }
+.unfold-card-body > * { opacity: 0; transform: translateX(-6px); transition: opacity .25s var(--ease) .3s, transform .25s var(--ease) .3s; }
 .unfold-card.is-open .unfold-card-body > * { opacity: 1; transform: none; }
-.unfold-card-model { margin: 0 0 6px; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.unfold-card-choice { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--ink); }
-.unfold-card-choice small { display: block; font-size: 10px; font-weight: 400; letter-spacing: .14em; text-transform: uppercase; color: var(--card-color); }
-.unfold-card-why { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
-.unfold-card-hint { margin: 8px 0 0; font-size: 10.5px; color: var(--ink-faint); }
+.unfold-card-model { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, .1);
+  font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(232, 238, 245, .7); white-space: nowrap; overflow: hidden; }
+.unfold-card-model > span:last-child { overflow: hidden; text-overflow: ellipsis; }
+.unfold-card-logo { flex: 0 0 auto; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #fff; border: 1.5px solid var(--card-color); }
+.unfold-card-logo img { width: 11px; height: 11px; }
+.unfold-card-choice { margin: 0 0 8px; font-size: 14px; font-weight: 600; line-height: 1.35; color: #fff; }
+.unfold-card-choice small { display: block; margin-bottom: 2px; font-size: 9.5px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--card-color); filter: brightness(1.35); }
+.unfold-card-why { margin: 0; font-size: 12.5px; line-height: 1.55; color: rgba(232, 238, 245, .82); display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden; }
+.unfold-card:hover .unfold-card-body { border-color: var(--card-color); }
 
 @media (prefers-reduced-motion: reduce) {
   .unfold::after, .unfold > *, .chapter-entry::after, .chapter-entry > *, .picker-actions button, .picker-actions button::after,
-  .view-tabs button::after, .story-options li::after, .story-option-label, .story-nav-button::before, .story-nav-button > span,
+  .story-options li::after, .story-option-label, .story-nav-button::before, .story-nav-button > span,
   .flow-node.kind-option .node-label::after,
-  .unfold-card-line, .unfold-card-body, .unfold-card-body > * { transition: none !important; }
+  .unfold-card-line, .unfold-card-body, .unfold-card-body > * { transition: none !important; animation: none !important; }
 }

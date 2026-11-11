@@ -1,0 +1,51 @@
+/* Glitch: one short burst on every interactive element. On hover (and again on press) the
+ * element splits into red and blue, slices jitter sideways and the light flickers, for about
+ * 250 ms, then settles. Nothing loops. Uses the `translate` property, so it composes with any
+ * transform the element already animates. Off for reduced motion.
+ */
+:root {
+  --glitch-red: rgba(255, 64, 88, .75);
+  --glitch-blue: rgba(64, 176, 255, .75);
+  --glitch-time: .26s;
+}
+
+@keyframes glitch-burst {
+  0%   { translate: 0 0; clip-path: inset(0 0 0 0); text-shadow: none; opacity: 1; }
+  12%  { translate: -3px 0; clip-path: inset(8% 0 52% 0); text-shadow: -2px 0 var(--glitch-red), 2px 0 var(--glitch-blue); }
+  26%  { translate: 3px 0; clip-path: inset(48% 0 6% 0); opacity: .72; }
+  40%  { translate: -1px 0; clip-path: inset(26% 0 34% 0); text-shadow: 2px 0 var(--glitch-red), -2px 0 var(--glitch-blue); opacity: 1; }
+  56%  { translate: 1px 0; clip-path: inset(0 0 0 0); opacity: .86; }
+  72%  { translate: 0 0; text-shadow: 1px 0 var(--glitch-red), -1px 0 var(--glitch-blue); opacity: 1; }
+  100% { translate: 0 0; clip-path: inset(-50% -50% -50% -50%); text-shadow: none; opacity: 1; }
+}
+/* The same burst under another name, so pressing replays it right after the hover one. */
+@keyframes glitch-press {
+  0%   { translate: 0 0; text-shadow: none; }
+  20%  { translate: 2px 0; text-shadow: -2px 0 var(--glitch-red), 2px 0 var(--glitch-blue); }
+  45%  { translate: -2px 0; clip-path: inset(30% 0 30% 0); }
+  70%  { translate: 1px 0; clip-path: inset(-50% -50% -50% -50%); text-shadow: 1px 0 var(--glitch-red), -1px 0 var(--glitch-blue); }
+  100% { translate: 0 0; text-shadow: none; }
+}
+/* Panels and cards that appear: drawn in slice by slice. */
+@keyframes glitch-in {
+  0%   { clip-path: inset(0 0 100% 0); translate: -4px 0; opacity: .4; }
+  20%  { clip-path: inset(0 0 62% 0); translate: 3px 0; opacity: .9; }
+  40%  { clip-path: inset(30% 0 22% 0); translate: -2px 0; }
+  60%  { clip-path: inset(0 0 18% 0); translate: 2px 0; opacity: .7; }
+  80%  { clip-path: inset(0 0 0 0); translate: -1px 0; opacity: 1; }
+  100% { clip-path: inset(-50% -50% -50% -50%); translate: 0 0; opacity: 1; }
+}
+
+:is(button:not(:disabled), [role="button"], .flow-node, .chapter-entry, .run-chip, .picker-run, .story-options li, .legend-line, .unfold-card):hover {
+  animation: glitch-burst var(--glitch-time) steps(1, end) 1;
+}
+:is(button:not(:disabled), [role="button"], .flow-node, .chapter-entry, .run-chip, .picker-run, .story-options li, .legend-line):active {
+  animation: glitch-press .2s steps(1, end) 1;
+}
+.picker-panel:not(.is-hidden), .reasoning-drawer:not(.is-hidden) { animation: glitch-in .3s steps(5, end) 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(button, [role="button"], .flow-node, .chapter-entry, .run-chip, .picker-run, .story-options li, .legend-line, .unfold-card, .picker-panel, .reasoning-drawer, .node-dialogue) {
+    animation: none !important;
+  }
+}

@@ -15,17 +15,19 @@
   const ctx = canvas.getContext('2d');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const MAX_NODES = 150, FADE_MS = 1800, TAU = Math.PI * 2;
+  const VISIBILITY = 3; // the network reads clearly behind the Story and Flowchart, not as a faint texture
 
   let width = 0, height = 0, dpr = 1;
   let colors = null;
   let current = null, previous = null, fadeStart = 0;
   let frame = 0, lastTime = 0, clock = 0;
 
-  /* ── Colours: grey structure, accent highlights, both from the live tokens ── */
+  /* ── Colours: the Character's shades for structure and highlights, from the live tokens ── */
   function readColors() {
     const style = getComputedStyle(document.body);
     const token = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
-    return {node: token('--ink-muted', '#8a939c'), line: token('--ink-faint', '#b4bbc2'), accent: token('--accent', '#2087e0')};
+    // Lines and dots carry the Character's colour, so the network reads against the light theme.
+    return {node: token('--shade-4', '#1567b6'), line: token('--shade-2', '#52a9f2'), accent: token('--accent', '#2087e0')};
   }
 
   /* ── Small helpers ── */
@@ -47,12 +49,12 @@
   }
   /* Lines are batched into a few opacity buckets: one stroke call per bucket. */
   function strokeBuckets(alpha, color, segments, lineWidth = 0.7) {
-    ctx.lineWidth = lineWidth;
+    ctx.lineWidth = lineWidth * 1.4;
     ctx.strokeStyle = color;
     for (let bucket = 0; bucket < segments.length; bucket++) {
       const list = segments[bucket];
       if (!list.length) continue;
-      ctx.globalAlpha = alpha * (bucket + 1) / segments.length;
+      ctx.globalAlpha = Math.min(1, alpha * (bucket + 1) / segments.length);
       ctx.beginPath();
       for (let k = 0; k < list.length; k += 4) {ctx.moveTo(list[k], list[k + 1]); ctx.lineTo(list[k + 2], list[k + 3]);}
       ctx.stroke();
@@ -68,7 +70,7 @@
   }
   function dots(alpha, color, nodes, radius, filter = null) {
     ctx.fillStyle = color;
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = Math.min(1, alpha);
     ctx.beginPath();
     for (const n of nodes) {
       if (filter && !filter(n)) continue;
@@ -79,7 +81,7 @@
     ctx.fill();
   }
   function glow(alpha, color, x, y, r) {
-    ctx.globalAlpha = alpha;
+    ctx.globalAlpha = Math.min(1, alpha);
     ctx.fillStyle = color;
     ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
   }
@@ -120,7 +122,7 @@
         dots(alpha * .45, colors.node, nodes, 1.4);
         dots(alpha * .85, colors.accent, nodes, 2, n => n.heat > .45);
         // The scan line itself: a thin accent rule with a soft trailing band.
-        ctx.globalAlpha = alpha * .4;
+        ctx.globalAlpha = Math.min(1, alpha * .4);
         ctx.strokeStyle = colors.accent;
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -129,7 +131,7 @@
         const band = vertical ? ctx.createLinearGradient(scan - 90, 0, scan, 0) : ctx.createLinearGradient(0, scan - 90, 0, scan);
         band.addColorStop(0, 'rgba(0,0,0,0)');
         band.addColorStop(1, colors.accent);
-        ctx.globalAlpha = alpha * .07;
+        ctx.globalAlpha = Math.min(1, alpha * .07);
         ctx.fillStyle = band;
         if (vertical) ctx.fillRect(scan - 90, 0, 90, h); else ctx.fillRect(0, scan - 90, w, 90);
       },
@@ -230,13 +232,13 @@
         strokeBuckets(alpha * .32, colors.line, proximitySegments(nodes, 95));
         ctx.fillStyle = colors.node;
         for (const n of nodes) {
-          ctx.globalAlpha = alpha * .55 * n.fade;
+          ctx.globalAlpha = Math.min(1, alpha * .55 * n.fade);
           ctx.beginPath(); ctx.arc(n.x, n.y, 1.6, 0, TAU); ctx.fill();
         }
         ctx.fillStyle = colors.accent;
         for (const n of nodes) {
           if (n.heat < .3) continue;
-          ctx.globalAlpha = alpha * .8 * n.heat * n.fade;
+          ctx.globalAlpha = Math.min(1, alpha * .8 * n.heat * n.fade);
           ctx.beginPath(); ctx.arc(n.x, n.y, 1.9, 0, TAU); ctx.fill();
         }
       },
@@ -290,8 +292,8 @@
     const mix = previous ? Math.min(1, (performance.now() - fadeStart) / FADE_MS) : 1;
     if (previous && mix >= 1) previous = null;
     // Each style keeps the colours it was born with, so a fade also crossfades the accent.
-    if (previous) {colors = previous.colors; previous.update(t, dt); previous.draw(1 - mix, t);}
-    colors = current.colors; current.update(t, dt); current.draw(previous ? mix : 1, t);
+    if (previous) {colors = previous.colors; previous.update(t, dt); previous.draw((1 - mix) * VISIBILITY, t);}
+    colors = current.colors; current.update(t, dt); current.draw((previous ? mix : 1) * VISIBILITY, t);
     ctx.globalAlpha = 1;
   }
   /* Reduced motion: one settled, still frame. */
@@ -328,7 +330,21 @@
   let resizeTimer;
   window.addEventListener('resize', () => {clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 150);});
 
+  /* The network lives only behind the Story and the Flowchart: the layer is clipped to
+   * whichever of the two is showing, and hidden when neither is. */
+  const views = ['storyView', 'viewport'].map(id => document.getElementById(id)).filter(Boolean);
+  function clipToView() {
+    const view = views.find(el => el.offsetWidth && el.offsetHeight);
+    if (!view) {host.style.clipPath = 'inset(50%)'; return;}
+    const r = view.getBoundingClientRect();
+    host.style.clipPath = `inset(${Math.max(0, r.top)}px ${Math.max(0, window.innerWidth - r.right)}px ${Math.max(0, window.innerHeight - r.bottom)}px ${Math.max(0, r.left)}px)`;
+  }
+  if (window.ResizeObserver) {const watch = new ResizeObserver(clipToView); views.forEach(el => watch.observe(el));}
+  window.addEventListener('resize', clipToView);
+  window.addEventListener('scroll', clipToView, {passive: true, capture: true});
+
   resize();
+  clipToView();
   schedule();
 })();
 

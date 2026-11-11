@@ -22,11 +22,18 @@
 #backdrop.has-art .backdrop-veil {
   background:
     radial-gradient(ellipse at 70% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
-    linear-gradient(90deg, color-mix(in srgb, var(--bg) 88%, transparent) 0, color-mix(in srgb, var(--bg) 72%, transparent) 260px, color-mix(in srgb, var(--bg) 58%, transparent) 70%, color-mix(in srgb, var(--bg) 66%, transparent)),
-    linear-gradient(180deg, color-mix(in srgb, var(--bg) 30%, transparent), transparent 22%);
+    linear-gradient(90deg, color-mix(in srgb, var(--bg) 92%, transparent) 0, color-mix(in srgb, var(--bg) 82%, transparent) 260px, color-mix(in srgb, var(--bg) 72%, transparent) 70%, color-mix(in srgb, var(--bg) 78%, transparent)),
+    linear-gradient(180deg, color-mix(in srgb, var(--bg) 45%, transparent), transparent 26%);
 }
-/* Over art, the network is a faint overlay rather than the whole background. */
-#backdrop.has-art .backdrop-network { opacity: .55; }
+/* Over art, the network stays clearly visible on top of the scene. */
+#backdrop.has-art .backdrop-network { opacity: .9; }
+
+/* Text over the art: a soft halo in the page colour lifts every letter off bright or busy
+ * patches of the image, without boxing the text in. */
+body:has(#backdrop.has-art) :is(.chapter-rail, .chapter-heading, .story-content, .story-toolbar, .control-strip, .graph-empty) {
+  text-shadow: 0 0 2px var(--bg), 0 0 8px var(--bg), 0 0 16px color-mix(in srgb, var(--bg) 70%, transparent);
+}
+body:has(#backdrop.has-art) :is(.story-content, .chapter-heading) { --ink-muted: color-mix(in srgb, var(--ink) 78%, var(--bg)); --ink-soft: color-mix(in srgb, var(--ink) 88%, var(--bg)); }
 
 @media (prefers-reduced-motion: reduce) {
   .backdrop-art-layer, .backdrop-network { transition: none; }
