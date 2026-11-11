@@ -323,9 +323,9 @@ def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
         )
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
-    [moment] = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Extra"}).json()[
-        "moments"
-    ]
+    [moment] = c.get(
+        f"/api/runs/{run['id']}/story", params={"chapter": "Extra"}
+    ).json()["moments"]
     assert moment["dialogue"] == [{"speaker": "Allen", "text": "Hold."}]
     assert moment["observations"] == ["Loaded"]
 

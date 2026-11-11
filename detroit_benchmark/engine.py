@@ -813,9 +813,7 @@ class Runner:
         payload["character_memory"] = self.state["character_memories"].get(
             character, ""
         )
-        payload["chapter_segment_so_far"] = deepcopy(
-            self.state["segment_events"]
-        )
+        payload["chapter_segment_so_far"] = deepcopy(self.state["segment_events"])
         payload["goal"] = self.goal
         payload["available_choices"] = [
             {"id": o["id"], "label": o["label"]} for o in offered

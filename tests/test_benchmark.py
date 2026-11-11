@@ -605,7 +605,10 @@ def test_public_news_in_the_prompt_is_capped_to_the_latest_headlines(tmp_path):
 
 def test_rationale_is_cut_to_two_sentences(tmp_path):
     reply = json.dumps(
-        {"choice_id": "inspect", "rationale": "First one. Second one! Third one? Fourth."}
+        {
+            "choice_id": "inspect",
+            "rationale": "First one. Second one! Third one? Fourth.",
+        }
     )
     Runner(graph(), "mock", None, tmp_path / "run", mock_replies=[reply]).run()
     [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
