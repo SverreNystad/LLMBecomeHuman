@@ -274,7 +274,14 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             if resolution not in CONDITION_RESOLUTIONS:
                 errors.append(f"{nid}: unknown resolution {resolution!r}")
             elif resolution == "qte":
-                if not 0 <= node.get("default_branch", 0) < len(branches):
+                # default_branch None: every branch is a failure, so success is
+                # the fall-through ``next``.
+                success = node.get("default_branch", 0)
+                if success is None:
+                    has_success = node.get("next") is not None
+                else:
+                    has_success = 0 <= success < len(branches)
+                if not has_success:
                     errors.append(f"{nid}: quick-time event without a success branch")
             elif resolution == "rule":
                 if not node.get("source"):
@@ -971,8 +978,11 @@ class Runner:
             self._choice(node)
         elif kind == "condition" and node.get("resolution") == "qte":
             # Quick-Time Events test reflexes, not judgement: always succeed.
+            # A null default_branch means every branch is a failure: fall through.
             idx = node.get("default_branch", 0)
-            self.state["node"] = node["branches"][idx]["next"]
+            self.state["node"] = (
+                node["next"] if idx is None else node["branches"][idx]["next"]
+            )
             self._record(
                 "condition",
                 node,
