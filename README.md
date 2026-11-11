@@ -86,6 +86,8 @@ Do not predict hidden endings or assume that unseen scenes have happened."""
 | Key                             | Contents                                                                                                                              |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `current_scene`                 | Chapter, Character, heading and description of the choice point                                                                       |
+| `chapter_briefing`              | A short, player-visible description of the current Chapter Segment: setting, who is present, their mood, what is at stake |
+| `news`                          | Public News: every headline the public knows so far, from all three Characters' choices (omitted while empty) |
 | `character_memory`              | This Character's memory, and never another Character's (empty until its first Chapter Segment ends)                                  |
 | `narrative_since_chapter_start` | The current Chapter Segment so far: every scene with full dialogue and observations, plus the model's earlier choices and rationales in this segment |
 | `goal`                          | The run's goal                                                                                                                        |

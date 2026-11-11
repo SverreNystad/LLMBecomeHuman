@@ -471,3 +471,26 @@ def test_providers_get_decision_token_limit_and_lowest_reasoning(
     for key in ("reasoning_effort", "thinking", "thinking_budget", "thinking_level"):
         if key not in reasoning:
             assert key not in captured
+
+
+def test_chapter_briefing_is_in_the_decision_prompt(tmp_path):
+    g = three_segment_graph()
+    g["chapter_briefings"] = {"1": "A rooftop at night. A child is in danger."}
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decisions[0]["input"]["chapter_briefing"].startswith("A rooftop")
+    assert "chapter_briefing" not in decisions[1]["input"]
+
+
+def test_public_news_from_one_character_reaches_the_others(tmp_path):
+    g = three_segment_graph()
+    g["nodes"]["c2"]["options"][0]["effects"] = {
+        "flags": {"kara_protected_alice": True},
+        "news": [{"headline": "Android flees with child", "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night"}],
+    }
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert "news" not in decisions[0]["input"]
+    assert decisions[2]["input"]["news"] == ["Android flees with child"]
+    # Raw flags never leak into the prompt.
+    assert "kara_protected_alice" not in json.dumps(decisions[2]["input"])

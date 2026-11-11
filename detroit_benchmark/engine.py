@@ -392,6 +392,7 @@ class Runner:
                 "character_memories", {name: "" for name in CHARACTERS}
             )
             self.state.setdefault("segment_events", [])
+            self.state.setdefault("news", [])
             self._save_story_snapshot()
             if self.state.get("status") == "complete":
                 raise ValueError("Run is already complete")
@@ -417,6 +418,8 @@ class Runner:
                 "character_memories": {name: "" for name in CHARACTERS},
                 # The current Chapter Segment so far: scenes and the choices made.
                 "segment_events": [],
+                # Public News headlines, in the order they happened.
+                "news": [],
                 "decisions": [],
                 "chapters_visited": [],
                 "warnings": [],
@@ -612,20 +615,12 @@ class Runner:
         )
 
     def _chapter_briefing(self, node: dict) -> str | None:
-        """HOOK (Chapter Briefing): the briefing for the current Chapter Segment.
-
-        Filled in by a later ticket; while it returns None the decision payload has
-        no ``chapter_briefing`` key.
-        """
-        return None
+        """The Chapter Briefing for the current Chapter Segment, if the graph has one."""
+        return (self.graph.get("chapter_briefings") or {}).get(str(node.get("chapter")))
 
     def _public_news(self, node: dict) -> list | None:
-        """HOOK (Public News): headlines every Character sees.
-
-        Filled in by a later ticket; while it returns None the decision payload has
-        no ``news`` key.
-        """
-        return None
+        """Public News: every headline triggered so far, seen by every Character."""
+        return list(self.state["news"]) or None
 
     def _decision_payload(self, node: dict, offered: list[dict]) -> dict:
         """Everything the model sees at a choice, and nothing else (ADR 0001).
@@ -768,6 +763,9 @@ class Runner:
         before = dict(self.state["flags"])
         effects = chosen.get("effects") or {}
         self.state["flags"].update(effects.get("flags", {}))
+        for item in effects.get("news") or []:
+            if item["headline"] not in self.state["news"]:
+                self.state["news"].append(item["headline"])
         key = f"{node['id']}:{chosen['id']}"
         decision = {
             "choice_key": key,
