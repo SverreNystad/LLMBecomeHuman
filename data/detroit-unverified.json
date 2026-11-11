@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 324,
+    "condition_nodes_unverified": 165,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -375,7 +375,7 @@
     "30.1": "ch30_1_00201",
     "30.2": "ch30_2_00154",
     "30.3": "ch30_3_00230",
-    "31.1": "ch31_1_00117",
+    "31.1": "ch31_1_x0001",
     "31.2": "ch31_2_00054",
     "32.1": "ch32_1_00429",
     "32.2": "ch32_2_00249",
@@ -500,12 +500,12 @@
       "heading": "Speak with Daniel",
       "branches": [
         {
-          "condition_text": "Connor dies",
+          "condition_text": "Connor dies: he reaches Emma in time, pulls her free and falls with Daniel",
           "when": null,
           "next": "ch1_00004"
         },
         {
-          "condition_text": "Connor survives",
+          "condition_text": "Connor survives: he fails to reach Daniel in time",
           "when": null,
           "next": "ch1_00004"
         }
@@ -513,7 +513,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch1_00004",
-      "resolution": "qte"
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
     },
     "ch1_00006": {
       "id": "ch1_00006",
@@ -24591,7 +24592,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch12_00001",
-      "resolution": "qte"
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch12_00009": {
       "id": "ch12_00009",
@@ -31045,7 +31047,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch13_00060",
-      "resolution": "qte"
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch13_00064": {
       "id": "ch13_00064",
@@ -37900,7 +37903,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch15_00100",
-      "resolution": "qte"
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
     },
     "ch15_00190": {
       "id": "ch15_00190",
@@ -57555,26 +57559,52 @@
     },
     "ch23_00103": {
       "id": "ch23_00103",
-      "type": "condition",
+      "type": "choice",
       "chapter": "23",
       "character": "Markus",
       "heading": "On the top floor",
-      "branches": [
+      "description": "One guard grabs the phone to call for help; the other draws his weapon. Which one do you shoot first?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Flowchart",
+      "options": [
         {
-          "condition_text": "Shoot the right guard",
-          "when": null,
-          "next": "ch23_00099"
+          "id": "option_0",
+          "label": "SHOOT GUARD DRAWING WEAPON",
+          "next": "ch23_00099",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.Jericho",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "markus_stratford_guard_shot_first": "weapon"
+            }
+          }
         },
         {
-          "condition_text": "Shoot the left guard",
-          "when": null,
-          "next": "ch23_00102"
+          "id": "option_1",
+          "label": "SHOOT GUARD ON PHONE",
+          "next": "ch23_00102",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.Jericho",
+              "direction": "RelationType.SmallDown"
+            },
+            {
+              "name": "RelationName.Simon",
+              "direction": "RelationType.SmallDown"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "markus_stratford_guard_shot_first": "phone"
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch23_00082",
-      "resolution": "unknown"
+      ]
     },
     "ch23_00104": {
       "id": "ch23_00104",
@@ -57672,7 +57702,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_stratford_guards_shot": false
+              "markus_stratford_guards_shot": false,
+              "markus_stratford_guard_shot_first": "none"
             }
           }
         },
@@ -61474,19 +61505,26 @@
       "branches": [
         {
           "condition_text": "Left guard was shot",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_guard_shot_first",
+            "equals": "phone"
+          },
           "next": "ch24_00100"
         },
         {
           "condition_text": "Right guard was shot",
-          "when": null,
+          "when": {
+            "flag": "markus_stratford_guard_shot_first",
+            "equals": "weapon"
+          },
           "next": "ch24_00101"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch24_x0002",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00103": {
       "id": "ch24_00103",
@@ -89076,21 +89114,38 @@
     },
     "ch30_2_00048": {
       "id": "ch30_2_00048",
-      "type": "condition",
+      "type": "choice",
       "chapter": "30.2",
       "character": "Connor",
       "heading": "Androids are chased by soldiers",
-      "branches": [
+      "description": "Soldiers are chasing two androids through the hold below you. A pipe overhead could bring the water reservoir down on the soldiers, but stopping costs time. Do you help them or keep going?",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Connor",
+      "options": [
         {
-          "condition_text": "Knock soldiers out",
-          "when": null,
-          "next": "ch30_2_00047"
+          "id": "option_0",
+          "label": "KNOCK SOLDIERS OUT",
+          "next": "ch30_2_00047",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_saved_chased_androids": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "RUN PAST",
+          "next": "ch30_2_00046",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_saved_chased_androids": false
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_2_00046",
-      "resolution": "qte"
+      ]
     },
     "ch30_2_00049": {
       "id": "ch30_2_00049",
@@ -91383,7 +91438,7 @@
       "chapter": "30.3",
       "character": "Markus",
       "description": "End of chapter 30.3",
-      "next": "ch31_1_00117"
+      "next": "ch31_1_x0001"
     },
     "ch30_3_00002": {
       "id": "ch30_3_00002",
@@ -93039,26 +93094,48 @@
     },
     "ch30_3_00083": {
       "id": "ch30_3_00083",
-      "type": "condition",
+      "type": "choice",
       "chapter": "30.3",
       "character": "Markus",
       "heading": "Androids are chased by soldiers",
-      "branches": [
+      "description": "Soldiers are chasing two androids through the hold below you. A pipe overhead could bring the water reservoir down on the soldiers, but stopping costs time. Do you help them or keep going?",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus",
+      "options": [
         {
-          "condition_text": "Knock soldiers out",
-          "when": null,
-          "next": "ch30_3_00082"
+          "id": "option_0",
+          "label": "KNOCK SOLDIERS OUT",
+          "next": "ch30_3_00082",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.Jericho",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "markus_saved_chased_androids": true
+            }
+          }
         },
         {
-          "condition_text": "Abandoned androids",
-          "when": null,
-          "next": "ch30_3_00080"
+          "id": "option_1",
+          "label": "RUN PAST",
+          "next": "ch30_3_00080",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.Jericho",
+              "direction": "RelationType.SmallDown"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "markus_saved_chased_androids": false
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_3_00080",
-      "resolution": "qte"
+      ]
     },
     "ch30_3_00084": {
       "id": "ch30_3_00084",
@@ -98100,7 +98177,8 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00096"
+      "next": "ch31_1_x0003",
+      "key": true
     },
     "ch31_1_00098": {
       "id": "ch31_1_00098",
@@ -98111,7 +98189,7 @@
       "description": "Carl is still alive",
       "dialogue": [],
       "observations": [],
-      "next": "ch31_1_00097"
+      "next": "ch31_1_x0002"
     },
     "ch31_1_00099": {
       "id": "ch31_1_00099",
@@ -98130,7 +98208,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00098"
+      "next": "ch31_1_00062"
     },
     "ch31_1_00100": {
       "id": "ch31_1_00100",
@@ -98149,7 +98227,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00098"
+      "next": "ch31_1_00062"
     },
     "ch31_1_00101": {
       "id": "ch31_1_00101",
@@ -98168,7 +98246,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00098"
+      "next": "ch31_1_00062"
     },
     "ch31_1_00102": {
       "id": "ch31_1_00102",
@@ -125913,6 +125991,112 @@
           "effects": {
             "flags": {
               "kara_ch32_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch31_1_x0001": {
+      "id": "ch31_1_x0001",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Carl's fate",
+      "branches": [
+        {
+          "condition_text": "Carl died in Broken",
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": false
+          },
+          "next": "ch31_1_00117"
+        },
+        {
+          "condition_text": "Carl is still alive",
+          "when": {
+            "flag": "markus_pushed_leo",
+            "equals": true
+          },
+          "next": "ch31_1_00098"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Broken#Cross-chapter_impacts"
+    },
+    "ch31_1_x0003": {
+      "id": "ch31_1_x0003",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Listen to Leo's message",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch31_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch31_1_00096"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch31_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch31_1_00094"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home"
+    },
+    "ch31_1_x0002": {
+      "id": "ch31_1_x0002",
+      "type": "choice",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Welcome Home",
+      "description": "You stand at the door of Carl's house, the home you were taken from. Inside are his paintings, the piano, the chessboard and the bookshelves, and an answering machine blinking with messages. Upstairs, Carl is bedridden, and a nurse android guards the stairs. Your people are waiting for you. How do you spend your time here?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN THE HOUSE",
+          "next": "ch31_1_00097",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch31_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GO STRAIGHT TO CARL",
+          "next": "ch31_1_00097",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch31_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "NO TIME TO LINGER",
+          "next": "ch31_1_00094",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch31_exploration": "rush"
             }
           }
         }

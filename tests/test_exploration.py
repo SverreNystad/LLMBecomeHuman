@@ -278,6 +278,7 @@ EXPLORED_CHAPTERS = {
     "26": 1,
     "27": 1,
     "28": 1,
+    "31.1": 1,
     "32.2": 1,
 }
 EXPLORATIONS = sorted(
