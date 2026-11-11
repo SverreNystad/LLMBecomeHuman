@@ -277,9 +277,11 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
                 # default_branch None: every branch is a failure, so success is
                 # the fall-through ``next``.
                 success = node.get("default_branch", 0)
-                if (node.get("next") is None) if success is None else not (
-                    0 <= success < len(branches)
-                ):
+                if success is None:
+                    has_success = node.get("next") is not None
+                else:
+                    has_success = 0 <= success < len(branches)
+                if not has_success:
                     errors.append(f"{nid}: quick-time event without a success branch")
             elif resolution == "rule":
                 if not node.get("source"):
