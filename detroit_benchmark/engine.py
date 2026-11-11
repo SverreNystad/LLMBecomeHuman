@@ -118,6 +118,126 @@ def _enrichment_errors(graph: dict) -> list[str]:
                     errors.append(f"{where}: news item without wiki source")
     return errors
 
+
+EXPLORATION_VALUES = ("thorough", "key_only", "rush")
+
+
+def _edges(node: dict) -> list[str]:
+    typ = node.get("type")
+    if typ == "choice":
+        found = [o.get("next") for o in node.get("options", [])]
+    elif typ == "condition":
+        found = [b.get("next") for b in node.get("branches", [])] + [node.get("next")]
+    elif typ == "route":
+        found = [node.get("if_true"), node.get("if_false")]
+    elif typ == "ending":
+        found = []
+    else:
+        found = [node.get("next")]
+    return [dest for dest in found if dest is not None]
+
+
+def _cycle_errors(nodes: dict) -> list[str]:
+    """The story only moves forward: report the first back edge found."""
+    state: dict[str, int] = {}  # 1 = on the current path, 2 = finished
+    for root in nodes:
+        if root in state:
+            continue
+        state[root] = 1
+        stack = [(root, iter(_edges(nodes[root])))]
+        while stack:
+            nid, children = stack[-1]
+            for child in children:
+                if child not in nodes:
+                    continue
+                if state.get(child) == 1:
+                    return [f"{nid} -> {child}: cycle in story graph"]
+                if child not in state:
+                    state[child] = 1
+                    stack.append((child, iter(_edges(nodes[child]))))
+                    break
+            else:
+                state[nid] = 2
+                stack.pop()
+    return []
+
+
+def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
+    """Nodes reachable from ``start`` in visiting order.
+
+    With ``flags``, a condition whose branch is decided by them follows only
+    that branch; everything else follows every edge.
+    """
+    order, seen, queue = [], {start}, [start]
+    while queue:
+        nid = queue.pop(0)
+        if nid not in nodes:
+            continue
+        order.append(nid)
+        node = nodes[nid]
+        dests = _edges(node)
+        if flags is not None and node.get("type") == "condition":
+            values = [
+                evaluate_condition(b.get("when"), flags) for b in node["branches"]
+            ]
+            if True in values:
+                dests = [node["branches"][values.index(True)]["next"]]
+            elif None not in values and node.get("next"):
+                dests = [node["next"]]
+        for dest in dests:
+            if dest not in seen:
+                seen.add(dest)
+                queue.append(dest)
+    return order
+
+
+def _exploration_errors(nodes: dict) -> list[str]:
+    """Exploration Choices: three ways to search that all rejoin afterwards."""
+    errors = []
+    for nid, node in nodes.items():
+        if not node.get("exploration"):
+            continue
+        options = node.get("options", [])
+        flag_sets = [set((o.get("effects") or {}).get("flags", {})) for o in options]
+        shared = set.intersection(*flag_sets) if flag_sets else set()
+        values = [
+            (o.get("effects") or {}).get("flags", {}).get(name)
+            for o in options
+            for name in shared
+        ]
+        if (
+            len(options) != 3
+            or len(shared) != 1
+            or sorted(values) != sorted(EXPLORATION_VALUES)
+        ):
+            errors.append(
+                f"{nid}: exploration choice needs three options setting one flag "
+                f"to {', '.join(EXPLORATION_VALUES)}"
+            )
+            continue
+        (flag,) = shared
+        paths = {
+            o["effects"]["flags"][flag]: _reachable(
+                nodes, o["next"], {flag: o["effects"]["flags"][flag]}
+            )
+            for o in options
+        }
+        others = [set(paths["thorough"]), set(paths["key_only"])]
+        rejoin = next((n for n in paths["rush"] if all(n in s for s in others)), None)
+        if rejoin is None:
+            errors.append(f"{nid}: exploration forks never rejoin")
+            continue
+        after = set(_reachable(nodes, rejoin))
+        for scene in paths["key_only"]:
+            if scene in after:
+                continue
+            if nodes[scene].get("type") == "scene" and not nodes[scene].get("key"):
+                errors.append(
+                    f"{nid}: key areas path shows {scene}, which is not marked key"
+                )
+    return errors
+
+
 # How a condition node picks its branch: a Quick-Time Event always succeeds,
 # a rule is evaluated over earlier choices' flags, unknown falls back to default.
 CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
@@ -173,6 +293,8 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             if dest is not None and dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
+    errors.extend(_cycle_errors(nodes))
+    errors.extend(_exploration_errors(nodes))
     if graph.get("metadata", {}).get("fidelity") != "verified_game_rules":
         warnings.append("Graph is not certified as accurate game logic")
     if strict and warnings:
@@ -199,7 +321,9 @@ def reasoning_settings(provider: str, model_id: str | None) -> dict:
         if not re.match(r"^(o\d|gpt-5)", name):
             return {}  # Non-reasoning models reject reasoning_effort.
         # gpt-5 accepts "minimal"; later gpt-5.x and o-series bottom out at "low".
-        return {"reasoning_effort": "minimal" if re.match(r"^gpt-5(-|$)", name) else "low"}
+        return {
+            "reasoning_effort": "minimal" if re.match(r"^gpt-5(-|$)", name) else "low"
+        }
     if provider == "anthropic":
         if re.search(r"opus-5[-.]5", name):
             # Thinking cannot be disabled on Opus 5.5; use its lowest effort.
