@@ -24310,7 +24310,8 @@
         "AUDIO PROCESSOR | #4903 | Status: FUNCTIONAL | COMPATIBLE"
       ],
       "dialogue": [],
-      "next": "ch11_00017"
+      "next": "ch11_00017",
+      "key": true
     },
     "ch11_00019": {
       "id": "ch11_00019",
@@ -24359,7 +24360,8 @@
         }
       ],
       "observations": [],
-      "next": "ch11_00020"
+      "next": "ch11_x0003",
+      "key": true
     },
     "ch11_00022": {
       "id": "ch11_00022",
@@ -24370,7 +24372,8 @@
       "description": "Android grabs Markus",
       "dialogue": [],
       "observations": [],
-      "next": "ch11_00021"
+      "next": "ch11_00021",
+      "key": true
     },
     "ch11_00023": {
       "id": "ch11_00023",
@@ -24383,7 +24386,8 @@
         "LEFT LEG COMPONENT | #8427g | Status: FUNCTIONAL | COMPATIBLE"
       ],
       "dialogue": [],
-      "next": "ch11_00022"
+      "next": "ch11_00022",
+      "key": true
     },
     "ch11_00024": {
       "id": "ch11_00024",
@@ -24409,7 +24413,8 @@
         "RIGHT LEG COMPONENT | #6847j | Status: FUNCTIONAL | COMPATIBLE"
       ],
       "dialogue": [],
-      "next": "ch11_00024"
+      "next": "ch11_x0002",
+      "key": true
     },
     "ch11_00026": {
       "id": "ch11_00026",
@@ -24425,7 +24430,8 @@
         "LEFT AND RIGHT LEG COMPONENTS | MISSING | Unable to stand"
       ],
       "dialogue": [],
-      "next": "ch11_00025"
+      "next": "ch11_00025",
+      "key": true
     },
     "ch11_00027": {
       "id": "ch11_00027",
@@ -24436,7 +24442,7 @@
       "description": "At the solid waste landfill",
       "dialogue": [],
       "observations": [],
-      "next": "ch11_00026"
+      "next": "ch11_x0001"
     },
     "ch12_00001": {
       "id": "ch12_00001",
@@ -27813,7 +27819,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00154"
+      "next": "ch12_x0002",
+      "key": true
     },
     "ch12_00156": {
       "id": "ch12_00156",
@@ -27832,7 +27839,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00155"
+      "next": "ch12_00155",
+      "key": true
     },
     "ch12_00157": {
       "id": "ch12_00157",
@@ -27851,7 +27859,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00156"
+      "next": "ch12_00156",
+      "key": true
     },
     "ch12_00158": {
       "id": "ch12_00158",
@@ -27870,7 +27879,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00156"
+      "next": "ch12_00156",
+      "key": true
     },
     "ch12_00159": {
       "id": "ch12_00159",
@@ -27889,7 +27899,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00156"
+      "next": "ch12_00156",
+      "key": true
     },
     "ch12_00160": {
       "id": "ch12_00160",
@@ -27908,7 +27919,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00156"
+      "next": "ch12_00156",
+      "key": true
     },
     "ch12_00161": {
       "id": "ch12_00161",
@@ -27979,7 +27991,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00161"
+      "next": "ch12_00161",
+      "key": true
     },
     "ch12_00163": {
       "id": "ch12_00163",
@@ -27998,7 +28011,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00162"
+      "next": "ch12_00162",
+      "key": true
     },
     "ch12_00164": {
       "id": "ch12_00164",
@@ -28017,7 +28031,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00162"
+      "next": "ch12_00162",
+      "key": true
     },
     "ch12_00165": {
       "id": "ch12_00165",
@@ -28036,7 +28051,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00162"
+      "next": "ch12_00162",
+      "key": true
     },
     "ch12_00166": {
       "id": "ch12_00166",
@@ -28055,7 +28071,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00162"
+      "next": "ch12_00162",
+      "key": true
     },
     "ch12_00167": {
       "id": "ch12_00167",
@@ -28129,7 +28146,8 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00167"
+      "next": "ch12_00167",
+      "key": true
     },
     "ch12_00169": {
       "id": "ch12_00169",
@@ -28149,7 +28167,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00154",
+      "next": "ch12_x0002",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
     },
@@ -28200,7 +28218,7 @@
         }
       ],
       "observations": [],
-      "next": "ch12_00171"
+      "next": "ch12_x0001"
     },
     "ch12_00173": {
       "id": "ch12_00173",
@@ -33895,7 +33913,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00005"
+      "next": "ch14_x0002",
+      "key": true
     },
     "ch14_00007": {
       "id": "ch14_00007",
@@ -33914,7 +33933,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00006"
+      "next": "ch14_00006",
+      "key": true
     },
     "ch14_00008": {
       "id": "ch14_00008",
@@ -33933,7 +33953,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00007"
+      "next": "ch14_00007",
+      "key": true
     },
     "ch14_00009": {
       "id": "ch14_00009",
@@ -33952,7 +33973,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00008"
+      "next": "ch14_00008",
+      "key": true
     },
     "ch14_00010": {
       "id": "ch14_00010",
@@ -33971,7 +33993,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00009"
+      "next": "ch14_00009",
+      "key": true
     },
     "ch14_00011": {
       "id": "ch14_00011",
@@ -33990,7 +34013,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00010"
+      "next": "ch14_00010",
+      "key": true
     },
     "ch14_00012": {
       "id": "ch14_00012",
@@ -34009,7 +34033,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00005"
+      "next": "ch14_x0002",
+      "key": true
     },
     "ch14_00013": {
       "id": "ch14_00013",
@@ -34028,7 +34053,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00012"
+      "next": "ch14_00012",
+      "key": true
     },
     "ch14_00014": {
       "id": "ch14_00014",
@@ -34047,7 +34073,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00013"
+      "next": "ch14_00013",
+      "key": true
     },
     "ch14_00015": {
       "id": "ch14_00015",
@@ -34066,7 +34093,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00014"
+      "next": "ch14_00014",
+      "key": true
     },
     "ch14_00016": {
       "id": "ch14_00016",
@@ -34085,7 +34113,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00015"
+      "next": "ch14_00015",
+      "key": true
     },
     "ch14_00017": {
       "id": "ch14_00017",
@@ -34104,7 +34133,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00016"
+      "next": "ch14_00016",
+      "key": true
     },
     "ch14_00018": {
       "id": "ch14_00018",
@@ -34132,7 +34162,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch14_00005",
+      "next": "ch14_x0002",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Broken#Cross-chapter_impacts"
     },
@@ -34145,7 +34175,8 @@
       "description": "Two people talking on the street",
       "dialogue": [],
       "observations": [],
-      "next": "ch14_00018"
+      "next": "ch14_00018",
+      "key": true
     },
     "ch14_00020": {
       "id": "ch14_00020",
@@ -34164,7 +34195,8 @@
         }
       ],
       "observations": [],
-      "next": "ch14_00019"
+      "next": "ch14_x0001",
+      "key": true
     },
     "ch14_00021": {
       "id": "ch14_00021",
@@ -34175,7 +34207,8 @@
       "description": "Talking to parked android",
       "dialogue": [],
       "observations": [],
-      "next": "ch14_00020"
+      "next": "ch14_00020",
+      "key": true
     },
     "ch14_00022": {
       "id": "ch14_00022",
@@ -34438,7 +34471,7 @@
       "description": "At Ferndale station",
       "dialogue": [],
       "observations": [],
-      "next": "ch14_00036"
+      "next": "ch14_x0003"
     },
     "ch15_00001": {
       "id": "ch15_00001",
@@ -35020,210 +35053,6 @@
       "observations": [],
       "next": "ch15_00029"
     },
-    "ch15_00031": {
-      "id": "ch15_00031",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Well next time, think faster, Sherlock.  Come on, I’ve had enough of this dump.  Move fuckers!",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CHANK.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00030"
-    },
-    "ch15_00032": {
-      "id": "ch15_00032",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "We're missing something…",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CCONNOR.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00031"
-    },
-    "ch15_00033": {
-      "id": "ch15_00033",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Two minutes are up!  Time to go.",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CHANK.GAMEOVER02"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00032"
-    },
-    "ch15_00034": {
-      "id": "ch15_00034",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time again",
-      "description": "Take too much time again",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch15_00033"
-    },
-    "ch15_00035": {
-      "id": "ch15_00035",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Why do you always ask for more time when I’m ready to leave?  Uh,  alright you got two minutes, then I’m outta here.  'The fuck…",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CHANK.STAYH"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00034"
-    },
-    "ch15_00036": {
-      "id": "ch15_00036",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Just another couple of minutes, Lieutenant.",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CCONNOR.STAY"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00035"
-    },
-    "ch15_00037": {
-      "id": "ch15_00037",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Well next time, think faster, Sherlock.  Come on, I’ve had enough of this dump.  Move fuckers!",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CHANK.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00030"
-    },
-    "ch15_00038": {
-      "id": "ch15_00038",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "We're missing something…",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CCONNOR.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00037"
-    },
-    "ch15_00039": {
-      "id": "ch15_00039",
-      "type": "choice",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "options": [
-        {
-          "id": "option_0",
-          "label": "STAY",
-          "next": "ch15_00036",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        },
-        {
-          "id": "option_1",
-          "label": "LEAVE",
-          "next": "ch15_00038",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        }
-      ]
-    },
-    "ch15_00040": {
-      "id": "ch15_00040",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "There’s nothing else to see here…  Let’s get out of this shithole before I die of an asthma attack.",
-          "source_keys": [
-            "X0502C.LIVING.GAMEOVER.PC.X05CHANK.GAMEOVER01"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00039"
-    },
-    "ch15_00041": {
-      "id": "ch15_00041",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch15_00040"
-    },
     "ch15_00042": {
       "id": "ch15_00042",
       "type": "scene",
@@ -35241,7 +35070,7 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00041"
+      "next": "ch15_00030"
     },
     "ch15_00043": {
       "id": "ch15_00043",
@@ -35450,36 +35279,6 @@
       "observations": [],
       "next": "ch15_00054"
     },
-    "ch15_00056": {
-      "id": "ch15_00056",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Hank looking at the sink (if Connor hasn't investigated yet)",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Something in the sink.  You should take a look…",
-          "source_keys": [
-            "X0502C.LIVING.BATHROOM.FA.X05CHANK.LED"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch15_00055"
-    },
-    "ch15_00057": {
-      "id": "ch15_00057",
-      "type": "scene",
-      "chapter": "15",
-      "character": "Connor",
-      "heading": "Hank looking at the sink (if Connor hasn't investigated yet)",
-      "description": "Hank looking at the sink (if Connor hasn't investigated yet)",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch15_00056"
-    },
     "ch15_00058": {
       "id": "ch15_00058",
       "type": "scene",
@@ -35493,7 +35292,8 @@
         "METAL HOOK | Recently broken | 100% stainless steel"
       ],
       "dialogue": [],
-      "next": "ch15_00057"
+      "next": "ch15_x0002",
+      "key": true
     },
     "ch15_00059": {
       "id": "ch15_00059",
@@ -35504,7 +35304,8 @@
       "description": "Inspect the bird cage",
       "dialogue": [],
       "observations": [],
-      "next": "ch15_00058"
+      "next": "ch15_00058",
+      "key": true
     },
     "ch15_00060": {
       "id": "ch15_00060",
@@ -35518,7 +35319,8 @@
         "OPENED MARKER PEN | Still wet - Used recently | Color: Midnight mood [black]"
       ],
       "dialogue": [],
-      "next": "ch15_00059"
+      "next": "ch15_00059",
+      "key": true
     },
     "ch15_00061": {
       "id": "ch15_00061",
@@ -35529,7 +35331,8 @@
       "description": "Inspect the stool",
       "dialogue": [],
       "observations": [],
-      "next": "ch15_00060"
+      "next": "ch15_00060",
+      "key": true
     },
     "ch15_00062": {
       "id": "ch15_00062",
@@ -35548,7 +35351,8 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00061"
+      "next": "ch15_00061",
+      "key": true
     },
     "ch15_00063": {
       "id": "ch15_00063",
@@ -35567,7 +35371,8 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00062"
+      "next": "ch15_00062",
+      "key": true
     },
     "ch15_00064": {
       "id": "ch15_00064",
@@ -35586,7 +35391,8 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00063"
+      "next": "ch15_00063",
+      "key": true
     },
     "ch15_00065": {
       "id": "ch15_00065",
@@ -35597,7 +35403,8 @@
       "description": "Looking at rA9 writings in the bathroom",
       "dialogue": [],
       "observations": [],
-      "next": "ch15_00064"
+      "next": "ch15_00064",
+      "key": true
     },
     "ch15_00066": {
       "id": "ch15_00066",
@@ -35616,7 +35423,8 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00065"
+      "next": "ch15_00065",
+      "key": true
     },
     "ch15_00067": {
       "id": "ch15_00067",
@@ -35635,7 +35443,8 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00066"
+      "next": "ch15_00066",
+      "key": true
     },
     "ch15_00068": {
       "id": "ch15_00068",
@@ -35649,7 +35458,8 @@
         "BLUE BLOOD | MODEL WB200 #847 004 961 | Reported Missing - 10/11/2036"
       ],
       "dialogue": [],
-      "next": "ch15_00067"
+      "next": "ch15_00067",
+      "key": true
     },
     "ch15_00069": {
       "id": "ch15_00069",
@@ -35660,7 +35470,8 @@
       "description": "Looking at LED on the sink",
       "dialogue": [],
       "observations": [],
-      "next": "ch15_00068"
+      "next": "ch15_00068",
+      "key": true
     },
     "ch15_00070": {
       "id": "ch15_00070",
@@ -35888,7 +35699,7 @@
         }
       ],
       "observations": [],
-      "next": "ch15_00083"
+      "next": "ch15_x0001"
     },
     "ch15_00085": {
       "id": "ch15_00085",
@@ -38503,7 +38314,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00022"
+      "next": "ch16_x0002",
+      "key": true
     },
     "ch16_00024": {
       "id": "ch16_00024",
@@ -38523,7 +38335,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00023"
+      "next": "ch16_00023",
+      "key": true
     },
     "ch16_00025": {
       "id": "ch16_00025",
@@ -38543,7 +38356,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00024"
+      "next": "ch16_00024",
+      "key": true
     },
     "ch16_00026": {
       "id": "ch16_00026",
@@ -38562,7 +38376,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00025"
+      "next": "ch16_00025",
+      "key": true
     },
     "ch16_00027": {
       "id": "ch16_00027",
@@ -38573,7 +38388,8 @@
       "description": "Talk with Lucy",
       "dialogue": [],
       "observations": [],
-      "next": "ch16_00026"
+      "next": "ch16_00026",
+      "key": true
     },
     "ch16_00028": {
       "id": "ch16_00028",
@@ -38592,7 +38408,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00027"
+      "next": "ch16_00027",
+      "key": true
     },
     "ch16_00029": {
       "id": "ch16_00029",
@@ -38611,7 +38428,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00028"
+      "next": "ch16_00028",
+      "key": true
     },
     "ch16_00030": {
       "id": "ch16_00030",
@@ -38630,7 +38448,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00029"
+      "next": "ch16_00029",
+      "key": true
     },
     "ch16_00031": {
       "id": "ch16_00031",
@@ -38649,7 +38468,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00028"
+      "next": "ch16_00028",
+      "key": true
     },
     "ch16_00032": {
       "id": "ch16_00032",
@@ -38668,7 +38488,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00031"
+      "next": "ch16_00031",
+      "key": true
     },
     "ch16_00033": {
       "id": "ch16_00033",
@@ -38687,7 +38508,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00028"
+      "next": "ch16_00028",
+      "key": true
     },
     "ch16_00034": {
       "id": "ch16_00034",
@@ -38706,7 +38528,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00033"
+      "next": "ch16_00033",
+      "key": true
     },
     "ch16_00035": {
       "id": "ch16_00035",
@@ -38725,7 +38548,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00028"
+      "next": "ch16_00028",
+      "key": true
     },
     "ch16_00036": {
       "id": "ch16_00036",
@@ -38744,7 +38568,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00035"
+      "next": "ch16_00035",
+      "key": true
     },
     "ch16_00037": {
       "id": "ch16_00037",
@@ -38763,7 +38588,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00028"
+      "next": "ch16_00028",
+      "key": true
     },
     "ch16_00038": {
       "id": "ch16_00038",
@@ -38782,7 +38608,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00037"
+      "next": "ch16_00037",
+      "key": true
     },
     "ch16_00039": {
       "id": "ch16_00039",
@@ -38858,7 +38685,8 @@
       "description": "Talk with North",
       "dialogue": [],
       "observations": [],
-      "next": "ch16_00039"
+      "next": "ch16_00039",
+      "key": true
     },
     "ch16_00041": {
       "id": "ch16_00041",
@@ -38877,7 +38705,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00040"
+      "next": "ch16_00040",
+      "key": true
     },
     "ch16_00042": {
       "id": "ch16_00042",
@@ -38896,7 +38725,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00041"
+      "next": "ch16_00041",
+      "key": true
     },
     "ch16_00043": {
       "id": "ch16_00043",
@@ -38915,7 +38745,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00042"
+      "next": "ch16_00042",
+      "key": true
     },
     "ch16_00044": {
       "id": "ch16_00044",
@@ -38934,7 +38765,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00043"
+      "next": "ch16_00043",
+      "key": true
     },
     "ch16_00045": {
       "id": "ch16_00045",
@@ -38953,7 +38785,8 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00044"
+      "next": "ch16_00044",
+      "key": true
     },
     "ch16_00046": {
       "id": "ch16_00046",
@@ -38964,7 +38797,8 @@
       "description": "Talk with Josh",
       "dialogue": [],
       "observations": [],
-      "next": "ch16_00045"
+      "next": "ch16_00045",
+      "key": true
     },
     "ch16_00047": {
       "id": "ch16_00047",
@@ -38994,7 +38828,7 @@
         }
       ],
       "observations": [],
-      "next": "ch16_00047"
+      "next": "ch16_x0001"
     },
     "ch16_00049": {
       "id": "ch16_00049",
@@ -40066,19 +39900,28 @@
       "branches": [
         {
           "condition_text": "Saw the android while searching for Alice",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "kara_ch17_exploration",
+              "equals": "rush"
+            }
+          },
           "next": "ch17_00026"
         },
         {
           "condition_text": "Didn't see the android",
-          "when": null,
+          "when": {
+            "flag": "kara_ch17_exploration",
+            "equals": "rush"
+          },
           "next": "ch17_00027"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch17_00025",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
     },
     "ch17_00029": {
       "id": "ch17_00029",
@@ -40783,131 +40626,6 @@
       "observations": [],
       "next": "ch17_00067"
     },
-    "ch17_00069": {
-      "id": "ch17_00069",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Alice",
-          "text": "Kara!",
-          "source_keys": [
-            "X0502K.RESET.GAMEOVER.PC.X05KALICE.NOMEMORY.2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00048"
-    },
-    "ch17_00070": {
-      "id": "ch17_00070",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Zlatko",
-          "text": "Come on!",
-          "source_keys": [
-            "X0502K.RESET.GAMEOVER.PC.X05KZLATKO.NOMEMORY.4"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00069"
-    },
-    "ch17_00071": {
-      "id": "ch17_00071",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Alice",
-          "text": "Kara!",
-          "source_keys": [
-            "X0502K.RESET.GAMEOVER.PC.X05KALICE.NOMEMORY.2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00070"
-    },
-    "ch17_00072": {
-      "id": "ch17_00072",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Zlatko",
-          "text": "Alright... Let's see what we can do with you…",
-          "source_keys": [
-            "X0502K.RESET.GAMEOVER.PC.X05KZLATKO.NOMEMORY"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00071"
-    },
-    "ch17_00073": {
-      "id": "ch17_00073",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Luther",
-          "text": "Here's the little one, Zlatko.",
-          "source_keys": [
-            "X0502K.RESET.GAMEOVER.PC.X05KLUTHER.NOMEMORY"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00072"
-    },
-    "ch17_00074": {
-      "id": "ch17_00074",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Zlatko",
-          "text": "I should've dismantled you from the start…  Time to rectify that mistake…",
-          "source_keys": [
-            "X0502K.BIGROOM.GAMEOVER.PC.X05KZLATKO.DISMANTLED"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch17_00073"
-    },
-    "ch17_00075": {
-      "id": "ch17_00075",
-      "type": "scene",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Don't find Alice in time",
-      "description": "Don't find Alice in time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch17_00074"
-    },
     "ch17_00076": {
       "id": "ch17_00076",
       "type": "scene",
@@ -40925,7 +40643,7 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00075"
+      "next": "ch17_00048"
     },
     "ch17_00077": {
       "id": "ch17_00077",
@@ -40944,7 +40662,7 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00075"
+      "next": "ch17_00048"
     },
     "ch17_00078": {
       "id": "ch17_00078",
@@ -40966,7 +40684,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch17_00075",
+      "next": "ch17_00048",
       "resolution": "unknown"
     },
     "ch17_00079": {
@@ -41034,7 +40752,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00081"
+      "next": "ch17_x0002",
+      "key": true
     },
     "ch17_00083": {
       "id": "ch17_00083",
@@ -41053,7 +40772,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00082"
+      "next": "ch17_00082",
+      "key": true
     },
     "ch17_00084": {
       "id": "ch17_00084",
@@ -41072,7 +40792,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00081"
+      "next": "ch17_x0002",
+      "key": true
     },
     "ch17_00085": {
       "id": "ch17_00085",
@@ -41091,7 +40812,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00084"
+      "next": "ch17_00084",
+      "key": true
     },
     "ch17_00086": {
       "id": "ch17_00086",
@@ -41110,7 +40832,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00081"
+      "next": "ch17_x0002",
+      "key": true
     },
     "ch17_00087": {
       "id": "ch17_00087",
@@ -41123,7 +40846,7 @@
         {
           "id": "option_0",
           "label": "SHUT DOWN",
-          "next": "ch17_00081",
+          "next": "ch17_x0002",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -41179,7 +40902,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00087"
+      "next": "ch17_00087",
+      "key": true
     },
     "ch17_00089": {
       "id": "ch17_00089",
@@ -41190,7 +40914,8 @@
       "description": "Talk to the android in the bathtub",
       "dialogue": [],
       "observations": [],
-      "next": "ch17_00088"
+      "next": "ch17_00088",
+      "key": true
     },
     "ch17_00090": {
       "id": "ch17_00090",
@@ -41210,7 +40935,8 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00089"
+      "next": "ch17_00089",
+      "key": true
     },
     "ch17_00091": {
       "id": "ch17_00091",
@@ -41221,7 +40947,8 @@
       "description": "See android in bathtub",
       "dialogue": [],
       "observations": [],
-      "next": "ch17_00090"
+      "next": "ch17_00090",
+      "key": true
     },
     "ch17_00092": {
       "id": "ch17_00092",
@@ -41270,7 +40997,7 @@
         }
       ],
       "observations": [],
-      "next": "ch17_00093"
+      "next": "ch17_x0001"
     },
     "ch17_00095": {
       "id": "ch17_00095",
@@ -125179,6 +124906,545 @@
           "effects": {
             "flags": {
               "kara_ch10_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch11_x0002": {
+      "id": "ch11_x0002",
+      "type": "condition",
+      "chapter": "11",
+      "character": "Markus",
+      "heading": "At the solid waste landfill",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch11_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch11_00024"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch11_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch11_00023"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/From_the_Dead#Flowchart"
+    },
+    "ch11_x0003": {
+      "id": "ch11_x0003",
+      "type": "condition",
+      "chapter": "11",
+      "character": "Markus",
+      "heading": "Other android grabs Markus",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch11_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch11_00020"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch11_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch11_00018"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/From_the_Dead#Flowchart"
+    },
+    "ch11_x0001": {
+      "id": "ch11_x0001",
+      "type": "choice",
+      "chapter": "11",
+      "character": "Markus",
+      "heading": "At the solid waste landfill",
+      "description": "You wake in a pit of broken androids. Your legs are gone, one eye is dead and your hearing is corrupted. Bodies lie in heaps all around you in the rain. You need parts to survive. How do you search?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/From_the_Dead#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH SYSTEMATICALLY",
+          "next": "ch11_00026",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch11_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "FIND WHAT YOU NEED",
+          "next": "ch11_00026",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch11_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GRAB THE NEAREST PARTS",
+          "next": "ch11_00017",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch11_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch12_x0002": {
+      "id": "ch12_x0002",
+      "type": "condition",
+      "chapter": "12",
+      "character": "Connor",
+      "heading": "Going into the break room",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch12_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch12_00154"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch12_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch12_00122"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
+    },
+    "ch12_x0001": {
+      "id": "ch12_x0001",
+      "type": "choice",
+      "chapter": "12",
+      "character": "Connor",
+      "heading": "In the Police Station",
+      "description": "Lieutenant Anderson hasn't arrived yet. The station is busy: detectives on the phone, officers filling out paperwork, a man shouting from a holding cell. You have time before Hank turns up. How do you use it?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "EXPLORE THE STATION",
+          "next": "ch12_00171",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch12_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "STAY ON THE CASE",
+          "next": "ch12_00169",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch12_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WAIT AT HIS DESK",
+          "next": "ch12_00122",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch12_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch14_x0002": {
+      "id": "ch14_x0002",
+      "type": "condition",
+      "chapter": "14",
+      "character": "Markus",
+      "heading": "Homeless man on the street",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch14_trail_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch14_00005"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch14_trail_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch14_00003"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Jericho#Flowchart"
+    },
+    "ch14_x0001": {
+      "id": "ch14_x0001",
+      "type": "choice",
+      "chapter": "14",
+      "character": "Markus",
+      "heading": "In the streets of Ferndale",
+      "description": "Outside the station, the symbols lead deeper into Ferndale's grey, half-empty streets. People pass without looking at you. How do you follow the trail?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Jericho#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN THE STREETS",
+          "next": "ch14_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_trail_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LISTEN AS YOU GO",
+          "next": "ch14_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_trail_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "KEEP MOVING",
+          "next": "ch14_00003",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_trail_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch14_x0003": {
+      "id": "ch14_x0003",
+      "type": "choice",
+      "chapter": "14",
+      "character": "Markus",
+      "heading": "At Ferndale station",
+      "description": "The station is almost deserted. A few people wait on the platform, and an android stands motionless nearby. Somewhere in this place is the next step toward Jericho. How do you go through it?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Jericho#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "STUDY THE STATION",
+          "next": "ch14_00036",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LOOK FOR JERICHO",
+          "next": "ch14_00021",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "FOLLOW THE SIGNS",
+          "next": "ch14_x0001",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch14_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch15_x0002": {
+      "id": "ch15_x0002",
+      "type": "condition",
+      "chapter": "15",
+      "character": "Connor",
+      "heading": "Hank looking at bookshelf",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch15_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch15_00055"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch15_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch15_00030"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart"
+    },
+    "ch15_x0001": {
+      "id": "ch15_x0001",
+      "type": "choice",
+      "chapter": "15",
+      "character": "Connor",
+      "heading": "Investigating",
+      "description": "The apartment reeks of birds and thirium. Every wall is covered in the same two characters, rA9, repeated hundreds of times. Pigeons crowd the room, a stool stands near the window and something small sits in the sink. The deviant seems to be gone. How do you search?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH EVERYTHING",
+          "next": "ch15_00083",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch15_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK KEY POINTS",
+          "next": "ch15_00069",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch15_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "CHECK THE EXITS",
+          "next": "ch15_00030",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch15_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch16_x0002": {
+      "id": "ch16_x0002",
+      "type": "condition",
+      "chapter": "16",
+      "character": "Markus",
+      "heading": "Talk with damaged android (sitting)",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch16_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch16_00022"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch16_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch16_00012"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Time_to_Decide#Flowchart"
+    },
+    "ch16_x0001": {
+      "id": "ch16_x0001",
+      "type": "choice",
+      "chapter": "16",
+      "character": "Markus",
+      "heading": "Explore Jericho",
+      "description": "The hold of Jericho is dark and cold. Damaged androids sit in small groups, some dying, some missing limbs. Josh, North and Simon have told you this is all there is. North suggested you see Lucy. How do you spend your time here?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Time_to_Decide#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN JERICHO",
+          "next": "ch16_00047",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch16_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TALK TO THE LEADERS",
+          "next": "ch16_00046",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch16_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "FIND SIMON",
+          "next": "ch16_00012",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch16_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch17_x0002": {
+      "id": "ch17_x0002",
+      "type": "condition",
+      "chapter": "17",
+      "character": "Kara",
+      "heading": "Watch TV",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "kara_ch17_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch17_00081"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "kara_ch17_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch17_00048"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
+    },
+    "ch17_x0001": {
+      "id": "ch17_x0001",
+      "type": "choice",
+      "chapter": "17",
+      "character": "Kara",
+      "heading": "Search house for Alice",
+      "description": "Zlatko has given Luther ten minutes before he brings Alice down to him. The house is dark and full of strange sounds: a hallway, a bathroom, rooms upstairs. How do you search for Alice?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH THE WHOLE HOUSE",
+          "next": "ch17_00093",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch17_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK THE LIKELY ROOMS",
+          "next": "ch17_00091",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch17_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GO STRAIGHT FOR ALICE",
+          "next": "ch17_00048",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch17_exploration": "rush"
             }
           }
         }
