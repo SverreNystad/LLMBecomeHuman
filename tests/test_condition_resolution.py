@@ -90,6 +90,30 @@ def test_quick_time_event_always_takes_success_branch(tmp_path):
     assert result["warnings"] == []
 
 
+FAILURE_ONLY_QTE = {
+    "resolution": "qte",
+    "unverified": True,
+    "default_branch": None,
+    "branches": [{"condition_text": "Connor is caught", "when": None, "next": "a"}],
+    "next": "b",
+}
+
+
+def test_quick_time_event_with_only_a_failure_branch_falls_through(tmp_path):
+    g = tiny_graph(FAILURE_ONLY_QTE)
+    assert validate_graph(g)["valid"]
+    result, events = play(g, tmp_path)
+    assert "b" in visited(events) and "a" not in visited(events)
+    gate = next(e for e in events if e["node_id"] == "gate")
+    assert gate["quick_time_event"] == "success"
+    assert result["warnings"] == []
+
+
+def test_failure_only_quick_time_event_needs_a_fall_through():
+    g = tiny_graph({**FAILURE_ONLY_QTE, "next": None})
+    assert any("success" in e for e in validate_graph(g)["errors"])
+
+
 RULE = {
     "resolution": "rule",
     "source": "https://detroit-become-human.fandom.com/wiki/Example#Choices",
@@ -177,7 +201,9 @@ def test_dataset_conditions_are_sorted(chapter):
         if n["resolution"] == "rule":
             assert n.get("source", "").startswith("https://"), n["id"]
             assert all(b["when"] is not None for b in n["branches"]), n["id"]
-        if n["resolution"] == "qte":
+        if n["resolution"] == "qte" and n["default_branch"] is None:
+            assert n["next"] in nodes, n["id"]
+        elif n["resolution"] == "qte":
             assert 0 <= n["default_branch"] < len(n["branches"]), n["id"]
 
 
