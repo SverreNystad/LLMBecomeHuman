@@ -240,10 +240,16 @@ def _short_event(event: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def _moment_id(node_id: Any) -> str | None:
+    """A Moment is one story graph node: the Story and the Flowchart both address it by this id."""
+    return str(node_id) if node_id is not None else None
+
+
 def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     """What a reader needs from one event, including the dialogue _short_event leaves out."""
     kind = event.get("type")
     beat = {k: event.get(k) for k in ("index", "type", "node_id")}
+    beat["moment"] = _moment_id(event.get("node_id"))
     if kind == "scene":
         scene = event.get("visible_to_agent") or {}
         beat.update(
@@ -287,10 +293,14 @@ def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, 
     """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
+    visits: Counter = Counter()
     for event in _event_iter(Path(directory)):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
+            # A node can recur, so each pass through a Moment is numbered from the run's start.
+            visits[beat["moment"]] += 1
+            beat["visit"] = visits[beat["moment"]]
             story.setdefault(str(event.get("chapter") or "Unknown"), []).append(beat)
     return short, story
 
@@ -417,6 +427,7 @@ def _flowchart_projection(
             )
             if k in node
         }
+        nodes[node_id]["moment"] = _moment_id(node_id)
         if node.get("type") == "scene":
             nodes[node_id]["observations"] = node.get("observations", [])
             nodes[node_id]["dialogue"] = [
@@ -537,7 +548,7 @@ def create_app(
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
     app = FastAPI(
-        title="Detroit LLM Benchmark Dashboard", version="0.3.0", docs_url="/api/docs"
+        title="LLM: Become Human", version="0.3.0", docs_url="/api/docs"
     )
 
     @app.middleware("http")
@@ -650,10 +661,6 @@ def create_app(
         return _compare(
             [_detail(root, _resolve_run(root, run_id)) for run_id in run_ids]
         )
-
-    @app.get("/legacy")
-    def legacy_home():
-        return FileResponse(ASSETS / "legacy.html", media_type="text/html")
 
     @app.get("/")
     def home():

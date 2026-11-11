@@ -114,12 +114,44 @@ def test_in_progress_and_partially_written_jsonl(tmp_path):
 def test_serves_frontend_and_assets():
     c = client()
     assert c.get("/").status_code == 200
-    assert "Decision Atlas" in c.get("/").text
     assert "renderDecisionInspector" in c.get("/assets/app.js").text
-    assert "CHAPTER" in c.get("/").text
-    assert "renderComparison" in c.get("/assets/legacy-app.js").text
-    assert c.get("/legacy").status_code == 200
     assert c.get("/assets/styles.css").status_code == 200
+
+
+def test_frontend_is_named_llm_become_human():
+    c = client()
+    assert "<title>LLM: Become Human</title>" in c.get("/").text
+    for path in ("/", "/assets/app.js", "/assets/story.js", "/assets/styles.css"):
+        assert "decision atlas" not in c.get(path).text.lower(), path
+
+
+def test_legacy_view_is_gone():
+    c = client()
+    assert c.get("/legacy").status_code == 404
+    for asset in ("legacy.html", "legacy-app.js", "legacy-styles.css"):
+        assert c.get(f"/assets/{asset}").status_code == 404, asset
+    assert "/legacy" not in c.get("/").text
+
+
+def test_frontend_has_no_internal_detail_copy():
+    c = client()
+    page = "\n".join(
+        c.get(path).text
+        for path in ("/", "/assets/app.js", "/assets/story.js")
+    ).lower()
+    for phrase in (
+        "all script paths",
+        "always on",
+        "private · local",
+        "synchronizing",
+        "script steps",
+        "graph nodes",
+        "drag to pan",
+        "esc · close",
+        "every script branch",
+        "refreshbtn",
+    ):
+        assert phrase not in page, phrase
 
 
 def test_compare_requires_two_runs():
@@ -211,6 +243,58 @@ def test_story_endpoint_returns_readable_chapter_in_order():
         and decision["rationale"]
     )
     assert "system_prompt" not in decision and "input" not in decision
+
+
+def test_story_and_flowchart_share_moment_ids():
+    c = client()
+    run = next(
+        r for r in c.get("/api/runs").json()["runs"] if r["name"] == "demo-first-option"
+    )
+    chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
+    flowchart_moments = {
+        node["moment"]: node for node in chart["nodes"].values() if "moment" in node
+    }
+    assert len(flowchart_moments) == chart["node_count"]
+    for chapter in chart["chapters"]:
+        beats = c.get(
+            f"/api/runs/{run['id']}/story", params={"chapter": chapter}
+        ).json()["beats"]
+        assert beats
+        for beat in beats:
+            node = flowchart_moments[beat["moment"]]
+            assert node["chapter"] == chapter
+    # The first decision of the run is the arrival choice in both views.
+    first = c.get(
+        f"/api/runs/{run['id']}/story", params={"chapter": chart["chapters"][0]}
+    ).json()["beats"]
+    decision = next(b for b in first if b["type"] == "decision")
+    assert flowchart_moments[decision["moment"]]["id"] == "arrival_decision"
+
+
+def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
+    target = tmp_path / "run"
+    shutil.copytree(PROJECT / "demo_runs" / "demo-first-option", target)
+    with (target / "events.jsonl").open("a") as f:
+        for index in (9000, 9001):
+            f.write(
+                json.dumps(
+                    {
+                        "index": index,
+                        "type": "scene",
+                        "node_id": "loop",
+                        "chapter": "Again",
+                        "visible_to_agent": {"heading": "Loop"},
+                    }
+                )
+                + "\n"
+            )
+    c = TestClient(create_app(tmp_path))
+    run = c.get("/api/runs").json()["runs"][0]
+    beats = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Again"}).json()[
+        "beats"
+    ]
+    assert [b["moment"] for b in beats] == ["loop", "loop"]
+    assert [b["visit"] for b in beats] == [1, 2]
 
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
@@ -327,7 +411,6 @@ def test_browsers_must_revalidate_the_frontend():
     c = client()
     for path in (
         "/",
-        "/legacy",
         "/assets/app.js",
         "/assets/story.js",
         "/assets/styles.css",
