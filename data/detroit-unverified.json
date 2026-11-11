@@ -42140,7 +42140,8 @@
         }
       ],
       "observations": [],
-      "next": "ch18_00003"
+      "next": "ch18_00003",
+      "key": true
     },
     "ch18_00005": {
       "id": "ch18_00005",
@@ -42159,7 +42160,8 @@
         }
       ],
       "observations": [],
-      "next": "ch18_00004"
+      "next": "ch18_00004",
+      "key": true
     },
     "ch18_00006": {
       "id": "ch18_00006",
@@ -42178,7 +42180,8 @@
         }
       ],
       "observations": [],
-      "next": "ch18_00005"
+      "next": "ch18_00005",
+      "key": true
     },
     "ch18_00007": {
       "id": "ch18_00007",
@@ -42209,7 +42212,8 @@
       "description": "Looking at the gun",
       "dialogue": [],
       "observations": [],
-      "next": "ch18_00007"
+      "next": "ch18_00007",
+      "key": true
     },
     "ch18_00009": {
       "id": "ch18_00009",
@@ -42332,7 +42336,8 @@
         "ANDERSON, COLE | Born: 09/23/2029 - Died: 10/11/2035 | Lived: 115 Michigan Drive – Detroit"
       ],
       "dialogue": [],
-      "next": "ch18_00015"
+      "next": "ch18_x0002",
+      "key": true
     },
     "ch18_00017": {
       "id": "ch18_00017",
@@ -42343,7 +42348,8 @@
       "description": "Investigating Hank's house",
       "dialogue": [],
       "observations": [],
-      "next": "ch18_00016"
+      "next": "ch18_00016",
+      "key": true
     },
     "ch18_00018": {
       "id": "ch18_00018",
@@ -42362,7 +42368,7 @@
         }
       ],
       "observations": [],
-      "next": "ch18_00017"
+      "next": "ch18_x0001"
     },
     "ch18_00019": {
       "id": "ch18_00019",
@@ -47391,93 +47397,6 @@
       "observations": [],
       "next": "ch20_00016"
     },
-    "ch20_00018": {
-      "id": "ch20_00018",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Let's get outta here. This place makes me sick…",
-          "source_keys": [
-            "X0603C.FINAL.GAMEOVERS.PC.X06CHANK.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00017"
-    },
-    "ch20_00019": {
-      "id": "ch20_00019",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "I failed. I should have caught it…",
-          "source_keys": [
-            "X0603C.FINAL.GAMEOVERS.PC.X06CCONNOR.LEAVE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00018"
-    },
-    "ch20_00020": {
-      "id": "ch20_00020",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Yes, I’m coming.",
-          "source_keys": [
-            "X0603C.FINAL.HANKAGENDAFINISH.FA.X06CCONNOR.COMING"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00019"
-    },
-    "ch20_00021": {
-      "id": "ch20_00021",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Come on, Connor! We're leaving.",
-          "source_keys": [
-            "X0603C.FINAL.GAMEOVERS.PC.X06CHANK.TIMER"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00020"
-    },
-    "ch20_00022": {
-      "id": "ch20_00022",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch20_00021"
-    },
     "ch20_00023": {
       "id": "ch20_00023",
       "type": "scene",
@@ -47495,7 +47414,7 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00022"
+      "next": "ch20_00017"
     },
     "ch20_00024": {
       "id": "ch20_00024",
@@ -47534,7 +47453,8 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00024"
+      "next": "ch20_x0004",
+      "key": true
     },
     "ch20_00026": {
       "id": "ch20_00026",
@@ -47545,7 +47465,8 @@
       "description": "In the warehouse",
       "dialogue": [],
       "observations": [],
-      "next": "ch20_00025"
+      "next": "ch20_00025",
+      "key": true
     },
     "ch20_00027": {
       "id": "ch20_00027",
@@ -47564,7 +47485,7 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00026"
+      "next": "ch20_x0003"
     },
     "ch20_00028": {
       "id": "ch20_00028",
@@ -47596,55 +47517,6 @@
       "observations": [],
       "next": "ch20_00028"
     },
-    "ch20_00030": {
-      "id": "ch20_00030",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Ah... For a second there, I thought you were gonna make yourself useful. Let’s get outta here. This place gives me the creeps.",
-          "source_keys": [
-            "X0603C.TRACKGAME.TIMEOUT.PC.X06CHANK.MOVIE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00029"
-    },
-    "ch20_00031": {
-      "id": "ch20_00031",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "It's too late… The androids’ memory have been reset. If one of them saw the Traci, we’ll never know… It’s my fault. I should have been faster.",
-          "source_keys": [
-            "X0603C.TRACKGAME.TIMEOUT.PC.X06CCONNOR.MOVIE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch20_00030"
-    },
-    "ch20_00032": {
-      "id": "ch20_00032",
-      "type": "scene",
-      "chapter": "20",
-      "character": "Connor",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch20_00031"
-    },
     "ch20_00033": {
       "id": "ch20_00033",
       "type": "scene",
@@ -47662,7 +47534,7 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00032"
+      "next": "ch20_00029"
     },
     "ch20_00034": {
       "id": "ch20_00034",
@@ -49614,7 +49486,8 @@
         "BLUE BLOOD | MODEL WR400 | Serial number #429 671 942"
       ],
       "dialogue": [],
-      "next": "ch20_00133"
+      "next": "ch20_x0002",
+      "key": true
     },
     "ch20_00135": {
       "id": "ch20_00135",
@@ -49633,7 +49506,8 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00134"
+      "next": "ch20_00134",
+      "key": true
     },
     "ch20_00136": {
       "id": "ch20_00136",
@@ -49644,7 +49518,8 @@
       "description": "Analyse the blood",
       "dialogue": [],
       "observations": [],
-      "next": "ch20_00135"
+      "next": "ch20_00135",
+      "key": true
     },
     "ch20_00137": {
       "id": "ch20_00137",
@@ -49659,7 +49534,8 @@
         "CARDIAC ARREST | No sign of cardiac event | Heart attack not cause of death"
       ],
       "dialogue": [],
-      "next": "ch20_00136"
+      "next": "ch20_00136",
+      "key": true
     },
     "ch20_00138": {
       "id": "ch20_00138",
@@ -49678,7 +49554,7 @@
         }
       ],
       "observations": [],
-      "next": "ch20_00137"
+      "next": "ch20_x0001"
     },
     "ch20_00139": {
       "id": "ch20_00139",
@@ -52347,36 +52223,6 @@
       "observations": [],
       "next": "ch21_00108"
     },
-    "ch21_00110": {
-      "id": "ch21_00110",
-      "type": "scene",
-      "chapter": "21",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Luther",
-          "text": "Kara! You should come have a look. I think I found something!",
-          "source_keys": [
-            "X0701K.PARK.FOUNDIT.FA.X07KLUTHER.COME"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch21_00109"
-    },
-    "ch21_00111": {
-      "id": "ch21_00111",
-      "type": "scene",
-      "chapter": "21",
-      "character": "Kara",
-      "heading": "Take too much time",
-      "description": "Take too much time",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch21_00110"
-    },
     "ch21_00112": {
       "id": "ch21_00112",
       "type": "scene",
@@ -52394,7 +52240,7 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00111"
+      "next": "ch21_00109"
     },
     "ch21_00113": {
       "id": "ch21_00113",
@@ -52503,7 +52349,8 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00118"
+      "next": "ch21_x0002",
+      "key": true
     },
     "ch21_00120": {
       "id": "ch21_00120",
@@ -52522,7 +52369,8 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00119"
+      "next": "ch21_00119",
+      "key": true
     },
     "ch21_00121": {
       "id": "ch21_00121",
@@ -52533,7 +52381,8 @@
       "description": "Check buildings",
       "dialogue": [],
       "observations": [],
-      "next": "ch21_00120"
+      "next": "ch21_00120",
+      "key": true
     },
     "ch21_00122": {
       "id": "ch21_00122",
@@ -52552,7 +52401,7 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00121"
+      "next": "ch21_x0001"
     },
     "ch21_00123": {
       "id": "ch21_00123",
@@ -58813,7 +58662,8 @@
         }
       ],
       "observations": [],
-      "next": "ch23_00158"
+      "next": "ch23_x0002",
+      "key": true
     },
     "ch23_00160": {
       "id": "ch23_00160",
@@ -58824,7 +58674,8 @@
       "description": "Watch TV",
       "dialogue": [],
       "observations": [],
-      "next": "ch23_00159"
+      "next": "ch23_00159",
+      "key": true
     },
     "ch23_00161": {
       "id": "ch23_00161",
@@ -59085,7 +58936,7 @@
       "description": "Floor 47",
       "dialogue": [],
       "observations": [],
-      "next": "ch23_00174"
+      "next": "ch23_x0001"
     },
     "ch23_00176": {
       "id": "ch23_00176",
@@ -61145,161 +60996,6 @@
       "observations": [],
       "next": "ch24_00067"
     },
-    "ch24_00069": {
-      "id": "ch24_00069",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "Ok, we're outta here.",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CHANK.YESV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00068"
-    },
-    "ch24_00070": {
-      "id": "ch24_00070",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Yes.",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CCONNOR.YESV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00069"
-    },
-    "ch24_00071": {
-      "id": "ch24_00071",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "You're the boss.",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CHANK.NOV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00068"
-    },
-    "ch24_00072": {
-      "id": "ch24_00072",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "Actually, I'll have another look around.",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CCONNOR.NOV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00071"
-    },
-    "ch24_00073": {
-      "id": "ch24_00073",
-      "type": "choice",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "Taking too much time / Ask Hank to leave",
-      "options": [
-        {
-          "id": "option_0",
-          "label": "YES",
-          "next": "ch24_00070",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        },
-        {
-          "id": "option_1",
-          "label": "NO",
-          "next": "ch24_00072",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        }
-      ]
-    },
-    "ch24_00074": {
-      "id": "ch24_00074",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Hank",
-          "text": "You wanna go?",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CHANK.LEAVEV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00073"
-    },
-    "ch24_00075": {
-      "id": "ch24_00075",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Connor",
-          "text": "I think we have seen everything there is to see.",
-          "source_keys": [
-            "X0903C.INVESTIGATION.FAILED.PC.X09CCONNOR.LEAVEV2"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch24_00074"
-    },
-    "ch24_00076": {
-      "id": "ch24_00076",
-      "type": "scene",
-      "chapter": "24",
-      "character": "Connor",
-      "heading": "Taking too much time / Ask Hank to leave",
-      "description": "Taking too much time / Ask Hank to leave",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch24_00075"
-    },
     "ch24_00077": {
       "id": "ch24_00077",
       "type": "scene",
@@ -61317,7 +61013,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00076"
+      "next": "ch24_00068",
+      "key": true
     },
     "ch24_00078": {
       "id": "ch24_00078",
@@ -61336,7 +61033,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00077"
+      "next": "ch24_00077",
+      "key": true
     },
     "ch24_00079": {
       "id": "ch24_00079",
@@ -61355,7 +61053,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00078"
+      "next": "ch24_00078",
+      "key": true
     },
     "ch24_00080": {
       "id": "ch24_00080",
@@ -61374,7 +61073,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00079"
+      "next": "ch24_00079",
+      "key": true
     },
     "ch24_00081": {
       "id": "ch24_00081",
@@ -61389,7 +61089,8 @@
         "RK-SERIES PROTOTYPE RK200 | Registered as 'Markus' | Gift from Elijah Kamski to Carl Manfred"
       ],
       "dialogue": [],
-      "next": "ch24_00080"
+      "next": "ch24_00080",
+      "key": true
     },
     "ch24_00082": {
       "id": "ch24_00082",
@@ -61408,7 +61109,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00081"
+      "next": "ch24_00081",
+      "key": true
     },
     "ch24_00083": {
       "id": "ch24_00083",
@@ -61427,7 +61129,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00082"
+      "next": "ch24_00082",
+      "key": true
     },
     "ch24_00084": {
       "id": "ch24_00084",
@@ -61438,7 +61141,8 @@
       "description": "Look at the speech",
       "dialogue": [],
       "observations": [],
-      "next": "ch24_00083"
+      "next": "ch24_00083",
+      "key": true
     },
     "ch24_00085": {
       "id": "ch24_00085",
@@ -61457,7 +61161,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00084"
+      "next": "ch24_00084",
+      "key": true
     },
     "ch24_00086": {
       "id": "ch24_00086",
@@ -61476,7 +61181,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00085"
+      "next": "ch24_00085",
+      "key": true
     },
     "ch24_00087": {
       "id": "ch24_00087",
@@ -61495,7 +61201,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00086"
+      "next": "ch24_00086",
+      "key": true
     },
     "ch24_00088": {
       "id": "ch24_00088",
@@ -61514,7 +61221,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00087"
+      "next": "ch24_00087",
+      "key": true
     },
     "ch24_00089": {
       "id": "ch24_00089",
@@ -61533,7 +61241,8 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00088"
+      "next": "ch24_00088",
+      "key": true
     },
     "ch24_00090": {
       "id": "ch24_00090",
@@ -61544,7 +61253,8 @@
       "description": "Check CCTV",
       "dialogue": [],
       "observations": [],
-      "next": "ch24_00089"
+      "next": "ch24_00089",
+      "key": true
     },
     "ch24_00091": {
       "id": "ch24_00091",
@@ -61737,7 +61447,8 @@
         "CHEDD, SEAN | Estimated time of death: 13:53:36 | Cause of death: Fatal gunshot wound"
       ],
       "dialogue": [],
-      "next": "ch24_00099"
+      "next": "ch24_x0002",
+      "key": true
     },
     "ch24_00101": {
       "id": "ch24_00101",
@@ -61751,7 +61462,8 @@
         "ROBERT, CHRIS | Estimated time of death: 13:53:36 | Cause of death: Fatal gunshot wound"
       ],
       "dialogue": [],
-      "next": "ch24_00099"
+      "next": "ch24_x0002",
+      "key": true
     },
     "ch24_00102": {
       "id": "ch24_00102",
@@ -61773,7 +61485,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00099",
+      "next": "ch24_x0002",
       "resolution": "unknown"
     },
     "ch24_00103": {
@@ -61787,7 +61499,8 @@
         "THOMPSON, EVAN | Estimated time of death: 13:55:24 | Cause of death: Fatal gunshot wound"
       ],
       "dialogue": [],
-      "next": "ch24_00102"
+      "next": "ch24_00102",
+      "key": true
     },
     "ch24_00104": {
       "id": "ch24_00104",
@@ -61825,7 +61538,8 @@
         "CAP | Stolen maintenance uniform | Assailants were disguised"
       ],
       "dialogue": [],
-      "next": "ch24_00104"
+      "next": "ch24_00104",
+      "key": true
     },
     "ch24_00106": {
       "id": "ch24_00106",
@@ -61836,7 +61550,8 @@
       "description": "Investigating",
       "dialogue": [],
       "observations": [],
-      "next": "ch24_00105"
+      "next": "ch24_00105",
+      "key": true
     },
     "ch24_00107": {
       "id": "ch24_00107",
@@ -61855,7 +61570,7 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00106"
+      "next": "ch24_x0001"
     },
     "ch24_00108": {
       "id": "ch24_00108",
@@ -114124,7 +113839,16 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch18_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
         },
         {
           "id": "option_4",
@@ -114136,7 +113860,16 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch18_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
         }
       ]
     },
@@ -125445,6 +125178,468 @@
           "effects": {
             "flags": {
               "kara_ch17_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch18_x0002": {
+      "id": "ch18_x0002",
+      "type": "condition",
+      "chapter": "18",
+      "character": "Connor",
+      "heading": "Watch TV",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch18_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch18_00015"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch18_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch18_00008"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Russian_Roulette#Flowchart"
+    },
+    "ch18_x0001": {
+      "id": "ch18_x0001",
+      "type": "choice",
+      "chapter": "18",
+      "character": "Connor",
+      "heading": "Investigating Hank's house",
+      "description": "Hank has shut himself in the bathroom to get ready. His house is a mess: records, photos, empty bottles, a broken window and a revolver on the kitchen floor. How do you use the time?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Russian_Roulette#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "LOOK AROUND THE HOUSE",
+          "next": "ch18_00017",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch18_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK WHAT MATTERS",
+          "next": "ch18_00017",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch18_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WAIT FOR HANK",
+          "next": "ch18_00003",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch18_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch20_x0002": {
+      "id": "ch20_x0002",
+      "type": "condition",
+      "chapter": "20",
+      "character": "Connor",
+      "heading": "Hank looking at driver's license",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch20_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch20_00133"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch20_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch20_00131"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Eden_Club#Flowchart"
+    },
+    "ch20_x0001": {
+      "id": "ch20_x0001",
+      "type": "choice",
+      "chapter": "20",
+      "character": "Connor",
+      "heading": "Inside the room",
+      "description": "A man lies dead on the bed, bruises around his throat. A damaged Traci lies against the wall, its LED dark. Hank is hungover and wants this over with. How do you examine the scene?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Eden_Club#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "EXAMINE EVERYTHING",
+          "next": "ch20_00137",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "FOCUS ON THE ESSENTIALS",
+          "next": "ch20_00137",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "MOVE ON",
+          "next": "ch20_00131",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch20_x0004": {
+      "id": "ch20_x0004",
+      "type": "condition",
+      "chapter": "20",
+      "character": "Connor",
+      "heading": "In the warehouse",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch20_warehouse_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch20_00024"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch20_warehouse_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch20_00017"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Eden_Club#Flowchart"
+    },
+    "ch20_x0003": {
+      "id": "ch20_x0003",
+      "type": "choice",
+      "chapter": "20",
+      "character": "Connor",
+      "heading": "In the warehouse",
+      "description": "The warehouse behind the club is cold and lit blue. Rows of identical Tracis stand in their charging stations. The blue-haired deviant is in here somewhere. How do you search?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Eden_Club#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH THE WAREHOUSE",
+          "next": "ch20_00026",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_warehouse_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "FOLLOW THE TRAIL",
+          "next": "ch20_00026",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_warehouse_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "PRESS ON",
+          "next": "ch20_00017",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch20_warehouse_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch21_x0002": {
+      "id": "ch21_x0002",
+      "type": "condition",
+      "chapter": "21",
+      "character": "Kara",
+      "heading": "Switch on Ivan",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "kara_ch21_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch21_00118"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "kara_ch21_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch21_00113"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Pirates'_Cove#Flowchart"
+    },
+    "ch21_x0001": {
+      "id": "ch21_x0001",
+      "type": "choice",
+      "chapter": "21",
+      "character": "Kara",
+      "heading": "Inside Pirate's Cove",
+      "description": "The car has broken down in the freezing night beside an abandoned amusement park. Old rides stand frozen under the snow and the buildings are dark. Alice is shivering. How do you look for shelter?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Pirates'_Cove#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SCOUT THE PARK",
+          "next": "ch21_00121",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK NEARBY BUILDINGS",
+          "next": "ch21_00121",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "FIND SHELTER NOW",
+          "next": "ch21_00113",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch23_x0002": {
+      "id": "ch23_x0002",
+      "type": "condition",
+      "chapter": "23",
+      "character": "Markus",
+      "heading": "Man and woman on couch talking",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "markus_ch23_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch23_00158"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "markus_ch23_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch23_00150"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Flowchart"
+    },
+    "ch23_x0001": {
+      "id": "ch23_x0001",
+      "type": "choice",
+      "chapter": "23",
+      "character": "Markus",
+      "heading": "Floor 47",
+      "description": "The 47th floor is full of employees: people chatting by the coffee machines, screens running the news, couples on the couches. None of them knows what is about to happen in their building. How do you cross the floor?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE IN THE FLOOR",
+          "next": "ch23_00174",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch23_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "KEEP YOUR EYES OPEN",
+          "next": "ch23_00160",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch23_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "STAY ON MISSION",
+          "next": "ch23_00150",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_ch23_exploration": "rush"
+            }
+          }
+        }
+      ]
+    },
+    "ch24_x0002": {
+      "id": "ch24_x0002",
+      "type": "condition",
+      "chapter": "24",
+      "character": "Connor",
+      "heading": "Investigating",
+      "branches": [
+        {
+          "condition_text": "Searching thoroughly",
+          "when": {
+            "flag": "connor_ch24_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch24_00099"
+        },
+        {
+          "condition_text": "Checking key areas only",
+          "when": {
+            "flag": "connor_ch24_exploration",
+            "equals": "key_only"
+          },
+          "next": "ch24_00090"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
+    },
+    "ch24_x0001": {
+      "id": "ch24_x0001",
+      "type": "choice",
+      "chapter": "24",
+      "character": "Connor",
+      "heading": "Investigating",
+      "description": "The Stratford Tower is a crime scene. Bullet holes mark the walls, the broadcast studio is sealed off and FBI agents are everywhere. Hank tells you to have a look around. How do you investigate?",
+      "exploration": true,
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "INVESTIGATE THOROUGHLY",
+          "next": "ch24_00106",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch24_exploration": "thorough"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CHECK KEY EVIDENCE",
+          "next": "ch24_00106",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch24_exploration": "key_only"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GO TO THE KITCHEN",
+          "next": "ch24_00068",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_ch24_exploration": "rush"
             }
           }
         }

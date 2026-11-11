@@ -269,6 +269,11 @@ EXPLORED_CHAPTERS = {
     "15": 1,
     "16": 1,
     "17": 1,
+    "18": 1,
+    "20": 2,
+    "21": 1,
+    "23": 1,
+    "24": 1,
 }
 EXPLORATIONS = sorted(
     nid
@@ -325,6 +330,7 @@ def test_every_story_node_is_reachable(dataset):
     [
         ("ch9_00123", "FEAR", "connor_ch9_exploration"),
         ("ch9_00123", "WOUNDS", "connor_ch9_exploration"),
+        ("ch32_3_00033", "HANK'S SON", "connor_ch18_exploration"),
     ],
 )
 def test_rushing_loses_options_the_wiki_ties_to_searching(
