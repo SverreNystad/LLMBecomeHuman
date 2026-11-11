@@ -586,7 +586,12 @@ class Runner:
                 "node": graph["start"],
                 "event_idx": 0,
                 "status": "running",
-                "flags": dict(initial_flags or {}),
+                # The story's own starting facts (e.g. every side character alive),
+                # then any the caller adds.
+                "flags": {
+                    **(graph.get("initial_flags") or {}),
+                    **(initial_flags or {}),
+                },
                 "character_memories": {name: "" for name in CHARACTERS},
                 # The current Chapter Segment so far: scenes and the choices made.
                 "segment_events": [],
@@ -1037,6 +1042,10 @@ class Runner:
                         "picked": idx,
                     }
                 )
+            if idx is not None:
+                # A fate decided here (a death, an escape) is remembered for later rules.
+                branch_effects = node["branches"][idx].get("effects") or {}
+                self.state["flags"].update(branch_effects.get("flags") or {})
             self.state["node"] = (
                 node["branches"][idx]["next"] if idx is not None else node.get("next")
             )

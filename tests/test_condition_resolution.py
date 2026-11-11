@@ -13,7 +13,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
-from tests.dataset import load_dataset
+from tests.dataset import flag_values, load_dataset
 
 
 def _scene(nid, nxt):
@@ -155,6 +155,34 @@ def test_rule_follows_earlier_choice_not_default(tmp_path):
     assert result["warnings"] == []
 
 
+def test_rule_branch_taken_applies_its_flag_effects(tmp_path):
+    # A fate decided at a rule (Luther dies when the officer finds the androids)
+    # is remembered for later rules.
+    fatal = {
+        **RULE,
+        "branches": [
+            RULE["branches"][0],
+            {**RULE["branches"][1], "effects": {"flags": {"luther_alive": False}}},
+        ],
+    }
+    g = tiny_graph(
+        fatal,
+        [
+            {"id": "stay", "effects": {"flags": {"connor_sacrificed": False}}},
+            {"id": "jump", "effects": {"flags": {"connor_sacrificed": True}}},
+        ],
+    )
+    result, _ = play(g, tmp_path)
+    assert result["final_flags"]["luther_alive"] is False
+
+
+def test_story_initial_flags_start_every_run(tmp_path):
+    # Every side character starts the story alive.
+    g = {**tiny_graph(RULE), "initial_flags": {"luther_alive": True}}
+    result, _ = play(g, tmp_path, allow_unverified=True)
+    assert result["final_flags"]["luther_alive"] is True
+
+
 def test_rule_needs_source_and_when_on_every_branch():
     no_source = {k: v for k, v in RULE.items() if k != "source"}
     assert not validate_graph(tiny_graph(no_source))["valid"]
@@ -215,14 +243,10 @@ def test_dataset_conditions_are_sorted(chapter):
 
 
 def test_dataset_rule_flags_are_set_by_some_choice():
-    nodes = load_dataset()["nodes"]
-    set_by_choices = {
-        name
-        for n in nodes.values()
-        if n["type"] == "choice"
-        for o in n["options"]
-        for name in (o.get("effects") or {}).get("flags", {})
-    }
+    # Set by a choice, by a fate decided at an earlier rule, or at the story's start.
+    graph = load_dataset()
+    nodes = graph["nodes"]
+    set_by_choices = set(flag_values(graph))
 
     def flags_in(expr):
         if "flag" in expr:
@@ -239,11 +263,7 @@ def test_dataset_rule_flags_are_set_by_some_choice():
 def test_dataset_rule_branches_never_overlap():
     # The engine refuses a condition where two branches match at once.
     nodes = load_dataset()["nodes"]
-    values = {}
-    for n in nodes.values():
-        for o in n.get("options", []):
-            for name, value in (o.get("effects") or {}).get("flags", {}).items():
-                values.setdefault(name, []).append(value)
+    values = flag_values(load_dataset())
 
     def flags_in(expr):
         if "flag" in expr:
