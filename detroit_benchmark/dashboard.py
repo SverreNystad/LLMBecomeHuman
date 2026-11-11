@@ -283,6 +283,16 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
         )
     elif kind == "ending":
         beat.update(description=event.get("description"))
+    elif kind == "memory_update":
+        # A Memory Update closes a Chapter Segment; _parse_events adds the previous memory.
+        beat.update(
+            type="memory",
+            character=event.get("character"),
+            memory=event.get("memory") or "",
+            length=event.get("length"),
+            max_chars=event.get("max_chars"),
+            truncated=bool(event.get("truncated", False)),
+        )
     else:
         return None
     return beat
@@ -294,10 +304,15 @@ def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, 
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
     visits: Counter = Counter()
+    memories: dict[str, str] = {}
     for event in _event_iter(Path(directory)):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
+            if beat["type"] == "memory":
+                # Each Character's memory is compared only with its own last one.
+                beat["previous"] = memories.get(beat["character"], "")
+                memories[beat["character"]] = beat["memory"]
             # A node can recur, so each pass through a Moment is numbered from the run's start.
             visits[beat["moment"]] += 1
             beat["visit"] = visits[beat["moment"]]

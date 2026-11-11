@@ -59,6 +59,8 @@ function buildStoryItems(beats) {
       items.push({kind: 'rule', index: beat.index, moment, beat});
     } else if (beat.type === 'ending') {
       items.push({kind: 'ending', index: beat.index, moment, text: beat.description});
+    } else if (beat.type === 'memory') {
+      items.push({kind: 'memory', index: beat.index, moment, ...beat});
     }
   }
   return items;
@@ -129,6 +131,7 @@ function renderItem(item, context) {
     case 'narration': return `<p class="story-narration" ${momentAttrs(item)}>${esc(item.text)}</p>`;
     case 'rule': return renderRule(item);
     case 'ending': return `<p class="story-ending" ${momentAttrs(item)}>${esc(item.text)}</p>`;
+    case 'memory': return typeof renderMemoryCard === 'function' ? renderMemoryCard(item) : '';
     case 'decision': return renderDecision(item, context.numbers.get(item), context.total, context.keys.get(item), context.tables, context.run);
     default: return '';
   }

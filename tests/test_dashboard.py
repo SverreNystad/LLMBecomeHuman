@@ -481,6 +481,35 @@ def test_story_opens_each_chapter_with_its_briefing(tmp_path):
     assert story(c, run, "3")["briefing"] is None
 
 
+def test_story_ends_each_chapter_segment_with_a_memory_snapshot(tmp_path):
+    c, run = played_run(tmp_path)
+    first = story(c, run, "1")["beats"][-1]
+    assert first["type"] == "memory"
+    assert first["character"] == "Connor"
+    assert "Rooftop" in first["memory"]
+    assert first["previous"] == ""
+    assert first["truncated"] is False
+
+    kara = story(c, run, "2")["beats"][-1]
+    assert kara["character"] == "Kara"
+    assert kara["previous"] == ""  # Kara's own first memory, not Connor's
+
+    later = story(c, run, "3")["beats"]
+    memory = next(b for b in later if b["type"] == "memory")
+    assert memory["previous"] == first["memory"]
+    assert "Interrogation" in memory["memory"]
+
+
+def test_old_runs_have_no_briefing_and_no_memory():
+    c = client()
+    run = c.get("/api/runs").json()["runs"][0]
+    chapter = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]["chapter"]
+    body = story(c, run, chapter)
+    assert body["beats"]
+    assert body["briefing"] is None
+    assert not [b for b in body["beats"] if b["type"] == "memory"]
+
+
 @pytest.mark.skipif(
     not (PROJECT / "docker-compose.yml").exists(),
     reason="compose file is not in the image",
