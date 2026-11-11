@@ -483,3 +483,66 @@ def test_breaking_programming_is_not_a_choice_but_standing_still_is():
     labels = {o["label"]: o for o in after["options"]}
     assert set(labels) == {"STAND STILL", "TALK TO TODD", "GO UPSTAIRS"}
     assert labels["STAND STILL"]["effects"]["flags"]["kara_story_ended"] is True
+
+
+ENDGAME = ("30", "31", "32")
+
+
+def _endgame_branches(tmp_path, picks):
+    """Play the whole real story; return {condition id: branch taken} in chapters 30-32."""
+    run = _ScriptedRunner(
+        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+    )
+    run.run()
+    assert run.state["status"] == "complete"
+    taken = {}
+    for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines():
+        event = json.loads(line)
+        if event["type"] == "condition" and str(event["chapter"]).startswith(ENDGAME):
+            taken[event["node_id"]] = event["branch_index"]
+    return taken
+
+
+def test_endgame_conditions_are_rules_or_say_why_not():
+    for n in load_dataset()["nodes"].values():
+        if n["type"] == "condition" and str(n["chapter"]).startswith(ENDGAME):
+            if n["resolution"] == "unknown":
+                assert n.get("unknown_reason"), n["id"]
+
+
+# Earlier choices that decide a side character's fate.
+SPARE_LUTHER = {"ch32_1_00209": "PAPERS"}  # not DIVERSION LUTHER at the bus terminal
+LEAVE_NORTH = {"ch30_3_00040": "RUN"}  # North is shot in Crossroads and left behind
+REFUSE_PERKINS = {
+    "ch32_5_00076": "REFUSE DEAL",
+    "ch32_5_00090": "REFUSE",
+    "ch32_5_00093": "REFUSE",
+}
+
+
+def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
+    default = _endgame_branches(tmp_path / "a", {})
+    chosen = _endgame_branches(
+        tmp_path / "b", {**SPARE_LUTHER, **LEAVE_NORTH, **REFUSE_PERKINS}
+    )
+    # Kara: Luther sent as a diversion is gone on the boat; spared, he is there.
+    assert (default["ch32_1_00179"], chosen["ch32_1_00179"]) == (1, 0)
+    # Connor: the androids he frees at CyberLife are greeted by North, or by Simon
+    # when North died in Crossroads.
+    assert (default["ch32_4_00011"], chosen["ch32_4_00011"]) == (0, 1)
+    # Markus: refusing Perkins's deal, North survives it unless Crossroads cost her.
+    assert chosen["ch32_5_00105"] == 1
+
+
+def test_endgame_rules_never_fall_back_to_a_default(tmp_path):
+    nodes = load_dataset()["nodes"]
+    taken = _endgame_branches(tmp_path, {**SPARE_LUTHER, **LEAVE_NORTH})
+    rules = [nid for nid in taken if nodes[nid]["resolution"] == "rule"]
+    assert rules
+    events = (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    fallbacks = {
+        e["node_id"]
+        for e in map(json.loads, events)
+        if e["type"] == "condition" and e.get("used_unverified_default")
+    }
+    assert not fallbacks & set(rules)

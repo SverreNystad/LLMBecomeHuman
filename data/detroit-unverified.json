@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 162,
+    "condition_nodes_unverified": 70,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -14133,26 +14133,37 @@
     },
     "ch7_00076": {
       "id": "ch7_00076",
-      "type": "condition",
+      "type": "choice",
       "chapter": "7",
       "character": "Kara",
       "heading": "Go into Alice's room",
-      "branches": [
+      "description": "Todd's gun is within reach. Do you take it?",
+      "options": [
         {
-          "condition_text": "Took the gun",
-          "when": null,
-          "next": "ch7_00053"
+          "id": "option_0",
+          "label": "TAKE THE GUN",
+          "next": "ch7_00053",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_took_gun": true
+            }
+          }
         },
         {
-          "condition_text": "Didn't take the gun",
-          "when": null,
-          "next": "ch7_00075"
+          "id": "option_1",
+          "label": "LEAVE IT",
+          "next": "ch7_00075",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_took_gun": false
+            }
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch7_00001",
-      "resolution": "unknown"
+      ]
     },
     "ch7_00077": {
       "id": "ch7_00077",
@@ -24603,19 +24614,26 @@
       "branches": [
         {
           "condition_text": "Kara didn't kill Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00003"
+          "next": "ch12_00003",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
         },
         {
           "condition_text": "Kara killed Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00004"
+          "next": "ch12_00004",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00002",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch12_00006": {
       "id": "ch12_00006",
@@ -25386,24 +25404,50 @@
       "branches": [
         {
           "condition_text": "Kara didn't kill Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00040"
+          "next": "ch12_00040",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_took_gun",
+                "equals": false
+              },
+              {
+                "flag": "quick_time_event_failed",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Kara killed Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00041"
+          "next": "ch12_00041",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_took_gun",
+                "equals": true
+              },
+              {
+                "flag": "quick_time_event_failed",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Kara died in Stormy Night",
-          "when": null,
-          "next": "ch12_00042"
+          "next": "ch12_00042",
+          "when": {
+            "flag": "quick_time_event_failed",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00039",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch12_00044": {
       "id": "ch12_00044",
@@ -25433,19 +25477,26 @@
       "branches": [
         {
           "condition_text": "Kara didn't kill Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00044"
+          "next": "ch12_00044",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
         },
         {
           "condition_text": "Kara killed Todd in Stormy Night",
-          "when": null,
-          "next": "ch12_00044"
+          "next": "ch12_00044",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00044",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch12_00046": {
       "id": "ch12_00046",
@@ -31238,19 +31289,26 @@
       "branches": [
         {
           "condition_text": "Todd was killed in Stormy Night",
-          "when": null,
-          "next": "ch13_00064"
+          "next": "ch13_00064",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": true
+          }
         },
         {
           "condition_text": "Todd is alive",
-          "when": null,
-          "next": "ch13_00068"
+          "next": "ch13_00068",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch13_00060",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch13_00070": {
       "id": "ch13_00070",
@@ -32455,19 +32513,26 @@
       "branches": [
         {
           "condition_text": "No gun : Kara takes a knife",
-          "when": null,
-          "next": "ch13_00128"
+          "next": "ch13_00128",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
         },
         {
           "condition_text": "Kara has a gun : Kara threatens Ralph with the gun",
-          "when": null,
-          "next": "ch13_00129"
+          "next": "ch13_00129",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch13_00122",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     },
     "ch13_00131": {
       "id": "ch13_00131",
@@ -45077,7 +45142,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_tried_to_save_john": true
+              "markus_tried_to_save_john": true,
+              "markus_john_joined": true
             }
           }
         },
@@ -45089,7 +45155,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_tried_to_save_john": false
+              "markus_tried_to_save_john": false,
+              "markus_john_joined": false
             }
           }
         }
@@ -45541,7 +45608,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_john_joined": true
+            }
           }
         },
         {
@@ -45560,7 +45629,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_john_joined": false
+            }
           }
         }
       ]
@@ -55979,7 +56050,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_simon_fate": "executed"
+              "markus_simon_fate": "executed",
+              "simon_alive": false
             }
           }
         },
@@ -55991,7 +56063,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_simon_fate": "left_behind"
+              "markus_simon_fate": "left_behind",
+              "simon_alive": false
             }
           }
         }
@@ -56102,7 +56175,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_simon_fate": "left_behind"
+              "markus_simon_fate": "left_behind",
+              "simon_alive": false
             }
           }
         }
@@ -56305,7 +56379,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_simon_fate": "killed_in_broadcast"
+              "markus_simon_fate": "killed_in_broadcast",
+              "simon_alive": false
             }
           }
         },
@@ -63622,19 +63697,57 @@
       "branches": [
         {
           "condition_text": "Policeman is fooled",
-          "when": null,
-          "next": "ch25_00006"
+          "next": "ch25_00006",
+          "when": {
+            "any": [
+              {
+                "any": [
+                  {
+                    "flag": "kara_ch25_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "kara_ch25_exploration",
+                    "equals": "key_only"
+                  }
+                ]
+              },
+              {
+                "flag": "kara_luther_hiding_place",
+                "equals": "kitchen"
+              }
+            ]
+          }
         },
         {
           "condition_text": "Policeman is suspicious",
-          "when": null,
-          "next": "ch25_00013"
+          "next": "ch25_00013",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_ch25_exploration",
+                "equals": "rush"
+              },
+              {
+                "not": {
+                  "flag": "kara_luther_hiding_place",
+                  "equals": "kitchen"
+                }
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch25_00002",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00015": {
       "id": "ch25_00015",
@@ -63840,7 +63953,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch25_00020",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record."
     },
     "ch25_00024": {
       "id": "ch25_00024",
@@ -64162,7 +64276,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch25_00036",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record."
     },
     "ch25_00039": {
       "id": "ch25_00039",
@@ -64249,19 +64364,56 @@
       "branches": [
         {
           "condition_text": "Policeman discovers Alice & Luther hidden in the kitchen",
-          "when": null,
-          "next": "ch25_00042"
+          "next": "ch25_00042",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_luther_hiding_place",
+                "equals": "kitchen"
+              },
+              {
+                "flag": "kara_ch25_exploration",
+                "equals": "rush"
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false,
+              "luther_killed_cop": true
+            }
+          }
         },
         {
           "condition_text": "Policeman discovers Alice hidden in the kitchen",
-          "when": null,
-          "next": "ch25_00038"
+          "next": "ch25_00038",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_luther_hiding_place",
+                "equals": "kitchen"
+              },
+              {
+                "any": [
+                  {
+                    "flag": "kara_ch25_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "kara_ch25_exploration",
+                    "equals": "key_only"
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch25_00038",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00044": {
       "id": "ch25_00044",
@@ -64388,14 +64540,18 @@
       "branches": [
         {
           "condition_text": "Kara didn't close the cupboard - policeman sees blue blood",
-          "when": null,
-          "next": "ch25_00048"
+          "next": "ch25_00048",
+          "when": {
+            "flag": "kara_ch25_exploration",
+            "equals": "rush"
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch25_00043",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00050": {
       "id": "ch25_00050",
@@ -66334,44 +66490,6 @@
       "observations": [],
       "next": "ch25_00144"
     },
-    "ch25_00146": {
-      "id": "ch25_00146",
-      "type": "scene",
-      "chapter": "25",
-      "character": "Kara",
-      "heading": "Get inside",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "I miss him too…",
-          "source_keys": [
-            "X0801K.ALICE.TAKECARE.PC.X08KKARA.MISSLUTHER"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch25_00144"
-    },
-    "ch25_00147": {
-      "id": "ch25_00147",
-      "type": "scene",
-      "chapter": "25",
-      "character": "Kara",
-      "heading": "Get inside",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Alice",
-          "text": "I miss Luther…",
-          "source_keys": [
-            "X0801K.ALICE.TAKECARE.PC.X08KALICE.MISSLUTHER"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch25_00146"
-    },
     "ch25_00148": {
       "id": "ch25_00148",
       "type": "condition",
@@ -66381,19 +66499,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch25_00145"
-        },
-        {
-          "condition_text": "Luther died in The Pirate's Cove 's unused chase scene",
-          "when": null,
-          "next": "ch25_00147"
+          "next": "ch25_00145",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch25_00144",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00149": {
       "id": "ch25_00149",
@@ -67206,19 +67323,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch25_00185"
-        },
-        {
-          "condition_text": "Luther died in The Pirate's Cove 's unused chase scene",
-          "when": null,
-          "next": "ch25_00180"
+          "next": "ch25_00185",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch25_00180",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00187": {
       "id": "ch25_00187",
@@ -74781,7 +74897,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": true
+              "markus_march_violent": true,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -74800,7 +74917,8 @@
           "effects": {
             "flags": {
               "markus_march_peaceful": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -74819,7 +74937,8 @@
           "effects": {
             "flags": {
               "markus_march_dispersed": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75107,24 +75226,60 @@
       "branches": [
         {
           "condition_text": "John joined in Spare Parts",
-          "when": null,
-          "next": "ch28_00021"
+          "next": "ch28_00021",
+          "when": {
+            "flag": "markus_john_joined",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon survived in Public Enemy and has a good relationship with Markus",
-          "when": null,
-          "next": "ch28_00023"
+          "next": "ch28_00023",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_john_joined",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "simon_alive": false
+            }
+          }
         },
         {
           "condition_text": "No one is there to save Markus",
-          "when": null,
-          "next": "ch28_00026"
+          "next": "ch28_00026",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_john_joined",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch28_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
     },
     "ch28_00028": {
       "id": "ch28_00028",
@@ -75180,7 +75335,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": true
+              "markus_march_violent": true,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75211,7 +75367,8 @@
           "effects": {
             "flags": {
               "markus_march_stood_under_fire": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75351,7 +75508,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": true
+              "markus_march_violent": true,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75402,7 +75560,8 @@
           "effects": {
             "flags": {
               "markus_march_fired_upon": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75421,7 +75580,8 @@
           "effects": {
             "flags": {
               "markus_march_dispersed": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75525,7 +75685,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": true
+              "markus_march_violent": true,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75544,7 +75705,8 @@
           "effects": {
             "flags": {
               "markus_march_stood_under_fire": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75591,7 +75753,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": true
+              "markus_march_violent": true,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75609,7 +75772,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             }
           }
         },
@@ -75639,7 +75803,8 @@
           "effects": {
             "flags": {
               "markus_march_dispersed": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75781,7 +75946,8 @@
           "effects": {
             "flags": {
               "markus_march_peaceful": true,
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             },
             "news": [
               {
@@ -75816,7 +75982,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_march_violent": false
+              "markus_march_violent": false,
+              "markus_march_fled": false
             }
           }
         }
@@ -84167,7 +84334,8 @@
           ],
           "effects": {
             "flags": {
-              "connor_revealed_jericho": true
+              "connor_revealed_jericho": true,
+              "connor_knows_jericho": true
             },
             "news": [
               {
@@ -84216,7 +84384,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_jericho": true
+            }
           },
           "requires": [
             {
@@ -84866,24 +85036,55 @@
       "branches": [
         {
           "condition_text": "Luther is alive - Luther sacrifices himself",
-          "when": null,
-          "next": "ch30_1_00018"
+          "next": "ch30_1_00018",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00020"
+          "next": "ch30_1_00020",
+          "when": {
+            "all": [
+              {
+                "flag": "luther_alive",
+                "equals": false
+              },
+              {
+                "flag": "kara_ch30_played_dead",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Luther is dead and Kara played dead before attacking",
-          "when": null,
-          "next": "ch30_1_00030"
+          "next": "ch30_1_00030",
+          "when": {
+            "all": [
+              {
+                "flag": "luther_alive",
+                "equals": false
+              },
+              {
+                "flag": "kara_ch30_played_dead",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00032": {
       "id": "ch30_1_00032",
@@ -85046,7 +85247,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch30_played_dead": true
+            }
           }
         }
       ]
@@ -85416,7 +85619,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch30_played_dead": true
+            }
           }
         },
         {
@@ -86165,7 +86370,8 @@
           ],
           "effects": {
             "flags": {
-              "kara_helped_luther": false
+              "kara_helped_luther": false,
+              "luther_alive": false
             }
           }
         }
@@ -86256,19 +86462,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00092"
+          "next": "ch30_1_00092",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00094"
+          "next": "ch30_1_00094",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00071",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00096": {
       "id": "ch30_1_00096",
@@ -86470,19 +86683,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00100"
+          "next": "ch30_1_00100",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00105"
+          "next": "ch30_1_00105",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00095",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00107": {
       "id": "ch30_1_00107",
@@ -86666,14 +86886,18 @@
       "branches": [
         {
           "condition_text": "Alice is DISTANT, but Kara chose LOOK FOR ALICE",
-          "when": null,
-          "next": "ch30_1_00116"
+          "next": "ch30_1_00116",
+          "when": {
+            "flag": "kara_ch30_alice_distant",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00113",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00118": {
       "id": "ch30_1_00118",
@@ -86817,14 +87041,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00124"
+          "next": "ch30_1_00124",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00123",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00126": {
       "id": "ch30_1_00126",
@@ -86903,14 +87131,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00129"
+          "next": "ch30_1_00129",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00126",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00131": {
       "id": "ch30_1_00131",
@@ -86936,7 +87168,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch30_alice_distant": false
+            }
           }
         },
         {
@@ -86951,7 +87185,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch30_alice_distant": true
+            }
           }
         }
       ]
@@ -87022,19 +87258,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00133"
+          "next": "ch30_1_00133",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00134"
+          "next": "ch30_1_00134",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00132",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00136": {
       "id": "ch30_1_00136",
@@ -87064,14 +87307,18 @@
       "branches": [
         {
           "condition_text": "Todd chased Kara escaping in Stormy Night",
-          "when": null,
-          "next": "ch30_1_00136"
+          "next": "ch30_1_00136",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00135",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00138": {
       "id": "ch30_1_00138",
@@ -87304,19 +87551,26 @@
       "branches": [
         {
           "condition_text": "Connor knows the location of Jericho",
-          "when": null,
-          "next": "ch30_1_00147"
+          "next": "ch30_1_00147",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
         },
         {
           "condition_text": "Connor series was decommissioned",
-          "when": null,
-          "next": "ch30_1_00148"
+          "next": "ch30_1_00148",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00146",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00150": {
       "id": "ch30_1_00150",
@@ -87384,19 +87638,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00151"
+          "next": "ch30_1_00151",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00152"
+          "next": "ch30_1_00152",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00150",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00154": {
       "id": "ch30_1_00154",
@@ -87705,19 +87966,26 @@
       "branches": [
         {
           "condition_text": "Connor knows the location of Jericho",
-          "when": null,
-          "next": "ch30_1_00166"
+          "next": "ch30_1_00166",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
         },
         {
           "condition_text": "Connor series was decommissioned",
-          "when": null,
-          "next": "ch30_1_00167"
+          "next": "ch30_1_00167",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00165",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00169": {
       "id": "ch30_1_00169",
@@ -87785,19 +88053,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00170"
+          "next": "ch30_1_00170",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch30_1_00171"
+          "next": "ch30_1_00171",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00169",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00173": {
       "id": "ch30_1_00173",
@@ -87827,19 +88102,42 @@
       "branches": [
         {
           "condition_text": "Talking to Markus",
-          "when": null,
-          "next": "ch30_1_00154"
+          "next": "ch30_1_00154",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Talking to North",
-          "when": null,
-          "next": "ch30_1_00173"
+          "next": "ch30_1_00173",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00139",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00175": {
       "id": "ch30_1_00175",
@@ -87964,19 +88262,26 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00179"
+          "next": "ch30_1_00179",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther died in Midnight Train",
-          "when": null,
-          "next": "ch30_1_00180"
+          "next": "ch30_1_00180",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00174",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00182": {
       "id": "ch30_1_00182",
@@ -88066,14 +88371,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00186"
+          "next": "ch30_1_00186",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00185",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00188": {
       "id": "ch30_1_00188",
@@ -88133,14 +88442,18 @@
       "branches": [
         {
           "condition_text": "Luther is alive",
-          "when": null,
-          "next": "ch30_1_00190"
+          "next": "ch30_1_00190",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_1_00188",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00192": {
       "id": "ch30_1_00192",
@@ -88412,19 +88725,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_2_00005"
+          "next": "ch30_2_00005",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_2_00006"
+          "next": "ch30_2_00006",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_2_00004",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_2_00008": {
       "id": "ch30_2_00008",
@@ -88642,19 +88962,42 @@
       "branches": [
         {
           "condition_text": "Markus is alive - Connor finds Markus",
-          "when": null,
-          "next": "ch30_2_00012"
+          "next": "ch30_2_00012",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus is dead or left Jericho - Connor goes after North",
-          "when": null,
-          "next": "ch30_2_00017"
+          "next": "ch30_2_00017",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_2_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_2_00019": {
       "id": "ch30_2_00019",
@@ -91571,19 +91914,42 @@
       "branches": [
         {
           "condition_text": "Markus survived",
-          "when": null,
-          "next": "ch30_3_00002"
+          "next": "ch30_3_00002",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus died or was rejected",
-          "when": null,
-          "next": "ch30_3_00003"
+          "next": "ch30_3_00003",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00005": {
       "id": "ch30_3_00005",
@@ -92352,7 +92718,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_saved_north": false
+              "markus_saved_north": false,
+              "north_alive": false
             }
           }
         }
@@ -92405,19 +92772,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00041"
+          "next": "ch30_3_00041",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00042"
+          "next": "ch30_3_00042",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00040",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00044": {
       "id": "ch30_3_00044",
@@ -92647,19 +93021,42 @@
       "branches": [
         {
           "condition_text": "Markus was rejected by Jericho",
-          "when": null,
-          "next": "ch30_3_00053"
+          "next": "ch30_3_00053",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus wasn't rejected",
-          "when": null,
-          "next": "ch30_3_00055"
+          "next": "ch30_3_00055",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00047",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00057": {
       "id": "ch30_3_00057",
@@ -92749,19 +93146,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00060"
+          "next": "ch30_3_00060",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00061"
+          "next": "ch30_3_00061",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00059",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00063": {
       "id": "ch30_3_00063",
@@ -93103,7 +93507,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "josh_alive": false
+            }
           }
         }
       ]
@@ -94580,19 +94986,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00146"
+          "next": "ch30_3_00146",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00152"
+          "next": "ch30_3_00152",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00138",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00154": {
       "id": "ch30_3_00154",
@@ -94680,19 +95093,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00155"
+          "next": "ch30_3_00155",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00157"
+          "next": "ch30_3_00157",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00154",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00159": {
       "id": "ch30_3_00159",
@@ -94807,7 +95227,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_kissed_north": true
+            }
           }
         },
         {
@@ -94822,7 +95244,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_kissed_north": false
+            }
           }
         }
       ]
@@ -94855,14 +95279,26 @@
       "branches": [
         {
           "condition_text": "North has lover relationship status",
-          "when": null,
-          "next": "ch30_3_00166"
+          "next": "ch30_3_00166",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00161",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00168": {
       "id": "ch30_3_00168",
@@ -95204,14 +95640,18 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00182"
+          "next": "ch30_3_00182",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00181",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00184": {
       "id": "ch30_3_00184",
@@ -95317,14 +95757,18 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00188"
+          "next": "ch30_3_00188",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00187",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00190": {
       "id": "ch30_3_00190",
@@ -95430,19 +95874,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch30_3_00193"
+          "next": "ch30_3_00193",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00194"
+          "next": "ch30_3_00194",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00180",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00196": {
       "id": "ch30_3_00196",
@@ -95638,19 +96089,26 @@
       "branches": [
         {
           "condition_text": "Simon is here",
-          "when": null,
-          "next": "ch30_3_00201"
+          "next": "ch30_3_00201",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch30_3_00202"
+          "next": "ch30_3_00202",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00200",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00204": {
       "id": "ch30_3_00204",
@@ -95749,19 +96207,26 @@
       "branches": [
         {
           "condition_text": "Reputation with Jericho is higher than 'unpopular'",
-          "when": null,
-          "next": "ch30_3_00203"
+          "next": "ch30_3_00203",
+          "when": {
+            "flag": "markus_march_fled",
+            "equals": false
+          }
         },
         {
           "condition_text": "Reputation with Jericho is unpopular",
-          "when": null,
-          "next": "ch30_3_00208"
+          "next": "ch30_3_00208",
+          "when": {
+            "flag": "markus_march_fled",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch30_3_00160",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_3_00210": {
       "id": "ch30_3_00210",
@@ -96539,14 +97004,26 @@
       "branches": [
         {
           "condition_text": "North has lover relationship status",
-          "when": null,
-          "next": "ch31_1_00013"
+          "next": "ch31_1_00013",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch31_1_x0900",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_1_00015": {
       "id": "ch31_1_00015",
@@ -96918,19 +97395,42 @@
       "branches": [
         {
           "condition_text": "Markus wasn't rejected by Jericho",
-          "when": null,
-          "next": "ch31_1_00023"
+          "next": "ch31_1_00023",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus was rejected by Jericho",
-          "when": null,
-          "next": "ch31_1_00030"
+          "next": "ch31_1_00030",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch31_1_x0900",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_1_00032": {
       "id": "ch31_1_00032",
@@ -98827,19 +99327,34 @@
       "branches": [
         {
           "condition_text": "Markus died",
-          "when": null,
-          "next": "ch31_2_00004"
+          "next": "ch31_2_00004",
+          "when": {
+            "flag": "markus_alive",
+            "equals": false
+          }
         },
         {
           "condition_text": "Markus was rejected by Jericho",
-          "when": null,
-          "next": "ch31_2_00005"
+          "next": "ch31_2_00005",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch31_2_00003",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_2_00007": {
       "id": "ch31_2_00007",
@@ -99127,24 +99642,74 @@
       "branches": [
         {
           "condition_text": "Markus detonated the bomb",
-          "when": null,
-          "next": "ch31_2_00019"
+          "next": "ch31_2_00019",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": true
+                  },
+                  {
+                    "flag": "markus_march_fled",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "flag": "markus_jericho_blown_up",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor detonated the bomb",
-          "when": null,
-          "next": "ch31_2_00020"
+          "next": "ch31_2_00020",
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_march_fled",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "flag": "connor_deviant",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus died without detonating the bomb",
-          "when": null,
-          "next": "ch31_2_00021"
+          "next": "ch31_2_00021",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch31_2_00015",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_2_00023": {
       "id": "ch31_2_00023",
@@ -99466,7 +100031,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch31_2_00035",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Counts how often Connor died across earlier chapters; the story data does not track deaths."
     },
     "ch31_2_00039": {
       "id": "ch31_2_00039",
@@ -99802,7 +100368,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch31_2_00048",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Both versions need a failed Quick-Time Event in Crossroads (Connor shot, or Markus killed), which never happens here."
     },
     "ch31_2_00054": {
       "id": "ch31_2_00054",
@@ -99927,24 +100494,50 @@
       "branches": [
         {
           "condition_text": "Markus is demonstrating peacefully",
-          "when": null,
-          "next": "ch32_1_00002"
+          "next": "ch32_1_00002",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_peaceful",
+                "equals": true
+              },
+              {
+                "flag": "luther_killed_cop",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus is leading a violent revolution",
-          "when": null,
-          "next": "ch32_1_00003"
+          "next": "ch32_1_00003",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_peaceful",
+                "equals": false
+              },
+              {
+                "flag": "luther_killed_cop",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Luther killed the cop in Midnight Train",
-          "when": null,
-          "next": "ch32_1_00006"
+          "next": "ch32_1_00006",
+          "when": {
+            "flag": "luther_killed_cop",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00008": {
       "id": "ch32_1_00008",
@@ -100012,24 +100605,52 @@
       "branches": [
         {
           "condition_text": "Sacrificed self - Alice went with Rose",
-          "when": null,
-          "next": "ch32_1_00008"
+          "next": "ch32_1_00008",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_border_sacrifice",
+                "equals": "self"
+              },
+              {
+                "flag": "luther_alive",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Sacrificed self - Alice went with Luther",
-          "when": null,
-          "next": "ch32_1_00009"
+          "next": "ch32_1_00009",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_border_sacrifice",
+                "equals": "self"
+              },
+              {
+                "flag": "luther_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "No sacrifice",
-          "when": null,
-          "next": "ch32_1_00010"
+          "next": "ch32_1_00010",
+          "when": {
+            "not": {
+              "flag": "kara_border_sacrifice",
+              "equals": "self"
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00007",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00012": {
       "id": "ch32_1_00012",
@@ -100356,19 +100977,26 @@
       "branches": [
         {
           "condition_text": "Luther not here : Alice goes with Rose",
-          "when": null,
-          "next": "ch32_1_00021"
+          "next": "ch32_1_00021",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         },
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00028"
+          "next": "ch32_1_00028",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00012",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00030": {
       "id": "ch32_1_00030",
@@ -100474,19 +101102,26 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00033"
+          "next": "ch32_1_00033",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is not here",
-          "when": null,
-          "next": "ch32_1_00034"
+          "next": "ch32_1_00034",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00032",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00036": {
       "id": "ch32_1_00036",
@@ -101105,7 +101740,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_border_sacrifice": "self"
+            }
           }
         },
         {
@@ -101115,7 +101752,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_border_sacrifice": "luther",
+              "luther_alive": false
+            }
           }
         },
         {
@@ -101130,7 +101770,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_border_sacrifice": "jerry"
+            }
           }
         },
         {
@@ -101149,7 +101791,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_border_sacrifice": "none"
+            }
           }
         }
       ]
@@ -102688,14 +103332,23 @@
       "branches": [
         {
           "condition_text": "Luther is here - Luther dies",
-          "when": null,
-          "next": "ch32_1_00142"
+          "next": "ch32_1_00142",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00140",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00144": {
       "id": "ch32_1_00144",
@@ -102783,14 +103436,23 @@
       "branches": [
         {
           "condition_text": "Luther is here - Luther dies",
-          "when": null,
-          "next": "ch32_1_00147"
+          "next": "ch32_1_00147",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00140",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00149": {
       "id": "ch32_1_00149",
@@ -102936,14 +103598,23 @@
       "branches": [
         {
           "condition_text": "Luther is here - Luther dies",
-          "when": null,
-          "next": "ch32_1_00155"
+          "next": "ch32_1_00155",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00140",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00157": {
       "id": "ch32_1_00157",
@@ -103481,19 +104152,26 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00177"
+          "next": "ch32_1_00177",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther isn't here",
-          "when": null,
-          "next": "ch32_1_00178"
+          "next": "ch32_1_00178",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00176",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00180": {
       "id": "ch32_1_00180",
@@ -103690,19 +104368,26 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00189"
+          "next": "ch32_1_00189",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther is dead",
-          "when": null,
-          "next": "ch32_1_00190"
+          "next": "ch32_1_00190",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00188",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00192": {
       "id": "ch32_1_00192",
@@ -104021,7 +104706,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_bus_terminal_incident": true
+              "kara_bus_terminal_incident": true,
+              "luther_alive": false
             },
             "news": [
               {
@@ -104601,19 +105287,26 @@
       "branches": [
         {
           "condition_text": "Luther is there",
-          "when": null,
-          "next": "ch32_1_00234"
+          "next": "ch32_1_00234",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Luther isn't there",
-          "when": null,
-          "next": "ch32_1_00238"
+          "next": "ch32_1_00238",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00230",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00240": {
       "id": "ch32_1_00240",
@@ -105619,14 +106312,18 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00286"
+          "next": "ch32_1_00286",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00284",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00288": {
       "id": "ch32_1_00288",
@@ -105860,14 +106557,18 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00300"
+          "next": "ch32_1_00300",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00299",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00302": {
       "id": "ch32_1_00302",
@@ -105916,14 +106617,18 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00303"
+          "next": "ch32_1_00303",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00302",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00305": {
       "id": "ch32_1_00305",
@@ -106140,14 +106845,18 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00312"
+          "next": "ch32_1_00312",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00311",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00314": {
       "id": "ch32_1_00314",
@@ -106420,14 +107129,18 @@
       "branches": [
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00325"
+          "next": "ch32_1_00325",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00321",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00327": {
       "id": "ch32_1_00327",
@@ -106624,14 +107337,18 @@
       "branches": [
         {
           "condition_text": "Luther is there",
-          "when": null,
-          "next": "ch32_1_00334"
+          "next": "ch32_1_00334",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00332",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00336": {
       "id": "ch32_1_00336",
@@ -106805,19 +107522,26 @@
       "branches": [
         {
           "condition_text": "Luther isn't there",
-          "when": null,
-          "next": "ch32_1_00340"
+          "next": "ch32_1_00340",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         },
         {
           "condition_text": "Luther is here",
-          "when": null,
-          "next": "ch32_1_00344"
+          "next": "ch32_1_00344",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00336",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00346": {
       "id": "ch32_1_00346",
@@ -108092,19 +108816,26 @@
       "branches": [
         {
           "condition_text": "Luther died - Save the Jerrys",
-          "when": null,
-          "next": "ch32_1_00384"
+          "next": "ch32_1_00384",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         },
         {
           "condition_text": "Luther is alive - Save Luther and Jerry",
-          "when": null,
-          "next": "ch32_1_00408"
+          "next": "ch32_1_00408",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00346",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00410": {
       "id": "ch32_1_00410",
@@ -108461,19 +109192,34 @@
       "branches": [
         {
           "condition_text": "Jericho wasn't attacked : Luther is there",
-          "when": null,
-          "next": "ch32_1_00366"
+          "next": "ch32_1_00366",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_knows_jericho",
+                "equals": false
+              },
+              {
+                "flag": "luther_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Luther isn't here",
-          "when": null,
-          "next": "ch32_1_00427"
+          "next": "ch32_1_00427",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_1_00346",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00429": {
       "id": "ch32_1_00429",
@@ -108561,14 +109307,18 @@
       "branches": [
         {
           "condition_text": "Alice and Kara are alive",
-          "when": null,
-          "next": "ch32_2_00004"
+          "next": "ch32_2_00004",
+          "when": {
+            "flag": "kara_captured",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_2_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_2_00006": {
       "id": "ch32_2_00006",
@@ -108659,7 +109409,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_2_00006",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on how Markus's revolution ends, which the story plays only after Kara's sections."
     },
     "ch32_2_00011": {
       "id": "ch32_2_00011",
@@ -108903,7 +109654,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_2_00006",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Whether Kara and Alice are separated at the camp is not decided by any recorded choice."
     },
     "ch32_2_00022": {
       "id": "ch32_2_00022",
@@ -108970,7 +109722,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_2_00022",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Needs Kara to lose a fight, a failed Quick-Time Event that never happens here."
     },
     "ch32_2_00026": {
       "id": "ch32_2_00026",
@@ -113451,24 +114204,50 @@
       "branches": [
         {
           "condition_text": "In the crowd [Markus led a successful demonstration]",
-          "when": null,
-          "next": "ch32_3_00008"
+          "next": "ch32_3_00008",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_peaceful",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor finds Markus",
-          "when": null,
-          "next": "ch32_3_00001"
+          "next": "ch32_3_00001",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_peaceful",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor arrives in the store",
-          "when": null,
-          "next": "ch32_3_00001"
+          "next": "ch32_3_00001",
+          "when": {
+            "flag": "markus_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_3_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_3_00010": {
       "id": "ch32_3_00010",
@@ -113890,7 +114669,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_3_00020",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Counts how often Connor died across earlier chapters; the story data does not track deaths."
     },
     "ch32_3_00031": {
       "id": "ch32_3_00031",
@@ -114543,7 +115323,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_3_00054",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Connor dying in The Hostage depends on how its final standoff plays out, which the story data does not record as a death."
     },
     "ch32_3_00059": {
       "id": "ch32_3_00059",
@@ -114720,7 +115501,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_3_00010",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on Hank's relationship with Connor, a running score the story data does not keep; one version is an untranslated label."
     },
     "ch32_3_00067": {
       "id": "ch32_3_00067",
@@ -114921,29 +115703,74 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_4_00007"
+          "next": "ch32_4_00007",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead",
-          "when": null,
-          "next": "ch32_4_00008"
+          "next": "ch32_4_00008",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North and Simon are dead",
-          "when": null,
-          "next": "ch32_4_00009"
+          "next": "ch32_4_00009",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Everyone is dead",
-          "when": null,
-          "next": "ch32_4_00010"
+          "next": "ch32_4_00010",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_4_00006",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_4_00012": {
       "id": "ch32_4_00012",
@@ -115214,19 +116041,26 @@
       "branches": [
         {
           "condition_text": "Markus is alive: Connor joins Markus",
-          "when": null,
-          "next": "ch32_4_00013"
+          "next": "ch32_4_00013",
+          "when": {
+            "flag": "markus_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Markus died : Connor becomes leader of the deviants",
-          "when": null,
-          "next": "ch32_4_00024"
+          "next": "ch32_4_00024",
+          "when": {
+            "flag": "markus_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_4_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_4_00026": {
       "id": "ch32_4_00026",
@@ -117001,7 +117835,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_4_00026",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on whether Hank was hostile in Last Chance, Connor, a running relationship score the story data does not keep."
     },
     "ch32_4_00109": {
       "id": "ch32_4_00109",
@@ -117094,7 +117929,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_4_00108",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice."
     },
     "ch32_4_00114": {
       "id": "ch32_4_00114",
@@ -117272,7 +118108,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_4_00114",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice."
     },
     "ch32_4_00123": {
       "id": "ch32_4_00123",
@@ -117539,14 +118376,18 @@
       "branches": [
         {
           "condition_text": "Connor freed the CyberLife androids",
-          "when": null,
-          "next": "ch32_5_00002"
+          "next": "ch32_5_00002",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00004": {
       "id": "ch32_5_00004",
@@ -117928,24 +118769,90 @@
       "branches": [
         {
           "condition_text": "The demonstration succeeded",
-          "when": null,
-          "next": "ch32_5_00003"
+          "next": "ch32_5_00003",
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "markus_barricade_response",
+                    "equals": "kiss"
+                  },
+                  {
+                    "flag": "markus_barricade_response",
+                    "equals": "sing"
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "markus_march_violent",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_capitol_park_violent",
+                    "equals": false
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "condition_text": "The demonstration failed - Markus and the androids died",
-          "when": null,
-          "next": "ch32_5_00021"
+          "next": "ch32_5_00021",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_barricade_response",
+                "equals": "sacrifice"
+              },
+              {
+                "all": [
+                  {
+                    "any": [
+                      {
+                        "flag": "markus_barricade_response",
+                        "equals": "kiss"
+                      },
+                      {
+                        "flag": "markus_barricade_response",
+                        "equals": "sing"
+                      }
+                    ]
+                  },
+                  {
+                    "any": [
+                      {
+                        "flag": "markus_march_violent",
+                        "equals": true
+                      },
+                      {
+                        "flag": "markus_capitol_park_violent",
+                        "equals": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
         },
         {
           "condition_text": "Markus used the dirty bomb",
-          "when": null,
-          "next": "ch32_5_00001"
+          "next": "ch32_5_00001",
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "dirty_bomb"
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00023": {
       "id": "ch32_5_00023",
@@ -118201,14 +119108,26 @@
       "branches": [
         {
           "condition_text": "Public opinion is positive",
-          "when": null,
-          "next": "ch32_5_00036"
+          "next": "ch32_5_00036",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_march_violent",
+                "equals": false
+              },
+              {
+                "flag": "markus_capitol_park_violent",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00035",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00038": {
       "id": "ch32_5_00038",
@@ -118276,19 +119195,42 @@
       "branches": [
         {
           "condition_text": "Public opinion is positive",
-          "when": null,
-          "next": "ch32_5_00039"
+          "next": "ch32_5_00039",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_march_violent",
+                "equals": false
+              },
+              {
+                "flag": "markus_capitol_park_violent",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Public opinion is negative",
-          "when": null,
-          "next": "ch32_5_00040"
+          "next": "ch32_5_00040",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_march_violent",
+                "equals": true
+              },
+              {
+                "flag": "markus_capitol_park_violent",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00035",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00042": {
       "id": "ch32_5_00042",
@@ -118364,7 +119306,8 @@
           "effects": {
             "flags": {
               "markus_dirty_bomb_threat": true,
-              "markus_barricade_response": "dirty_bomb"
+              "markus_barricade_response": "dirty_bomb",
+              "markus_barricade_kiss": false
             },
             "news": [
               {
@@ -118411,7 +119354,8 @@
           "effects": {
             "flags": {
               "markus_barricade_song": true,
-              "markus_barricade_response": "sing"
+              "markus_barricade_response": "sing",
+              "markus_barricade_kiss": false
             },
             "news": [
               {
@@ -118429,7 +119373,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_barricade_response": "sacrifice"
+              "markus_barricade_response": "sacrifice",
+              "markus_barricade_kiss": false
             }
           }
         }
@@ -118694,29 +119639,74 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_5_00056"
+          "next": "ch32_5_00056",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_5_00057"
+          "next": "ch32_5_00057",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_5_00058"
+          "next": "ch32_5_00058",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead, Josh is dead",
-          "when": null,
-          "next": "ch32_5_00059"
+          "next": "ch32_5_00059",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00055",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00061": {
       "id": "ch32_5_00061",
@@ -118852,19 +119842,42 @@
       "branches": [
         {
           "condition_text": "North has lover relationship status",
-          "when": null,
-          "next": "ch32_5_00066"
+          "next": "ch32_5_00066",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North doesn't have lover status",
-          "when": null,
-          "next": "ch32_5_00067"
+          "next": "ch32_5_00067",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": false
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00061",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00069": {
       "id": "ch32_5_00069",
@@ -119054,7 +120067,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "north_alive": false
+            }
           }
         },
         {
@@ -119241,29 +120256,74 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_5_00082"
+          "next": "ch32_5_00082",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_5_00083"
+          "next": "ch32_5_00083",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_5_00084"
+          "next": "ch32_5_00084",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead, Josh is dead",
-          "when": null,
-          "next": "ch32_5_00085"
+          "next": "ch32_5_00085",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00081",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00087": {
       "id": "ch32_5_00087",
@@ -119337,7 +120397,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "north_alive": false
+            }
           }
         },
         {
@@ -119405,7 +120467,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "north_alive": false
+            }
           }
         },
         {
@@ -119525,29 +120589,74 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_5_00095"
+          "next": "ch32_5_00095",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_5_00096"
+          "next": "ch32_5_00096",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_5_00097"
+          "next": "ch32_5_00097",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead, Josh is dead",
-          "when": null,
-          "next": "ch32_5_00098"
+          "next": "ch32_5_00098",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00094",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00100": {
       "id": "ch32_5_00100",
@@ -119653,29 +120762,74 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_5_00101"
+          "next": "ch32_5_00101",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_5_00102"
+          "next": "ch32_5_00102",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_5_00103"
+          "next": "ch32_5_00103",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead, Josh is dead",
-          "when": null,
-          "next": "ch32_5_00104"
+          "next": "ch32_5_00104",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00100",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00106": {
       "id": "ch32_5_00106",
@@ -120417,19 +121571,34 @@
       "branches": [
         {
           "condition_text": "With Josh",
-          "when": null,
-          "next": "ch32_5_00136"
+          "next": "ch32_5_00136",
+          "when": {
+            "all": [
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "With Simon",
-          "when": null,
-          "next": "ch32_5_00141"
+          "next": "ch32_5_00141",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00131",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00143": {
       "id": "ch32_5_00143",
@@ -120553,7 +121722,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_5_00147",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Depends on how Markus builds the barricade, an action the story data does not record as a choice."
     },
     "ch32_5_00150": {
       "id": "ch32_5_00150",
@@ -120670,24 +121840,50 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_5_00153"
+          "next": "ch32_5_00153",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead and Simon is alive",
-          "when": null,
-          "next": "ch32_5_00154"
+          "next": "ch32_5_00154",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch32_5_00155"
+          "next": "ch32_5_00155",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00152",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00157": {
       "id": "ch32_5_00157",
@@ -121265,19 +122461,26 @@
       "branches": [
         {
           "condition_text": "Markus is alive",
-          "when": null,
-          "next": "ch32_5_00180"
+          "next": "ch32_5_00180",
+          "when": {
+            "flag": "markus_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Markus is dead and North is leading the revolution",
-          "when": null,
-          "next": "ch32_5_00181"
+          "next": "ch32_5_00181",
+          "when": {
+            "flag": "markus_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00177",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00183": {
       "id": "ch32_5_00183",
@@ -121649,19 +122852,42 @@
       "branches": [
         {
           "condition_text": "Public opinion is positive",
-          "when": null,
-          "next": "ch32_5_00199"
+          "next": "ch32_5_00199",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_march_violent",
+                "equals": false
+              },
+              {
+                "flag": "markus_capitol_park_violent",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "Public opinion is negative",
-          "when": null,
-          "next": "ch32_5_00201"
+          "next": "ch32_5_00201",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_march_violent",
+                "equals": true
+              },
+              {
+                "flag": "markus_capitol_park_violent",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_5_00177",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_5_00203": {
       "id": "ch32_5_00203",
@@ -122605,24 +123831,50 @@
       "branches": [
         {
           "condition_text": "North is alive : Surrounded by soldiers",
-          "when": null,
-          "next": "ch32_6_00022"
+          "next": "ch32_6_00022",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead and Connor is machine : Connor arrives",
-          "when": null,
-          "next": "ch32_6_00029"
+          "next": "ch32_6_00029",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead and Connor is not here: Markus alone in the store",
-          "when": null,
-          "next": "ch32_6_00032"
+          "next": "ch32_6_00032",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "connor_deviant",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00011",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00034": {
       "id": "ch32_6_00034",
@@ -122690,24 +123942,50 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_6_00034"
+          "next": "ch32_6_00034",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_6_00035"
+          "next": "ch32_6_00035",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_6_00036"
+          "next": "ch32_6_00036",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00033",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00038": {
       "id": "ch32_6_00038",
@@ -122826,24 +124104,50 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_6_00041"
+          "next": "ch32_6_00041",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead, Simon is alive",
-          "when": null,
-          "next": "ch32_6_00042"
+          "next": "ch32_6_00042",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North is dead, Simon is dead",
-          "when": null,
-          "next": "ch32_6_00043"
+          "next": "ch32_6_00043",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00040",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00045": {
       "id": "ch32_6_00045",
@@ -123161,19 +124465,42 @@
       "branches": [
         {
           "condition_text": "North is lover",
-          "when": null,
-          "next": "ch32_6_00062"
+          "next": "ch32_6_00062",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "North not lover",
-          "when": null,
-          "next": "ch32_6_00063"
+          "next": "ch32_6_00063",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": false
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00061",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00065": {
       "id": "ch32_6_00065",
@@ -123203,14 +124530,26 @@
       "branches": [
         {
           "condition_text": "North is lover",
-          "when": null,
-          "next": "ch32_6_00065"
+          "next": "ch32_6_00065",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00061",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00067": {
       "id": "ch32_6_00067",
@@ -123251,7 +124590,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "north_alive": false
+            }
           }
         },
         {
@@ -123294,14 +124635,26 @@
       "branches": [
         {
           "condition_text": "North is lover",
-          "when": null,
-          "next": "ch32_6_00069"
+          "next": "ch32_6_00069",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_kissed_north",
+                "equals": true
+              },
+              {
+                "flag": "markus_barricade_kiss",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00068",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00071": {
       "id": "ch32_6_00071",
@@ -123712,19 +125065,34 @@
       "branches": [
         {
           "condition_text": "North is at least companion: North gives her heart",
-          "when": null,
-          "next": "ch32_6_00081"
+          "next": "ch32_6_00081",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon gives his heart",
-          "when": null,
-          "next": "ch32_6_00091"
+          "next": "ch32_6_00091",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00061",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00093": {
       "id": "ch32_6_00093",
@@ -123742,7 +125110,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch32_6_00061",
-      "resolution": "unknown"
+      "resolution": "unknown",
+      "unknown_reason": "Markus is only badly wounded after failed Quick-Time Events in the assault, which never happen here."
     },
     "ch32_6_00094": {
       "id": "ch32_6_00094",
@@ -124065,19 +125434,26 @@
       "branches": [
         {
           "condition_text": "Simon is alive",
-          "when": null,
-          "next": "ch32_6_00109"
+          "next": "ch32_6_00109",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch32_6_00110"
+          "next": "ch32_6_00110",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00108",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00112": {
       "id": "ch32_6_00112",
@@ -124183,24 +125559,50 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_6_00114"
+          "next": "ch32_6_00114",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         },
         {
           "condition_text": "North is dead and Simon is alive",
-          "when": null,
-          "next": "ch32_6_00115"
+          "next": "ch32_6_00115",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Simon is dead",
-          "when": null,
-          "next": "ch32_6_00116"
+          "next": "ch32_6_00116",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00113",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00118": {
       "id": "ch32_6_00118",
@@ -124250,14 +125652,18 @@
       "branches": [
         {
           "condition_text": "North is alive",
-          "when": null,
-          "next": "ch32_6_00119"
+          "next": "ch32_6_00119",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_6_00118",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_6_00121": {
       "id": "ch32_6_00121",
@@ -126444,5 +127850,27 @@
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
     }
+  },
+  "initial_flags": {
+    "luther_alive": true,
+    "simon_alive": true,
+    "north_alive": true,
+    "josh_alive": true,
+    "markus_alive": true,
+    "luther_killed_cop": false,
+    "kara_took_gun": false,
+    "kara_border_sacrifice": "none",
+    "markus_march_fled": false,
+    "markus_march_violent": false,
+    "markus_capitol_park_violent": false,
+    "markus_kissed_north": false,
+    "markus_barricade_kiss": false,
+    "markus_barricade_response": "none",
+    "markus_peaceful": false,
+    "markus_jericho_blown_up": false,
+    "connor_deviant": false,
+    "connor_highway_pursuit": false,
+    "kara_ch30_played_dead": false,
+    "quick_time_event_failed": false
   }
 }
