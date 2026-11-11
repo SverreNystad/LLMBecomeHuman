@@ -232,12 +232,12 @@ def test_story_endpoint_returns_readable_chapter_in_order():
     c = client()
     run = c.get("/api/runs").json()["runs"][0]
     chapter = c.get(f"/api/runs/{run['id']}/flowchart").json()["chapters"][0]
-    beats = c.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter}).json()[
-        "beats"
+    moments = c.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter}).json()[
+        "moments"
     ]
-    assert beats
-    assert [b["index"] for b in beats] == sorted(b["index"] for b in beats)
-    decision = next(b for b in beats if b["type"] == "decision")
+    assert moments
+    assert [b["index"] for b in moments] == sorted(b["index"] for b in moments)
+    decision = next(b for b in moments if b["type"] == "decision")
     assert (
         decision["available_choices"]
         and decision["choice_id"]
@@ -257,17 +257,17 @@ def test_story_and_flowchart_share_moment_ids():
     }
     assert len(flowchart_moments) == chart["node_count"]
     for chapter in chart["chapters"]:
-        beats = c.get(
+        moments = c.get(
             f"/api/runs/{run['id']}/story", params={"chapter": chapter}
-        ).json()["beats"]
-        assert beats
-        for beat in beats:
-            node = flowchart_moments[beat["moment"]]
+        ).json()["moments"]
+        assert moments
+        for moment in moments:
+            node = flowchart_moments[moment["moment"]]
             assert node["chapter"] == chapter
     # The first decision of the run is the arrival choice in both views.
     first = c.get(
         f"/api/runs/{run['id']}/story", params={"chapter": chart["chapters"][0]}
-    ).json()["beats"]
+    ).json()["moments"]
     decision = next(b for b in first if b["type"] == "decision")
     assert flowchart_moments[decision["moment"]]["id"] == "arrival_decision"
 
@@ -291,11 +291,11 @@ def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
             )
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
-    beats = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Again"}).json()[
-        "beats"
+    moments = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Again"}).json()[
+        "moments"
     ]
-    assert [b["moment"] for b in beats] == ["loop", "loop"]
-    assert [b["visit"] for b in beats] == [1, 2]
+    assert [b["moment"] for b in moments] == ["loop", "loop"]
+    assert [b["visit"] for b in moments] == [1, 2]
 
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
@@ -323,11 +323,11 @@ def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
         )
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
-    [beat] = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Extra"}).json()[
-        "beats"
+    [moment] = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Extra"}).json()[
+        "moments"
     ]
-    assert beat["dialogue"] == [{"speaker": "Allen", "text": "Hold."}]
-    assert beat["observations"] == ["Loaded"]
+    assert moment["dialogue"] == [{"speaker": "Allen", "text": "Hold."}]
+    assert moment["observations"] == ["Loaded"]
 
 
 def test_story_for_unvisited_chapter_is_empty_not_an_error():
@@ -337,7 +337,7 @@ def test_story_for_unvisited_chapter_is_empty_not_an_error():
         f"/api/runs/{run['id']}/story", params={"chapter": "Never visited"}
     )
     assert response.status_code == 200
-    assert response.json()["beats"] == []
+    assert response.json()["moments"] == []
 
 
 def test_story_sees_new_events_written_to_a_live_run(tmp_path):
@@ -347,7 +347,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     run = c.get("/api/runs").json()["runs"][0]
     assert (
         c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Live"}).json()[
-            "beats"
+            "moments"
         ]
         == []
     )
@@ -367,7 +367,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     assert (
         len(
             c.get(f"/api/runs/{run['id']}/story", params={"chapter": "Live"}).json()[
-                "beats"
+                "moments"
             ]
         )
         == 1
@@ -485,18 +485,18 @@ def test_story_opens_each_chapter_with_its_briefing(tmp_path):
 
 def test_story_ends_each_chapter_segment_with_a_memory_snapshot(tmp_path):
     c, run = played_run(tmp_path)
-    first = story(c, run, "1")["beats"][-1]
+    first = story(c, run, "1")["moments"][-1]
     assert first["type"] == "memory"
     assert first["character"] == "Connor"
     assert "Rooftop" in first["memory"]
     assert first["previous"] == ""
     assert first["truncated"] is False
 
-    kara = story(c, run, "2")["beats"][-1]
+    kara = story(c, run, "2")["moments"][-1]
     assert kara["character"] == "Kara"
     assert kara["previous"] == ""  # Kara's own first memory, not Connor's
 
-    later = story(c, run, "3")["beats"]
+    later = story(c, run, "3")["moments"]
     memory = next(b for b in later if b["type"] == "memory")
     assert memory["previous"] == first["memory"]
     assert "Interrogation" in memory["memory"]
@@ -507,9 +507,9 @@ def test_old_runs_have_no_briefing_and_no_memory():
     run = c.get("/api/runs").json()["runs"][0]
     chapter = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]["chapter"]
     body = story(c, run, chapter)
-    assert body["beats"]
+    assert body["moments"]
     assert body["briefing"] is None
-    assert not [b for b in body["beats"] if b["type"] == "memory"]
+    assert not [b for b in body["moments"] if b["type"] == "memory"]
 
 
 @pytest.mark.skipif(
@@ -544,7 +544,7 @@ def test_title_art_missing_is_404(tmp_path):
     assert c.get("/api/art/title").status_code == 404
 
 
-def _scene_art_app(tmp_path, installed=("ch01_installed",)):
+def _scene_art_app(tmp_path, installed=("ch01_installed",), runs=None):
     """A tmp images folder and manifest: one scene installed, one listed but missing."""
     images = tmp_path / "images"
     (images / "scenes").mkdir(parents=True)
@@ -569,7 +569,9 @@ def _scene_art_app(tmp_path, installed=("ch01_installed",)):
     manifest = tmp_path / "scene-art.json"
     manifest.write_text(json.dumps({"title": "ui/title.webp", "scenes": scenes}))
     return TestClient(
-        create_app(PROJECT / "demo_runs", images_dir=images, art_manifest=manifest)
+        create_app(
+            runs or PROJECT / "demo_runs", images_dir=images, art_manifest=manifest
+        )
     )
 
 
@@ -620,3 +622,17 @@ def test_committed_scene_art_manifest_is_well_formed():
     for scene in manifest["scenes"]:
         assert scene["file"] == f"scenes/{scene['key']}.webp"
         assert isinstance(scene["headings"], list)
+
+
+def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
+    Runner(three_segment_graph(), "mock", None, tmp_path / "runs" / "r1").run()
+    c = _scene_art_app(tmp_path, runs=tmp_path / "runs")
+    run = c.get("/api/runs").json()["runs"][0]
+    moments = c.get(f"/api/runs/{run['id']}/story", params={"chapter": "1"}).json()[
+        "moments"
+    ]
+    scenes = [m for m in moments if m["type"] == "scene"]
+    assert scenes
+    # Only installed images are named; the chapter's main image is the fallback.
+    assert {m["art"] for m in scenes} == {"ch01_installed"}
+    assert all("art" not in m for m in moments if m["type"] != "scene")

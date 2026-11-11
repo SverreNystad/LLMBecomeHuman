@@ -172,7 +172,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .selected-run-chips { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 2px; }
 .run-chip { --run-color: var(--accent); display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; max-width: 190px; height: 32px; padding: 0 6px 0 4px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--surface); cursor: pointer; transition: border-color .2s, background .2s; }
 .run-chip:hover, .run-chip.run-focused { border-color: var(--run-color); }
-.run-chip.is-reader { border-color: var(--run-color); background: var(--surface-solid); box-shadow: inset 0 0 0 1px var(--run-color); }
+.run-chip.is-followed { border-color: var(--run-color); background: var(--surface-solid); box-shadow: inset 0 0 0 1px var(--run-color); }
 .run-chip-mark, .legend-model, .inspect-logo { display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: #fff; border: 1.5px solid var(--run-color, var(--accent)); }
 .run-chip-mark { width: 24px; height: 24px; }
 .run-chip-mark img, .legend-model img { width: 12px; height: 12px; }
@@ -187,7 +187,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 /* ── Story ────────────────────────────────────────────── */
 .story-view { display: flex; flex-direction: column; }
 .story-toolbar { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); }
-.reader-picker select { max-width: 280px; height: 30px; padding: 0 26px 0 10px; border: 1px solid var(--line-soft); background: var(--surface-solid) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a939c' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 9px center / 9px; appearance: none; font-size: 13px; cursor: pointer; }
+.story-run-picker select { max-width: 280px; height: 30px; padding: 0 26px 0 10px; border: 1px solid var(--line-soft); background: var(--surface-solid) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a939c' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat right 9px center / 9px; appearance: none; font-size: 13px; cursor: pointer; }
 .icon-toggle { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--line-soft); border-radius: 50%; color: var(--ink-soft); transition: border-color .2s, color .2s; }
 .icon-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; }
 .icon-toggle:hover { border-color: var(--highlight); color: var(--highlight); }
@@ -206,7 +206,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .story-section:first-child { margin-top: 0; }
 .story-line { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 16px; margin: 0 0 10px; }
 .story-speaker { text-align: right; font-size: 12px; line-height: 25.6px; color: var(--ink-muted); overflow-wrap: anywhere; }
-.story-line.is-protagonist .story-speaker { color: var(--accent); }
+.story-line.is-character .story-speaker { color: var(--accent); }
 .story-narration { margin: 0 0 12px; color: var(--ink-soft); font-style: italic; font-weight: 300; }
 .story-clue { margin: 14px 0 18px; padding: 2px 0 2px 16px; border-left: 1px solid var(--accent); font-size: 14px; line-height: 1.55; }
 .story-clue-title { margin-bottom: 6px; font-size: 12px; color: var(--ink-muted); }
@@ -397,8 +397,8 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
   .story-content { padding: 22px 16px 36px; font-size: 15px; }
   .story-line { display: block; }
   .story-speaker { display: block; text-align: left; line-height: 1.4; }
-  .reader-picker { flex: 1; min-width: 0; }
-  .reader-picker select { width: 100%; max-width: none; }
+  .story-run-picker { flex: 1; min-width: 0; }
+  .story-run-picker select { width: 100%; max-width: none; }
   .decision-strip { flex-basis: 100%; justify-content: flex-start; }
   .story-option-models { max-width: 40%; }
   .canvas-legend { display: none; }
@@ -407,3 +407,5 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+.route-logo { pointer-events: none; }
+.route-logo circle { fill: var(--surface-solid); stroke-width: 1.5; }

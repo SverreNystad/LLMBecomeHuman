@@ -58,8 +58,9 @@
 
     function dismiss(event) {
       if (performance.now() - shownAt < ARMED_AFTER_MS) return;
-      // Browser shortcuts (Ctrl+R, Alt+Tab, …) are not "any key".
-      if (event.type === 'keydown' && (MODIFIERS.has(event.key) || event.ctrlKey || event.metaKey || event.altKey)) return;
+      // Any key dismisses, a lone Shift or Ctrl included; only browser shortcuts
+      // (Ctrl+R, Alt+Tab, …) pass through to the browser instead.
+      if (event.type === 'keydown' && !MODIFIERS.has(event.key) && (event.ctrlKey || event.metaKey || event.altKey)) return;
       // The dismissing gesture belongs to the title screen; the dashboard must not also act on it.
       event.preventDefault();
       event.stopImmediatePropagation();

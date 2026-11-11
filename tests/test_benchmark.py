@@ -54,7 +54,7 @@ def test_segment_narrative_includes_earlier_choices_and_dialogue(tmp_path):
     decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
     assert len(decisions) == 2
     # No chapter exit in this graph, so the whole run is one Chapter Segment.
-    narrative = decisions[1]["input"]["narrative_since_chapter_start"]
+    narrative = decisions[1]["input"]["chapter_segment_so_far"]
     assert [e.get("heading") or e.get("your_choice") for e in narrative] == [
         "Arrival",
         "Inspect the sensor",
@@ -72,14 +72,14 @@ def test_segment_narrative_includes_earlier_choices_and_dialogue(tmp_path):
     assert narrative[1]["rationale"] == "Mock policy: first listed choice."
 
 
-def test_decision_prompt_contains_only_the_allowed_context(tmp_path):
+def test_decision_prompt_contains_only_the_allowed_fields(tmp_path):
     Runner(three_segment_graph(), "mock", None, tmp_path / "run").run()
     decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
     for decision in decisions:
         assert list(decision["input"]) == [
             "current_scene",
             "character_memory",
-            "narrative_since_chapter_start",
+            "chapter_segment_so_far",
             "goal",
             "available_choices",
         ]
@@ -90,7 +90,7 @@ def test_decision_prompt_contains_only_the_allowed_context(tmp_path):
             "description",
         }
     # The segment restarts at each chapter exit.
-    third = decisions[2]["input"]["narrative_since_chapter_start"]
+    third = decisions[2]["input"]["chapter_segment_so_far"]
     assert [e.get("heading") for e in third] == ["Interrogation"]
 
 
@@ -582,3 +582,32 @@ def test_public_news_from_one_character_reaches_the_others(tmp_path):
     assert decisions[2]["input"]["news"] == ["Android flees with child"]
     # Raw flags never leak into the prompt.
     assert "kara_protected_alice" not in json.dumps(decisions[2]["input"])
+
+
+def test_public_news_in_the_prompt_is_capped_to_the_latest_headlines(tmp_path):
+    from detroit_benchmark.engine import PUBLIC_NEWS_LIMIT
+
+    g = three_segment_graph()
+    source = "https://detroit-become-human.fandom.com/wiki/Stormy_Night"
+    g["nodes"]["c1"]["options"][0]["effects"] = {
+        "flags": {},
+        "news": [
+            {"headline": f"Headline {i}", "source": source}
+            for i in range(PUBLIC_NEWS_LIMIT + 5)
+        ],
+    }
+    Runner(g, "mock", None, tmp_path / "run").run()
+    decisions = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    news = decisions[1]["input"]["news"]
+    assert len(news) == PUBLIC_NEWS_LIMIT
+    assert news[-1] == f"Headline {PUBLIC_NEWS_LIMIT + 4}"
+
+
+def test_rationale_is_cut_to_two_sentences(tmp_path):
+    reply = json.dumps(
+        {"choice_id": "inspect", "rationale": "First one. Second one! Third one? Fourth."}
+    )
+    Runner(graph(), "mock", None, tmp_path / "run", mock_replies=[reply]).run()
+    [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decision["output"]["rationale"] == "First one. Second one!"
+    assert decision["untrimmed_rationale"].endswith("Fourth.")

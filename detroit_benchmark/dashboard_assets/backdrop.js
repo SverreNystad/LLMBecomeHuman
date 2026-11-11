@@ -334,8 +334,9 @@
 
 /* Scene art: the current scene's concept art, if installed locally, under the network.
  *
- * Listens for `scenechange` ({chapter, heading, headings}) from the Story and Flowchart.
- * A heading listed for that chapter in the manifest wins, else the chapter's main image,
+ * Listens for `scenechange` ({chapter, heading, headings, art}) from the Story and Flowchart.
+ * An `art` key named by the Story wins, then a heading listed for that chapter in the
+ * manifest, then the chapter's main image,
  * else no art. Images crossfade between two layers once loaded.
  */
 (() => {
@@ -349,9 +350,11 @@
     return layer;
   });
   const byChapter = new Map();
-  let wanted = {chapter: null, headings: []}, shownKey = null, front = 0, timer = 0, request = 0;
+  const byKey = new Map();
+  let wanted = {chapter: null, headings: [], art: null}, shownKey = null, front = 0, timer = 0, request = 0;
 
-  function sceneFor({chapter, headings}) {
+  function sceneFor({chapter, headings, art}) {
+    if (art && byKey.has(art)) return byKey.get(art);
     const entry = byChapter.get(String(chapter ?? ''));
     if (!entry) return null;
     for (const heading of headings) if (entry.byHeading.has(heading)) return entry.byHeading.get(heading);
@@ -386,7 +389,7 @@
   document.addEventListener('scenechange', event => {
     const detail = event.detail || {};
     const headings = detail.headings?.length ? detail.headings : detail.heading ? [detail.heading] : [];
-    wanted = {chapter: detail.chapter ?? null, headings};
+    wanted = {chapter: detail.chapter ?? null, headings, art: detail.art ?? null};
     update();
   });
 
@@ -394,6 +397,7 @@
     .then(response => (response.ok ? response.json() : {scenes: []}))
     .then(manifest => {
       for (const scene of manifest.scenes || []) {
+        byKey.set(scene.key, scene);
         const chapter = String(scene.chapter);
         if (!byChapter.has(chapter)) byChapter.set(chapter, {main: null, byHeading: new Map()});
         const entry = byChapter.get(chapter);

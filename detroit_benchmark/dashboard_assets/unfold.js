@@ -9,7 +9,6 @@
   const HIDE_DELAY_MS = 90;
   let card = null, current = null, hideTimer = null;
 
-  const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
   function ensureCard() {
     if (card) return card;
@@ -34,11 +33,11 @@
 
   function cardMarkup({run, decision}) {
     const who = run ? `${run.model || 'Unknown model'} · ${run.name || 'run'}` : '';
-    const head = `<p class="unfold-card-model">${escape(who)}</p>`;
+    const head = `<p class="unfold-card-model">${esc(who)}</p>`;
     if (!decision) return `${head}<p class="unfold-card-why">Passed through this moment.</p>`;
     const chosen = decision.label || decision.available_choices?.find(o => o.id === decision.choice_id)?.label || decision.choice_id || 'Not recorded';
-    return `${head}<p class="unfold-card-choice"><small>Chose</small>${escape(chosen)}</p>
-      <p class="unfold-card-why">${escape(decision.rationale || 'No reason recorded.')}</p>
+    return `${head}<p class="unfold-card-choice"><small>Chose</small>${esc(chosen)}</p>
+      <p class="unfold-card-why">${esc(decision.rationale || 'No reason recorded.')}</p>
       <p class="unfold-card-hint">Click for the full record</p>`;
   }
 

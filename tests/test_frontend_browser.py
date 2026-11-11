@@ -47,11 +47,13 @@ def test_chapter_flowchart_browser_interactions():
     css = (ASSETS / "styles.css").read_text(encoding="utf-8")
     js = (ASSETS / "app.js").read_text(encoding="utf-8")
     story_js = (ASSETS / "story.js").read_text(encoding="utf-8")
+    characters_js = (ASSETS / "characters.js").read_text(encoding="utf-8")
     html = html.replace(
         '<link rel="stylesheet" href="/assets/styles.css">', f"<style>{css}</style>"
     )
     html = html.replace('<script src="/assets/app.js" defer></script>', "")
     html = html.replace('<script src="/assets/story.js" defer></script>', "")
+    html = html.replace('<script src="/assets/characters.js" defer></script>', "")
 
     with playwright.sync_playwright() as p:
         browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
@@ -72,6 +74,7 @@ def test_chapter_flowchart_browser_interactions():
             }""",
                 mock_responses,
             )
+            page.add_script_tag(content=characters_js)
             page.add_script_tag(content=story_js)
             page.add_script_tag(content=js)
 

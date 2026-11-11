@@ -41,11 +41,22 @@ MEMORY_SHORTEN_INSTRUCTION = (
 # Decisions are meant to be quick and cheap (issue #11).
 DECISION_MAX_OUTPUT_TOKENS = 400
 RATIONALE_MAX_SENTENCES = 2
+# Public News is told newest-last; only the latest headlines reach the prompt.
+PUBLIC_NEWS_LIMIT = 12
 BRIEF_RETRY_INSTRUCTION = (
     "Your previous reply was cut off or was not valid structured output. "
     "Answer briefly: return only the required fields, with a rationale of at most "
     "two short sentences."
 )
+
+
+_SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
+
+
+def limit_sentences(text: str, limit: int = RATIONALE_MAX_SENTENCES) -> str:
+    """The first ``limit`` sentences of a rationale; the rest is dropped."""
+    sentences = _SENTENCE_END.split(text.strip())
+    return " ".join(sentences[:limit])
 
 
 class BrokenReply(Exception):
@@ -240,7 +251,28 @@ def _exploration_errors(nodes: dict) -> list[str]:
 
 # How a condition node picks its branch: a Quick-Time Event always succeeds,
 # a rule is evaluated over earlier choices' flags, unknown falls back to default.
-CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
+QTE, RULE, UNKNOWN = CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
+
+
+def qte_success_target(node: dict) -> tuple[int | None, str | None]:
+    """The branch a Quick-Time Event always takes, and where it leads.
+
+    A null ``default_branch`` means every branch is a failure: success is the
+    fall-through ``next``. Returns ``(index, None)`` when no success branch exists.
+    """
+    idx = node.get("default_branch", 0)
+    if idx is None:
+        return None, node.get("next")
+    branches = node.get("branches", [])
+    if not 0 <= idx < len(branches):
+        return idx, None
+    return idx, branches[idx].get("next")
+
+
+def chapter_briefing(graph: dict, chapter) -> str | None:
+    """The Chapter Briefing for a Chapter Segment, if the graph has one."""
+    briefing = (graph.get("chapter_briefings") or {}).get(str(chapter))
+    return briefing if isinstance(briefing, str) else None
 
 
 def validate_graph(graph: dict, strict: bool = False) -> dict:
@@ -269,21 +301,14 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             edges = [b.get("next") for b in node.get("branches", [])] + [
                 node.get("next")
             ]
-            resolution = node.get("resolution", "unknown")
+            resolution = node.get("resolution", UNKNOWN)
             branches = node.get("branches", [])
             if resolution not in CONDITION_RESOLUTIONS:
                 errors.append(f"{nid}: unknown resolution {resolution!r}")
-            elif resolution == "qte":
-                # default_branch None: every branch is a failure, so success is
-                # the fall-through ``next``.
-                success = node.get("default_branch", 0)
-                if success is None:
-                    has_success = node.get("next") is not None
-                else:
-                    has_success = 0 <= success < len(branches)
-                if not has_success:
+            elif resolution == QTE:
+                if qte_success_target(node)[1] is None:
                     errors.append(f"{nid}: quick-time event without a success branch")
-            elif resolution == "rule":
+            elif resolution == RULE:
                 if not node.get("source"):
                     errors.append(f"{nid}: rule without a source")
                 if any(b.get("when") is None for b in branches):
@@ -761,13 +786,9 @@ class Runner:
             ModelDecision, payload, DECISION_MAX_OUTPUT_TOKENS, default
         )
 
-    def _chapter_briefing(self, node: dict) -> str | None:
-        """The Chapter Briefing for the current Chapter Segment, if the graph has one."""
-        return (self.graph.get("chapter_briefings") or {}).get(str(node.get("chapter")))
-
-    def _public_news(self, node: dict) -> list | None:
-        """Public News: every headline triggered so far, seen by every Character."""
-        return list(self.state["news"]) or None
+    def _public_news(self) -> list | None:
+        """Public News: the latest headlines so far, seen by every Character."""
+        return self.state["news"][-PUBLIC_NEWS_LIMIT:] or None
 
     def _decision_payload(self, node: dict, offered: list[dict]) -> dict:
         """Everything the model sees at a choice, and nothing else (ADR 0001).
@@ -783,16 +804,16 @@ class Runner:
                 "description": node.get("description"),
             }
         }
-        briefing = self._chapter_briefing(node)
+        briefing = chapter_briefing(self.graph, node.get("chapter"))
         if briefing:
             payload["chapter_briefing"] = briefing
-        news = self._public_news(node)
+        news = self._public_news()
         if news:
             payload["news"] = news
         payload["character_memory"] = self.state["character_memories"].get(
             character, ""
         )
-        payload["narrative_since_chapter_start"] = deepcopy(
+        payload["chapter_segment_so_far"] = deepcopy(
             self.state["segment_events"]
         )
         payload["goal"] = self.goal
@@ -906,6 +927,8 @@ class Runner:
             raise RuntimeError(
                 f"Model returned illegal choice {response.choice_id} at {node['id']}"
             )
+        # The rationale limit is enforced, not only asked for.
+        rationale = limit_sentences(response.rationale)
         # Model only selects: authored graph/rules determine the outcome.
         before = dict(self.state["flags"])
         effects = chosen.get("effects") or {}
@@ -919,7 +942,7 @@ class Runner:
             "chapter": node.get("chapter"),
             "scene": node.get("heading"),
             "label": chosen["label"],
-            "rationale": response.rationale,
+            "rationale": rationale,
             "effects": effects,
             "relation_hints": chosen.get("relation_hints", []),
         }
@@ -929,7 +952,7 @@ class Runner:
             {
                 "at": node.get("heading"),
                 "your_choice": chosen["label"],
-                "rationale": response.rationale,
+                "rationale": rationale,
             }
         )
         self.state["node"] = chosen["next"]
@@ -938,7 +961,12 @@ class Runner:
             node,
             {
                 "input": payload,
-                "output": response.model_dump(),
+                "output": {**response.model_dump(), "rationale": rationale},
+                **(
+                    {"untrimmed_rationale": response.rationale}
+                    if rationale != response.rationale
+                    else {}
+                ),
                 "model": self.model_id,
                 "provider": self.provider,
                 "model_info": model_meta,
@@ -976,13 +1004,9 @@ class Runner:
             self._record("scene", node, {"visible_to_agent": scene})
         elif kind == "choice":
             self._choice(node)
-        elif kind == "condition" and node.get("resolution") == "qte":
+        elif kind == "condition" and node.get("resolution") == QTE:
             # Quick-Time Events test reflexes, not judgement: always succeed.
-            # A null default_branch means every branch is a failure: fall through.
-            idx = node.get("default_branch", 0)
-            self.state["node"] = (
-                node["next"] if idx is None else node["branches"][idx]["next"]
-            )
+            idx, self.state["node"] = qte_success_target(node)
             self._record(
                 "condition",
                 node,

@@ -251,8 +251,6 @@ htmlcov/
 # MkDocs build output
 site/
 
-# Game art is copyrighted: keep local, only Character portraits are committed
+# Game art is copyrighted: keep local. The Character portraits are committed once,
+# under detroit_benchmark/dashboard_assets/portraits/.
 images/*
-!images/Connor.webp
-!images/Kara.webp
-!images/Markus.webp

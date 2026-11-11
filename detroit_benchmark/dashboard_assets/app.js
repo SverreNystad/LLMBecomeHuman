@@ -12,14 +12,13 @@ const MAX_VISIBLE_RUNS = 6;
 // Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
 // so the first few models get well-separated shades.
 const SHADE_ORDER = [3, 5, 1, 4, 6, 2];
-const CHARACTERS = ['connor', 'kara', 'markus'];
 const PROVIDER_STYLES = new Set(['openai', 'anthropic', 'google', 'gemini', 'xai', 'grok', 'deepseek', 'mistral']);
 const state = {
   runs: [], selectedIds: [], details: new Map(), graph: null, chapter: null,
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
   toastTimer: null, selectionHydrated: false, shadeSlots: new Map(), focusedId: null, viewTouched: false,
-  view: 'story', readerRunId: null, storyMode: 'full', pendingMoment: null
+  view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
 const modelName = provider => ({openai:'OpenAI',anthropic:'Anthropic',xai:'xAI',grok:'xAI',google:'Google',gemini:'Google',deepseek:'DeepSeek',mistral:'Mistral',openrouter:'OpenRouter',mock:'Mock agent'})[provider] || provider || 'Other';
@@ -68,7 +67,7 @@ function setupRunFocus(){
    el.addEventListener('mouseleave',()=>applyRunFocus());
    el.addEventListener('click',e=>{
      if(e.target.closest('.run-chip-remove'))return;
-     if(state.view==='story'&&el.classList.contains('run-chip')){setReaderRun(el.dataset.focusId);return;}
+     if(state.view==='story'&&el.classList.contains('run-chip')){setStoryRun(el.dataset.focusId);return;}
      state.focusedId=state.focusedId===el.dataset.focusId?null:el.dataset.focusId;
      applyRunFocus();
    });
@@ -92,11 +91,11 @@ function setCharacterTheme(character){
 }
 /* Tells the background which scene is in view, so it can show that scene's art. */
 let lastScene='';
-function emitScene(headings=[]){
-  const key=JSON.stringify([state.chapter,headings]);
+function emitScene(headings=[],art=null){
+  const key=JSON.stringify([state.chapter,headings,art]);
   if(key===lastScene)return;
   lastScene=key;
-  document.dispatchEvent(new CustomEvent('scenechange',{detail:{chapter:state.chapter,heading:headings[0]||null,headings}}));
+  document.dispatchEvent(new CustomEvent('scenechange',{detail:{chapter:state.chapter,heading:headings[0]||null,headings,art}}));
 }
 function emitFlowScene(nodeId){
   const node=nodeId&&state.rendered?.graph.nodes.get(nodeId);
@@ -248,11 +247,11 @@ function setView(view) {
 }
 function renderChapterList() {
   const all = chapters();
-  const reader = readerRun(), readerDetail = reader && state.details.get(reader.id);
-  const decisionCounts = new Map((readerDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
+  const followed = storyRun(), storyDetail = followed && state.details.get(followed.id);
+  const decisionCounts = new Map((storyDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
-    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reader&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${followed&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
       <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
@@ -499,6 +498,26 @@ function createLogo(node, view) {
   btn.addEventListener('click',e=>{e.stopPropagation();inspect(node.id,run.id);});
   return btn;
 }
+/* The provider's mark at the middle of a route line, so same-colored routes stay apart. */
+const ROUTE_LOGO_MIN_LENGTH = 90, ROUTE_LOGO_SIZE = 14;
+function routeLogo(path, run) {
+  const length=path.getTotalLength?.()||0;
+  if(length<ROUTE_LOGO_MIN_LENGTH)return null;
+  const {x,y}=path.getPointAtLength(length/2), half=ROUTE_LOGO_SIZE/2;
+  const g=document.createElementNS(svgNS,'g');
+  g.setAttribute('class','route-logo');g.setAttribute('aria-hidden','true');
+  const disc=document.createElementNS(svgNS,'circle');
+  disc.setAttribute('cx',x);disc.setAttribute('cy',y);disc.setAttribute('r',half+2);disc.style.stroke=routeColor(run);
+  g.appendChild(disc);
+  const src=modelIcon(providerOf(run)).match(/src="([^"]+)"/)?.[1];
+  if(src){
+    const img=document.createElementNS(svgNS,'image');
+    img.setAttribute('href',src);img.setAttribute('x',x-half);img.setAttribute('y',y-half);
+    img.setAttribute('width',ROUTE_LOGO_SIZE);img.setAttribute('height',ROUTE_LOGO_SIZE);
+    g.appendChild(img);
+  }
+  return g;
+}
 function drawGraph(graph, paths) {
   const world=$('graphWorld'), nodesEl=$('graphNodes'), edgesEl=$('graphEdges');
   const views=activeViews();
@@ -529,6 +548,8 @@ function drawGraph(graph, paths) {
       path.setAttribute('aria-label',`${modelLabel(view.run)} took this branch`);
       const title=document.createElementNS(svgNS,'title');title.textContent=modelLabel(view.run);path.appendChild(title);
       edgesEl.appendChild(path);
+      const logo=routeLogo(path,view.run);
+      if(logo)edgesEl.appendChild(logo);
     });
   }
   for(const node of graph.nodes.values()) {
@@ -542,8 +563,7 @@ function drawGraph(graph, paths) {
     n.role='button';n.tabIndex=0;n.dataset.nodeId=node.id;
     if(node.type!=='portal')n.dataset.moment=node.parent||node.members?.[0]?.id||node.id;
     n.dataset.visitedCount=String(users.length);
-    n.setAttribute('aria-label',`${node.label}. ${users.length} of ${views.length} selected runs visited this node.`);
-    n.title=`${node.label} · ${users.length} / ${views.length} runs visited`;
+    n.setAttribute('aria-label',node.label);
     const label=document.createElement('span');label.className='node-label';label.textContent=node.label;n.appendChild(label);
     if(node.items?.length){
       const dialogue=document.createElement('div');dialogue.className='node-dialogue';
@@ -575,12 +595,12 @@ function drawGraph(graph, paths) {
 /* Opens the Story at a Flowchart node, following a Run that passed through it. A node no
  * selected Run reached has no Story to show, so its script opens beside the Flowchart. */
 function showMomentInStory(node,visitorIds){
- const reader=readerRun()?.id, runId=visitorIds.includes(reader)?reader:visitorIds[0];
+ const followed=storyRun()?.id, runId=visitorIds.includes(followed)?followed:visitorIds[0];
  if(!runId){inspect(node.id,activeRuns()[0]?.id);return;}
  const events=state.rendered?.paths.find(p=>p.run.id===runId)?.path.byId.get(node.id)||[];
  const moments=node.members?node.members.map(member=>member.id):[node.parent||node.id];
  state.pendingMoment={moments,index:events[0]?.index??Infinity};
- state.readerRunId=runId;
+ state.storyRunId=runId;
  setView('story');renderChapterList();
 }
 function renderChapter(fit=true){
@@ -594,7 +614,7 @@ function renderChapter(fit=true){
  renderFlowchart(fit);
 }
 function renderFlowchart(fit=true){
- renderStoryToolbar(readerRun());
+ renderStoryToolbar(storyRun());
  const chapter=state.chapter, views=activeViews(), graph=buildChapterGraph(chapter);
  const paths=views.map(v=>({...v,path:computePath(v,chapter,graph)}));
  $('chapterSubtitle').textContent=chapterCharacter(chapter)||'';
@@ -724,7 +744,7 @@ function sceneScriptSection(node){
  if(!node.members)return '';
  const items=buildStoryItems(node.members.map(n=>({...n,type:'scene'})));
  if(items.every(item=>item.kind==='heading'))return '';
- const context={protagonist:chapterCharacter(state.chapter)};
+ const context={character:chapterCharacter(state.chapter)};
  return `<section class="inspect-section inspect-script">${items.map(item=>renderItem(item,context)).join('')}</section>`;
 }
 function renderSceneInspector(node,ev,runId,view){
@@ -779,7 +799,7 @@ function setupInteractions(){
   e.preventDefault();zoom(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY);},{passive:false});
  let resizeDebounce;
  new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>{
-  // Closing the drawer also resizes the canvas; that must not undo where the reader has moved to.
+  // Closing the drawer also resizes the canvas; that must not undo where the viewer has moved to.
   if(state.selected)centerSelectedNode();
   else if(!state.viewTouched)openChapterView();
  },130);}).observe(vp);

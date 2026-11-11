@@ -68,7 +68,7 @@
 
         <section class="story-view" id="storyView" aria-label="Story">
           <div class="story-toolbar">
-            <label class="reader-picker"><span class="visually-hidden">Following</span><select id="readerRun" aria-label="Following"></select></label>
+            <label class="story-run-picker"><span class="visually-hidden">Following</span><select id="storyRun" aria-label="Following"></select></label>
             <button type="button" id="storyMode" class="icon-toggle" aria-pressed="false" aria-label="Decisions only" title="Decisions only">
               <svg class="icon-full" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 10h14M5 14h14M5 18h9"/></svg>
               <svg class="icon-key" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="7" r="2"/><circle cx="7" cy="17" r="2"/><path d="M12 7h7M12 17h7"/></svg>
@@ -96,6 +96,7 @@
     </div>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/characters.js" defer></script>
   <script src="/assets/backdrop.js" defer></script>
   <script src="/assets/sound.js" defer></script>
   <script src="/assets/unfold.js" defer></script>

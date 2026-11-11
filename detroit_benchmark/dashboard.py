@@ -14,7 +14,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .engine import canonical_hash
+from .engine import canonical_hash, chapter_briefing
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -571,8 +571,11 @@ def _cached_briefings(
     graph, _, _ = _load_saved_graph(
         path.parent, path, Path(extra_graphs_dir) if extra_graphs_dir else None
     )
-    briefings = graph.get("chapter_briefings") or {}
-    return {str(k): v for k, v in briefings.items() if isinstance(v, str)}
+    return {
+        str(chapter): briefing
+        for chapter in graph.get("chapter_briefings") or {}
+        if (briefing := chapter_briefing(graph, chapter))
+    }
 
 
 def _chapter_briefing(
@@ -608,6 +611,21 @@ def _installed_scene_art(art_root: Path, manifest: Path) -> dict[str, dict[str, 
         if _art_file(art_root, scene.get("file")) is not None:
             installed[scene["key"]] = scene
     return installed
+
+
+def _scene_art_key(
+    scenes: dict[str, dict[str, Any]], chapter: str, heading: Any
+) -> str | None:
+    """The installed image for a scene: its heading's image, else the chapter's main one."""
+    main = None
+    for scene in scenes.values():
+        if str(scene.get("chapter")) != chapter:
+            continue
+        if heading in (scene.get("headings") or []):
+            return scene["key"]
+        if scene.get("chapter_main") and main is None:
+            main = scene["key"]
+    return main
 
 
 def create_app(
@@ -660,10 +678,17 @@ def create_app(
     def get_story(run_id: str, chapter: str):
         # A chapter the run never entered is a normal answer, not an error.
         directory = _resolve_run(root, run_id)
+        scenes = _installed_scene_art(images_root, manifest_path)
+        moments = [
+            {**moment, "art": _scene_art_key(scenes, chapter, moment.get("heading"))}
+            if moment.get("type") == "scene"
+            else moment
+            for moment in _parsed_events(directory)[1].get(chapter, [])
+        ]
         return {
             "chapter": chapter,
             "briefing": _chapter_briefing(directory, graph_root, chapter),
-            "beats": _parsed_events(directory)[1].get(chapter, []),
+            "moments": moments,
         }
 
     @app.get("/api/runs/{run_id}/events/{event_index}")

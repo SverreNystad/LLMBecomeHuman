@@ -1,6 +1,6 @@
 /* Memory card: what the model chose to remember at the end of a Chapter Segment,
  * with the change since that Character's previous Memory Update highlighted.
- * Loaded before story.js, which calls renderMemoryCard() for each memory beat.
+ * Loaded before story.js, which calls renderMemoryCard() for each memory Moment.
  */
 'use strict';
 
