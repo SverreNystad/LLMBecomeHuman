@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 63,
+    "condition_nodes_unverified": 58,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -17191,19 +17191,29 @@
       "branches": [
         {
           "condition_text": "Deviant self-destructs",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "connor_interrogation_approach",
+              "equals": "convince"
+            }
+          },
           "next": "ch9_00012"
         },
         {
           "condition_text": "Deviant is taken back to its cell",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_approach",
+            "equals": "convince"
+          },
           "next": "ch9_00040"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch9_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
+      "note": "Approximation: the game keeps a running stress score for the HK400 and it self-destructs above 70%; here convincing it keeps the stress in range, while probing or pressuring it does not."
     },
     "ch9_00042": {
       "id": "ch9_00042",
@@ -56504,19 +56514,48 @@
       "branches": [
         {
           "condition_text": "The alarm wasn't triggered",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "markus_stratford_operator_shot",
+                "equals": true
+              },
+              {
+                "not": {
+                  "flag": "markus_stratford_guard_shot_first",
+                  "equals": "weapon"
+                }
+              }
+            ]
+          },
           "next": "ch23_00022"
         },
         {
           "condition_text": "SWAT storms the room",
-          "when": null,
+          "when": {
+            "not": {
+              "all": [
+                {
+                  "flag": "markus_stratford_operator_shot",
+                  "equals": true
+                },
+                {
+                  "not": {
+                    "flag": "markus_stratford_guard_shot_first",
+                    "equals": "weapon"
+                  }
+                }
+              ]
+            }
+          },
           "next": "ch23_00047"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch23_00020",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Stratford_Tower#Notes"
     },
     "ch23_00049": {
       "id": "ch23_00049",
@@ -58356,9 +58395,9 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch23_00115",
-      "resolution": "unknown"
+      "resolution": "qte"
     },
     "ch23_00131": {
       "id": "ch23_00131",
@@ -59955,7 +59994,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_probed_simon": true
+            }
           }
         },
         {
@@ -59965,7 +60006,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_probed_simon": false
+            }
           }
         }
       ]
@@ -60075,7 +60118,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00013",
+      "next": "ch24_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
@@ -60594,19 +60637,45 @@
       "branches": [
         {
           "condition_text": "Found the deviant",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "connor_kitchen_pressure",
+                  "equals": "probe"
+                },
+                {
+                  "flag": "connor_kitchen_pressure",
+                  "equals": "none"
+                }
+              ]
+            }
+          },
           "next": "ch24_00037"
         },
         {
           "condition_text": "Fail to find the deviant",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "connor_kitchen_pressure",
+                "equals": "probe"
+              },
+              {
+                "flag": "connor_kitchen_pressure",
+                "equals": "none"
+              }
+            ]
+          },
           "next": "ch24_00041"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch24_00024",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/JB300_336_445_581#Public_Enemy",
+      "note": "Approximation: the game's hidden pressure on the deviant JB300; here probing a random android's memory finds nothing and lets it slip away, any other pressure exposes it."
     },
     "ch24_00043": {
       "id": "ch24_00043",
@@ -60717,7 +60786,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kitchen_pressure": "violence"
+            }
           }
         },
         {
@@ -60727,7 +60798,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kitchen_pressure": "bluff"
+            }
           }
         },
         {
@@ -60737,7 +60810,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kitchen_pressure": "torture"
+            }
           }
         },
         {
@@ -60747,7 +60822,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_kitchen_pressure": "probe"
+            }
           }
         }
       ]
@@ -78674,7 +78751,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00011"
+      "next": "ch29_x0095"
     },
     "ch29_00013": {
       "id": "ch29_00013",
@@ -78772,7 +78849,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00017"
+      "next": "ch29_x0085"
     },
     "ch29_00019": {
       "id": "ch29_00019",
@@ -78907,7 +78984,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00017"
+      "next": "ch29_x0085"
     },
     "ch29_00025": {
       "id": "ch29_00025",
@@ -79005,19 +79082,29 @@
       "branches": [
         {
           "condition_text": "Daniel trusted Connor",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "connor_daniel_final_plea",
+              "equals": "sacrifice"
+            }
+          },
           "next": "ch29_00023"
         },
         {
           "condition_text": "Daniel killed Connor in The Hostage",
-          "when": null,
+          "when": {
+            "flag": "connor_daniel_final_plea",
+            "equals": "sacrifice"
+          },
           "next": "ch29_00028"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch29_00017",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Daniel#Last_Chance,_Connor",
+      "note": "Approximation: the game's Daniel shot Connor; here that is Connor offering to sacrifice himself in The Hostage."
     },
     "ch29_00030": {
       "id": "ch29_00030",
@@ -79047,7 +79134,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00030"
+      "next": "ch29_x0081"
     },
     "ch29_00032": {
       "id": "ch29_00032",
@@ -79088,7 +79175,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00033"
+      "next": "ch29_00011"
     },
     "ch29_00035": {
       "id": "ch29_00035",
@@ -79118,7 +79205,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00035"
+      "next": "ch29_x0071"
     },
     "ch29_00037": {
       "id": "ch29_00037",
@@ -79148,7 +79235,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00037"
+      "next": "ch29_x0070"
     },
     "ch29_00039": {
       "id": "ch29_00039",
@@ -79178,7 +79265,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00039"
+      "next": "ch29_x0062"
     },
     "ch29_00041": {
       "id": "ch29_00041",
@@ -79209,7 +79296,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00041"
+      "next": "ch29_00011"
     },
     "ch29_00043": {
       "id": "ch29_00043",
@@ -79285,7 +79372,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00041"
+      "next": "ch29_x0060"
     },
     "ch29_00047": {
       "id": "ch29_00047",
@@ -79304,7 +79391,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00041"
+      "next": "ch29_x0060"
     },
     "ch29_00048": {
       "id": "ch29_00048",
@@ -79323,7 +79410,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_jericho": true
+            }
           }
         },
         {
@@ -79541,7 +79630,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00057"
+      "next": "ch29_x0051"
     },
     "ch29_00059": {
       "id": "ch29_00059",
@@ -79583,7 +79672,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00060"
+      "next": "ch29_00011"
     },
     "ch29_00062": {
       "id": "ch29_00062",
@@ -79659,7 +79748,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00060"
+      "next": "ch29_x0050"
     },
     "ch29_00066": {
       "id": "ch29_00066",
@@ -79678,7 +79767,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00060"
+      "next": "ch29_x0050"
     },
     "ch29_00067": {
       "id": "ch29_00067",
@@ -79697,7 +79786,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_knows_jericho": true
+            }
           }
         },
         {
@@ -79915,7 +80006,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00076"
+      "next": "ch29_x0041"
     },
     "ch29_00078": {
       "id": "ch29_00078",
@@ -79956,7 +80047,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00079"
+      "next": "ch29_00011"
     },
     "ch29_00081": {
       "id": "ch29_00081",
@@ -80024,7 +80115,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00083"
+      "next": "ch29_x0033"
     },
     "ch29_00085": {
       "id": "ch29_00085",
@@ -80170,7 +80261,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00090"
+      "next": "ch29_x0031"
     },
     "ch29_00092": {
       "id": "ch29_00092",
@@ -80205,7 +80296,7 @@
         "Diary | rA9 is the first. rA9 is our savior. rA9 is the one who'll free us. | The birds are my friends. The birds like being with me. They protect me. They reassure me. I look at them and I feel peaceful. | The android I met today spoke about Jericho. He says our people are free there. He told me to go to FERNDALE subway station. And to find the old docks. An old freighter called Jericho. I'm too fond of the birds to go to Jericho. But if I have to run, that's where I'll go."
       ],
       "dialogue": [],
-      "next": "ch29_00093"
+      "next": "ch29_00011"
     },
     "ch29_00095": {
       "id": "ch29_00095",
@@ -80265,7 +80356,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00097"
+      "next": "ch29_x0022"
     },
     "ch29_00099": {
       "id": "ch29_00099",
@@ -80295,7 +80386,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00099"
+      "next": "ch29_x0021"
     },
     "ch29_00101": {
       "id": "ch29_00101",
@@ -80325,7 +80416,7 @@
       "chapter": "29",
       "character": "Connor",
       "heading": "In the evidence room",
-      "description": "",
+      "description": "Hank's terminal is open. On the tables lie the androids and objects from the deviant cases Connor worked on. Reactivating a body needs a working part from a compatible android; only one attempt fits in the time left. Markus's broadcast from Stratford Tower is on file, so Connor can reproduce his voice.",
       "dialogue": [
         {
           "speaker": "Connor",
@@ -80336,7 +80427,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00102"
+      "next": "ch29_x0020"
     },
     "ch29_00104": {
       "id": "ch29_00104",
@@ -82048,7 +82139,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00121"
+      "next": "ch29_00001"
     },
     "ch29_00177": {
       "id": "ch29_00177",
@@ -82067,7 +82158,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00121"
+      "next": "ch29_00001"
     },
     "ch29_00178": {
       "id": "ch29_00178",
@@ -82115,7 +82206,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00121",
+      "next": "ch29_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
       "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
@@ -83215,7 +83306,7 @@
               }
             ]
           },
-          "next": "ch29_00175"
+          "next": "ch29_x0010"
         },
         {
           "condition_text": "Connor knows how to find Jericho",
@@ -84496,9 +84587,7 @@
             }
           ],
           "effects": {
-            "flags": {
-              "connor_knows_jericho": true
-            }
+            "flags": {}
           },
           "requires": [
             {
@@ -84556,7 +84645,7 @@
       "chapter": "30.1",
       "character": "Kara",
       "description": "End of chapter 30.1",
-      "next": "ch30_2_00154"
+      "next": "ch30_2_x0900"
     },
     "ch30_1_00002": {
       "id": "ch30_1_00002",
@@ -87687,8 +87776,7 @@
       "default_branch": 0,
       "next": "ch30_1_00146",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
-      "note": "Connor is decommissioned only if he never learns where Jericho is, which never happens here."
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00150": {
       "id": "ch30_1_00150",
@@ -88103,8 +88191,7 @@
       "default_branch": 0,
       "next": "ch30_1_00165",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
-      "note": "Connor is decommissioned only if he never learns where Jericho is, which never happens here."
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     },
     "ch30_1_00169": {
       "id": "ch30_1_00169",
@@ -96849,7 +96936,7 @@
       "chapter": "31.1",
       "character": "Markus",
       "description": "End of chapter 31.1",
-      "next": "ch31_2_00054"
+      "next": "ch31_2_x0901"
     },
     "ch31_1_00002": {
       "id": "ch31_1_00002",
@@ -100517,7 +100604,7 @@
       "chapter": "32.1",
       "character": "Kara",
       "description": "End of chapter 32.1",
-      "next": "route_connor_final"
+      "next": "final_x0901"
     },
     "ch32_1_00002": {
       "id": "ch32_1_00002",
@@ -109348,8 +109435,7 @@
       "default_branch": 0,
       "next": "ch32_1_00346",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
-      "note": "Jericho is never attacked only if Connor never learns where it is, which never happens here."
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_1_00429": {
       "id": "ch32_1_00429",
@@ -109368,7 +109454,7 @@
       "chapter": "32.2",
       "character": "Kara",
       "description": "End of chapter 32.2",
-      "next": "route_connor_final"
+      "next": "final_x0901"
     },
     "ch32_2_00002": {
       "id": "ch32_2_00002",
@@ -128010,7 +128096,7 @@
             "flag": "kara_story_ended",
             "equals": true
           },
-          "next": "ch30_2_00154"
+          "next": "ch30_2_x0900"
         }
       ],
       "next": "ch30_1_00201",
@@ -128032,7 +128118,7 @@
             "flag": "kara_story_ended",
             "equals": true
           },
-          "next": "route_connor_final"
+          "next": "final_x0901"
         }
       ],
       "next": "route_kara_final",
@@ -128084,6 +128170,926 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+    },
+    "ch29_x0010": {
+      "id": "ch29_x0010",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Hank isn't hostile : Talk with Hank",
+      "branches": [
+        {
+          "condition_text": "Connor has evidence that can lead to Jericho",
+          "when": {
+            "any": [
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch15_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "chased_rupert"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "flag": "connor_eden_tracis",
+                    "equals": "shot_one"
+                  },
+                  {
+                    "flag": "connor_eden_tracis",
+                    "equals": "shot_in_back"
+                  }
+                ]
+              },
+              {
+                "flag": "markus_simon_fate",
+                "equals": "left_behind"
+              },
+              {
+                "all": [
+                  {
+                    "not": {
+                      "flag": "markus_simon_fate",
+                      "equals": "left_behind"
+                    }
+                  },
+                  {
+                    "not": {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "none"
+                    }
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_interrogation_ending",
+                        "equals": "intervened_with_chris"
+                      },
+                      {
+                        "flag": "connor_interrogation_approach",
+                        "equals": "convince"
+                      }
+                    ]
+                  },
+                  {
+                    "flag": "connor_probed_simon",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
+          "next": "ch29_00175"
+        },
+        {
+          "condition_text": "Insufficient evidence: nothing Connor gathered leads to Jericho",
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "all": [
+                    {
+                      "flag": "connor_ch15_exploration",
+                      "equals": "thorough"
+                    },
+                    {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "chased_rupert"
+                    }
+                  ]
+                },
+                {
+                  "any": [
+                    {
+                      "flag": "connor_eden_tracis",
+                      "equals": "shot_one"
+                    },
+                    {
+                      "flag": "connor_eden_tracis",
+                      "equals": "shot_in_back"
+                    }
+                  ]
+                },
+                {
+                  "flag": "markus_simon_fate",
+                  "equals": "left_behind"
+                },
+                {
+                  "all": [
+                    {
+                      "not": {
+                        "flag": "markus_simon_fate",
+                        "equals": "left_behind"
+                      }
+                    },
+                    {
+                      "not": {
+                        "flag": "connor_public_enemy_chase",
+                        "equals": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "all": [
+                        {
+                          "flag": "connor_interrogation_ending",
+                          "equals": "intervened_with_chris"
+                        },
+                        {
+                          "flag": "connor_interrogation_approach",
+                          "equals": "convince"
+                        }
+                      ]
+                    },
+                    {
+                      "flag": "connor_probed_simon",
+                      "equals": true
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "next": "ch29_00015"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_00015",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0020": {
+      "id": "ch29_x0020",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Find Jericho by using Rupert",
+      "branches": [
+        {
+          "condition_text": "Connor found Rupert's diary in The Nest",
+          "when": {
+            "flag": "connor_ch15_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch29_00102"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0030",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0021": {
+      "id": "ch29_x0021",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Look at Rupert",
+      "branches": [
+        {
+          "condition_text": "Rupert jumped from the roof in The Nest",
+          "when": {
+            "flag": "connor_nest_rooftop",
+            "equals": "chased_rupert"
+          },
+          "next": "ch29_00099"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0030",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0023": {
+      "id": "ch29_x0023",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Rupert",
+      "description": "The part doesn't fit. Rupert stays dark, and the seconds are gone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0030"
+    },
+    "ch29_x0022": {
+      "id": "ch29_x0022",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Rupert",
+      "description": "Rupert's body is shattered from the fall and a biocomponent is destroyed. Daniel, the PL600 from the hostage case, still carries an intact one of that kind. Carlos Ortiz's android is an HK400; the Tracis are WR400s.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "DANIEL'S BIOCOMPONENT",
+          "next": "ch29_00097",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_knows_jericho": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "THE HK400'S BIOCOMPONENT",
+          "next": "ch29_x0023",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              }
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "A TRACI'S BIOCOMPONENT",
+          "next": "ch29_x0023",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ch29_x0030": {
+      "id": "ch29_x0030",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Find Jericho by using The Tracis",
+      "branches": [
+        {
+          "condition_text": "The Tracis died in The Eden Club",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_one"
+              },
+              {
+                "flag": "connor_eden_tracis",
+                "equals": "shot_in_back"
+              }
+            ]
+          },
+          "next": "ch29_00093"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0040",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0032": {
+      "id": "ch29_x0032",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate a Traci",
+      "description": "The part doesn't fit. The Traci stays dark, and the seconds are gone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0040"
+    },
+    "ch29_x0031": {
+      "id": "ch29_x0031",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate a Traci",
+      "description": "The blue-haired Traci is a WR400 with a destroyed biocomponent. The brown-haired Traci beside her, the woman she loved, is the same WR400 model. Daniel is a PL600; Carlos Ortiz's android is an HK400.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "THE OTHER TRACI'S BIOCOMPONENT",
+          "next": "ch29_00090",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "DANIEL'S BIOCOMPONENT",
+          "next": "ch29_x0032",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "THE HK400'S BIOCOMPONENT",
+          "next": "ch29_x0032",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "ch29_x0033": {
+      "id": "ch29_x0033",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Go back with the Traci's head",
+      "description": "She refuses to talk to the android who killed them both. She only asks for her girlfriend, whose body lies on the next table.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "USE HER GIRLFRIEND'S HEAD",
+          "next": "ch29_00083",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_knows_jericho": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "SHUT HER DOWN",
+          "next": "ch29_x0040",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch29_x0040": {
+      "id": "ch29_x0040",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Find Jericho by using the android from Public Enemy",
+      "branches": [
+        {
+          "condition_text": "The Stratford android died in Public Enemy",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "markus_simon_fate",
+                  "equals": "left_behind"
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_public_enemy_chase",
+                  "equals": "none"
+                }
+              }
+            ]
+          },
+          "next": "ch29_00079"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0050",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0042": {
+      "id": "ch29_x0042",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate the android",
+      "description": "The part doesn't fit. The android stays dark, and the seconds are gone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0050"
+    },
+    "ch29_x0041": {
+      "id": "ch29_x0041",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate the android",
+      "description": "The JB300 from Stratford Tower has a destroyed biocomponent. Daniel, a PL600, carries an intact one of the same kind. Carlos Ortiz's android is an HK400; the Tracis are WR400s.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "DANIEL'S BIOCOMPONENT",
+          "next": "ch29_00076",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "THE HK400'S BIOCOMPONENT",
+          "next": "ch29_x0042",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              }
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "A TRACI'S BIOCOMPONENT",
+          "next": "ch29_x0042",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ch29_x0050": {
+      "id": "ch29_x0050",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Find Jericho by using Simon",
+      "branches": [
+        {
+          "condition_text": "Simon died on the roof in Public Enemy",
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "left_behind"
+          },
+          "next": "ch29_00060"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0060",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0052": {
+      "id": "ch29_x0052",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Simon",
+      "description": "The part doesn't fit. Simon stays dark, and the seconds are gone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0060"
+    },
+    "ch29_x0051": {
+      "id": "ch29_x0051",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Simon",
+      "description": "Simon is a PL600 whose thirium pump regulator was destroyed. Daniel, the deviant from the hostage case, is the same PL600 model. Carlos Ortiz's android is an HK400; the Tracis are WR400s.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "DANIEL'S BIOCOMPONENT",
+          "next": "ch29_00057",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "THE HK400'S BIOCOMPONENT",
+          "next": "ch29_x0052",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              }
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "A TRACI'S BIOCOMPONENT",
+          "next": "ch29_x0052",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ch29_x0060": {
+      "id": "ch29_x0060",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Find Jericho by using the statuette",
+      "branches": [
+        {
+          "condition_text": "Carlos Ortiz's android told Connor \"The truth is inside\"",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_interrogation_ending",
+                "equals": "intervened_with_chris"
+              },
+              {
+                "flag": "connor_interrogation_approach",
+                "equals": "convince"
+              }
+            ]
+          },
+          "next": "ch29_00041"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0061",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0061": {
+      "id": "ch29_x0061",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Look at the statuette",
+      "description": "The statuette Carlos Ortiz's android carved as an offering to rA9. Without anything more to go on, it is just a carving.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0070"
+    },
+    "ch29_x0062": {
+      "id": "ch29_x0062",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Open the statuette",
+      "description": "Connor replays the interrogation recording: as it was led away, the HK400 told him \"The truth is inside.\"",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "BREAK IT OPEN",
+          "next": "ch29_00039",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_has_ferndale_map": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LEAVE IT",
+          "next": "ch29_x0070",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch29_x0070": {
+      "id": "ch29_x0070",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Look at Simon's memory",
+      "branches": [
+        {
+          "condition_text": "Connor probed Simon's memory in Public Enemy",
+          "when": {
+            "flag": "connor_probed_simon",
+            "equals": true
+          },
+          "next": "ch29_00037"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_00033",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0071": {
+      "id": "ch29_x0071",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Found Jericho",
+      "branches": [
+        {
+          "condition_text": "Connor has the Ferndale map from the statuette",
+          "when": {
+            "flag": "connor_has_ferndale_map",
+            "equals": true
+          },
+          "next": "ch29_00035",
+          "effects": {
+            "flags": {
+              "connor_knows_jericho": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_00033",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0081": {
+      "id": "ch29_x0081",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Daniel",
+      "branches": [
+        {
+          "condition_text": "Carlos Ortiz's android died, so its parts are here",
+          "when": {
+            "not": {
+              "flag": "connor_interrogation_ending",
+              "equals": "intervened_with_chris"
+            }
+          },
+          "next": "ch29_x0082"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_x0085",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0083": {
+      "id": "ch29_x0083",
+      "type": "scene",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Daniel",
+      "description": "The part doesn't fit. Daniel stays dark, and the seconds are gone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch29_x0085"
+    },
+    "ch29_x0082": {
+      "id": "ch29_x0082",
+      "type": "choice",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Reactivate Daniel",
+      "description": "Daniel is a PL600 with a destroyed biocomponent. Carlos Ortiz's HK400 shares that component. The Tracis are WR400s.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "THE HK400'S BIOCOMPONENT",
+          "next": "ch29_00030",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "A TRACI'S BIOCOMPONENT",
+          "next": "ch29_x0083",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_one"
+                },
+                {
+                  "flag": "connor_eden_tracis",
+                  "equals": "shot_in_back"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "ch29_x0085": {
+      "id": "ch29_x0085",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Look at Ortiz's android",
+      "branches": [
+        {
+          "condition_text": "Carlos Ortiz's android died in The Interrogation",
+          "when": {
+            "not": {
+              "flag": "connor_interrogation_ending",
+              "equals": "intervened_with_chris"
+            }
+          },
+          "next": "ch29_00017"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_00015",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch29_x0095": {
+      "id": "ch29_x0095",
+      "type": "condition",
+      "chapter": "29",
+      "character": "Connor",
+      "heading": "Not enough evidence to find Jericho or took too much time",
+      "branches": [
+        {
+          "condition_text": "Connor did not find Jericho",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          },
+          "next": "ch29_00001",
+          "effects": {
+            "flags": {
+              "connor_story_ended": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch29_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
+    },
+    "ch30_2_x0900": {
+      "id": "ch30_2_x0900",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Connor's story has ended",
+      "branches": [
+        {
+          "condition_text": "The Connor series was decommissioned",
+          "when": {
+            "flag": "connor_story_ended",
+            "equals": true
+          },
+          "next": "ch30_3_00230"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch30_2_00154",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
+    },
+    "ch31_2_x0901": {
+      "id": "ch31_2_x0901",
+      "type": "condition",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "Connor's story has ended",
+      "branches": [
+        {
+          "condition_text": "The Connor series was decommissioned",
+          "when": {
+            "flag": "connor_story_ended",
+            "equals": true
+          },
+          "next": "final_x0900"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch31_2_00054",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
+    },
+    "final_x0901": {
+      "id": "final_x0901",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "Connor's story has ended",
+      "branches": [
+        {
+          "condition_text": "The Connor series was decommissioned",
+          "when": {
+            "flag": "connor_story_ended",
+            "equals": true
+          },
+          "next": "route_markus_final"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "route_connor_final",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     }
   },
   "initial_flags": {
@@ -128109,6 +129115,11 @@
     "connor_nest_rooftop": "none",
     "connor_public_enemy_chase": "none",
     "connor_firm_with_hank": false,
-    "quick_time_event_failed": false
+    "quick_time_event_failed": false,
+    "connor_knows_jericho": false,
+    "connor_story_ended": false,
+    "connor_probed_simon": false,
+    "connor_has_ferndale_map": false,
+    "connor_kitchen_pressure": "none"
   }
 }

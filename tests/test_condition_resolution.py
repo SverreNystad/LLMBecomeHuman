@@ -580,3 +580,88 @@ def test_endgame_rules_never_fall_back_to_a_default(tmp_path):
         if e["type"] == "condition" and e.get("used_unverified_default")
     }
     assert not fallbacks & set(rules)
+
+
+# Last Chance, Connor: how Connor finds Jericho, or fails to.
+EVIDENCE_ROOM, LOCATED = "In the evidence room", "Located Jericho"
+FAILED = "Not enough evidence to find Jericho or took too much time"
+CONNOR_LATER = {"30.2", "31.2", "32.3", "32.4"}
+KAMSKIS_KEY = {"ch27_00031": "SHOOT", "ch27_00024": "JERICHO LOCATION"}
+NO_CLUES = {
+    "ch27_00031": "DON'T SHOOT",  # no key from Kamski
+    "ch15_x0001": "CHECK KEY POINTS",  # Rupert's diary stays hidden
+    "ch15_00018": "Save Hank",  # Rupert escapes instead of jumping
+    "ch20_00008": "SPARE",  # the Tracis escape
+    "ch20_00011": "SPARE",
+    "ch24_00048": "PROBE MEMORY",  # the wrong JB300: the Stratford deviant slips away
+}
+# Sparing the fleeing operator brings SWAT; Markus helps Simon, then leaves him.
+SIMON_LEFT_ON_THE_ROOF = {
+    **NO_CLUES,
+    "ch23_00077": "SPARE",
+    "ch23_00043": "Help",
+    "ch23_00033": "LEAVE",
+}
+TRUTH_IS_INSIDE = {"ch9_00095": "CONVINCE IT", "ch9_00040": "INTERVENE"}
+
+
+def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):
+    seen = _play_story(tmp_path, KAMSKIS_KEY)
+    assert EVIDENCE_ROOM not in seen["29"]
+    assert "30.2" in seen
+
+
+def test_without_any_clue_connor_is_decommissioned_and_his_story_ends(tmp_path):
+    seen = _play_story(tmp_path, NO_CLUES)
+    assert FAILED in seen["29"]
+    assert not {EVIDENCE_ROOM, LOCATED} & seen["29"]
+    assert not CONNOR_LATER & set(seen)
+    # Kara's and Markus's stories go on, at a Jericho nobody raids.
+    assert {"30.1", "30.3", "32.5"} & set(seen)
+
+
+@pytest.mark.parametrize(
+    "approach, found", [("IMITATE MARKUS' VOICE", True), ("THREATEN", False)]
+)
+def test_connor_finds_jericho_in_simon_only_by_posing_as_markus(
+    tmp_path, approach, found
+):
+    seen = _play_story(
+        tmp_path,
+        {
+            **SIMON_LEFT_ON_THE_ROOF,
+            "ch29_x0051": "DANIEL'S BIOCOMPONENT",
+            "ch29_00048": approach,
+        },
+    )
+    assert {EVIDENCE_ROOM, "Reactivate Simon"} <= seen["29"]
+    # Only the evidence Connor earned is on the tables.
+    assert (
+        not {"Look at the Tracis", "Look at diary", "Look at the android"} & seen["29"]
+    )
+    assert (LOCATED in seen["29"], FAILED in seen["29"]) == (found, not found)
+    assert bool(CONNOR_LATER & set(seen)) == found
+
+
+def test_reactivating_an_android_needs_a_compatible_part():
+    nodes = load_dataset()["nodes"]
+    simon = {o["label"]: o for o in nodes["ch29_x0051"]["options"]}
+    assert (
+        nodes[simon["DANIEL'S BIOCOMPONENT"]["next"]]["heading"] == "Reactivate Simon"
+    )
+    assert "PL600" in nodes["ch29_x0051"]["description"]
+    wrong = nodes[simon["THE HK400'S BIOCOMPONENT"]["next"]]
+    assert wrong["next"] != simon["DANIEL'S BIOCOMPONENT"]["next"]
+
+
+@pytest.mark.parametrize("good_interrogation", [True, False])
+def test_the_truth_is_inside_only_after_a_good_interrogation(
+    tmp_path, good_interrogation
+):
+    picks = {**SIMON_LEFT_ON_THE_ROOF, "ch29_00048": "THREATEN"}
+    if good_interrogation:
+        picks |= TRUTH_IS_INSIDE
+    seen = _play_story(tmp_path, picks)
+    assert ("Open the statuette" in seen["29"]) == good_interrogation
+    # The statuette's Ferndale map, matched with Simon's memory, finds Jericho.
+    assert (LOCATED in seen["29"]) == good_interrogation
