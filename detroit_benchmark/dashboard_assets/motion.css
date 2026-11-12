@@ -38,4 +38,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .view-leave, .view-enter, #storyView.view-enter #storyContent > *, .title-glitch, .picker-panel.is-closing { animation: none !important; }
+  .node-dialogue { transition: none !important; animation: none !important; }
 }

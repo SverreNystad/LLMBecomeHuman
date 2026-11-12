@@ -469,6 +469,24 @@ def test_best_of_each_logos_popover_and_motion(live_dashboard):
             )
             providers = page.evaluate("activeRuns().map(providerOf)")
             assert len(set(providers)) == 6 and "mock" not in providers
+            # A finished Run beats an unfinished one, then the provider's ranking decides.
+            picked = page.evaluate("""() => {
+              const saved = state.runs, hash = shownStoryHash();
+              const run = (id, model, status) => ({id, model, status, provider: 'openai', graph_sha256: hash});
+              state.runs = [run('sol-stopped', 'gpt-6.1-sol', 'stopped'), run('terra', 'gpt-6.1-terra', 'complete'),
+                            run('luna', 'gpt-6-luna', 'complete')];
+              const first = bestOfEach();
+              state.runs = [...state.runs, run('sol', 'gpt-6.1-sol', 'complete')];
+              const second = bestOfEach();
+              state.runs = saved;
+              return [first, second];
+            }""")
+            assert picked == [["terra"], ["sol"]]
+            # A release date is not a version: Mistral 3 beats an older dated model.
+            assert page.evaluate(
+                "modelRank({provider:'mistral', model:'mistral-medium-3'})"
+                " < modelRank({provider:'mistral', model:'mistral-large-2411'})"
+            )
             # Among a provider's Runs, a listed model outranks an unlisted one.
             assert page.evaluate(
                 "modelRank({display_provider:'openai', model:'gpt-6.1-sol'})"
@@ -523,6 +541,12 @@ def test_best_of_each_logos_popover_and_motion(live_dashboard):
             # Chapters slide in the direction of travel through the story.
             page.locator(".chapter-entry").nth(1).click()
             page.wait_for_function("document.body.dataset.chapterMotion === 'forward'")
+            # Forward: the old chapter rises out (moves up).
+            leaving = page.evaluate(
+                "document.querySelector('.chapter-heading-text').getAnimations()"
+                ".map(a => a.effect.getKeyframes().at(-1).transform)"
+            )
+            assert leaving and leaving[0].startswith("translateY(-")
             page.wait_for_function(
                 "document.querySelector('#chapterTitle').innerText.includes('The Search')"
             )

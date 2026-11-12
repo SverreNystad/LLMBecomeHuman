@@ -10,14 +10,28 @@ const SCENE_NODE_WIDTH = 240, NODE_LOGO_STEP = 22, NODE_LOGO_PADDING = 12;
 const MAX_VISIBLE_RUNS = 6;
 /* Motion (motion.css): view switches, chapter slides and the picker closing. All skipped for
  * reduced motion. */
-const VIEW_LEAVE_MS = 160, VIEW_ENTER_MS = 420, CHAPTER_LEAVE_MS = 150, CHAPTER_ENTER_MS = 360, PICKER_CLOSE_MS = 220;
+const VIEW_LEAVE_MS = 160, VIEW_ENTER_MS = 320, CHAPTER_LEAVE_MS = 150, CHAPTER_ENTER_MS = 360, PICKER_CLOSE_MS = 220;
+const STORY_LINE_STEP_MS = 35, STORY_LINE_MS = 420, STORY_LINES_STAGGERED = 14;  // motion.css line-in
+const TITLE_GLITCH_MS = 400, CAMERA_REVEAL_MS = 520, CAMERA_CLOSE_UP = 1.5, CAMERA_MAX_SCALE = 1.45;
+const CHAPTER_LEAVE_PX = 18, CHAPTER_ENTER_PX = 26;
+/* Only the latest transition animates in; an interrupted one still finishes its state change,
+ * so the shown view and chapter always match state. */
 let motionVersion = 0;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 function playClass(el, cls, ms) {
   if (!el) return;
   el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
-  clearTimeout(el._motion?.[cls]); el._motion = {...el._motion, [cls]: setTimeout(() => el.classList.remove(cls), ms)};
+  el._classTimers ??= {};
+  clearTimeout(el._classTimers[cls]); el._classTimers[cls] = setTimeout(() => el.classList.remove(cls), ms);
+}
+/* The chapter heading and the shown view's content: what a chapter change slides. */
+function chapterSlideTargets() {
+  return [document.querySelector('.chapter-heading-text'), state.view === 'story' ? $('storyContent') : $('viewport')].filter(Boolean);
+}
+function cancelChapterSlide() {
+  for (const el of [document.querySelector('.chapter-heading-text'), $('storyContent'), $('viewport')])
+    el?.getAnimations().forEach(a => a.cancel());
 }
 /* The dropdown plays its opening glitch in reverse before it hides. */
 function setPickerPanel(open) {
@@ -33,7 +47,7 @@ function setPickerPanel(open) {
 }
 /* Entering the Story, its first lines fade in one after another. */
 function staggerStoryLines() {
-  [...$('storyContent').children].forEach((el, i) => el.style.setProperty('--line', String(Math.min(i, 14))));
+  [...$('storyContent').children].forEach((el, i) => el.style.setProperty('--line', String(Math.min(i, STORY_LINES_STAGGERED))));
 }
 /* Entering the Flowchart, the camera starts close on the current Moment and eases out. */
 function revealFromMoment() {
@@ -41,9 +55,9 @@ function revealFromMoment() {
     const world = $('graphWorld'), vp = $('viewport').getBoundingClientRect(), node = state.selected && state.rendered?.graph.nodes.get(state.selected.id);
     const wx = node ? node.x + node.width / 2 : (vp.width / 2 - state.panX) / state.scale;
     const wy = node ? node.y + node.height / 2 : (vp.height / 2 - state.panY) / state.scale;
-    const close = Math.min(1.45, state.scale * 1.5);
+    const close = Math.min(CAMERA_MAX_SCALE, state.scale * CAMERA_CLOSE_UP);
     const start = `translate3d(${vp.width / 2 - wx * close}px,${vp.height / 2 - wy * close}px,0) scale(${close})`;
-    world.animate([{transform: start}, {transform: world.style.transform}], {duration: 520, easing: 'cubic-bezier(.2,.7,.2,1)'});
+    world.animate([{transform: start}, {transform: world.style.transform}], {duration: CAMERA_REVEAL_MS, easing: 'cubic-bezier(.2,.7,.2,1)'});
   }));
 }
 // Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
@@ -90,14 +104,16 @@ function modelRank(run){
   // The longest listed prefix wins, so "gpt-4.1-mini" is not mistaken for "gpt-4.1".
   const match=listed.filter(name=>model.startsWith(name)).sort((a,b)=>b.length-a.length)[0];
   if(match)return listed.indexOf(match);
-  const version=(model.match(/\d+/g)||[]).slice(0,3).reduce((sum,n,i)=>sum+Number(n)/100**i,0);
-  return 1000-version;
+  // Version parts are short numbers (gemini-3.8 → 3, 8); longer ones are release dates, skipped.
+  const parts=(model.match(/\d+/g)||[]).filter(n=>n.length<=2).slice(0,3).map(Number);
+  const version=parts.reduce((sum,n,i)=>sum+n/100**i,0);
+  return listed.length+100-version;
 }
 function bestOfEach(){
   const hash=shownStoryHash();if(!hash)return [];
   const best=new Map();
-  const better=(a,b)=>(a.status==='complete')!==(b.status==='complete')?(a.status==='complete'?-1:1)
-    :(modelRank(a)-modelRank(b))||byRunOrder(a,b);
+  const finishedFirst=(a,b)=>(b.status==='complete')-(a.status==='complete');
+  const better=(a,b)=>finishedFirst(a,b)||(modelRank(a)-modelRank(b))||byRunOrder(a,b);
   for(const run of state.runs){
     const family=PROVIDER_FAMILY[providerOf(run)];
     if(run.graph_sha256!==hash||!family)continue;
@@ -312,13 +328,13 @@ async function setView(view) {
   const story = view === 'story', version = ++motionVersion;
   const from = story ? $('viewerWrap') : $('storyView'), to = story ? $('storyView') : $('viewerWrap');
   const animate = !reducedMotion() && view !== state.view && !from.classList.contains('is-hidden');
-  state.view = view;
   document.body.dataset.viewMotion = story ? 'to-story' : 'to-flow';
   $('viewStory').setAttribute('aria-pressed',String(story));
   $('viewFlow').setAttribute('aria-pressed',String(!story));
   if (animate) {playClass(from, 'view-leave', VIEW_LEAVE_MS); await wait(VIEW_LEAVE_MS);}
-  if (version !== motionVersion) return;
   from.classList.remove('view-leave');
+  cancelChapterSlide();
+  state.view = view;
   $('storyView').classList.toggle('is-hidden',!story);
   $('viewerWrap').classList.toggle('is-hidden',story);
   document.querySelectorAll('.flow-only').forEach(el=>el.classList.toggle('is-hidden',story));
@@ -329,8 +345,8 @@ async function setView(view) {
   }
   syncHash();
   await renderChapter(true);
-  if (!animate) return;
-  playClass(to, 'view-enter', VIEW_ENTER_MS);
+  if (!animate || version !== motionVersion) return;
+  playClass(to, 'view-enter', story ? VIEW_ENTER_MS + STORY_LINE_MS + STORY_LINES_STAGGERED * STORY_LINE_STEP_MS : VIEW_ENTER_MS);
   if (story) staggerStoryLines(); else revealFromMoment();
 }
 function renderChapterList() {
@@ -353,25 +369,21 @@ async function changeChapter(ch) {
   const version = ++motionVersion, direction = all.indexOf(ch) < all.indexOf(state.chapter) ? 'back' : 'forward';
   const animate = !reducedMotion() && Boolean(state.chapter) && ch !== state.chapter;
   document.body.dataset.chapterMotion = direction;
-  const moving = () => [document.querySelector('.chapter-heading-text'), state.view === 'story' ? $('storyContent') : $('viewport')].filter(Boolean);
-  const rise = direction === 'forward' ? -1 : 1;
+  const upward = direction === 'forward' ? -1 : 1;  // forward: the old chapter rises out
   if (animate) {
-    moving().forEach(el => el.animate([{transform:'none', opacity:1}, {transform:`translateY(${rise*18}px)`, opacity:0}],
+    chapterSlideTargets().forEach(el => el.animate([{transform:'none', opacity:1}, {transform:`translateY(${upward*CHAPTER_LEAVE_PX}px)`, opacity:0}],
       {duration: CHAPTER_LEAVE_MS, easing: 'ease-in', fill: 'forwards'}));
     await wait(CHAPTER_LEAVE_MS);
-    if (version !== motionVersion) return;
   }
+  cancelChapterSlide();
   state.chapter = ch; closeDrawer();
   syncHash();
   renderChapterList();
   await renderChapter(true);
   if (!animate || version !== motionVersion) return;
-  moving().forEach(el => {
-    el.getAnimations().forEach(a => a.cancel());
-    el.animate([{transform:`translateY(${-rise*26}px)`, opacity:0}, {transform:'none', opacity:1}],
-      {duration: CHAPTER_ENTER_MS, easing: 'cubic-bezier(.2,.7,.2,1)'});
-  });
-  playClass($('chapterTitle'), 'title-glitch', 420);
+  chapterSlideTargets().forEach(el => el.animate([{transform:`translateY(${-upward*CHAPTER_ENTER_PX}px)`, opacity:0}, {transform:'none', opacity:1}],
+    {duration: CHAPTER_ENTER_MS, easing: 'cubic-bezier(.2,.7,.2,1)'}));
+  playClass($('chapterTitle'), 'title-glitch', TITLE_GLITCH_MS);
 }
 function optionId(parent, option) {return `${parent}::OPTION::${encodeURIComponent(option)}`;}
 function modelView(runId){return {run:runById(runId),detail:state.details.get(runId)};}
