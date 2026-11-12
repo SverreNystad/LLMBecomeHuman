@@ -213,8 +213,9 @@ async function renderStory({keepScroll = false} = {}) {
   renderStoryToolbar(run);
   if (!run || !chapter || state.view !== 'story') return;
   const version = ++storyVersion, detail = state.details.get(run.id);
-  const cacheKey = `${run.id}\u0000${chapter}\u0000${detail?.events?.length || 0}`;
-  let response = storyCache.get(cacheKey);
+  // One entry per Run and chapter, replaced when the Run has played on.
+  const cacheKey = `${run.id}\u0000${chapter}`, events = detail?.events?.length || 0;
+  let response = storyCache.get(cacheKey)?.events === events ? storyCache.get(cacheKey).response : null;
   if (!response) {
     if (!keepScroll) $('storyContent').innerHTML = '';
     try {
@@ -223,7 +224,7 @@ async function renderStory({keepScroll = false} = {}) {
       if (version === storyVersion) $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(error.message)}</strong></div>`;
       return;
     }
-    storyCache.set(cacheKey, response);
+    storyCache.set(cacheKey, {events, response});
   }
   if (version !== storyVersion) return;
   const records = response.moments || [];
@@ -292,7 +293,7 @@ function scrollToMoment({moments = [], index = Infinity} = {}) {
   if (!target) return;
   const collapsed = target.closest('details');
   if (collapsed) collapsed.open = true;
-  target.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+  target.scrollIntoView({block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth'});
   target.classList.add('story-flash');
   setTimeout(() => target.classList.remove('story-flash'), 1800);
 }

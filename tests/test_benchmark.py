@@ -4,6 +4,7 @@ import pytest
 from bs4 import BeautifulSoup
 
 from detroit_benchmark.engine import Runner, validate_graph, evaluate_condition
+from tests.dataset import read_events
 from detroit_benchmark.ingest import (
     Compiler,
     render_expr,
@@ -251,12 +252,6 @@ def test_additional_providers_are_wired_without_external_calls(monkeypatch):
 
     with pytest.raises(RuntimeError, match="DEEPSEEK_API_KEY"):
         create_model("deepseek", None)
-
-
-def read_events(run_dir):
-    return [
-        json.loads(line) for line in (run_dir / "events.jsonl").read_text().splitlines()
-    ]
 
 
 def test_overlong_reply_is_retried_once_briefly_then_accepted(tmp_path):

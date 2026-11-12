@@ -14,7 +14,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .engine import canonical_hash, chapter_briefing
+from .engine import canonical_hash, chapter_briefing, iter_events
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -24,6 +24,7 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
+ART_RECHECK_SECONDS = 30
 # Game art is copyrighted, so it stays local (gitignored) and every view works without it.
 IMAGES = Path(__file__).resolve().parents[1] / "images"
 # The scene-art manifest is committed; the images it names live under the images folder.
@@ -120,23 +121,6 @@ def _discovered_runs(root: Path) -> list[Path]:
     return sorted(set(paths), key=lambda p: p.as_posix().lower())
 
 
-def _event_iter(directory: Path):
-    """Ignore an incompletely written final JSONL record while runs are live."""
-    try:
-        with (directory / "events.jsonl").open(encoding="utf-8") as stream:
-            for line in stream:
-                if not line.strip():
-                    continue
-                try:
-                    parsed = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if isinstance(parsed, dict):
-                    yield parsed
-    except OSError:
-        return
-
-
 def _seconds_since_write(directory: Path) -> float:
     try:
         return time.time() - (directory / "events.jsonl").stat().st_mtime
@@ -144,14 +128,44 @@ def _seconds_since_write(directory: Path) -> float:
         return float("inf")
 
 
+def _stamp(path: Path) -> tuple[int, int] | None:
+    """A file's version, for caches: (modified time, size), or None if it is missing."""
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
+
+
 def _metadata(root: Path, directory: Path) -> dict[str, Any]:
+    """The Run list is polled every few seconds; its files are re-read only when they change."""
+    summary = directory / "summary.json"
+    meta = dict(
+        _cached_metadata(
+            str(root),
+            str(directory),
+            _stamp(directory / "experiment.json"),
+            _stamp(summary),
+            # A finished Run's summary has everything; the checkpoint only fills in live ones.
+            None if summary.exists() else _stamp(directory / "checkpoint.json"),
+        )
+    )
+    if (
+        meta["status"] == "running"
+        and _seconds_since_write(directory) > STALE_RUN_SECONDS
+    ):
+        meta["status"] = "stopped"
+    return meta
+
+
+@lru_cache(maxsize=256)
+def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
+    root, directory = Path(root_s), Path(directory_s)
     exp = _json_file(directory / "experiment.json") or {}
     summary = _json_file(directory / "summary.json") or {}
-    checkpoint = _json_file(directory / "checkpoint.json") or {}
+    checkpoint = {} if summary else _json_file(directory / "checkpoint.json") or {}
     state = checkpoint.get("state", {})
     status = summary.get("status") or state.get("status") or "unknown"
-    if status == "running" and _seconds_since_write(directory) > STALE_RUN_SECONDS:
-        status = "stopped"
     chapters = summary.get("chapters_visited", state.get("chapters_visited", []))
     decisions = summary.get("number_of_choices", len(state.get("decisions", [])))
     return {
@@ -303,14 +317,13 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     return beat
 
 
-@lru_cache(maxsize=64)
-def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, dict]:
+def _parse_events(directory: str) -> tuple[list, dict]:
     """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
     visits: Counter = Counter()
     memories: dict[str, str] = {}
-    for event in _event_iter(Path(directory)):
+    for event in iter_events(Path(directory)):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
@@ -325,12 +338,18 @@ def _parse_events(directory: str, _modified_ns: int, _size: int) -> tuple[list, 
     return short, story
 
 
+# Run directory -> (log version, parsed log). Only the latest version of a live Run is kept.
+_PARSED_LOGS: dict[str, tuple[tuple[int, int], tuple[list, dict]]] = {}
+
+
 def _parsed_events(directory: Path) -> tuple[list, dict]:
-    try:
-        stat = (directory / "events.jsonl").stat()
-    except OSError:
+    stamp = _stamp(directory / "events.jsonl")
+    if stamp is None:
         return [], {}
-    return _parse_events(str(directory), stat.st_mtime_ns, stat.st_size)
+    cached = _PARSED_LOGS.get(str(directory))
+    if cached is None or cached[0] != stamp:
+        cached = _PARSED_LOGS[str(directory)] = (stamp, _parse_events(str(directory)))
+    return cached[1]
 
 
 def _detail(root: Path, directory: Path) -> dict[str, Any]:
@@ -489,7 +508,7 @@ def _flowchart_projection(
 
 def _event_only_graph(directory: Path) -> dict:
     """Compatibility for old logs: never fabricate the unrecorded branches."""
-    events = list(_event_iter(directory))
+    events = list(iter_events(directory))
     nodes = {}
     for i, event in enumerate(events):
         nid = event.get("node_id")
@@ -522,9 +541,7 @@ def _event_only_graph(directory: Path) -> dict:
                 }
                 for opt in (event.get("input") or {}).get("available_choices", [])
             ]
-        elif typ in ("scene", "chapter_exit"):
-            node["next"] = next_id
-        elif typ in ("condition", "route"):
+        else:
             node["next"] = next_id
     return {
         "metadata": {"title": "Partial reconstruction from recorded events"},
@@ -534,7 +551,7 @@ def _event_only_graph(directory: Path) -> dict:
 
 
 def _load_saved_graph(
-    root: Path, directory: Path, extra_graphs_dir: Path | None
+    directory: Path, extra_graphs_dir: Path | None
 ) -> tuple[dict, bool, str]:
     expected = (_json_file(directory / "experiment.json") or {}).get("graph_sha256")
     # New benchmark runs always include their original full story graph.
@@ -562,33 +579,29 @@ def _load_saved_graph(
     return _event_only_graph(directory), False, "event_log_only"
 
 
-@lru_cache(maxsize=32)
-def _cached_briefings(
-    directory: str, extra_graphs_dir: str | None, _snapshot_ns: int
-) -> dict[str, str]:
-    """Chapter Briefings from the Run's story graph; graphs older than briefings have none."""
-    path = Path(directory)
-    graph, _, _ = _load_saved_graph(
-        path.parent, path, Path(extra_graphs_dir) if extra_graphs_dir else None
-    )
-    return {
-        str(chapter): briefing
-        for chapter in graph.get("chapter_briefings") or {}
-        if (briefing := chapter_briefing(graph, chapter))
-    }
+# (story hash, where it is found) -> (graph, Flowchart projection). Every Run of one story
+# shares its graph, so it is loaded, hashed and projected once per story, not per request.
+_STORIES: dict[tuple, tuple[dict, dict]] = {}
+
+
+def _story(directory: Path, extra_graphs_dir: Path | None) -> tuple[dict, dict]:
+    """A Run's story graph and its Flowchart projection."""
+    expected = (_json_file(directory / "experiment.json") or {}).get("graph_sha256")
+    key = (expected, (directory / "story-graph.json").exists(), str(extra_graphs_dir))
+    if key in _STORIES:
+        return _STORIES[key]
+    graph, complete, source = _load_saved_graph(directory, extra_graphs_dir)
+    story = graph, _flowchart_projection(graph, complete=complete, source=source)
+    if complete and expected:
+        _STORIES[key] = story
+    return story
 
 
 def _chapter_briefing(
     directory: Path, extra_graphs_dir: Path | None, chapter: str
 ) -> str | None:
-    try:
-        snapshot_ns = (directory / "story-graph.json").stat().st_mtime_ns
-    except OSError:
-        snapshot_ns = 0
-    briefings = _cached_briefings(
-        str(directory), str(extra_graphs_dir) if extra_graphs_dir else None, snapshot_ns
-    )
-    return briefings.get(chapter)
+    """Graphs older than Chapter Briefings have none."""
+    return chapter_briefing(_story(directory, extra_graphs_dir)[0], chapter)
 
 
 def _art_file(art_root: Path, relative: Any) -> Path | None:
@@ -602,7 +615,21 @@ def _art_file(art_root: Path, relative: Any) -> Path | None:
 
 
 def _installed_scene_art(art_root: Path, manifest: Path) -> dict[str, dict[str, Any]]:
-    """Manifest scenes whose image is actually installed, by key."""
+    """Manifest scenes whose image is actually installed, by key. Checked again when the
+    manifest changes, and at most every ART_RECHECK_SECONDS for newly added images."""
+    return _cached_scene_art(
+        str(art_root),
+        str(manifest),
+        _stamp(manifest),
+        int(time.time() // ART_RECHECK_SECONDS),
+    )
+
+
+@lru_cache(maxsize=4)
+def _cached_scene_art(
+    art_root_s: str, manifest_s: str, *_versions
+) -> dict[str, dict[str, Any]]:
+    art_root, manifest = Path(art_root_s), Path(manifest_s)
     scenes = (_json_file(manifest) or {}).get("scenes", [])
     installed: dict[str, dict[str, Any]] = {}
     for scene in scenes if isinstance(scenes, list) else []:
@@ -670,9 +697,7 @@ def create_app(
 
     @app.get("/api/runs/{run_id}/flowchart")
     def get_flowchart(run_id: str):
-        directory = _resolve_run(root, run_id)
-        graph, complete, source = _load_saved_graph(root, directory, graph_root)
-        return _flowchart_projection(graph, complete=complete, source=source)
+        return _story(_resolve_run(root, run_id), graph_root)[1]
 
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
@@ -696,7 +721,7 @@ def create_app(
         if event_index < 0:
             raise HTTPException(status_code=404, detail="Unknown event")
         directory = _resolve_run(root, run_id)
-        for event in _event_iter(directory):
+        for event in iter_events(directory):
             if event.get("index") == event_index:
                 return event
         raise HTTPException(status_code=404, detail="Unknown event")

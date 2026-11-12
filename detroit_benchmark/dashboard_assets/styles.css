@@ -167,7 +167,6 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .picker-run-text { flex: 1; min-width: 0; }
 .picker-run-text strong { display: block; font-weight: 400; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .picker-run-text small { display: block; font-size: 11px; color: var(--ink-muted); }
-.picker-color { width: 18px; height: 2px; flex: 0 0 auto; }
 .picker-actions { display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid var(--line-soft); }
 .picker-actions button { padding: 4px 2px; font-size: 12px; color: var(--highlight); }
 .picker-actions button:last-child { color: var(--ink-muted); }
@@ -272,8 +271,8 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .edge-path.route-overlay:hover { stroke-width: 3.5; }
 .route-overlay.provider-openai { stroke-dasharray: var(--dash-openai); }
 .route-overlay.provider-anthropic { stroke-dasharray: var(--dash-anthropic); }
-.route-overlay.provider-google, .route-overlay.provider-gemini { stroke-dasharray: var(--dash-google); }
-.route-overlay.provider-xai, .route-overlay.provider-grok { stroke-dasharray: var(--dash-xai); }
+.route-overlay.provider-google { stroke-dasharray: var(--dash-google); }
+.route-overlay.provider-xai { stroke-dasharray: var(--dash-xai); }
 .route-overlay.provider-deepseek { stroke-dasharray: var(--dash-deepseek); }
 .route-overlay.provider-mistral { stroke-dasharray: var(--dash-mistral); }
 .route-overlay.provider-other { stroke-dasharray: var(--dash-other); }
