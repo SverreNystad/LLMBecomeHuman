@@ -31,6 +31,7 @@ Supply appropriate API keys to run the models. The dashboard itself uses **no** 
 - **Character colours:** each chapter takes its Character's colour: Connor blue, Kara yellow, Markus red. Each colour is a ramp of six shades from light to dark.
 - **One shade per model:** each selected Run holds one shade slot, so a model sits at the same place on the light-to-dark range in every chapter. Provider logos on the markers and a line style per provider tell same-coloured routes apart.
 - **Six at a time:** at most six Runs are shown. Selecting a seventh is refused with a short notice.
+- **Best of each:** shows one Run per provider (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral) for the shown story: a finished Run first, then the provider's best model. Each provider's ranking lives in `MODEL_RANK` in `app.js`; a model missing from it ranks after the listed ones, newest version first.
 - **Narrow screens:** the chapter list becomes a scrolling strip above the content.
 
 ## Story

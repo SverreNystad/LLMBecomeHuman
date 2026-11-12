@@ -298,8 +298,7 @@ function scrollToMoment({moments = [], index = Infinity} = {}) {
 }
 function showMomentOnFlowchart(moment) {
   const run = storyRun();
-  setView('flow');
-  inspect(moment, run?.id, {glide: true});
+  setView('flow').then(() => inspect(moment, run?.id, {glide: true}));
 }
 function setStoryRun(id) {
   state.storyRunId = id;

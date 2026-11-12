@@ -8,6 +8,58 @@ const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
 const SCENE_NODE_WIDTH = 240, NODE_LOGO_STEP = 22, NODE_LOGO_PADDING = 12;
 // A chapter shows at most six Runs, one per shade of its Character's colour.
 const MAX_VISIBLE_RUNS = 6;
+/* Motion (motion.css): view switches, chapter slides and the picker closing. All skipped for
+ * reduced motion. */
+const VIEW_LEAVE_MS = 160, VIEW_ENTER_MS = 320, CHAPTER_LEAVE_MS = 150, CHAPTER_ENTER_MS = 360, PICKER_CLOSE_MS = 220;
+const STORY_LINE_STEP_MS = 35, STORY_LINE_MS = 420, STORY_LINES_STAGGERED = 14;  // motion.css line-in
+const TITLE_GLITCH_MS = 400, CAMERA_REVEAL_MS = 520, CAMERA_CLOSE_UP = 1.5, CAMERA_MAX_SCALE = 1.45;
+const CHAPTER_LEAVE_PX = 18, CHAPTER_ENTER_PX = 26;
+/* Only the latest transition animates in; an interrupted one still finishes its state change,
+ * so the shown view and chapter always match state. */
+let motionVersion = 0;
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+function playClass(el, cls, ms) {
+  if (!el) return;
+  el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls);
+  el._classTimers ??= {};
+  clearTimeout(el._classTimers[cls]); el._classTimers[cls] = setTimeout(() => el.classList.remove(cls), ms);
+}
+/* The chapter heading and the shown view's content: what a chapter change slides. */
+function chapterSlideTargets() {
+  return [document.querySelector('.chapter-heading-text'), state.view === 'story' ? $('storyContent') : $('viewport')].filter(Boolean);
+}
+function cancelChapterSlide() {
+  for (const el of [document.querySelector('.chapter-heading-text'), $('storyContent'), $('viewport')])
+    el?.getAnimations().forEach(a => a.cancel());
+}
+/* The dropdown plays its opening glitch in reverse before it hides. */
+function setPickerPanel(open) {
+  const panel = $('pickerPanel');
+  if (open) {panel.classList.remove('is-hidden', 'is-closing'); return;}
+  if (panel.classList.contains('is-hidden') || panel.classList.contains('is-closing')) return;
+  if (reducedMotion()) {panel.classList.add('is-hidden'); return;}
+  panel.classList.add('is-closing');
+  setTimeout(() => {
+    if (!panel.classList.contains('is-closing')) return;
+    panel.classList.remove('is-closing'); panel.classList.add('is-hidden');
+  }, PICKER_CLOSE_MS);
+}
+/* Entering the Story, its first lines fade in one after another. */
+function staggerStoryLines() {
+  [...$('storyContent').children].forEach((el, i) => el.style.setProperty('--line', String(Math.min(i, STORY_LINES_STAGGERED))));
+}
+/* Entering the Flowchart, the camera starts close on the current Moment and eases out. */
+function revealFromMoment() {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const world = $('graphWorld'), vp = $('viewport').getBoundingClientRect(), node = state.selected && state.rendered?.graph.nodes.get(state.selected.id);
+    const wx = node ? node.x + node.width / 2 : (vp.width / 2 - state.panX) / state.scale;
+    const wy = node ? node.y + node.height / 2 : (vp.height / 2 - state.panY) / state.scale;
+    const close = Math.min(CAMERA_MAX_SCALE, state.scale * CAMERA_CLOSE_UP);
+    const start = `translate3d(${vp.width / 2 - wx * close}px,${vp.height / 2 - wy * close}px,0) scale(${close})`;
+    world.animate([{transform: start}, {transform: world.style.transform}], {duration: CAMERA_REVEAL_MS, easing: 'cubic-bezier(.2,.7,.2,1)'});
+  }));
+}
 // Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
 // so the first few models get well-separated shades.
 const SHADE_ORDER = [3, 5, 1, 4, 6, 2];
@@ -32,18 +84,42 @@ function runById(id) {return state.runs.find(r=>r.id===id) || null;}
 function activeRuns(){return state.selectedIds.map(runById).filter(Boolean);}
 function activeViews(){return activeRuns().map(run=>({run,detail:state.details.get(run.id)})).filter(x=>x.detail);}
 function anchorRun(){return activeRuns()[0]||null;}
-/* What "Select all" adds: every Run of the shown story, the ones already shown first. With
- * nothing shown, the story most Runs played. Capped later at MAX_VISIBLE_RUNS. */
-function selectAllCandidates(){
-  let hash=anchorRun()?.graph_sha256;
-  if(!hash){
-    const counts=new Map();
-    for(const r of state.runs)if(r.graph_sha256)counts.set(r.graph_sha256,(counts.get(r.graph_sha256)||0)+1);
-    hash=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0];
+/* The story being compared: the shown Runs' story, else the one most Runs played. */
+function shownStoryHash(){
+  const shown=anchorRun()?.graph_sha256;
+  if(shown)return shown;
+  const counts=new Map();
+  for(const r of state.runs)if(r.graph_sha256)counts.set(r.graph_sha256,(counts.get(r.graph_sha256)||0)+1);
+  return [...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+}
+/* "Best of each": one Run per provider. Each provider's models are ranked best first; a model
+ * missing from its list ranks after the listed ones, newest version first. */
+const PROVIDER_FAMILY = {anthropic:'anthropic', openai:'openai', google:'google', gemini:'google', xai:'xai', grok:'xai', deepseek:'deepseek', mistral:'mistral'};
+const MODEL_RANK = {
+  anthropic: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-haiku-4-5'],
+  openai: ['gpt-6.1-sol', 'gpt-6.1-terra', 'gpt-6-luna', 'gpt-5.6-luna', 'gpt-4.1', 'gpt-4.1-mini'],
+};
+function modelRank(run){
+  const model=String(run?.model||'').toLowerCase(), listed=MODEL_RANK[PROVIDER_FAMILY[providerOf(run)]]||[];
+  // The longest listed prefix wins, so "gpt-4.1-mini" is not mistaken for "gpt-4.1".
+  const match=listed.filter(name=>model.startsWith(name)).sort((a,b)=>b.length-a.length)[0];
+  if(match)return listed.indexOf(match);
+  // Version parts are short numbers (gemini-3.8 → 3, 8); longer ones are release dates, skipped.
+  const parts=(model.match(/\d+/g)||[]).filter(n=>n.length<=2).slice(0,3).map(Number);
+  const version=parts.reduce((sum,n,i)=>sum+n/100**i,0);
+  return listed.length+100-version;
+}
+function bestOfEach(){
+  const hash=shownStoryHash();if(!hash)return [];
+  const best=new Map();
+  const finishedFirst=(a,b)=>(b.status==='complete')-(a.status==='complete');
+  const better=(a,b)=>finishedFirst(a,b)||(modelRank(a)-modelRank(b))||byRunOrder(a,b);
+  for(const run of state.runs){
+    const family=PROVIDER_FAMILY[providerOf(run)];
+    if(run.graph_sha256!==hash||!family)continue;
+    if(!best.has(family)||better(run,best.get(family))<0)best.set(family,run);
   }
-  if(!hash)return [];
-  const kept=state.selectedIds.filter(id=>runById(id)?.graph_sha256===hash);
-  return [...kept,...state.runs.filter(r=>r.graph_sha256===hash&&!kept.includes(r.id)).sort(byRunOrder).map(r=>r.id)];
+  return [...best.values()].sort(byRunOrder).slice(0,MAX_VISIBLE_RUNS).map(r=>r.id);
 }
 function compatible(run,anchor=anchorRun()) {return !anchor || Boolean(run.graph_sha256 && run.graph_sha256===anchor.graph_sha256);}
 /* Each selected Run keeps one shade slot while it stays selected, so it sits at the same
@@ -125,11 +201,10 @@ async function api(path){
 function updateSelectors() {
   assignShadeSlots();
   $('pickerToggle').setAttribute('aria-expanded',String(state.pickerOpen));
-  $('pickerPanel').classList.toggle('is-hidden',!state.pickerOpen);
+  setPickerPanel(state.pickerOpen);
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
-  const fill=selectAllCandidates();
-  $('selectAllRuns').disabled=!fill.length||fill.every(id=>state.selectedIds.includes(id));
-  $('selectAllRuns').textContent=fill.length>MAX_VISIBLE_RUNS?'Select six':'Select all';
+  const best=bestOfEach();
+  $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
   const chips=$('selectedRunChips');
   chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
@@ -153,7 +228,7 @@ async function toggleRun(id,enabled){
   const run=runById(id);if(!run)return;
   const selected=state.selectedIds.includes(id);
   if(enabled&&!selected&&!compatible(run)){toast('That model played a different story. Clear the selection first.');renderPickerList();return;}
-  if(enabled&&!selected&&state.selectedIds.length>=MAX_VISIBLE_RUNS){toast('Six models at a time. Remove one to add another.');renderPickerList();return;}
+  if(enabled&&!selected&&state.selectedIds.length>=MAX_VISIBLE_RUNS){toast('Six models max. Remove one first.');renderPickerList();return;}
   if(enabled&&!selected)state.selectedIds.push(id);
   if(!enabled&&selected)state.selectedIds=state.selectedIds.filter(x=>x!==id);
   if(state.focusedId===id)state.focusedId=null;
@@ -247,17 +322,32 @@ function syncHash() {
   if (state.view !== 'story') params.set('view',state.view);
   history.replaceState(null,'',location.pathname+location.search+'#'+params.toString());
 }
-function setView(view) {
+/* Story <-> Flowchart: the old view breaks up in glitch slices, the new one settles in from a
+ * slight blur. Resolves once the new view is drawn. */
+async function setView(view) {
+  const story = view === 'story', version = ++motionVersion;
+  const from = story ? $('viewerWrap') : $('storyView'), to = story ? $('storyView') : $('viewerWrap');
+  const animate = !reducedMotion() && view !== state.view && !from.classList.contains('is-hidden');
+  document.body.dataset.viewMotion = story ? 'to-story' : 'to-flow';
+  $('viewStory').setAttribute('aria-pressed',String(story));
+  $('viewFlow').setAttribute('aria-pressed',String(!story));
+  if (animate) {playClass(from, 'view-leave', VIEW_LEAVE_MS); await wait(VIEW_LEAVE_MS);}
+  from.classList.remove('view-leave');
+  cancelChapterSlide();
   state.view = view;
-  const story = view === 'story';
   $('storyView').classList.toggle('is-hidden',!story);
   $('viewerWrap').classList.toggle('is-hidden',story);
   document.querySelectorAll('.flow-only').forEach(el=>el.classList.toggle('is-hidden',story));
-  $('viewStory').setAttribute('aria-pressed',String(story));
-  $('viewFlow').setAttribute('aria-pressed',String(!story));
-  if (story) closeDrawer();
+  if (story) {
+    const moment = state.selected && document.querySelector(`.flow-node[data-node-id="${CSS.escape(state.selected.id)}"]`)?.dataset.moment;
+    if (moment && !state.pendingMoment) state.pendingMoment = {moments:[moment]};
+    closeDrawer();
+  }
   syncHash();
-  renderChapter(true);
+  await renderChapter(true);
+  if (!animate || version !== motionVersion) return;
+  playClass(to, 'view-enter', story ? VIEW_ENTER_MS + STORY_LINE_MS + STORY_LINES_STAGGERED * STORY_LINE_STEP_MS : VIEW_ENTER_MS);
+  if (story) staggerStoryLines(); else revealFromMoment();
 }
 function renderChapterList() {
   const all = chapters();
@@ -271,11 +361,29 @@ function renderChapterList() {
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
   document.querySelector('.chapter-entry.active')?.scrollIntoView({block:'nearest'});
 }
-function changeChapter(ch) {
-  if (!chapters().includes(ch)) return;
+/* Chapters slide vertically in the direction of travel: forward, the old chapter rises out and
+ * the new one comes up from below; back, everything moves down. */
+async function changeChapter(ch) {
+  const all = chapters();
+  if (!all.includes(ch)) return;
+  const version = ++motionVersion, direction = all.indexOf(ch) < all.indexOf(state.chapter) ? 'back' : 'forward';
+  const animate = !reducedMotion() && Boolean(state.chapter) && ch !== state.chapter;
+  document.body.dataset.chapterMotion = direction;
+  const upward = direction === 'forward' ? -1 : 1;  // forward: the old chapter rises out
+  if (animate) {
+    chapterSlideTargets().forEach(el => el.animate([{transform:'none', opacity:1}, {transform:`translateY(${upward*CHAPTER_LEAVE_PX}px)`, opacity:0}],
+      {duration: CHAPTER_LEAVE_MS, easing: 'ease-in', fill: 'forwards'}));
+    await wait(CHAPTER_LEAVE_MS);
+  }
+  cancelChapterSlide();
   state.chapter = ch; closeDrawer();
   syncHash();
-  renderChapterList(); renderChapter(true);
+  renderChapterList();
+  await renderChapter(true);
+  if (!animate || version !== motionVersion) return;
+  chapterSlideTargets().forEach(el => el.animate([{transform:`translateY(${-upward*CHAPTER_ENTER_PX}px)`, opacity:0}, {transform:'none', opacity:1}],
+    {duration: CHAPTER_ENTER_MS, easing: 'cubic-bezier(.2,.7,.2,1)'}));
+  playClass($('chapterTitle'), 'title-glitch', TITLE_GLITCH_MS);
 }
 function optionId(parent, option) {return `${parent}::OPTION::${encodeURIComponent(option)}`;}
 function modelView(runId){return {run:runById(runId),detail:state.details.get(runId)};}
@@ -566,6 +674,7 @@ function drawGraph(graph, paths) {
   edgesEl.setAttribute('width',String(bounds.width));edgesEl.setAttribute('height',String(bounds.height));
   edgesEl.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);
   edgesEl.replaceChildren();nodesEl.replaceChildren();
+  const logos=[];
   for(const edge of graph.edges) {
     const d=edgeMarkup(edge,graph);
     edgesEl.appendChild(svgPath(d,'edge-path'));
@@ -581,9 +690,11 @@ function drawGraph(graph, paths) {
       const title=document.createElementNS(svgNS,'title');title.textContent=modelLabel(view.run);path.appendChild(title);
       edgesEl.appendChild(path);
       const logo=routeLogo(path,view.run,(i-(users.length-1)/2)*ROUTE_LOGO_STEP-offset);
-      if(logo)edgesEl.appendChild(logo);
+      if(logo)logos.push(logo);
     });
   }
+  // Logos go in last, so no route line is drawn over a model's mark.
+  edgesEl.append(...logos);
   for(const node of graph.nodes.values()) {
     const users=paths.filter(view=>view.path.visited.has(node.id));
     const n=document.createElement('div');
@@ -643,7 +754,7 @@ function renderChapter(fit=true){
  setCharacterTheme(chapterCharacter(chapter));
  emitScene();
  $('chapterTitle').textContent=chapterTitle(chapter);
- if(state.view==='story'){state.rendered=null;renderStory({keepScroll:!fit});return;}
+ if(state.view==='story'){state.rendered=null;return renderStory({keepScroll:!fit});}
  renderFlowchart(fit);
 }
 function renderFlowchart(fit=true){
@@ -797,12 +908,11 @@ function setupInteractions(){
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});
- $('selectAllRuns').addEventListener('click',async()=>{
-  const all=selectAllCandidates();if(!all.length)return;
-  const hadAnchor=Boolean(anchorRun());
-  state.selectedIds=all.slice(0,MAX_VISIBLE_RUNS);
-  if(all.length>MAX_VISIBLE_RUNS)toast('Showing six models at a time.');
-  updateSelectors();await loadCurrent(!hadAnchor);
+ $('bestOfEach').addEventListener('click',async()=>{
+  const best=bestOfEach();if(!best.length)return;
+  const sameStory=Boolean(anchorRun());
+  state.selectedIds=best;state.focusedId=null;
+  updateSelectors();await loadCurrent(!sameStory);
  });
  $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});
  const fitToButton=()=>{fitGraph();state.viewTouched=true;};

@@ -119,6 +119,9 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .chapter-entry.active { background: var(--surface-solid); color: var(--ink); }
 .chapter-entry.active::before { height: 18px; margin-top: -9px; border-radius: 2px; opacity: 1; }
 .chapter-entry.not-reached { opacity: .45; }
+/* Unreached chapters glitch in their own grey, never in white. */
+.chapter-entry.not-reached { --entry-color: rgb(150, 158, 166); --glitch-red: rgba(122, 132, 142, .7); --glitch-blue: rgba(176, 184, 192, .7); }
+.chapter-entry.not-reached:hover { background: rgba(122, 132, 142, .1); }
 .chapter-numeral { flex: 0 0 26px; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--ink-muted); }
 .chapter-name { flex: 1; min-width: 0; font-size: 13px; line-height: 1.35; }
 .chapter-name b { display: block; font-weight: 500; overflow-wrap: anywhere; }
@@ -294,14 +297,33 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .node-mini { position: absolute; left: 10px; top: -8px; padding: 1px 6px; background: var(--surface-solid); font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-muted); }
 /* Idle nodes show only their title; the scene's dialogue opens below it on hover or focus,
  * over the chart, without moving any other node. */
-.node-dialogue { display: none; position: absolute; left: -1px; right: -1px; top: calc(100% - 1px); z-index: 2;
-  max-height: 180px; padding: 8px 12px 10px; background: var(--surface-solid); border: 1px solid var(--line); border-top: 0;
-  box-shadow: var(--shadow); text-align: left; overflow-y: auto; font-size: 11.5px; line-height: 15px; color: var(--ink-soft); overflow-wrap: anywhere; scrollbar-width: thin; cursor: text; }
-.flow-node:is(:hover, :focus-visible) .node-dialogue { display: block; animation: glitch-in .28s steps(4, end); }
-.flow-node:is(:hover, :focus-visible):has(.node-dialogue) { z-index: 15; }
+/* The dialogue continues the node: the node's bottom edge takes the Character's color and the
+ * panel unfolds from it in dark glass with corner brackets (as the decision card). It folds
+ * back after a short delay, so the pointer can move into it and scroll. */
+.node-dialogue { --dialogue-color: var(--node-accent, var(--accent));
+  position: absolute; left: -1px; right: -1px; top: calc(100% - 1px); z-index: 2;
+  max-height: 180px; padding: 10px 12px 12px; text-align: left; overflow-y: auto; cursor: text;
+  font-size: 11.5px; line-height: 15px; color: rgba(232, 238, 245, .82); overflow-wrap: anywhere;
+  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .25) transparent;
+  background:
+    linear-gradient(var(--dialogue-color), var(--dialogue-color)) left bottom / 12px 2px no-repeat,
+    linear-gradient(var(--dialogue-color), var(--dialogue-color)) left bottom / 2px 12px no-repeat,
+    linear-gradient(var(--dialogue-color), var(--dialogue-color)) right bottom / 12px 2px no-repeat,
+    linear-gradient(var(--dialogue-color), var(--dialogue-color)) right bottom / 2px 12px no-repeat,
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 3px),
+    linear-gradient(170deg, rgba(24, 32, 44, .93), rgba(10, 14, 20, .96));
+  backdrop-filter: blur(12px) saturate(1.3);
+  border: 1px solid color-mix(in srgb, var(--dialogue-color) 40%, transparent); border-top: 1px solid var(--dialogue-color);
+  box-shadow: 0 14px 34px rgba(5, 10, 18, .35), 0 0 22px -8px var(--dialogue-color);
+  visibility: hidden; opacity: 0; pointer-events: none; clip-path: inset(0 -40px 100% -40px);
+  transition: clip-path .26s var(--ease) .18s, opacity .2s .24s, visibility 0s linear .44s; }
+.flow-node:is(:hover, :focus-visible) .node-dialogue { visibility: visible; opacity: 1; pointer-events: auto;
+  clip-path: inset(0 -40px -40px -40px); transition: clip-path .3s var(--ease), opacity .12s, visibility 0s;
+  animation: glitch-in .28s steps(4, end); }
+.flow-node:is(:hover, :focus-visible):has(.node-dialogue) { z-index: 15; border-bottom-color: var(--node-accent, var(--accent)); }
 .node-dialogue p { margin: 0 0 5px; }
-.node-dialogue b { font-weight: 500; color: var(--ink); }
-.node-dialogue .node-section { display: block; margin: 6px 0 3px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); }
+.node-dialogue b { font-weight: 500; color: #fff; }
+.node-dialogue .node-section { display: block; margin: 6px 0 3px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: rgba(232, 238, 245, .55); }
 .node-dialogue .node-clue { padding-left: 6px; border-left: 1px solid var(--accent); }
 .node-socket { position: absolute; top: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: var(--line); }
 .node-socket.left { left: -2.5px; } .node-socket.right { right: -2.5px; }

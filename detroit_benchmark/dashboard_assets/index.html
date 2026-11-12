@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="/assets/portraits.css">
   <link rel="stylesheet" href="/assets/story-marks.css">
   <link rel="stylesheet" href="/assets/glitch.css">
+  <link rel="stylesheet" href="/assets/motion.css">
 </head>
 <body data-character="none">
   <!-- Background layer: later layers (scene art, node network) mount inside here. -->
@@ -61,7 +62,7 @@
             <div class="picker-panel is-hidden" id="pickerPanel" role="group" aria-label="Choose models">
               <input id="searchRuns" class="picker-search" type="search" autocomplete="off" placeholder="Search" aria-label="Search models">
               <div class="picker-list" id="pickerList"></div>
-              <div class="picker-actions"><button id="selectAllRuns" type="button">Select six</button><button id="clearRuns" type="button">Clear</button></div>
+              <div class="picker-actions"><button id="bestOfEach" type="button" title="The best model of each provider">Best of each</button><button id="clearRuns" type="button">Clear</button></div>
             </div>
           </div>
           <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>

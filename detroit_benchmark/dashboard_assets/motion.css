@@ -1,0 +1,42 @@
+/* Motion between places: Story <-> Flowchart, chapter to chapter, and the model dropdown
+ * closing. app.js adds the classes and runs the chapter slide; all of it is off for reduced
+ * motion.
+ */
+
+/* The view being left breaks into horizontal slices and fades out. */
+@keyframes view-leave {
+  0%   { opacity: 1; clip-path: inset(0 0 0 0); translate: 0 0; }
+  30%  { clip-path: inset(8% 0 46% 0); translate: -6px 0; opacity: .85; }
+  60%  { clip-path: inset(44% 0 6% 0); translate: 5px 0; opacity: .5; }
+  100% { clip-path: inset(30% 0 30% 0); translate: 0 0; opacity: 0; }
+}
+/* The view arriving settles in from a slight blur. */
+@keyframes view-enter {
+  from { opacity: 0; filter: blur(6px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes line-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+.view-leave { animation: view-leave .16s steps(4, end) both; pointer-events: none; }
+.view-enter { animation: view-enter .32s cubic-bezier(.2, .7, .2, 1) both; }
+/* Story lines fade in one after another (app.js numbers the first ones). */
+#storyView.view-enter #storyContent > * { animation: line-in .42s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--line, 14) * 35ms); }
+
+/* A new chapter's title flickers in. */
+.title-glitch { animation: glitch-in .4s steps(5, end) 1; }
+
+/* The dropdown closes with its opening glitch in reverse. */
+@keyframes glitch-out {
+  0%   { clip-path: inset(-50% -50% -50% -50%); translate: 0 0; opacity: 1; }
+  25%  { clip-path: inset(0 0 18% 0); translate: 2px 0; opacity: .8; }
+  50%  { clip-path: inset(30% 0 22% 0); translate: -2px 0; }
+  75%  { clip-path: inset(0 0 62% 0); translate: 3px 0; opacity: .6; }
+  100% { clip-path: inset(0 0 100% 0); translate: -4px 0; opacity: 0; }
+}
+.picker-panel.is-closing:not(.is-hidden) { animation: glitch-out .22s steps(4, end) both; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .view-leave, .view-enter, #storyView.view-enter #storyContent > *, .title-glitch, .picker-panel.is-closing { animation: none !important; }
+  .node-dialogue { transition: none !important; animation: none !important; }
+}
