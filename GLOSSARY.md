@@ -24,6 +24,10 @@ _Avoid_: investigation strategy, sandbox
 An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless it is really a decision (e.g. whether to shoot).
 _Avoid_: QTE choice, willingness choice
 
+**Fate**:
+Whether a side character (Luther, Simon, North, Josh) or Markus is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
+_Avoid_: alive flag, death state, survival
+
 **Public News**:
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.
 _Avoid_: world state, flags, broadcast

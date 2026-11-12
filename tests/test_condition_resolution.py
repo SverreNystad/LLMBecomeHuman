@@ -13,7 +13,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
-from tests.dataset import load_dataset
+from tests.dataset import flag_values, load_dataset
 
 
 def _scene(nid, nxt):
@@ -155,6 +155,67 @@ def test_rule_follows_earlier_choice_not_default(tmp_path):
     assert result["warnings"] == []
 
 
+def test_rule_branch_decides_a_fate_that_later_rules_read(tmp_path):
+    # Luther dies when the officer finds the androids: later scenes must know.
+    fatal = {
+        **RULE,
+        "branches": [
+            RULE["branches"][0],
+            {**RULE["branches"][1], "effects": {"flags": {"luther_alive": False}}},
+        ],
+    }
+    g = tiny_graph(
+        fatal,
+        [
+            {"id": "stay", "effects": {"flags": {"connor_sacrificed": False}}},
+            {"id": "jump", "effects": {"flags": {"connor_sacrificed": True}}},
+        ],
+    )
+    result, events = play(g, tmp_path)
+    assert result["final_flags"]["luther_alive"] is False
+    gate = next(e for e in events if e["node_id"] == "gate")
+    assert gate["flags_set"] == {"luther_alive": False}
+
+
+def test_quick_time_event_success_branch_can_decide_a_fate(tmp_path):
+    qte = {
+        "resolution": "qte",
+        "unverified": True,
+        "default_branch": 0,
+        "branches": [
+            {
+                "condition_text": "Luther is shot",
+                "when": None,
+                "next": "a",
+                "effects": {"flags": {"luther_alive": False}},
+            },
+        ],
+    }
+    result, _ = play(tiny_graph(qte), tmp_path)
+    assert result["final_flags"]["luther_alive"] is False
+
+
+def test_branch_and_starting_flags_must_be_snake_case():
+    bad_branch = {
+        **RULE,
+        "branches": [
+            {**RULE["branches"][0], "effects": {"flags": {"Luther Alive": False}}},
+            RULE["branches"][1],
+        ],
+    }
+    assert not validate_graph(tiny_graph(bad_branch))["valid"]
+    assert not validate_graph(
+        {**tiny_graph(RULE), "initial_flags": {"Luther Alive": True}}
+    )["valid"]
+
+
+def test_graph_initial_flags_start_every_run(tmp_path):
+    # Every Fate starts alive.
+    g = {**tiny_graph(RULE), "initial_flags": {"luther_alive": True}}
+    result, _ = play(g, tmp_path, allow_unverified=True)
+    assert result["final_flags"]["luther_alive"] is True
+
+
 def test_rule_needs_source_and_when_on_every_branch():
     no_source = {k: v for k, v in RULE.items() if k != "source"}
     assert not validate_graph(tiny_graph(no_source))["valid"]
@@ -214,15 +275,11 @@ def test_dataset_conditions_are_sorted(chapter):
             assert 0 <= n["default_branch"] < len(n["branches"]), n["id"]
 
 
-def test_dataset_rule_flags_are_set_by_some_choice():
-    nodes = load_dataset()["nodes"]
-    set_by_choices = {
-        name
-        for n in nodes.values()
-        if n["type"] == "choice"
-        for o in n["options"]
-        for name in (o.get("effects") or {}).get("flags", {})
-    }
+def test_dataset_rule_flags_are_set_somewhere():
+    # Set by a choice, by a Fate decided at an earlier condition, or from the start.
+    graph = load_dataset()
+    nodes = graph["nodes"]
+    set_somewhere = set(flag_values(graph))
 
     def flags_in(expr):
         if "flag" in expr:
@@ -233,17 +290,14 @@ def test_dataset_rule_flags_are_set_by_some_choice():
     for n in nodes.values():
         if n.get("resolution") == "rule":
             for b in n["branches"]:
-                assert flags_in(b["when"]) <= set_by_choices, n["id"]
+                assert flags_in(b["when"]) <= set_somewhere, n["id"]
 
 
 def test_dataset_rule_branches_never_overlap():
     # The engine refuses a condition where two branches match at once.
-    nodes = load_dataset()["nodes"]
-    values = {}
-    for n in nodes.values():
-        for o in n.get("options", []):
-            for name, value in (o.get("effects") or {}).get("flags", {}).items():
-                values.setdefault(name, []).append(value)
+    graph = load_dataset()
+    nodes = graph["nodes"]
+    values = flag_values(graph)
 
     def flags_in(expr):
         if "flag" in expr:
@@ -463,3 +517,66 @@ def test_breaking_programming_is_not_a_choice_but_standing_still_is():
     labels = {o["label"]: o for o in after["options"]}
     assert set(labels) == {"STAND STILL", "TALK TO TODD", "GO UPSTAIRS"}
     assert labels["STAND STILL"]["effects"]["flags"]["kara_story_ended"] is True
+
+
+ENDGAME = ("30", "31", "32")
+
+
+def _endgame_branches(tmp_path, picks):
+    """Play the whole real story; return {condition id: branch taken} in chapters 30-32."""
+    run = _ScriptedRunner(
+        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+    )
+    run.run()
+    assert run.state["status"] == "complete"
+    taken = {}
+    for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines():
+        event = json.loads(line)
+        if event["type"] == "condition" and str(event["chapter"]).startswith(ENDGAME):
+            taken[event["node_id"]] = event["branch_index"]
+    return taken
+
+
+def test_endgame_conditions_are_rules_or_say_why_not():
+    for n in load_dataset()["nodes"].values():
+        if n["type"] == "condition" and str(n["chapter"]).startswith(ENDGAME):
+            if n["resolution"] == "unknown":
+                assert n.get("unknown_reason"), n["id"]
+
+
+# Earlier choices that decide a side character's fate.
+SPARE_LUTHER = {"ch32_1_00209": "PAPERS"}  # not DIVERSION LUTHER at the bus terminal
+LEAVE_NORTH = {"ch30_3_00040": "RUN"}  # North is shot in Crossroads and left behind
+REFUSE_PERKINS = {
+    "ch32_5_00076": "REFUSE DEAL",
+    "ch32_5_00090": "REFUSE",
+    "ch32_5_00093": "REFUSE",
+}
+
+
+def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
+    default = _endgame_branches(tmp_path / "a", {})
+    chosen = _endgame_branches(
+        tmp_path / "b", {**SPARE_LUTHER, **LEAVE_NORTH, **REFUSE_PERKINS}
+    )
+    # Kara: Luther sent as a diversion is gone on the boat; spared, he is there.
+    assert (default["ch32_1_00179"], chosen["ch32_1_00179"]) == (1, 0)
+    # Connor: the androids he frees at CyberLife are greeted by North, or by Simon
+    # when North died in Crossroads.
+    assert (default["ch32_4_00011"], chosen["ch32_4_00011"]) == (0, 1)
+    # Markus: refusing Perkins's deal, North survives it unless Crossroads cost her.
+    assert chosen["ch32_5_00105"] == 1
+
+
+def test_endgame_rules_never_fall_back_to_a_default(tmp_path):
+    nodes = load_dataset()["nodes"]
+    taken = _endgame_branches(tmp_path, {**SPARE_LUTHER, **LEAVE_NORTH})
+    rules = [nid for nid in taken if nodes[nid]["resolution"] == "rule"]
+    assert rules
+    events = (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    fallbacks = {
+        e["node_id"]
+        for e in map(json.loads, events)
+        if e["type"] == "condition" and e.get("used_unverified_default")
+    }
+    assert not fallbacks & set(rules)

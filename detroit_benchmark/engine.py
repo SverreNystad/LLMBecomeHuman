@@ -92,6 +92,11 @@ NEWS_SOURCE_PREFIX = "https://detroit-become-human.fandom.com"
 FLAG_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*")
 
 
+def effect_flags(item: dict) -> dict:
+    """The flags an option or a condition branch sets when it is taken."""
+    return (item.get("effects") or {}).get("flags") or {}
+
+
 def _enrichment_errors(graph: dict) -> list[str]:
     """Check Chapter Briefings and Public News; graphs without them pass."""
     errors = []
@@ -105,7 +110,14 @@ def _enrichment_errors(graph: dict) -> list[str]:
                 errors.append(
                     f"chapter {segment}: briefing exceeds {BRIEFING_MAX_CHARS} chars"
                 )
+    for flag in graph.get("initial_flags") or {}:
+        if not FLAG_NAME.fullmatch(flag):
+            errors.append(f"initial flag {flag!r} is not snake_case")
     for nid, node in graph.get("nodes", {}).items():
+        for branch in node.get("branches", []):
+            for flag in effect_flags(branch):
+                if not FLAG_NAME.fullmatch(flag):
+                    errors.append(f"{nid}: branch flag {flag!r} is not snake_case")
         for option in node.get("options", []):
             effects = option.get("effects")
             if not isinstance(effects, dict):
@@ -586,7 +598,12 @@ class Runner:
                 "node": graph["start"],
                 "event_idx": 0,
                 "status": "running",
-                "flags": dict(initial_flags or {}),
+                # The story's own starting facts (e.g. every side character alive),
+                # then any the caller adds.
+                "flags": {
+                    **(graph.get("initial_flags") or {}),
+                    **(initial_flags or {}),
+                },
                 "character_memories": {name: "" for name in CHARACTERS},
                 # The current Chapter Segment so far: scenes and the choices made.
                 "segment_events": [],
@@ -664,6 +681,13 @@ class Runner:
             encoding="utf-8",
         )
         os.replace(temp, self.checkpoint_path)
+
+    def _take_branch_effects(self, node: dict, idx: int | None) -> dict:
+        """A Fate decided at a condition (a death, an escape) is remembered for later
+        rules. Returns the flags set, so the event shows where it changed."""
+        flags = effect_flags(node["branches"][idx]) if idx is not None else {}
+        self.state["flags"].update(flags)
+        return dict(flags)
 
     def _record(self, kind: str, node: dict, info: dict):
         i = self.state["event_idx"]
@@ -1012,6 +1036,7 @@ class Runner:
                     "branch_index": idx,
                     "quick_time_event": "success",
                     "used_unverified_default": False,
+                    "flags_set": self._take_branch_effects(node, idx),
                 },
             )
         elif kind == "condition":
@@ -1037,6 +1062,7 @@ class Runner:
                         "picked": idx,
                     }
                 )
+            flags_set = self._take_branch_effects(node, idx)
             self.state["node"] = (
                 node["branches"][idx]["next"] if idx is not None else node.get("next")
             )
@@ -1047,6 +1073,7 @@ class Runner:
                 node,
                 {
                     "branch_index": idx,
+                    "flags_set": flags_set,
                     "condition_values": values,
                     "used_unverified_default": (not matches and None in values),
                 },
