@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 58,
+    "condition_nodes_unverified": 57,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -81134,21 +81134,38 @@
     },
     "ch29_00138": {
       "id": "ch29_00138",
-      "type": "condition",
+      "type": "choice",
       "chapter": "29",
       "character": "Connor",
       "heading": "Hank isn't hostile : Talk with Hank",
-      "branches": [
+      "description": "Hank won't help. Perkins is on the phone in the bullpen, and once the FBI takes over, Connor will be sent back to CyberLife before he reaches the evidence room. In a holding cell sits an aggressive suspect, detained for an unknown crime. Connor can open his cell; the man would go straight at whoever is nearest.",
+      "options": [
         {
-          "condition_text": "Freeing the prisoner",
-          "when": null,
-          "next": "ch29_00137"
+          "id": "option_0",
+          "label": "FREE THE PRISONER",
+          "next": "ch29_00137",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_freed_prisoner": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch29_00015",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_freed_prisoner": false
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch29_00121",
-      "resolution": "unknown"
+      "source": "https://detroit-become-human.fandom.com/wiki/Violent_Suspect#Last_Chance,_Connor"
     },
     "ch29_00139": {
       "id": "ch29_00139",

@@ -665,3 +665,24 @@ def test_the_truth_is_inside_only_after_a_good_interrogation(
     assert ("Open the statuette" in seen["29"]) == good_interrogation
     # The statuette's Ferndale map, matched with Simon's memory, finds Jericho.
     assert (LOCATED in seen["29"]) == good_interrogation
+
+
+@pytest.mark.parametrize(
+    "diversion, found", [("FREE THE PRISONER", True), ("GIVE UP", False)]
+)
+def test_without_hanks_help_connor_frees_the_prisoner_or_gives_up(
+    tmp_path, diversion, found
+):
+    hank_not_a_friend = {"ch15_00018": "Chase Deviant"}  # never saved Hank
+    seen = _play_story(
+        tmp_path,
+        {
+            **SIMON_LEFT_ON_THE_ROOF,
+            **hank_not_a_friend,
+            "ch29_00138": diversion,
+            "ch29_x0051": "DANIEL'S BIOCOMPONENT",
+            "ch29_00048": "IMITATE MARKUS' VOICE",
+        },
+    )
+    assert (EVIDENCE_ROOM in seen["29"]) == found
+    assert (LOCATED in seen["29"], FAILED in seen["29"]) == (found, not found)
