@@ -7,23 +7,30 @@
   --glitch-red: rgba(255, 64, 88, .75);
   --glitch-blue: rgba(64, 176, 255, .75);
   --glitch-time: .26s;
+  /* Horizontal bands kept visible during a burst. */
+  --slice-a: linear-gradient(to bottom, transparent 8%, #000 8% 48%, transparent 48%);
+  --slice-b: linear-gradient(to bottom, transparent 48%, #000 48% 94%, transparent 94%);
+  --slice-c: linear-gradient(to bottom, transparent 26%, #000 26% 66%, transparent 66%);
+  --slice-d: linear-gradient(to bottom, transparent 30%, #000 30% 70%, transparent 70%);
 }
 
+/* Slices are drawn with a mask, not clip-path: a clip also removes the clipped area from
+ * hit-testing, so the pointer would "leave" mid-burst and restart the hover in a loop. */
 @keyframes glitch-burst {
-  0%   { translate: 0 0; clip-path: inset(0 0 0 0); text-shadow: none; opacity: 1; }
-  12%  { translate: -3px 0; clip-path: inset(8% 0 52% 0); text-shadow: -2px 0 var(--glitch-red), 2px 0 var(--glitch-blue); }
-  26%  { translate: 3px 0; clip-path: inset(48% 0 6% 0); opacity: .72; }
-  40%  { translate: -1px 0; clip-path: inset(26% 0 34% 0); text-shadow: 2px 0 var(--glitch-red), -2px 0 var(--glitch-blue); opacity: 1; }
-  56%  { translate: 1px 0; clip-path: inset(0 0 0 0); opacity: .86; }
+  0%   { translate: 0 0; -webkit-mask-image: none; mask-image: none; text-shadow: none; opacity: 1; }
+  12%  { translate: -3px 0; -webkit-mask-image: var(--slice-a); mask-image: var(--slice-a); text-shadow: -2px 0 var(--glitch-red), 2px 0 var(--glitch-blue); }
+  26%  { translate: 3px 0; -webkit-mask-image: var(--slice-b); mask-image: var(--slice-b); opacity: .72; }
+  40%  { translate: -1px 0; -webkit-mask-image: var(--slice-c); mask-image: var(--slice-c); text-shadow: 2px 0 var(--glitch-red), -2px 0 var(--glitch-blue); opacity: 1; }
+  56%  { translate: 1px 0; -webkit-mask-image: none; mask-image: none; opacity: .86; }
   72%  { translate: 0 0; text-shadow: 1px 0 var(--glitch-red), -1px 0 var(--glitch-blue); opacity: 1; }
-  100% { translate: 0 0; clip-path: inset(-50% -50% -50% -50%); text-shadow: none; opacity: 1; }
+  100% { translate: 0 0; -webkit-mask-image: none; mask-image: none; text-shadow: none; opacity: 1; }
 }
 /* The same burst under another name, so pressing replays it right after the hover one. */
 @keyframes glitch-press {
   0%   { translate: 0 0; text-shadow: none; }
   20%  { translate: 2px 0; text-shadow: -2px 0 var(--glitch-red), 2px 0 var(--glitch-blue); }
-  45%  { translate: -2px 0; clip-path: inset(30% 0 30% 0); }
-  70%  { translate: 1px 0; clip-path: inset(-50% -50% -50% -50%); text-shadow: 1px 0 var(--glitch-red), -1px 0 var(--glitch-blue); }
+  45%  { translate: -2px 0; -webkit-mask-image: var(--slice-d); mask-image: var(--slice-d); }
+  70%  { translate: 1px 0; -webkit-mask-image: none; mask-image: none; text-shadow: 1px 0 var(--glitch-red), -1px 0 var(--glitch-blue); }
   100% { translate: 0 0; text-shadow: none; }
 }
 /* Panels and cards that appear: drawn in slice by slice. */

@@ -248,15 +248,15 @@ def test_chapter_flowchart_browser_interactions():
             assert "Synthetic preview" in page.locator("#drawerContent").text_content()
             page.locator("#closeDrawer").click()
 
-            # "Select six" works even with nothing selected, and fills up to six
-            # compatible runs; swap one for the Grok preview.
+            # "Best of each" works even with nothing selected: one Run per provider;
+            # swap one for the Grok preview.
             page.locator("#pickerToggle").click()
             page.locator("#clearRuns").click()
             page.wait_for_function(
                 "document.querySelectorAll('.run-chip').length === 0"
             )
-            assert page.locator("#selectAllRuns").is_enabled()
-            page.locator("#selectAllRuns").click()
+            assert page.locator("#bestOfEach").is_enabled()
+            page.locator("#bestOfEach").click()
             page.wait_for_function(
                 "document.querySelectorAll('.run-chip').length === 6"
             )
@@ -310,7 +310,9 @@ def test_chapter_flowchart_browser_interactions():
             )
             assert page.locator(".flow-node").count() == node_count
             page.locator(".chapter-entry").nth(1).click()
-            assert "The Search" in page.locator("#chapterTitle").inner_text()
+            page.wait_for_function(
+                "document.querySelector('#chapterTitle').innerText.includes('The Search')"
+            )
             assert not errors
         finally:
             browser.close()
@@ -435,6 +437,100 @@ def test_title_screen_sound_and_marker_card(live_dashboard):
             assert marker.get_attribute("aria-describedby") == "unfoldCard"
             page.keyboard.press("Escape")
             page.wait_for_function("!document.querySelector('#unfoldCard.is-open')")
+            assert not errors
+        finally:
+            browser.close()
+
+
+def test_best_of_each_logos_popover_and_motion(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+            page.locator("#titleScreen").wait_for()
+            page.wait_for_timeout(400)
+            page.keyboard.press("Enter")
+            page.locator("#titleScreen").wait_for(state="detached")
+
+            # "Best of each": one Run per provider, never the unbranded mock agents.
+            page.locator("#pickerToggle").click()
+            best = page.locator("#bestOfEach")
+            assert best.inner_text() == "Best of each"
+            assert "Select six" not in page.content()
+            page.locator("#clearRuns").click()
+            best.click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 6"
+            )
+            providers = page.evaluate("activeRuns().map(providerOf)")
+            assert len(set(providers)) == 6 and "mock" not in providers
+            # Among a provider's Runs, a listed model outranks an unlisted one.
+            assert page.evaluate(
+                "modelRank({display_provider:'openai', model:'gpt-6.1-sol'})"
+                " < modelRank({display_provider:'openai', model:'gpt-6.1-terra'})"
+            )
+            assert page.evaluate(
+                "modelRank({provider:'anthropic', model:'claude-haiku-4-5-20251001'})"
+                " > modelRank({provider:'anthropic', model:'claude-haiku-5-5'})"
+            )
+            # A seventh model is refused with the short notice.
+            page.locator(".picker-run:not(:has(input:checked))").first.click()
+            page.wait_for_function(
+                "document.querySelector('#toast').classList.contains('visible')"
+            )
+            assert (
+                page.locator("#toast").inner_text()
+                == "Six models max. Remove one first."
+            )
+            # The dropdown animates closed instead of vanishing.
+            page.locator("#pickerToggle").click()
+            assert page.evaluate(
+                "document.querySelector('#pickerPanel').classList.contains('is-closing')"
+            )
+            page.wait_for_function(
+                "document.querySelector('#pickerPanel').classList.contains('is-hidden')"
+            )
+
+            # Story to Flowchart: the switch is animated in the new view's direction.
+            page.locator("#viewFlow").click()
+            page.wait_for_function("document.body.dataset.viewMotion === 'to-flow'")
+            page.locator(".flow-node").first.wait_for()
+            # Model logos are drawn above every route line.
+            order = page.evaluate("""() => {
+              const kids = [...document.querySelector('#graphEdges').children];
+              return {lastLine: kids.map(k => k.classList.contains('route-overlay')).lastIndexOf(true),
+                      firstLogo: kids.findIndex(k => k.classList.contains('route-logo'))};
+            }""")
+            assert order["firstLogo"] > order["lastLine"]
+            # The node's dialogue unfolds as part of the node, in dark glass (once the
+            # camera has eased out from the Moment).
+            page.wait_for_function(
+                "!document.getElementById('graphWorld').getAnimations().length"
+            )
+            scene = page.locator(".flow-node.kind-scene:has(.node-dialogue)").first
+            assert not scene.locator(".node-dialogue").is_visible()
+            scene.hover(force=True)
+            scene.locator(".node-dialogue").wait_for(state="visible")
+            assert "gradient" in scene.locator(".node-dialogue").evaluate(
+                "el => getComputedStyle(el).backgroundImage"
+            )
+
+            # Chapters slide in the direction of travel through the story.
+            page.locator(".chapter-entry").nth(1).click()
+            page.wait_for_function("document.body.dataset.chapterMotion === 'forward'")
+            page.wait_for_function(
+                "document.querySelector('#chapterTitle').innerText.includes('The Search')"
+            )
+            page.locator(".chapter-entry").nth(0).click()
+            page.wait_for_function("document.body.dataset.chapterMotion === 'back'")
+            page.locator("#viewStory").click()
+            page.wait_for_function("document.body.dataset.viewMotion === 'to-story'")
+            page.locator(".story-decision").first.wait_for()
             assert not errors
         finally:
             browser.close()
