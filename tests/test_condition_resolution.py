@@ -686,3 +686,36 @@ def test_without_hanks_help_connor_frees_the_prisoner_or_gives_up(
     )
     assert (EVIDENCE_ROOM in seen["29"]) == found
     assert (LOCATED in seen["29"], FAILED in seen["29"]) == (found, not found)
+
+
+def _nodes_visited(tmp_path, picks):
+    run = _ScriptedRunner(
+        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+    )
+    run.run()
+    events = (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    return {json.loads(e).get("node_id") for e in events}
+
+
+HANK_RESIGNS, TALK_WITH_HANK = "ch29_00224", "ch29_00175"
+HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}  # firm, never saved
+
+
+def test_a_hostile_hank_resigns_and_leaves_connor_to_free_the_prisoner(tmp_path):
+    visited = _nodes_visited(
+        tmp_path,
+        {
+            **SIMON_LEFT_ON_THE_ROOF,
+            **HOSTILE_HANK,
+            "ch29_00138": "FREE THE PRISONER",
+            "ch29_x0051": "DANIEL'S BIOCOMPONENT",
+            "ch29_00048": "IMITATE MARKUS' VOICE",
+        },
+    )
+    assert {HANK_RESIGNS, "ch29_00137", "ch29_00011"} <= visited
+    assert TALK_WITH_HANK not in visited
+
+
+def test_hank_does_not_resign_when_connor_has_kamskis_key(tmp_path):
+    visited = _nodes_visited(tmp_path, {**HOSTILE_HANK, **KAMSKIS_KEY})
+    assert HANK_RESIGNS not in visited

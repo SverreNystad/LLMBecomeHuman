@@ -81138,7 +81138,7 @@
       "chapter": "29",
       "character": "Connor",
       "heading": "Hank isn't hostile : Talk with Hank",
-      "description": "Hank won't help. Perkins is on the phone in the bullpen, and once the FBI takes over, Connor will be sent back to CyberLife before he reaches the evidence room. In a holding cell sits an aggressive suspect, detained for an unknown crime. Connor can open his cell; the man would go straight at whoever is nearest.",
+      "description": "Hank isn't going to help. Perkins is on the phone in the bullpen, and once the FBI takes over, Connor will be sent back to CyberLife before he reaches the evidence room. In a holding cell sits an aggressive suspect, detained for an unknown crime. Connor can open his cell; the man would go straight at whoever is nearest.",
       "options": [
         {
           "id": "option_0",
@@ -83377,7 +83377,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00220"
+      "next": "ch29_00138"
     },
     "ch29_00222": {
       "id": "ch29_00222",
@@ -83474,7 +83474,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00220",
+      "next": "ch29_00175",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart",
       "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners."
@@ -83496,7 +83496,7 @@
         }
       ],
       "observations": [],
-      "next": "ch29_00225"
+      "next": "ch29_00220"
     },
     "ch29_00227": {
       "id": "ch29_00227",
@@ -128265,7 +128265,7 @@
               }
             ]
           },
-          "next": "ch29_00175"
+          "next": "ch29_00225"
         },
         {
           "condition_text": "Insufficient evidence: nothing Connor gathered leads to Jericho",
