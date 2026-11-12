@@ -5,7 +5,13 @@ import argparse
 import json
 from pathlib import Path
 from .ingest import apply_overrides, compile_from_repo
-from .engine import DEFAULT_MEMORY_MAX_CHARS, Runner, validate_graph
+from .engine import (
+    DEFAULT_MEMORY_MAX_CHARS,
+    DEFAULT_MODELS,
+    Runner,
+    iter_events,
+    validate_graph,
+)
 
 
 def read_json(p):
@@ -34,16 +40,7 @@ def main():
     play.add_argument("graph", type=Path)
     play.add_argument(
         "--provider",
-        choices=[
-            "openai",
-            "anthropic",
-            "xai",
-            "google",
-            "deepseek",
-            "mistral",
-            "openrouter",
-            "mock",
-        ],
+        choices=list(DEFAULT_MODELS),
         required=True,
     )
     play.add_argument("--model")
@@ -147,14 +144,9 @@ def main():
         results = []
         for d in args.run_dirs:
             summary = read_json(d / "summary.json")
-            events = [
-                json.loads(x)
-                for x in (d / "events.jsonl").read_text(encoding="utf-8").splitlines()
-                if x
-            ]
             decisions = {
                 e["node_id"]: e.get("decision_key")
-                for e in events
+                for e in iter_events(d)
                 if e["type"] == "decision"
             }
             results.append(

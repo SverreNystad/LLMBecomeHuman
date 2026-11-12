@@ -16,6 +16,16 @@ from bs4 import BeautifulSoup, NavigableString, Tag
 DATA_ROOT = "src/app/chapters/components/chapter-contents"
 SERVICE_PATH = "src/app/shared/services/chapter.service.ts"
 TR_KEY = re.compile(r'(?<![\w])t\(\s*["\']([^"\']+)["\']\s*\)')
+# The final chapters are split by Character; each split ends at the next Character's route.
+FINAL_EXITS = {
+    "31.2": "route_kara_final",
+    "32.1": "route_connor_final",
+    "32.2": "route_connor_final",
+    "32.3": "route_markus_final",
+    "32.4": "route_markus_final",
+    "32.5": "game_complete",
+    "32.6": "game_complete",
+}
 OBJECT_KEY = re.compile(
     r'translationService\.translateObject\(\s*["\']([^"\']+)["\']\s*(?:,\s*(\d+))?\s*(?:,\s*(\d+))?',
     re.S,
@@ -94,7 +104,6 @@ class Compiler:
         self.nodes = {}
         self.n = 0
         self.unresolved = set()
-        self.conditions = []
         self.choice_groups_compiled = 0
         self.choice_options_compiled = 0
         self.implicit_choice_groups = 0
@@ -246,7 +255,7 @@ class Compiler:
                     f"Condition group with no directly nested app-conditioned-content in chapter {self.chapter_id}"
                 )
             self.condition_branches_compiled += len(branches)
-            nid = self.add(
+            return self.add(
                 "condition",
                 heading=heading,
                 branches=branches,
@@ -254,8 +263,6 @@ class Compiler:
                 default_branch=0,
                 next=successor,
             )
-            self.conditions.append(nid)
-            return nid
         if tag in {"app-choice-item", "app-conditioned-content"}:
             # These must be compiled by their owning group, otherwise mutually
             # exclusive story content would incorrectly merge into one scene.
@@ -387,24 +394,13 @@ def compile_from_repo(repo: Path) -> dict:
         entries[ch["number"]] = start
         exits[ch["number"]] = exitid
         unresolved |= compiler.unresolved
-        condition_count += len(compiler.conditions)
+        condition_count += compiler.condition_groups_compiled
     # Narrative order is from upstream service, with the final split chapters
     # selected using assumed flags. THESE ROUTES ARE NOT VERIFIED GAME RULES.
     for i, ch in enumerate(chapters):
         current = ch["number"]
         nextchapter = chapters[i + 1]["number"] if i + 1 < len(chapters) else None
-        if current == "31.2":
-            nextchapter = "route_kara_final"
-        elif current in ("32.1", "32.2"):
-            nextchapter = "route_connor_final"
-        elif current in ("32.3", "32.4"):
-            nextchapter = "route_markus_final"
-        elif current in ("32.5", "32.6"):
-            nextchapter = "game_complete"
-        elif current in ("32.1", "32.3", "32.5"):
-            pass
-        if current in ("32.1", "32.2", "32.3", "32.4", "32.5", "32.6"):
-            pass
+        nextchapter = FINAL_EXITS.get(current, nextchapter)
         nodes[exits[current]]["next"] = entries.get(nextchapter, nextchapter)
 
     def make_route(key, flag, false_chapter, true_chapter, default):

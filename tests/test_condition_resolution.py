@@ -13,7 +13,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
-from tests.dataset import flag_values, load_dataset
+from tests.dataset import flag_values, flags_in, load_dataset
 
 
 def _scene(nid, nxt):
@@ -281,12 +281,6 @@ def test_dataset_rule_flags_are_set_somewhere():
     nodes = graph["nodes"]
     set_somewhere = set(flag_values(graph))
 
-    def flags_in(expr):
-        if "flag" in expr:
-            return {expr["flag"]}
-        inner = expr.get("all") or expr.get("any") or [expr["not"]]
-        return set().union(*(flags_in(x) for x in inner))
-
     for n in nodes.values():
         if n.get("resolution") == "rule":
             for b in n["branches"]:
@@ -298,12 +292,6 @@ def test_dataset_rule_branches_never_overlap():
     graph = load_dataset()
     nodes = graph["nodes"]
     values = flag_values(graph)
-
-    def flags_in(expr):
-        if "flag" in expr:
-            return {expr["flag"]}
-        inner = expr.get("all") or expr.get("any") or [expr["not"]]
-        return set().union(*(flags_in(x) for x in inner))
 
     for n in nodes.values():
         if n.get("resolution") != "rule":

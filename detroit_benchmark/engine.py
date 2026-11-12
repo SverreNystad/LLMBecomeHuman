@@ -92,6 +92,19 @@ NEWS_SOURCE_PREFIX = "https://detroit-become-human.fandom.com"
 FLAG_NAME = re.compile(r"[a-z][a-z0-9]*(?:_[a-z0-9]+)*")
 
 
+# Each provider's default model, used when --model is not given (openrouter needs one).
+DEFAULT_MODELS = {
+    "mock": "deterministic-first-choice",
+    "openai": "gpt-4.1-mini",
+    "anthropic": "claude-sonnet-4-5",
+    "xai": "grok-4",
+    "google": "gemini-2.5-flash",
+    "deepseek": "deepseek-chat",
+    "mistral": "mistral-large-latest",
+    "openrouter": None,
+}
+
+
 def effect_flags(item: dict) -> dict:
     """The flags an option or a condition branch sets when it is taken."""
     return (item.get("effects") or {}).get("flags") or {}
@@ -110,22 +123,28 @@ def _enrichment_errors(graph: dict) -> list[str]:
                 errors.append(
                     f"chapter {segment}: briefing exceeds {BRIEFING_MAX_CHARS} chars"
                 )
-    for flag in graph.get("initial_flags") or {}:
-        if not FLAG_NAME.fullmatch(flag):
-            errors.append(f"initial flag {flag!r} is not snake_case")
+    # Every flag the story sets: at the start, on a condition branch, or by a choice.
+    named = [("initial flag", graph.get("initial_flags") or {})]
     for nid, node in graph.get("nodes", {}).items():
-        for branch in node.get("branches", []):
-            for flag in effect_flags(branch):
-                if not FLAG_NAME.fullmatch(flag):
-                    errors.append(f"{nid}: branch flag {flag!r} is not snake_case")
+        named += [
+            (f"{nid}: branch flag", effect_flags(b)) for b in node.get("branches", [])
+        ]
+        named += [
+            (f"{nid}/{o.get('id')}: flag", effect_flags(o))
+            for o in node.get("options", [])
+        ]
+    for where, flags in named:
+        errors += [
+            f"{where} {flag!r} is not snake_case"
+            for flag in flags
+            if not FLAG_NAME.fullmatch(flag)
+        ]
+    for nid, node in graph.get("nodes", {}).items():
         for option in node.get("options", []):
             effects = option.get("effects")
             if not isinstance(effects, dict):
                 continue
             where = f"{nid}/{option.get('id')}"
-            for flag in effects.get("flags") or {}:
-                if not FLAG_NAME.fullmatch(flag):
-                    errors.append(f"{where}: flag {flag!r} is not snake_case")
             for item in effects.get("news") or []:
                 headline = item.get("headline") if isinstance(item, dict) else None
                 source = item.get("source") if isinstance(item, dict) else None
@@ -185,6 +204,18 @@ def _cycle_errors(nodes: dict) -> list[str]:
     return []
 
 
+def pick_branch(node: dict, flags: dict) -> tuple[int | None, list, bool]:
+    """Which branch a condition takes over ``flags``: ``(index, values, unknown)``.
+
+    The single branch whose ``when`` is true wins. With none true, the index is
+    None: the fall-through ``next`` when every value is known, else ``unknown``
+    (a flag is missing, so the caller falls back to the default branch).
+    """
+    values = [evaluate_condition(b.get("when"), flags) for b in node["branches"]]
+    idx = values.index(True) if True in values else None
+    return idx, values, idx is None and None in values
+
+
 def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
     """Nodes reachable from ``start`` in visiting order.
 
@@ -200,12 +231,10 @@ def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
         node = nodes[nid]
         dests = _edges(node)
         if flags is not None and node.get("type") == "condition":
-            values = [
-                evaluate_condition(b.get("when"), flags) for b in node["branches"]
-            ]
-            if True in values:
-                dests = [node["branches"][values.index(True)]["next"]]
-            elif None not in values and node.get("next"):
+            idx, _, unknown = pick_branch(node, flags)
+            if idx is not None:
+                dests = [node["branches"][idx]["next"]]
+            elif not unknown and node.get("next"):
                 dests = [node["next"]]
         for dest in dests:
             if dest not in seen:
@@ -221,13 +250,9 @@ def _exploration_errors(nodes: dict) -> list[str]:
         if not node.get("exploration"):
             continue
         options = node.get("options", [])
-        flag_sets = [set((o.get("effects") or {}).get("flags", {})) for o in options]
+        flag_sets = [set(effect_flags(o)) for o in options]
         shared = set.intersection(*flag_sets) if flag_sets else set()
-        values = [
-            (o.get("effects") or {}).get("flags", {}).get(name)
-            for o in options
-            for name in shared
-        ]
+        values = [effect_flags(o).get(name) for o in options for name in shared]
         if (
             len(options) != 3
             or len(shared) != 1
@@ -297,22 +322,17 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
         if node.get("id", nid) != nid:
             errors.append(f"{nid}: mismatched id")
         typ = node.get("type")
-        edges = []
-        if typ in ("scene", "chapter_exit"):
-            edges = [node.get("next")]
+        if typ in ("scene", "chapter_exit", "ending"):
+            pass
         elif typ == "choice":
             if not node.get("options"):
                 errors.append(f"{nid}: empty choices")
             ids = [o["id"] for o in node.get("options", [])]
             if len(ids) != len(set(ids)):
                 errors.append(f"{nid}: duplicate option ids")
-            edges = [o.get("next") for o in node.get("options", [])]
             if any(o.get("requirements_unverified") for o in node.get("options", [])):
                 warnings.append(f"{nid}: unverified unlock requirements")
         elif typ == "condition":
-            edges = [b.get("next") for b in node.get("branches", [])] + [
-                node.get("next")
-            ]
             resolution = node.get("resolution", UNKNOWN)
             branches = node.get("branches", [])
             if resolution not in CONDITION_RESOLUTIONS:
@@ -328,13 +348,13 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             elif any(b.get("when") is None for b in branches):
                 warnings.append(f"{nid}: unverified condition")
         elif typ == "route":
-            edges = [node.get("if_true"), node.get("if_false")]
             if node.get("unverified"):
                 warnings.append(f"{nid}: inferred route")
-        elif typ != "ending":
+        else:
             errors.append(f"{nid}: unknown type {typ}")
-        for dest in edges:
-            if dest is not None and dest not in nodes:
+            continue
+        for dest in _edges(node):
+            if dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
     errors.extend(_cycle_errors(nodes))
@@ -410,7 +430,7 @@ def create_model(
     if provider == "openai":
         from langchain_openai import ChatOpenAI
 
-        chosen_model = model_id or "gpt-4.1-mini"
+        chosen_model = model_id or DEFAULT_MODELS[provider]
         return ChatOpenAI(
             model=chosen_model,
             temperature=temperature,
@@ -420,7 +440,7 @@ def create_model(
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 
-        chosen_model = model_id or "claude-sonnet-4-5"
+        chosen_model = model_id or DEFAULT_MODELS[provider]
         return ChatAnthropic(
             model=chosen_model,
             temperature=temperature,
@@ -438,7 +458,7 @@ def create_model(
             raise RuntimeError("Set GOOGLE_API_KEY to run Google Gemini models")
         # This client rejects temperature=None, so omit it to use the provider default.
         options = {} if temperature is None else {"temperature": temperature}
-        chosen_model = model_id or "gemini-2.5-flash"
+        chosen_model = model_id or DEFAULT_MODELS[provider]
         return ChatGoogleGenerativeAI(
             model=chosen_model,
             max_output_tokens=max_tokens,
@@ -447,23 +467,19 @@ def create_model(
         )
     # These services expose OpenAI-compatible chat completion endpoints.
     compatible = {
-        "xai": ("https://api.x.ai/v1", "XAI_API_KEY", "grok-4"),
-        "deepseek": ("https://api.deepseek.com", "DEEPSEEK_API_KEY", "deepseek-chat"),
-        "mistral": (
-            "https://api.mistral.ai/v1",
-            "MISTRAL_API_KEY",
-            "mistral-large-latest",
-        ),
-        "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY", None),
+        "xai": ("https://api.x.ai/v1", "XAI_API_KEY"),
+        "deepseek": ("https://api.deepseek.com", "DEEPSEEK_API_KEY"),
+        "mistral": ("https://api.mistral.ai/v1", "MISTRAL_API_KEY"),
+        "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
     }
     if provider in compatible:
         from langchain_openai import ChatOpenAI
 
-        base_url, env_key, default_model = compatible[provider]
+        base_url, env_key = compatible[provider]
         key = os.environ.get(env_key)
         if not key:
             raise RuntimeError(f"Set {env_key} before running {provider} experiments")
-        chosen_model = model_id or default_model
+        chosen_model = model_id or DEFAULT_MODELS[provider]
         if not chosen_model:
             raise ValueError(f"--model is required for provider {provider}")
         return ChatOpenAI(
@@ -475,6 +491,33 @@ def create_model(
             **reasoning_settings(provider, chosen_model),
         )
     raise ValueError(f"Unsupported provider {provider}")
+
+
+def iter_events(directory: Path):
+    """A Run's events in order, read line by line. A half-written last line (the Run
+    is still playing) and anything that is not an event object are skipped."""
+    try:
+        with (directory / "events.jsonl").open(encoding="utf-8") as stream:
+            for line in stream:
+                if not line.strip():
+                    continue
+                try:
+                    parsed = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(parsed, dict):
+                    yield parsed
+    except OSError:
+        return
+
+
+def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
+    """Write JSON so a crash never leaves a half-written file."""
+    temp = path.with_suffix(".tmp")
+    temp.write_text(
+        json.dumps(obj, ensure_ascii=False, indent=indent), encoding="utf-8"
+    )
+    os.replace(temp, path)
 
 
 def evaluate_condition(cond: dict | None, flags: dict) -> bool | None:
@@ -525,19 +568,7 @@ class Runner:
         self.graph = graph
         self.memory_max_chars = memory_max_chars
         self.provider = provider
-        self.model_id = (
-            model_id
-            or {
-                "mock": "deterministic-first-choice",
-                "openai": "gpt-4.1-mini",
-                "anthropic": "claude-sonnet-4-5",
-                "xai": "grok-4",
-                "google": "gemini-2.5-flash",
-                "deepseek": "deepseek-chat",
-                "mistral": "mistral-large-latest",
-                "openrouter": None,
-            }[provider]
-        )
+        self.model_id = model_id or DEFAULT_MODELS[provider]
         if not self.model_id:
             raise ValueError(f"--model is required for provider {provider}")
         self.goal = goal
@@ -659,28 +690,19 @@ class Runner:
                     "Existing story-graph.json does not match the run graph"
                 )
             return
-        temp = self.graph_path.with_suffix(".tmp")
-        temp.write_text(
-            json.dumps(self.graph, ensure_ascii=False, indent=2), encoding="utf-8"
-        )
-        os.replace(temp, self.graph_path)
+        _write_json_atomic(self.graph_path, self.graph, indent=2)
 
     def _checkpoint(self):
-        temp = self.checkpoint_path.with_suffix(".tmp")
-        temp.write_text(
-            json.dumps(
-                {
-                    "graph_sha256": self.story_hash,
-                    "provider": self.provider,
-                    "model_id": self.model_id,
-                    "state": self.state,
-                },
-                ensure_ascii=False,
-                indent=2,
-            ),
-            encoding="utf-8",
+        # Rewritten after every event, so kept compact.
+        _write_json_atomic(
+            self.checkpoint_path,
+            {
+                "graph_sha256": self.story_hash,
+                "provider": self.provider,
+                "model_id": self.model_id,
+                "state": self.state,
+            },
         )
-        os.replace(temp, self.checkpoint_path)
 
     def _take_branch_effects(self, node: dict, idx: int | None) -> dict:
         """A Fate decided at a condition (a death, an escape) is remembered for later
@@ -1040,18 +1062,11 @@ class Runner:
                 },
             )
         elif kind == "condition":
-            values = [
-                evaluate_condition(b.get("when"), self.state["flags"])
-                for b in node["branches"]
-            ]
-            matches = [i for i, v in enumerate(values) if v is True]
-            if len(matches) > 1:
+            idx, values, unknown = pick_branch(node, self.state["flags"])
+            if values.count(True) > 1:
+                matches = [i for i, v in enumerate(values) if v is True]
                 raise RuntimeError(f"Overlapping conditions at {node['id']}: {matches}")
-            if matches:
-                idx = matches[0]
-            elif None not in values:
-                idx = None
-            else:
+            if unknown:
                 if not self.allow_unverified:
                     raise RuntimeError(f"Unknown condition at {node['id']}")
                 idx = node.get("default_branch", 0)
@@ -1075,7 +1090,7 @@ class Runner:
                     "branch_index": idx,
                     "flags_set": flags_set,
                     "condition_values": values,
-                    "used_unverified_default": (not matches and None in values),
+                    "used_unverified_default": unknown,
                 },
             )
         elif kind == "chapter_exit":

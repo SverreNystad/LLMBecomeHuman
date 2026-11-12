@@ -4,10 +4,7 @@
  * story.js announces each chapter it opens with a 'storychapter' event on document.
  */
 'use strict';
-const portraitKey = character => {
-  const key = String(character || '').toLowerCase();
-  return CHARACTERS.includes(key) ? key : null;
-};
+const portraitKey = characterKey;
 
 function portraitThumb(character) {
   const key = portraitKey(character);

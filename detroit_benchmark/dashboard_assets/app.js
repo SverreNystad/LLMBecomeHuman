@@ -63,7 +63,6 @@ function revealFromMoment() {
 // Shade positions (1 = lightest … 6 = darkest) in the order slots are handed out,
 // so the first few models get well-separated shades.
 const SHADE_ORDER = [3, 5, 1, 4, 6, 2];
-const PROVIDER_STYLES = new Set(['openai', 'anthropic', 'google', 'gemini', 'xai', 'grok', 'deepseek', 'mistral']);
 const state = {
   runs: [], selectedIds: [], details: new Map(), graph: null, chapter: null,
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
@@ -72,12 +71,28 @@ const state = {
   view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
-const modelName = provider => ({openai:'OpenAI',anthropic:'Anthropic',xai:'xAI',grok:'xAI',google:'Google',gemini:'Google',deepseek:'DeepSeek',mistral:'Mistral',openrouter:'OpenRouter',mock:'Mock agent'})[provider] || provider || 'Other';
+/* Every provider the dashboard knows: its family (gemini and grok are aliases), its display
+ * name and its logo. Route line styles, logos and "Best of each" all read this one table. */
+const PROVIDERS = {
+  openai: {family:'openai', name:'OpenAI', mark:'openai'},
+  anthropic: {family:'anthropic', name:'Anthropic', mark:'claude'},
+  google: {family:'google', name:'Google', mark:'gemini'},
+  gemini: {family:'google', name:'Google', mark:'gemini'},
+  xai: {family:'xai', name:'xAI', mark:'grok'},
+  grok: {family:'xai', name:'xAI', mark:'grok'},
+  deepseek: {family:'deepseek', name:'DeepSeek', mark:'deepseek'},
+  mistral: {family:'mistral', name:'Mistral', mark:'mistral'},
+  openrouter: {name:'OpenRouter'},
+  mock: {name:'Mock agent'},
+};
+const modelName = provider => PROVIDERS[provider]?.name || provider || 'Other';
+const providerFamily = run => PROVIDERS[providerOf(run)]?.family || null;
+const markSrc = provider => {const mark=PROVIDERS[String(provider||'').toLowerCase()]?.mark; return mark?`/assets/${mark}-mark.svg`:null;};
 const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'run'}`;
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
 const runStatusLabel = run => ({running: 'playing', stopped: 'stopped'})[run?.status] || '';
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
-const providerStyle = run => PROVIDER_STYLES.has(providerOf(run)) ? providerOf(run) : 'other';
+const providerStyle = run => providerFamily(run) || 'other';
 const runSortKey = run => `${providerOf(run)}\u0000${run?.model || ''}\u0000${run?.name || ''}`;
 const byRunOrder = (a, b) => runSortKey(a).localeCompare(runSortKey(b));
 function runById(id) {return state.runs.find(r=>r.id===id) || null;}
@@ -94,13 +109,12 @@ function shownStoryHash(){
 }
 /* "Best of each": one Run per provider. Each provider's models are ranked best first; a model
  * missing from its list ranks after the listed ones, newest version first. */
-const PROVIDER_FAMILY = {anthropic:'anthropic', openai:'openai', google:'google', gemini:'google', xai:'xai', grok:'xai', deepseek:'deepseek', mistral:'mistral'};
 const MODEL_RANK = {
   anthropic: ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-5-5', 'claude-haiku-4-5'],
   openai: ['gpt-6.1-sol', 'gpt-6.1-terra', 'gpt-6-luna', 'gpt-5.6-luna', 'gpt-4.1', 'gpt-4.1-mini'],
 };
 function modelRank(run){
-  const model=String(run?.model||'').toLowerCase(), listed=MODEL_RANK[PROVIDER_FAMILY[providerOf(run)]]||[];
+  const model=String(run?.model||'').toLowerCase(), listed=MODEL_RANK[providerFamily(run)]||[];
   // The longest listed prefix wins, so "gpt-4.1-mini" is not mistaken for "gpt-4.1".
   const match=listed.filter(name=>model.startsWith(name)).sort((a,b)=>b.length-a.length)[0];
   if(match)return listed.indexOf(match);
@@ -115,7 +129,7 @@ function bestOfEach(){
   const finishedFirst=(a,b)=>(b.status==='complete')-(a.status==='complete');
   const better=(a,b)=>finishedFirst(a,b)||(modelRank(a)-modelRank(b))||byRunOrder(a,b);
   for(const run of state.runs){
-    const family=PROVIDER_FAMILY[providerOf(run)];
+    const family=providerFamily(run);
     if(run.graph_sha256!==hash||!family)continue;
     if(!best.has(family)||better(run,best.get(family))<0)best.set(family,run);
   }
@@ -149,30 +163,31 @@ function applyRunFocus(runId){
  });
  document.querySelectorAll('[data-focus-id]').forEach(el=>el.classList.toggle('run-focused',Boolean(active)&&el.dataset.focusId===active));
 }
+/* Run chips and legend lines focus a Run. Listened for once on the document, so the
+ * elements can be redrawn freely without stacking listeners. */
 function setupRunFocus(){
- document.querySelectorAll('[data-focus-id]').forEach(el=>{
-   el.addEventListener('mouseenter',()=>applyRunFocus(el.dataset.focusId));
-   el.addEventListener('mouseleave',()=>applyRunFocus());
-   el.addEventListener('click',e=>{
-     if(e.target.closest('.run-chip-remove'))return;
-     if(state.view==='story'&&el.classList.contains('run-chip')){setStoryRun(el.dataset.focusId);return;}
-     state.focusedId=state.focusedId===el.dataset.focusId?null:el.dataset.focusId;
-     applyRunFocus();
-   });
-   el.addEventListener('keydown',e=>{
-     if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}
-   });
+ const target=e=>e.target.closest?.('[data-focus-id]');
+ document.addEventListener('mouseover',e=>{const el=target(e);if(el&&!el.contains(e.relatedTarget))applyRunFocus(el.dataset.focusId);});
+ document.addEventListener('mouseout',e=>{const el=target(e);if(el&&!el.contains(e.relatedTarget))applyRunFocus();});
+ document.addEventListener('click',e=>{
+   const el=target(e);if(!el||e.target.closest('.run-chip-remove'))return;
+   if(state.view==='story'&&el.classList.contains('run-chip')){setStoryRun(el.dataset.focusId);return;}
+   state.focusedId=state.focusedId===el.dataset.focusId?null:el.dataset.focusId;
+   applyRunFocus();
+ });
+ document.addEventListener('keydown',e=>{
+   const el=target(e);
+   if(el&&(e.key==='Enter'||e.key===' ')){e.preventDefault();el.click();}
  });
 }
 function modelIcon(provider, extraClass='') {
-  const kind=String(provider||'').toLowerCase();
-  const assets={openai:'openai',anthropic:'claude',xai:'grok',grok:'grok',google:'gemini',gemini:'gemini',deepseek:'deepseek',mistral:'mistral'};
-  if(assets[kind]) return `<img src="/assets/${assets[kind]}-mark.svg" alt="" aria-hidden="true" class="${esc(extraClass)}">`;
+  const kind=String(provider||'').toLowerCase(), src=markSrc(kind);
+  if(src) return `<img src="${src}" alt="" aria-hidden="true" class="${esc(extraClass)}">`;
   return `<span class="mock-icon" aria-hidden="true">${kind==='mock'?'◇':(kind.slice(0,1).toUpperCase()||'•')}</span>`;
 }
 function setCharacterTheme(character){
   // Hook for per-Character theming: CSS swaps the --shade ramp on body[data-character].
-  const key=CHARACTERS.includes(String(character||'').toLowerCase())?String(character).toLowerCase():'none';
+  const key=characterKey(character)||'none';
   if(document.body.dataset.character===key)return;
   document.body.dataset.character=key;
   document.dispatchEvent(new CustomEvent('characterchange',{detail:{character:key,chapter:state.chapter}}));
@@ -208,7 +223,6 @@ function updateSelectors() {
   const chips=$('selectedRunChips');
   chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
-  setupRunFocus();
   $('searchRuns').value=state.search;
   renderPickerList();
 }
@@ -298,10 +312,13 @@ async function refreshEventsInPlace(){
  const selected=activeRuns();if(!selected.length)return;
  const request=++state.requestVersion;
  try{
-  const details=await Promise.all(selected.map(r=>api(`/api/runs/${encodeURIComponent(r.id)}`)));
+  // Only a playing Run, or one whose status just changed, can have new events.
+  const stale=selected.filter(r=>r.status==='running'||state.details.get(r.id)?.run.status!==r.status);
+  const fresh=await Promise.all(stale.map(r=>api(`/api/runs/${encodeURIComponent(r.id)}`)));
   if(request!==state.requestVersion)return;
-  const changed=selected.some((r,i)=>state.details.get(r.id)?.events.length!==details[i].events.length);
-  if(changed){state.details=new Map(selected.map((r,i)=>[r.id,details[i]]));renderChapterList();renderChapter(false);}
+  const changed=stale.some((r,i)=>state.details.get(r.id)?.events.length!==fresh[i].events.length);
+  stale.forEach((r,i)=>state.details.set(r.id,fresh[i]));
+  if(changed){renderChapterList();renderChapter(false);}
  }catch(_){/* Retain last complete snapshot while runs are being written */}
 }
 function chapters() {return state.graph?.chapters || [];}
@@ -386,7 +403,6 @@ async function changeChapter(ch) {
   playClass($('chapterTitle'), 'title-glitch', TITLE_GLITCH_MS);
 }
 function optionId(parent, option) {return `${parent}::OPTION::${encodeURIComponent(option)}`;}
-function modelView(runId){return {run:runById(runId),detail:state.details.get(runId)};}
 const nodeTargets = n => n.type === 'choice' ? (n.options||[]).map(o=>o.next)
   : n.type === 'condition' ? [...(n.branches||[]).map(b=>b.next), n.next]
   : n.type === 'route' ? [n.if_true, n.if_false]
@@ -450,7 +466,7 @@ function buildChapterGraph(chapter) {
     // The first heading is already the node's title.
     const items = buildStoryItems(run.map(n=>({...n,type:'scene'}))).filter((item,i)=>!(i===0&&item.kind==='heading'));
     run.forEach(member=>groupOf.set(member.id,head.id));
-    nodes.set(head.id,{id:head.id,parent:null,type:'scene',originalType:'scene',label:sceneRunLabel(run),node:head,
+    nodes.set(head.id,{id:head.id,parent:null,type:'scene',label:sceneRunLabel(run),node:head,
                        members:run,items,width:items.length?SCENE_NODE_WIDTH:190,height:60});
     addEdge(head.id,run.at(-1).next,'normal');
   }
@@ -459,7 +475,7 @@ function buildChapterGraph(chapter) {
     const type = n.type === 'condition' || n.type === 'route' ? 'junction'
                : n.type === 'chapter_exit' ? 'exit' : n.type;
     const label = n.heading || ({choice:'CHOICE',condition:'CONDITION',route:'STORY BRANCH',chapter_exit:'CHAPTER COMPLETE',ending:'STORY END'}[n.type] || shortTitle(n.id,26));
-    nodes.set(n.id, {id:n.id, parent:null, type, originalType:n.type, label, node:n,
+    nodes.set(n.id, {id:n.id, parent:null, type, label, node:n,
                      width: n.type === 'choice' ? 180 : n.type === 'condition'||n.type === 'route' ? 135 : 190,
                      height: n.type === 'condition'||n.type === 'route' ? 39 : 60});
   }
@@ -468,7 +484,7 @@ function buildChapterGraph(chapter) {
     if (n.type === 'choice') {
       for (const o of n.options || []) {
         const id = optionId(n.id, o.id);
-        nodes.set(id,{id,parent:n.id,optionId:o.id,type:'option',originalType:'option',label:o.label||o.id,
+        nodes.set(id,{id,parent:n.id,optionId:o.id,type:'option',label:o.label||o.id,
                       node:o,width:188,height:54});
         addEdge(n.id,id,'choice-option',o.id);
         addEdge(id,o.next,'option-next',o.id);
@@ -490,7 +506,7 @@ function buildChapterGraph(chapter) {
     const portalId = `PORTAL::${e.to}`;
     if (!nodes.has(portalId)) {
       const chapterName = destination.chapter || 'END';
-      nodes.set(portalId, {id:portalId, type:'portal', originalType:'portal',
+      nodes.set(portalId, {id:portalId, type:'portal',
         label:`CONTINUES · ${chapterName}`, destination:e.to,
         destinationChapter:destination.chapter || null,
         width:188, height:54});
@@ -499,12 +515,11 @@ function buildChapterGraph(chapter) {
   }
   const internal = edges.filter(e => nodes.has(e.from) && nodes.has(e.to));
   const sourceSteps = originals.reduce((sum,n)=>sum+1+(n.options||[]).length,0);
-  const merged = groupOf.size > [...nodes.values()].filter(n=>n.members).length;
-  return {nodes, edges:internal, chapter, groupOf, sourceSteps, merged};
+  return {nodes, edges:internal, chapter, groupOf, sourceSteps};
 }
 function computePath(view, chapter, graph) {
   const groupId = id => graph.groupOf.get(id) || id;
-  const visited = new Set(), traversed = new Set(), byId = new Map(), counts = new Map();
+  const visited = new Set(), traversed = new Set(), byId = new Map();
   const events = view?.detail?.events || [];
   for (let i = 0; i < events.length; i++) {
     const ev = events[i], nid = groupId(ev.node_id);
@@ -512,7 +527,6 @@ function computePath(view, chapter, graph) {
     visited.add(nid);
     if (!byId.has(nid)) byId.set(nid,[]);
     byId.get(nid).push(ev);
-    counts.set(nid,(counts.get(nid)||0)+1);
     const next = events[i+1];
     const nextId = next?.chapter === chapter ? groupId(next.node_id) :
       next?.node_id && state.graph?.nodes?.[next.node_id] ? `PORTAL::${next.node_id}` : null;
@@ -528,7 +542,7 @@ function computePath(view, chapter, graph) {
       if(nextId.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}
     }
   }
-  return {visited,traversed,byId,counts};
+  return {visited,traversed,byId};
 }
 function layoutGraph(graph) {
   const all = Array.from(graph.nodes.values()), byId = graph.nodes;
@@ -547,7 +561,8 @@ function layoutGraph(graph) {
     }
   }
   // Cyclic imported graphs: display the remaining nodes without an infinite walk.
-  for(const n of all) if(!topo.includes(n.id)) topo.push(n.id);
+  const placed = new Set(topo);
+  for(const n of all) if(!placed.has(n.id)) topo.push(n.id);
   const maxRank = Math.max(0,...ranks.values());
   const layers = Array.from({length:maxRank+1},()=>[]);
   for(const id of topo) layers[ranks.get(id)].push(id);
@@ -557,17 +572,14 @@ function layoutGraph(graph) {
       const columns = backward ? [...layers.keys()].reverse() : [...layers.keys()];
       for (const rank of columns) {
         if (rank === 0 && !backward || rank === layers.length-1 && backward) continue;
-        const neighborList = backward ? outgoing : incoming;
-        const comparator = (a,b) => {
-          const score = id => {
-            const arr = neighborList.get(id).filter(x=>ranks.get(x)===(backward?rank+1:rank-1));
-            if(!arr.length) return Infinity;
-            const otherLayer = layers[backward?rank+1:rank-1];
-            return arr.reduce((s,x)=>s+otherLayer.indexOf(x),0)/arr.length;
-          };
-          return score(a)-score(b) || index.get(a)-index.get(b);
-        };
-        layers[rank].sort(comparator);
+        // Each node's barycenter over the neighbouring column, computed once per sort.
+        const neighborList = backward ? outgoing : incoming, otherRank = backward ? rank+1 : rank-1;
+        const position = new Map(layers[otherRank].map((id,i)=>[id,i]));
+        const score = new Map(layers[rank].map(id => {
+          const arr = neighborList.get(id).filter(x=>ranks.get(x)===otherRank);
+          return [id, arr.length ? arr.reduce((s,x)=>s+position.get(x),0)/arr.length : Infinity];
+        }));
+        layers[rank].sort((a,b) => score.get(a)-score.get(b) || index.get(a)-index.get(b));
       }
     }
   }
@@ -583,7 +595,7 @@ function layoutGraph(graph) {
     }
     x += Math.max(0,...layer.map(id=>byId.get(id).width))+gapX;
   }
-  return {width:x-gapX+left,height:Math.max(420,top*2+contentHeight),rankCount:layers.length};
+  return {width:x-gapX+left,height:Math.max(420,top*2+contentHeight)};
 }
 /* A long jump that would cross the boxes in between runs instead through the empty lane
  * above or below them, whichever is nearer, with rounded corners in the column gaps. */
@@ -650,7 +662,7 @@ function routeLogo(path, run, shift=0) {
   const disc=document.createElementNS(svgNS,'circle');
   disc.setAttribute('cx',x);disc.setAttribute('cy',y);disc.setAttribute('r',half+2);disc.style.stroke=routeColor(run);
   g.appendChild(disc);
-  const src=modelIcon(providerOf(run)).match(/src="([^"]+)"/)?.[1];
+  const src=markSrc(providerOf(run));
   if(src){
     const img=document.createElementNS(svgNS,'image');
     img.setAttribute('href',src);img.setAttribute('x',x-half);img.setAttribute('y',y-half);
@@ -661,7 +673,6 @@ function routeLogo(path, run, shift=0) {
 }
 function drawGraph(graph, paths) {
   const world=$('graphWorld'), nodesEl=$('graphNodes'), edgesEl=$('graphEdges');
-  const views=activeViews();
   // Idle nodes show only their title; model logos stack in a column at the right edge,
   // so a node grows just tall enough to keep every logo visible.
   for(const node of graph.nodes.values()) {
@@ -776,7 +787,7 @@ function renderFlowchart(fit=true){
  if(!graph.nodes.size)$('graphEmpty').innerHTML='<strong>Nothing here yet</strong>';
  const bounds=drawGraph(graph,paths);
  state.rendered={graph,paths,bounds};
- setupRunFocus();applyRunFocus();
+ applyRunFocus();
  if(fit)requestAnimationFrame(openChapterView);else applyTransform();
  if(state.selected&&!graph.nodes.has(state.selected.id))closeDrawer();
  emitFlowScene(state.selected?.id);
@@ -817,7 +828,7 @@ function centerSelectedNode({glide=false}={}) {
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
   state.panY=box.height*.50-(node.y+node.height/2)*state.scale;
   const world=$('graphWorld');
-  if(glide&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+  if(glide&&!reducedMotion()){
     world.classList.add('is-gliding');clearTimeout(state.glideTimer);
     state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
   }
@@ -835,7 +846,7 @@ function zoom(factor,clientX,clientY){
 }
 function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
-function renderInspectorShell(node,runId,view){
+function renderInspectorShell(node,view){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
  $('reasoningDrawer').style.setProperty('--inspect-color',color);
  return `<div class="inspect-model-line"><span class="inspect-logo" style="border-color:${color};color:${color}">${modelIcon(provider)}</span><div><div class="inspect-model-name">${esc(modelName(provider))}</div><div class="inspect-run-name">${esc(run?.model||'Unknown')} · ${esc(run?.name||'')}</div></div></div>
@@ -846,7 +857,7 @@ async function inspect(nodeId,runId,{glide=false}={}){
  const rendered=state.rendered?.graph;
  const node=rendered?.nodes.get(rendered.groupOf.get(nodeId)||nodeId);if(!node)return;
  nodeId=node.id;
- const view=modelView(runId), path=state.rendered?.paths.find(p=>p.run.id===runId)?.path;
+ const view={run:runById(runId),detail:state.details.get(runId)}, path=state.rendered?.paths.find(p=>p.run.id===runId)?.path;
  const events=path?.byId.get(nodeId)||[];
  const selectedEvent=events.findLast?.(e=>e.type==='decision')||events[events.length-1];
  state.selected={id:nodeId,runId};emitFlowScene(nodeId);
@@ -856,17 +867,17 @@ async function inspect(nodeId,runId,{glide=false}={}){
   el.classList.toggle('moment-focus',glide&&el.dataset.nodeId===nodeId);
  });
  if(!selectedEvent){
-  $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`<div class="nondecision-msg">Not taken by this model.</div>${sceneScriptSection(node)}`;
+  $('drawerContent').innerHTML=renderInspectorShell(node,view)+`<div class="nondecision-msg">Not taken by this model.</div>${sceneScriptSection(node)}`;
   return;
  }
- $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+'';
+ $('drawerContent').innerHTML=renderInspectorShell(node,view);
  const marker=state.selected;
  try{
   const raw=await api(`/api/runs/${encodeURIComponent(runId)}/events/${selectedEvent.index}`);
   if(state.selected!==marker)return;
   if(raw.type==='decision')renderDecisionInspector(node,raw,runId,view);
   else renderSceneInspector(node,raw,runId,view);
- }catch(err){if(state.selected===marker)$('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`<div class="nondecision-msg">${esc(err.message)}</div>`;}
+ }catch(err){if(state.selected===marker)$('drawerContent').innerHTML=renderInspectorShell(node,view)+`<div class="nondecision-msg">${esc(err.message)}</div>`;}
 }
 function renderDecisionInspector(node,ev,runId,view){
  const input=ev.input||{},output=ev.output||{},history=input.entire_decision_history||[];
@@ -875,7 +886,7 @@ function renderDecisionInspector(node,ev,runId,view){
  const changes=Array.from(new Set([...Object.keys(before),...Object.keys(after)]))
    .filter(k=>JSON.stringify(before[k])!==JSON.stringify(after[k]));
  const color=routeColor(view.run);
- $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`
+ $('drawerContent').innerHTML=renderInspectorShell(node,view)+`
   <p class="inspect-subtitle">${esc(input.current_scene?.description||'')}</p>
   <div class="selected-choice" style="border-left-color:${color}"><div class="selected-label">Chose</div><strong>${esc(selectedOption?.label||ev.label||output.choice_id||'Not recorded')}</strong></div>
   <section class="inspect-section"><h3>Why</h3><p class="rationale">${esc(output.rationale||'—')}</p></section>
@@ -895,12 +906,13 @@ function renderSceneInspector(node,ev,runId,view){
  const data=ev.visible_to_agent||{};
  const preceding=(view.detail?.decisions||[]).filter(d=>d.index<ev.index).at(-1);
  const prior=preceding?`<section class="inspect-section"><h3>Previous decision</h3><div class="selected-choice" style="border-left-color:${routeColor(view.run)}"><div class="selected-label">${esc(preceding.heading||'')}</div><strong>${esc(preceding.label||preceding.choice_id)}</strong></div><p class="rationale">${esc(preceding.rationale||'')}</p></section>`:'';
- $('drawerContent').innerHTML=renderInspectorShell(node,runId,view)+`
+ $('drawerContent').innerHTML=renderInspectorShell(node,view)+`
   ${node.members?'':`<p class="inspect-subtitle">${esc(data.description||ev.description||node.node.description||'')}</p>`}
   ${sceneScriptSection(node)}
 ${prior}`;
 }
 function setupInteractions(){
+ setupRunFocus();
  // The background follows the hovered node, else the selected one.
  $('graphNodes').addEventListener('mouseover',e=>{const n=e.target.closest('.flow-node');if(n)emitFlowScene(n.dataset.nodeId);});
  $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));

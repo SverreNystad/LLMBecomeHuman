@@ -114,5 +114,4 @@
     document.addEventListener(type, event => { if (current && !card?.contains(event.target)) hide(true); }, {capture: true, passive: true});
   }
 
-  window.unfoldCard = {open, hide};
 })();

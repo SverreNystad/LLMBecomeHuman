@@ -302,8 +302,11 @@
     for (let i = 0; i < 40; i++) current.update(4 + i * .25, .25);
     render(14, 0);
   }
+  /* The network drifts slowly, so 30 frames a second look the same as 60 at half the work. */
+  const FRAME_MS = 1000 / 30;
   function tick(now) {
     frame = 0;
+    if (lastTime && now - lastTime < FRAME_MS - 1) {schedule(); return;}
     const dt = Math.min(.1, lastTime ? (now - lastTime) / 1000 : 0);
     lastTime = now; clock += dt;
     render(clock, dt);
