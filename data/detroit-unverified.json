@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 41,
+    "condition_nodes_unverified": 34,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -7542,7 +7542,7 @@
         }
       ],
       "observations": [],
-      "next": "ch5_00020"
+      "next": "ch5_x0102"
     },
     "ch5_00022": {
       "id": "ch5_00022",
@@ -7611,7 +7611,7 @@
         }
       ],
       "observations": [],
-      "next": "ch5_00024"
+      "next": "ch5_x0101"
     },
     "ch5_00026": {
       "id": "ch5_00026",
@@ -8694,7 +8694,7 @@
         {
           "id": "option_1",
           "label": "PLAY THE PIANO",
-          "next": "ch5_00055",
+          "next": "ch5_x0106",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -44430,19 +44430,28 @@
       "branches": [
         {
           "condition_text": "Successfully escaped or Markus was rescued",
-          "when": null,
+          "when": {
+            "not": {
+              "flag": "markus_spare_parts_outcome",
+              "equals": "ran"
+            }
+          },
           "next": "ch19_00002"
         },
         {
           "condition_text": "Ran away when the guard arrived",
-          "when": null,
+          "when": {
+            "flag": "markus_spare_parts_outcome",
+            "equals": "ran"
+          },
           "next": "ch19_00003"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch19_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00005": {
       "id": "ch19_00005",
@@ -44779,29 +44788,50 @@
       "branches": [
         {
           "condition_text": "Successfully escaped and stole the truck",
-          "when": null,
+          "when": {
+            "flag": "markus_spare_parts_outcome",
+            "equals": "truck"
+          },
           "next": "ch19_00007"
         },
         {
           "condition_text": "Successfully escaped, without stealing the truck",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "markus_spare_parts_outcome",
+                "equals": "full_bags"
+              },
+              {
+                "flag": "markus_spare_parts_outcome",
+                "equals": "none"
+              }
+            ]
+          },
           "next": "ch19_00010"
         },
         {
           "condition_text": "Ran away when the guard arrived",
-          "when": null,
+          "when": {
+            "flag": "markus_spare_parts_outcome",
+            "equals": "ran"
+          },
           "next": "ch19_00013"
         },
         {
           "condition_text": "Markus failed to escape and had to be rescued",
-          "when": null,
+          "when": {
+            "flag": "markus_spare_parts_outcome",
+            "equals": "failed"
+          },
           "next": "ch19_00021"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch19_00004",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00023": {
       "id": "ch19_00023",
@@ -44951,14 +44981,27 @@
       "branches": [
         {
           "condition_text": "Stole the key - go back to the truck",
-          "when": null,
+          "when": {
+            "flag": "markus_spare_parts_outcome",
+            "equals": "truck"
+          },
           "next": "ch19_00031"
+        },
+        {
+          "condition_text": "No key",
+          "next": "ch19_00030",
+          "when": {
+            "not": {
+              "flag": "markus_spare_parts_outcome",
+              "equals": "truck"
+            }
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch19_00030",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
     },
     "ch19_00033": {
       "id": "ch19_00033",
@@ -45186,7 +45229,8 @@
           "effects": {
             "flags": {
               "markus_tried_to_save_john": true,
-              "markus_john_joined": true
+              "markus_john_joined": true,
+              "markus_spare_parts_outcome": "failed"
             }
           }
         },
@@ -45199,7 +45243,8 @@
           "effects": {
             "flags": {
               "markus_tried_to_save_john": false,
-              "markus_john_joined": false
+              "markus_john_joined": false,
+              "markus_spare_parts_outcome": "full_bags"
             }
           }
         }
@@ -45299,39 +45344,6 @@
       ],
       "observations": [],
       "next": "ch19_00048"
-    },
-    "ch19_00050": {
-      "id": "ch19_00050",
-      "type": "condition",
-      "chapter": "19",
-      "character": "Markus",
-      "heading": "Let John join the group - Steal the key",
-      "branches": [
-        {
-          "condition_text": "Create short-circuit",
-          "when": null,
-          "next": "ch19_00040"
-        },
-        {
-          "condition_text": "Attract the guards by knocking a barrel",
-          "when": null,
-          "next": "ch19_00042"
-        },
-        {
-          "condition_text": "Threaten guards with the gun",
-          "when": null,
-          "next": "ch19_00032"
-        },
-        {
-          "condition_text": "Be seen by the guards",
-          "when": null,
-          "next": "ch19_00049"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch19_00032",
-      "resolution": "unknown"
     },
     "ch19_00051": {
       "id": "ch19_00051",
@@ -45673,7 +45685,8 @@
           ],
           "effects": {
             "flags": {
-              "markus_john_joined": false
+              "markus_john_joined": false,
+              "markus_spare_parts_outcome": "full_bags"
             }
           }
         }
@@ -45927,7 +45940,7 @@
         }
       ],
       "observations": [],
-      "next": "ch19_00074"
+      "next": "ch19_00030"
     },
     "ch19_00079": {
       "id": "ch19_00079",
@@ -46005,7 +46018,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_spare_parts_outcome": "full_bags",
+              "markus_john_joined": false
+            }
           }
         }
       ]
@@ -46300,7 +46316,7 @@
         }
       ],
       "observations": [],
-      "next": "ch19_00092"
+      "next": "ch19_00030"
     },
     "ch19_00095": {
       "id": "ch19_00095",
@@ -46338,7 +46354,7 @@
         }
       ],
       "observations": [],
-      "next": "ch19_00092"
+      "next": "ch19_00030"
     },
     "ch19_00097": {
       "id": "ch19_00097",
@@ -46634,7 +46650,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_spare_parts_outcome": "ran"
+            }
           }
         },
         {
@@ -46644,7 +46662,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_spare_parts_outcome": "ran"
+            }
           }
         },
         {
@@ -67821,7 +67841,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00006"
+      "next": "ch26_x0104"
     },
     "ch26_00008": {
       "id": "ch26_00008",
@@ -67840,7 +67860,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00006"
+      "next": "ch26_x0104"
     },
     "ch26_00009": {
       "id": "ch26_00009",
@@ -68927,7 +68947,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00060"
+      "next": "ch26_00053"
     },
     "ch26_00062": {
       "id": "ch26_00062",
@@ -68946,7 +68966,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00060"
+      "next": "ch26_00053"
     },
     "ch26_00063": {
       "id": "ch26_00063",
@@ -69193,29 +69213,6 @@
       ],
       "observations": [],
       "next": "ch26_00072"
-    },
-    "ch26_00075": {
-      "id": "ch26_00075",
-      "type": "condition",
-      "chapter": "26",
-      "character": "Markus",
-      "heading": "Send a message",
-      "branches": [
-        {
-          "condition_text": "Destroy the statue",
-          "when": null,
-          "next": "ch26_00073"
-        },
-        {
-          "condition_text": "Tag the statue",
-          "when": null,
-          "next": "ch26_00074"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch26_00072",
-      "resolution": "unknown"
     },
     "ch26_00076": {
       "id": "ch26_00076",
@@ -69508,7 +69505,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00091"
+      "next": "ch26_00010"
     },
     "ch26_00093": {
       "id": "ch26_00093",
@@ -69567,44 +69564,6 @@
       "observations": [],
       "next": "ch26_00094"
     },
-    "ch26_00096": {
-      "id": "ch26_00096",
-      "type": "scene",
-      "chapter": "26",
-      "character": "Markus",
-      "heading": "In the store",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "North",
-          "text": "We forgot about the drone…",
-          "source_keys": [
-            "X0802M.TRUCK.GAMEOVER.PC.X08MMARLA.FORGOTDRONE"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch26_00094"
-    },
-    "ch26_00097": {
-      "id": "ch26_00097",
-      "type": "scene",
-      "chapter": "26",
-      "character": "Markus",
-      "heading": "In the store",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "North",
-          "text": "He saw us... I knew we should've blocked the road…",
-          "source_keys": [
-            "X0802M.TRUCK.GAMEOVER.PC.X08MMARLA.ROAD"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch26_00094"
-    },
     "ch26_00098": {
       "id": "ch26_00098",
       "type": "condition",
@@ -69614,24 +69573,18 @@
       "branches": [
         {
           "condition_text": "Alarm wasn't deactivated",
-          "when": null,
-          "next": "ch26_00095"
-        },
-        {
-          "condition_text": "Drone wasn't destroyed",
-          "when": null,
-          "next": "ch26_00096"
-        },
-        {
-          "condition_text": "Road wasn't blocked",
-          "when": null,
-          "next": "ch26_00097"
+          "next": "ch26_00095",
+          "when": {
+            "flag": "markus_capitol_park_failed",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch26_00094",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch26_00099": {
       "id": "ch26_00099",
@@ -69642,14 +69595,25 @@
       "branches": [
         {
           "condition_text": "Markus and North have to flee",
-          "when": null,
-          "next": "ch26_00098"
+          "next": "ch26_00098",
+          "when": {
+            "flag": "markus_capitol_park_failed",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "The store is secured",
+          "next": "ch26_00091",
+          "when": {
+            "flag": "markus_capitol_park_failed",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch26_00091",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
     },
     "ch26_00100": {
       "id": "ch26_00100",
@@ -70034,7 +69998,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00120"
+      "next": "ch26_00010"
     },
     "ch26_00122": {
       "id": "ch26_00122",
@@ -70513,7 +70477,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_capitol_park_failed": true
+            }
           }
         },
         {
@@ -71154,7 +71120,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00180"
+      "next": "ch26_00001"
     },
     "ch26_00182": {
       "id": "ch26_00182",
@@ -71311,7 +71277,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00188"
+      "next": "ch26_x0103"
     },
     "ch26_00190": {
       "id": "ch26_00190",
@@ -74988,13 +74954,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false
+            }
           }
         },
         {
           "id": "option_1",
           "label": "DON'T SHOOT",
-          "next": "ch28_00001",
+          "next": "ch28_00027",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75094,7 +75062,7 @@
         {
           "id": "option_0",
           "label": "ATTACK",
-          "next": "ch28_00001",
+          "next": "ch28_00013",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75113,7 +75081,7 @@
         {
           "id": "option_1",
           "label": "STAND GROUND",
-          "next": "ch28_00001",
+          "next": "ch28_00032",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75133,7 +75101,7 @@
         {
           "id": "option_2",
           "label": "DISPERSE",
-          "next": "ch28_00001",
+          "next": "ch28_00034",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75533,7 +75501,7 @@
         {
           "id": "option_0",
           "label": "CHARGE",
-          "next": "ch28_00001",
+          "next": "ch28_00013",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75674,7 +75642,7 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00001"
+      "next": "ch28_00040"
     },
     "ch28_00034": {
       "id": "ch28_00034",
@@ -75706,7 +75674,7 @@
         {
           "id": "option_0",
           "label": "ATTACK",
-          "next": "ch28_00001",
+          "next": "ch28_00013",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75883,7 +75851,7 @@
         {
           "id": "option_0",
           "label": "CHARGE",
-          "next": "ch28_00001",
+          "next": "ch28_00013",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75902,7 +75870,7 @@
         {
           "id": "option_1",
           "label": "SACRIFICE",
-          "next": "ch28_00001",
+          "next": "ch28_00027",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75922,7 +75890,7 @@
         {
           "id": "option_2",
           "label": "RUN AWAY",
-          "next": "ch28_00001",
+          "next": "ch28_00029",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75951,7 +75919,7 @@
         {
           "id": "option_0",
           "label": "CHARGE",
-          "next": "ch28_00001",
+          "next": "ch28_00013",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -75970,20 +75938,21 @@
         {
           "id": "option_1",
           "label": "STAY",
-          "next": "ch28_00040",
+          "next": "ch28_00027",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "markus_march_violent": false,
-              "markus_march_fled": false
+              "markus_march_fled": false,
+              "markus_march_stood_under_fire": true
             }
           }
         },
         {
           "id": "option_2",
           "label": "DISPERSE",
-          "next": "ch28_00001",
+          "next": "ch28_00029",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -76007,7 +75976,7 @@
             "flags": {
               "markus_march_dispersed": true,
               "markus_march_violent": false,
-              "markus_march_fled": false
+              "markus_march_fled": true
             },
             "news": [
               {
@@ -77789,7 +77758,7 @@
         },
         {
           "id": "option_5",
-          "label": "DEFAULT/TIMEOUT",
+          "label": "SAY NOTHING",
           "next": "ch28_00130",
           "requirements_unverified": [],
           "relation_hints": [
@@ -131143,6 +131112,593 @@
           }
         }
       ]
+    },
+    "ch5_x0101": {
+      "id": "ch5_x0101",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Paint something you see",
+      "description": "Carl asks Markus to paint something he sees in the studio.",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "COPY CARL'S PAINTING",
+          "next": "ch5_00024",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_copy": "carls_painting"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "COPY THE DESK",
+          "next": "ch5_00024",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_copy": "desk"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "COPY THE STATUE",
+          "next": "ch5_00024",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_copy": "statue"
+            }
+          }
+        }
+      ]
+    },
+    "ch5_x0102": {
+      "id": "ch5_x0102",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Paint from the heart",
+      "description": "Carl asks Markus to close his eyes and paint something that doesn't exist, something from his heart. What does he paint about?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ANDROIDS",
+          "next": "ch5_x0103",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_theme": "androids"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "HUMANITY",
+          "next": "ch5_x0104",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_theme": "humanity"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "IDENTITY",
+          "next": "ch5_x0105",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_theme": "identity"
+            }
+          }
+        }
+      ]
+    },
+    "ch5_x0103": {
+      "id": "ch5_x0103",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Paint from the heart",
+      "description": "Markus paints about androids. What does the painting show?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "FATE",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "fate"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "HOPE",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "hope"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "PAIN",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "pain"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "SADNESS",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "sadness"
+            }
+          }
+        }
+      ]
+    },
+    "ch5_x0104": {
+      "id": "ch5_x0104",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Paint from the heart",
+      "description": "Markus paints about humanity. What does the painting show?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ANGER",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "anger"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "COMFORT",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "comfort"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "EMPATHY",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "empathy"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "HOPE",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "hope"
+            }
+          }
+        }
+      ]
+    },
+    "ch5_x0105": {
+      "id": "ch5_x0105",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Paint from the heart",
+      "description": "Markus paints about identity. What does the painting show?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ANDROIDS",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "androids"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "DESPAIR",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "despair"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "DOUBTS",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "doubts"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "PRISONER",
+          "next": "ch5_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_painting_subject": "prisoner"
+            }
+          }
+        }
+      ]
+    },
+    "ch5_x0106": {
+      "id": "ch5_x0106",
+      "type": "choice",
+      "chapter": "5",
+      "character": "Markus",
+      "heading": "Find something to do",
+      "description": "Markus sits at Carl's piano. What does he play?",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Painter#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "MELANCHOLIC",
+          "next": "ch5_00055",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_piano_mood": "melancholic"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "HOPEFUL",
+          "next": "ch5_00055",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_piano_mood": "hopeful"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "INTIMATE",
+          "next": "ch5_00055",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_piano_mood": "intimate"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "ENIGMATIC",
+          "next": "ch5_00055",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_piano_mood": "enigmatic"
+            }
+          }
+        }
+      ]
+    },
+    "ch19_x0102": {
+      "id": "ch19_x0102",
+      "type": "condition",
+      "chapter": "19",
+      "character": "Markus",
+      "heading": "Let John join the group - Steal the key",
+      "branches": [
+        {
+          "condition_text": "Avoid the guards",
+          "next": "ch19_00040",
+          "when": null,
+          "effects": {
+            "flags": {
+              "markus_spare_parts_outcome": "truck"
+            }
+          }
+        },
+        {
+          "condition_text": "Be seen by the guards",
+          "next": "ch19_00049",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
+    },
+    "ch19_x0103": {
+      "id": "ch19_x0103",
+      "type": "condition",
+      "chapter": "19",
+      "character": "Markus",
+      "heading": "Let John join the group - Steal the key",
+      "branches": [
+        {
+          "condition_text": "Avoid the guards",
+          "next": "ch19_00042",
+          "when": null,
+          "effects": {
+            "flags": {
+              "markus_spare_parts_outcome": "truck"
+            }
+          }
+        },
+        {
+          "condition_text": "Be seen by the guards",
+          "next": "ch19_00049",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart"
+    },
+    "ch19_00050": {
+      "id": "ch19_00050",
+      "type": "choice",
+      "chapter": "19",
+      "character": "Markus",
+      "heading": "Let John join the group - Steal the key",
+      "description": "The truck key is in the control station, with two human guards inside. How does Markus get them away from it?",
+      "source": "https://detroit-become-human.fandom.com/wiki/Spare_Parts#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "CREATE A BLACKOUT",
+          "next": "ch19_x0102",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_spare_parts_key_method": "blackout"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LURE THE GUARDS",
+          "next": "ch19_x0103",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_spare_parts_key_method": "lure"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "THREATEN THE GUARDS",
+          "next": "ch19_00032",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_spare_parts_key_method": "threaten",
+              "markus_spare_parts_outcome": "truck"
+            }
+          }
+        }
+      ]
+    },
+    "ch26_x0103": {
+      "id": "ch26_x0103",
+      "type": "condition",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Reach the store",
+      "branches": [
+        {
+          "condition_text": "Reach the store in time",
+          "next": "ch26_x0101",
+          "when": null
+        },
+        {
+          "condition_text": "Out of time",
+          "next": "ch26_00188",
+          "when": null,
+          "effects": {
+            "flags": {
+              "markus_capitol_park_failed": true
+            }
+          }
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
+    },
+    "ch26_x0101": {
+      "id": "ch26_x0101",
+      "type": "choice",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Reach the store",
+      "description": "The store's alarm is armed, a police drone patrols overhead and the street is open to traffic. A delivery truck nearby could break through the store window.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SECURE THE AREA FIRST",
+          "next": "ch26_00180",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_capitol_park_failed": false
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "RAM THE STORE NOW",
+          "next": "ch26_x0102",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_capitol_park_failed": true
+            }
+          }
+        }
+      ]
+    },
+    "ch26_x0102": {
+      "id": "ch26_x0102",
+      "type": "scene",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Ram the store",
+      "description": "Markus and North take the truck and drive it through the store window. The alarm goes off at once, and the police are alerted.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch26_00100",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch26_x0104": {
+      "id": "ch26_x0104",
+      "type": "condition",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Mission failed",
+      "branches": [
+        {
+          "condition_text": "Mission failed",
+          "next": "ch26_00006",
+          "when": {
+            "flag": "markus_capitol_park_failed",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Mission succeeded",
+          "next": "ch26_00001",
+          "when": {
+            "flag": "markus_capitol_park_failed",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart"
+    },
+    "ch26_00075": {
+      "id": "ch26_00075",
+      "type": "choice",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Send a message",
+      "description": "The androids are free and waiting for Markus. The plaza is his to mark: the statue in the middle, the bus stop, the cars, the shop windows.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "DESTROY THE STATUE",
+          "next": "ch26_00073",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_capitol_park_statue": "destroyed"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TAG THE STATUE",
+          "next": "ch26_00074",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_capitol_park_statue": "tagged"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "DO NOTHING",
+          "next": "ch26_00060",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_capitol_park_statue": "none",
+              "markus_capitol_park_violent": false
+            }
+          }
+        }
+      ]
     }
   },
   "initial_flags": {
@@ -131178,6 +131734,9 @@
     "connor_died_in_hostage": false,
     "connor_died_in_interrogation": false,
     "connor_shot_by_hank": false,
-    "connor_ch6_wrong_answer": false
+    "connor_ch6_wrong_answer": false,
+    "markus_john_joined": false,
+    "markus_spare_parts_outcome": "none",
+    "markus_capitol_park_failed": false
   }
 }
