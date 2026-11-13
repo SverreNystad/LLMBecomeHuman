@@ -22,6 +22,8 @@
 /* Story: a large, faint cut-out in the margin beside the text column. */
 .story-view { position: relative; container-type: inline-size; overflow: hidden; }
 .story-view > .story-toolbar, .story-view > .story-scroll { position: relative; z-index: 1; }
+/* The toolbar sits above the scroll pane so the Following menu can open over it. */
+.story-view > .story-toolbar { z-index: 2; }
 .story-portrait {
   display: none; position: absolute; z-index: 0; right: 0; bottom: 0;
   width: min(280px, calc((100cqw - 720px) / 2 + 24px)); height: auto; max-height: 88%;

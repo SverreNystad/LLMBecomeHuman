@@ -99,11 +99,17 @@ def test_chapter_flowchart_browser_interactions():
                 page.locator("#decisionStrip button").count()
                 == page.locator(".story-decision").count()
             )
-            mark = page.locator(".story-mark").first
+            # Clicking another model's logo shows its Justification in place.
+            followed_model = page.evaluate("storyRun().model")
+            other_id = first_card.locator(
+                ".story-mark[aria-pressed='false']"
+            ).first.get_attribute("data-why-run")
+            mark = first_card.locator(f'.story-mark[data-why-run="{other_id}"]')
             mark.click()
+            assert mark.get_attribute("aria-pressed") == "true"
             assert (
-                not page.locator(".story-other-why:not(.is-hidden)").first.inner_text()
-                == ""
+                followed_model
+                not in first_card.locator(".story-why-label").inner_text()
             )
             assert page.locator("#storyMode").get_attribute("aria-label")
             page.locator("#storyMode").click()
@@ -434,6 +440,11 @@ def test_title_screen_sound_and_marker_card(live_dashboard):
             card.wait_for()
             assert "CHOSE" in card.inner_text().upper()
             assert page.locator(".unfold-card-why").inner_text().strip()
+            # A long Justification scrolls inside the card instead of being cut off.
+            assert page.evaluate("""() => {
+              const why = getComputedStyle(document.querySelector('.unfold-card-why'));
+              return [why.overflowY, why.webkitLineClamp];
+            }""") == ["auto", "none"]
             assert marker.get_attribute("aria-describedby") == "unfoldCard"
             page.keyboard.press("Escape")
             page.wait_for_function("!document.querySelector('#unfoldCard.is-open')")
@@ -555,6 +566,108 @@ def test_best_of_each_logos_popover_and_motion(live_dashboard):
             page.locator("#viewStory").click()
             page.wait_for_function("document.body.dataset.viewMotion === 'to-story'")
             page.locator(".story-decision").first.wait_for()
+            assert not errors
+        finally:
+            browser.close()
+
+
+def test_story_marks_following_menu_and_empty_state(live_dashboard):
+    playwright = pytest.importorskip("playwright.sync_api")
+    with playwright.sync_playwright() as p:
+        browser = _launch_chromium(p)
+        try:
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            page.set_default_timeout(4500)
+            errors = []
+            page.on("pageerror", lambda e: errors.append(str(e)))
+            page.goto(live_dashboard)
+            page.locator("#titleScreen").wait_for()
+            page.wait_for_timeout(400)
+            page.keyboard.press("Enter")
+            page.locator("#titleScreen").wait_for(state="detached")
+            page.locator("#pickerToggle").click()
+            page.locator("#clearRuns").click()
+            page.locator("#bestOfEach").click()
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 6"
+            )
+            page.keyboard.press("Escape")
+            card = page.locator(".story-decision").first
+            card.wait_for()
+
+            # Every model shown has a logo by its choice, the followed one included and active.
+            followed = page.evaluate("storyRun().id")
+            marks = card.locator(".story-mark")
+            assert marks.count() >= 2
+            own = card.locator(f'.story-mark[data-why-run="{followed}"]')
+            assert own.get_attribute("aria-pressed") == "true"
+
+            # Hovering a logo names the model quickly, in a label of its own.
+            other = card.locator(f'.story-mark:not([data-why-run="{followed}"])').first
+            other_id = other.get_attribute("data-why-run")
+            other_model = page.evaluate(f"runById({other_id!r}).model")
+            other.hover()
+            name = other.locator(".story-mark-name")
+            name.wait_for(state="visible", timeout=400)
+            assert name.inner_text() == other_model
+            assert other.get_attribute("title") is None
+
+            # Clicking it swaps the card's Justification to that model's, in place.
+            other.click()
+            assert other.get_attribute("aria-pressed") == "true"
+            assert own.get_attribute("aria-pressed") == "false"
+            assert other_model in card.locator(".story-why-label").inner_text()
+            assert card.locator(".story-other-why").count() == 0
+            assert page.evaluate("storyRun().id") == followed
+
+            # The Following menu glitches open, follows the picked model, and glitches shut.
+            page.locator("#storyRun").click()
+            menu = page.locator("#storyRunMenu")
+            menu.wait_for(state="visible")
+            menu.locator(f'[data-run-id="{other_id}"]').click()
+            assert page.evaluate(
+                "document.querySelector('#storyRunMenu').classList.contains('is-closing')"
+            )
+            page.wait_for_function(f"storyRun().id === {other_id!r}")
+            assert other_model in page.locator("#storyRun").inner_text()
+            page.wait_for_function(
+                "document.querySelector('#storyRunMenu').classList.contains('is-hidden')"
+            )
+
+            # With no model chosen, the controls that need one are hidden and + pulses.
+            page.locator("#pickerToggle").click()
+            page.locator("#clearRuns").click()
+            page.keyboard.press("Escape")
+            page.wait_for_function(
+                "document.querySelectorAll('.run-chip').length === 0"
+            )
+            assert page.locator(".story-toolbar").is_hidden()
+            assert (
+                page.evaluate(
+                    "getComputedStyle(document.querySelector('#pickerToggle')).animationName"
+                )
+                == "picker-pulse"
+            )
+            story_box = page.locator(".story-empty").bounding_box()
+            page.locator("#viewFlow").click()
+            page.locator("#graphEmpty").wait_for(state="visible")
+            page.wait_for_function(
+                "document.querySelector('#viewerWrap').getAnimations().length === 0"
+            )
+            assert page.locator("#canvasLegend").is_hidden()
+            flow_box = page.locator("#graphEmpty").bounding_box()
+            centre = lambda b: (b["x"] + b["width"] / 2, b["y"] + b["height"] / 2)
+            (sx, sy), (fx, fy) = centre(story_box), centre(flow_box)
+            assert abs(sx - fx) < 4 and abs(sy - fy) < 4
+            # Opening the picker stops the pulse.
+            page.locator("#pickerToggle").click()
+            page.mouse.move(700, 700)
+            assert (
+                page.evaluate(
+                    "getComputedStyle(document.querySelector('#pickerToggle')).animationName"
+                )
+                == "none"
+            )
             assert not errors
         finally:
             browser.close()
