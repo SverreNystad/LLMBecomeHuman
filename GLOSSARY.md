@@ -25,8 +25,12 @@ An action sequence from the game that tests reflexes, not judgement. It always s
 _Avoid_: QTE choice, willingness choice
 
 **Fate**:
-Whether a side character (Luther, Simon, North, Josh) or Markus is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
+Whether Kara, Markus or a side character (Alice, Hank, Luther, Simon, North, Josh) is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
 _Avoid_: alive flag, death state, survival
+
+**Connor's Deaths**:
+How many times Connor has died so far. CyberLife sends a new body each time, so his story goes on, but people who saw it remember (Hank's lines change with the count). Connor has no Fate until his story ends.
+_Avoid_: Connor's lives, respawns
 
 **Public News**:
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.
