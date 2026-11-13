@@ -77,6 +77,7 @@ DETROIT_CHAPTER_TITLES = {
     "32.4": "Battle for Detroit: Connor at the CyberLife Tower",
     "32.5": "Battle for Detroit: Markus Demonstration",
     "32.6": "Battle for Detroit: Markus Revolution",
+    "32.7": "Battle for Detroit: Connor in the Zen Garden",
     "final": "Final Routes",
 }
 

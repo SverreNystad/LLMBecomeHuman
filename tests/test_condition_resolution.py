@@ -543,7 +543,8 @@ REFUSE_PERKINS = {
 
 
 def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
-    default = _endgame_branches(tmp_path / "a", {})
+    # Connor's Zen Garden ending plays after Markus's, so Markus must survive his.
+    default = _endgame_branches(tmp_path / "a", REFUSE_PERKINS)
     chosen = _endgame_branches(
         tmp_path / "b", {**SPARE_LUTHER, **LEAVE_NORTH, **REFUSE_PERKINS}
     )
@@ -551,7 +552,7 @@ def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
     assert (default["ch32_1_00179"], chosen["ch32_1_00179"]) == (1, 0)
     # Connor: the androids he frees at CyberLife are greeted by North, or by Simon
     # when North died in Crossroads.
-    assert (default["ch32_4_00011"], chosen["ch32_4_00011"]) == (0, 1)
+    assert (default["ch32_7_00011"], chosen["ch32_7_00011"]) == (0, 1)
     # Markus: refusing Perkins's deal, North survives it unless Crossroads cost her.
     assert chosen["ch32_5_00105"] == 1
 
@@ -707,3 +708,110 @@ def test_a_hostile_hank_resigns_and_leaves_connor_to_free_the_prisoner(tmp_path)
 def test_hank_does_not_resign_when_connor_has_kamskis_key(tmp_path):
     visited = _nodes_visited(tmp_path, {**HOSTILE_HANK, **KAMSKIS_KEY})
     assert HANK_RESIGNS not in visited
+
+
+# Battle for Detroit: Connor's Zen Garden ending is its own last Chapter Segment (32.7),
+# played after Markus's ending (docs/adr/0002). Kamski's emergency exit is the way out.
+ZEN_GARDEN = "32.7"
+KAMSKI_WITH_MARKUS, KAMSKI_ALONE = "ch32_7_00030", "ch32_7_00031"
+EXIT_WITH_MARKUS, EXIT_ALONE = "ch32_7_00032", "ch32_7_00033"
+GUN_PUT_AWAY, MARKUS_SHOT = "ch32_7_00034", "ch32_7_00035"
+GUN_TO_HIS_HEAD, STAYS_CONTROLLED = "ch32_7_00036", "ch32_7_00016"
+ALONE_CHOICE = "ch32_7_00017"
+MARKUS_LIVES = REFUSE_PERKINS
+MARKUS_DIES = {"ch32_5_00076": "ACCEPT DEAL"}
+
+
+def _play_ending(tmp_path, picks):
+    """Play the whole real story; return (node ids in order, chapters in order, flags)."""
+    run = _ScriptedRunner(
+        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+    )
+    run.run()
+    assert run.state["status"] == "complete"
+    events = [
+        json.loads(line)
+        for line in (tmp_path / "run" / "events.jsonl").read_text().splitlines()
+    ]
+    nodes = [e.get("node_id") for e in events]
+    chapters = [str(e.get("chapter")) for e in events if e["type"] == "scene"]
+    return nodes, chapters, run.state["flags"]
+
+
+def test_connors_zen_garden_ending_plays_last_after_markus(tmp_path):
+    nodes, chapters, _ = _play_ending(tmp_path, {})
+    assert chapters[-1] == ZEN_GARDEN
+    markus = [i for i, c in enumerate(chapters) if c in ("32.5", "32.6")]
+    connor_tower = [i for i, c in enumerate(chapters) if c == "32.4"]
+    assert markus and connor_tower
+    assert max(connor_tower) < min(markus) < max(markus) < chapters.index(ZEN_GARDEN)
+    # The CyberLife Tower segment no longer holds the Hart Plaza aftermath.
+    graph = _dataset()
+    assert not any(
+        n.get("heading") == "Freed the androids"
+        for n in graph["nodes"].values()
+        if n.get("chapter") == "32.4"
+    )
+    assert graph["chapter_briefings"][ZEN_GARDEN]
+
+
+def test_a_machine_connor_has_no_zen_garden_ending():
+    route = _dataset()["nodes"]["route_connor_zen_garden"]
+    assert route["flag"] == "connor_deviant"
+    assert route["if_false"] == "game_complete"
+
+
+@pytest.mark.parametrize(
+    "picks, reached, markus_alive",
+    [
+        (
+            {**MARKUS_LIVES, EXIT_WITH_MARKUS: "FIND THE EMERGENCY EXIT"},
+            GUN_PUT_AWAY,
+            True,
+        ),
+        ({**MARKUS_LIVES, EXIT_WITH_MARKUS: "GIVE UP"}, MARKUS_SHOT, False),
+        (
+            {
+                **MARKUS_DIES,
+                ALONE_CHOICE: "SUICIDE",
+                EXIT_ALONE: "FIND THE EMERGENCY EXIT",
+            },
+            GUN_TO_HIS_HEAD,
+            False,
+        ),
+        (
+            {**MARKUS_DIES, ALONE_CHOICE: "SUICIDE", EXIT_ALONE: "GIVE UP"},
+            STAYS_CONTROLLED,
+            False,
+        ),
+    ],
+    ids=["escape-with-markus", "give-up-markus-shot", "escape-alone", "give-up-alone"],
+)
+def test_connor_remembers_kamskis_emergency_exit_and_chooses(
+    tmp_path, picks, reached, markus_alive
+):
+    nodes, _, flags = _play_ending(tmp_path, picks)
+    kamski = (
+        KAMSKI_WITH_MARKUS if markus_alive or reached == MARKUS_SHOT else KAMSKI_ALONE
+    )
+    assert kamski in nodes
+    assert reached in nodes
+    assert flags["markus_alive"] is markus_alive
+    line = _dataset()["nodes"][kamski]["dialogue"][0]
+    assert line["speaker"] == "Kamski (memory)"
+    assert "emergency exit" in line["text"]
+
+
+def test_only_giving_up_beside_markus_ends_his_fate():
+    nodes = _dataset()["nodes"]
+    fates = {
+        (nid, o["label"]): o["effects"]["flags"].get("markus_alive")
+        for nid in (EXIT_WITH_MARKUS, EXIT_ALONE)
+        for o in nodes[nid]["options"]
+    }
+    assert fates == {
+        (EXIT_WITH_MARKUS, "FIND THE EMERGENCY EXIT"): None,
+        (EXIT_WITH_MARKUS, "GIVE UP"): False,
+        (EXIT_ALONE, "FIND THE EMERGENCY EXIT"): None,
+        (EXIT_ALONE, "GIVE UP"): None,
+    }
