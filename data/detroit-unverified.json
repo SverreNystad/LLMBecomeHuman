@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 57,
+    "condition_nodes_unverified": 47,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -504,7 +504,13 @@
         {
           "condition_text": "Connor dies: he reaches Emma in time, pulls her free and falls with Daniel",
           "when": null,
-          "next": "ch1_00004"
+          "next": "ch1_00004",
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_hostage": true
+            }
+          }
         },
         {
           "condition_text": "Connor survives: he fails to reach Daniel in time",
@@ -637,14 +643,15 @@
         {
           "id": "option_2",
           "label": "USE GUN",
-          "next": "ch1_00006",
+          "next": "ch1_x0101",
           "requirements_unverified": [
             "Close enough to Daniel"
           ],
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_daniel_final_plea": "use_gun"
+              "connor_daniel_final_plea": "use_gun",
+              "connor_shot_hostage_taker": true
             }
           },
           "requires": [
@@ -658,14 +665,16 @@
         {
           "id": "option_3",
           "label": "SACRIFICE SELF",
-          "next": "ch1_00006",
+          "next": "ch1_x0103",
           "requirements_unverified": [
             "Close enough to Daniel"
           ],
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_daniel_final_plea": "sacrifice"
+              "connor_daniel_final_plea": "sacrifice",
+              "connor_deaths": 1,
+              "connor_died_in_hostage": true
             }
           }
         }
@@ -707,7 +716,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00010"
+      "next": "ch1_x0102"
     },
     "ch1_00012": {
       "id": "ch1_00012",
@@ -748,13 +757,16 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_hostage": true
+            }
           }
         },
         {
           "id": "option_1",
           "label": "SHOOT",
-          "next": "ch1_00010",
+          "next": "ch1_x0101",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -844,7 +856,7 @@
         {
           "id": "option_1",
           "label": "EXECUTE",
-          "next": "ch1_00010",
+          "next": "ch1_x0101",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -975,7 +987,7 @@
         {
           "id": "option_3",
           "label": "SACRIFICE SELF",
-          "next": "ch1_00010",
+          "next": "ch1_x0103",
           "requirements_unverified": [
             "Close enough to Daniel"
           ],
@@ -986,7 +998,10 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_hostage": true
+            }
           }
         }
       ]
@@ -16435,7 +16450,7 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00003"
+      "next": "ch9_x0102"
     },
     "ch9_00005": {
       "id": "ch9_00005",
@@ -16660,7 +16675,7 @@
             "flag": "connor_pressured_deviant",
             "equals": true
           },
-          "next": "ch9_00014"
+          "next": "ch9_x0101"
         }
       ],
       "unverified": false,
@@ -28905,19 +28920,18 @@
       "branches": [
         {
           "condition_text": "Connor died in The Interrogation",
-          "when": null,
-          "next": "ch12_00201"
-        },
-        {
-          "condition_text": "Connor failed to find the deviant in Partners",
-          "when": null,
-          "next": "ch12_00202"
+          "next": "ch12_00201",
+          "when": {
+            "flag": "connor_died_in_interrogation",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00200",
-      "resolution": "unknown"
+      "next": "ch12_00202",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch12_00204": {
       "id": "ch12_00204",
@@ -53190,14 +53204,49 @@
       "branches": [
         {
           "condition_text": "Hank left Connor alone",
-          "when": null,
-          "next": "ch22_00003"
+          "next": "ch22_00003",
+          "when": {
+            "not": {
+              "all": [
+                {
+                  "not": {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "saved_hank"
+                  }
+                },
+                {
+                  "flag": "connor_firm_with_hank",
+                  "equals": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "condition_text": "Hank is hostile and shoots Connor",
+          "next": "ch22_x0102",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch22_00001",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Flowchart",
+      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is hostile if Connor never saved him on the roof in The Nest and was firm with him in Partners, as in Last Chance, Connor."
     },
     "ch22_00005": {
       "id": "ch22_00005",
@@ -53668,14 +53717,27 @@
       "branches": [
         {
           "condition_text": "Connor died before",
-          "when": null,
-          "next": "ch22_00023"
+          "next": "ch22_00023",
+          "when": {
+            "not": {
+              "flag": "connor_deaths",
+              "equals": 0
+            }
+          }
+        },
+        {
+          "condition_text": "Connor never died",
+          "next": "ch22_00022",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch22_00022",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Flowchart"
     },
     "ch22_00025": {
       "id": "ch22_00025",
@@ -60308,7 +60370,7 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00024"
+      "next": "ch24_x0101"
     },
     "ch24_00028": {
       "id": "ch24_00028",
@@ -61650,24 +61712,53 @@
       "branches": [
         {
           "condition_text": "Connor didn't die before",
-          "when": null,
-          "next": "ch24_00092"
+          "next": "ch24_00092",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          }
         },
         {
           "condition_text": "Connor died in The Hostage",
-          "when": null,
-          "next": "ch24_00094"
+          "next": "ch24_00094",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 0
+                }
+              },
+              {
+                "flag": "connor_died_in_hostage",
+                "equals": true
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor died after The Hostage",
-          "when": null,
-          "next": "ch24_00096"
+          "next": "ch24_00096",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 0
+                }
+              },
+              {
+                "flag": "connor_died_in_hostage",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00090",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00098": {
       "id": "ch24_00098",
@@ -62727,19 +62818,25 @@
       "branches": [
         {
           "condition_text": "Hank shot Connor in The Bridge",
-          "when": null,
-          "next": "ch24_00149"
+          "next": "ch24_00149",
+          "when": {
+            "flag": "connor_shot_by_hank",
+            "equals": true
+          }
         },
         {
-          "condition_text": "Hank didn't shoot Connor in The Bridge",
-          "when": null,
-          "next": "ch24_00151"
+          "condition_text": "Hank left Connor alone in The Bridge",
+          "next": "ch24_00151",
+          "when": {
+            "flag": "connor_shot_by_hank",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00144",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00153": {
       "id": "ch24_00153",
@@ -63300,19 +63397,25 @@
       "branches": [
         {
           "condition_text": "Hank shot Connor in The Bridge",
-          "when": null,
-          "next": "ch24_00173"
+          "next": "ch24_00173",
+          "when": {
+            "flag": "connor_shot_by_hank",
+            "equals": true
+          }
         },
         {
           "condition_text": "Hank left Connor alone in The Bridge",
-          "when": null,
-          "next": "ch24_00175"
+          "next": "ch24_00175",
+          "when": {
+            "flag": "connor_shot_by_hank",
+            "equals": false
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00172",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00177": {
       "id": "ch24_00177",
@@ -83004,24 +83107,79 @@
       "branches": [
         {
           "condition_text": "Connor saved Hank before",
-          "when": null,
-          "next": "ch29_00191"
+          "next": "ch29_00191",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_nest_rooftop",
+                "equals": "saved_hank"
+              },
+              {
+                "flag": "connor_public_enemy_chase",
+                "equals": "save_hank"
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor never saved Hank and died at least once",
-          "when": null,
-          "next": "ch29_00200"
+          "next": "ch29_00200",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "saved_hank"
+                    },
+                    {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "save_hank"
+                    }
+                  ]
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 0
+                }
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor never showed empathy",
-          "when": null,
-          "next": "ch29_00205"
+          "next": "ch29_00205",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "any": [
+                    {
+                      "flag": "connor_nest_rooftop",
+                      "equals": "saved_hank"
+                    },
+                    {
+                      "flag": "connor_public_enemy_chase",
+                      "equals": "save_hank"
+                    }
+                  ]
+                }
+              },
+              {
+                "flag": "connor_deaths",
+                "equals": 0
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch29_00178",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Flowchart"
     },
     "ch29_00207": {
       "id": "ch29_00207",
@@ -89020,7 +89178,7 @@
         {
           "condition_text": "Reach the gun",
           "when": null,
-          "next": "ch30_2_00003"
+          "next": "ch30_2_x0101"
         },
         {
           "condition_text": "Fail to reach the gun",
@@ -100254,20 +100412,45 @@
       "branches": [
         {
           "condition_text": "Connor died multiple times",
-          "when": null,
-          "next": "ch31_2_00036"
+          "next": "ch31_2_00036",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 0
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 1
+                }
+              }
+            ]
+          }
         },
         {
           "condition_text": "Connor never died",
-          "when": null,
-          "next": "ch31_2_00037"
+          "next": "ch31_2_00037",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          }
+        },
+        {
+          "condition_text": "Connor died once",
+          "next": "ch31_2_00035",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch31_2_00035",
-      "resolution": "unknown",
-      "unknown_reason": "Counts how often Connor died across earlier chapters; the story data does not track deaths."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_2_00039": {
       "id": "ch31_2_00039",
@@ -114898,15 +115081,45 @@
       "branches": [
         {
           "condition_text": "Connor died several times before",
-          "when": null,
-          "next": "ch32_3_00029"
+          "next": "ch32_3_00029",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 0
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_deaths",
+                  "equals": 1
+                }
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Connor died once at most",
+          "next": "ch32_3_00020",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_deaths",
+                "equals": 0
+              },
+              {
+                "flag": "connor_deaths",
+                "equals": 1
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_3_00020",
-      "resolution": "unknown",
-      "unknown_reason": "Counts how often Connor died across earlier chapters; the story data does not track deaths."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
     },
     "ch32_3_00031": {
       "id": "ch32_3_00031",
@@ -115547,20 +115760,25 @@
       "branches": [
         {
           "condition_text": "Connor didn't die in The Hostage",
-          "when": null,
-          "next": "ch32_3_00055"
+          "next": "ch32_3_00055",
+          "when": {
+            "flag": "connor_died_in_hostage",
+            "equals": false
+          }
         },
         {
           "condition_text": "Connor died in The Hostage",
-          "when": null,
-          "next": "ch32_3_00057"
+          "next": "ch32_3_00057",
+          "when": {
+            "flag": "connor_died_in_hostage",
+            "equals": true
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch32_3_00054",
-      "resolution": "unknown",
-      "unknown_reason": "Connor dying in The Hostage depends on how its final standoff plays out, which the story data does not record as a death."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
     },
     "ch32_3_00059": {
       "id": "ch32_3_00059",
@@ -129684,6 +129902,599 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
+    },
+    "ch1_x0101": {
+      "id": "ch1_x0101",
+      "type": "scene",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Connor shot the deviant",
+      "description": "Connor raises the gun and shoots Daniel in the head. Daniel falls back from the ledge, and Emma runs to safety. Connor unloads the gun and hands it to Captain Allen.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch1_x0102": {
+      "id": "ch1_x0102",
+      "type": "scene",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "The deviant shot Connor",
+      "description": "Connor keeps talking with his gun raised. Daniel shoots him in the head, and then, overcome with guilt, jumps from the ledge with Emma.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch1_x0103": {
+      "id": "ch1_x0103",
+      "type": "scene",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Connor died protecting Emma",
+      "description": "Connor throws himself at Daniel and pushes him over the ledge, away from Emma. Daniel fires as he falls, and Connor is shot in the back. Emma is safe. Connor died protecting her.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch9_x0101": {
+      "id": "ch9_x0101",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Deviant confesses",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch9_00014",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_died_in_interrogation": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
+    },
+    "ch9_x0102": {
+      "id": "ch9_x0102",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Deviant shoots Connor and itself",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_died_in_interrogation": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch9_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_died_in_interrogation": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
+    },
+    "ch22_x0102": {
+      "id": "ch22_x0102",
+      "type": "condition",
+      "chapter": "22",
+      "character": "Connor",
+      "heading": "At Ambassador Bridge",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_shot_by_hank": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch22_x0101",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_shot_by_hank": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Flowchart"
+    },
+    "ch22_x0101": {
+      "id": "ch22_x0101",
+      "type": "scene",
+      "chapter": "22",
+      "character": "Connor",
+      "heading": "Hank shot Connor",
+      "description": "Hank's patience runs out. He pulls the trigger, and Connor falls in the snow beside the bridge.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch22_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch24_x0101": {
+      "id": "ch24_x0101",
+      "type": "condition",
+      "chapter": "24",
+      "character": "Connor",
+      "heading": "In the kitchen",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch24_00024",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
+    },
+    "ch30_2_x0101": {
+      "id": "ch30_2_x0101",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "In the hold",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch30_2_00003",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
     }
   },
   "initial_flags": {
@@ -129714,6 +130525,10 @@
     "connor_story_ended": false,
     "connor_probed_simon": false,
     "connor_has_ferndale_map": false,
-    "connor_kitchen_pressure": "none"
+    "connor_kitchen_pressure": "none",
+    "connor_deaths": 0,
+    "connor_died_in_hostage": false,
+    "connor_died_in_interrogation": false,
+    "connor_shot_by_hank": false
   }
 }
