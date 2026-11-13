@@ -210,3 +210,99 @@ def test_phone_levels_respect_reduced_motion(detroit_dashboard):
             assert duration < 0.01
         finally:
             browser.close()
+
+
+# ── Touch (#37) ──────────────────────────────────────────
+
+
+def open_flowchart(page):
+    page.locator("#viewFlow").tap()
+    page.locator(".flow-node").first.wait_for()
+    page.wait_for_timeout(500)
+
+
+def test_phone_flowchart_opens_around_the_current_moment(phone):
+    page = phone
+    open_flowchart(page)
+    shown = page.evaluate(
+        """() => {
+          const graph = state.rendered.graph, node = phoneFocusNode();
+          const ids = new Set([node.id]);
+          for (const e of graph.edges) { if (e.from === node.id) ids.add(e.to); if (e.to === node.id) ids.add(e.from); }
+          const vp = document.getElementById('viewport').getBoundingClientRect();
+          return [...ids].map(id => {
+            const r = document.querySelector(`.flow-node[data-node-id="${CSS.escape(id)}"]`).getBoundingClientRect();
+            return r.left >= vp.left - 1 && r.right <= vp.right + 1 && r.top >= vp.top - 1 && r.bottom <= vp.bottom + 1;
+          });
+        }"""
+    )
+    assert len(shown) >= 2 and all(shown)
+    page.screenshot(path=str(SHOTS / "phone_flowchart_moment.png"))
+    assert not page.errors
+
+
+def test_two_fingers_pinch_the_flowchart(phone):
+    page = phone
+    open_flowchart(page)
+    before = page.evaluate("state.scale")
+    page.evaluate(
+        """() => {
+          const vp = document.getElementById('viewport'), r = vp.getBoundingClientRect();
+          const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+          const fire = (type, id, x) => vp.dispatchEvent(new PointerEvent(type, {pointerId: id, pointerType: 'touch', isPrimary: id === 1, clientX: x, clientY: cy, bubbles: true}));
+          fire('pointerdown', 1, cx - 30); fire('pointerdown', 2, cx + 30);
+          for (let d = 30; d <= 90; d += 10) { fire('pointermove', 1, cx - d); fire('pointermove', 2, cx + d); }
+          fire('pointerup', 1, cx - 90); fire('pointerup', 2, cx + 90);
+        }"""
+    )
+    assert page.evaluate("state.scale") > before * 2
+    assert not page.errors
+
+
+def test_taps_stand_in_for_hovering_and_details_slide_up(phone):
+    page = phone
+    # Story: tapping another model's logo names it and shows its reason.
+    mark = page.locator('.story-mark[aria-pressed="false"]').first.element_handle()
+    mark.scroll_into_view_if_needed()
+    mark.tap()
+    assert "is-named" in mark.get_attribute("class")
+    assert mark.get_attribute("aria-pressed") == "true"
+    page.locator(".story-mark.is-named .story-mark-name").wait_for(state="visible")
+
+    open_flowchart(page)
+    # A box: the first tap shows its dialogue.
+    box = page.locator(".flow-node:has(.node-dialogue)").first
+    box.tap(position={"x": 12, "y": 8})
+    assert "is-peeked" in box.get_attribute("class")
+    assert box.locator(".node-dialogue").is_visible()
+    # A model's marker: the first tap opens its card, the second the details panel.
+    marker = page.locator(".flow-node.visited .node-model-button").first
+    marker.tap()
+    page.locator("#unfoldCard.is-open").wait_for()
+    assert page.locator("#reasoningDrawer").is_hidden()
+    marker.tap()
+    drawer = page.locator("#reasoningDrawer")
+    drawer.wait_for()
+    page.wait_for_timeout(400)
+    sheet = drawer.bounding_box()
+    assert abs(sheet["y"] + sheet["height"] - PHONE["height"]) <= 2
+    assert sheet["height"] <= PHONE["height"] * 0.7 + 2
+    page.screenshot(path=str(SHOTS / "phone_details.png"))
+    # Dragging the grip down closes it.
+    page.evaluate(
+        """() => {
+          const grip = document.querySelector('.drawer-grip'), r = grip.getBoundingClientRect();
+          const x = r.left + r.width / 2, y = r.top + r.height / 2;
+          const fire = (type, dy) => grip.dispatchEvent(new PointerEvent(type, {pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: x, clientY: y + dy, bubbles: true}));
+          fire('pointerdown', 0); fire('pointermove', 60); fire('pointermove', 140); fire('pointerup', 140);
+        }"""
+    )
+    drawer.wait_for(state="hidden")
+    # And × closes it too.
+    marker = page.locator(".flow-node.visited .node-model-button").first
+    marker.tap()
+    marker.tap()
+    drawer.wait_for()
+    page.locator("#closeDrawer").tap()
+    drawer.wait_for(state="hidden")
+    assert not page.errors

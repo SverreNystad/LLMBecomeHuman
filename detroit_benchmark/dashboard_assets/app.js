@@ -350,6 +350,7 @@ async function setView(view) {
   document.body.dataset.viewMotion = story ? 'to-story' : 'to-flow';
   $('viewStory').setAttribute('aria-pressed',String(story));
   $('viewFlow').setAttribute('aria-pressed',String(!story));
+  if (!story && !$('storyView').classList.contains('is-hidden')) state.flowFocus = storyMomentInView();
   if (animate) {playClass(from, 'view-leave', VIEW_LEAVE_MS); await wait(VIEW_LEAVE_MS);}
   from.classList.remove('view-leave');
   cancelChapterSlide();
@@ -649,7 +650,13 @@ function createLogo(node, view) {
   btn.title=`${modelLabel(run)} — inspect recorded explanation at ${node.label}`;
   btn.setAttribute('aria-label',btn.title);
   btn.innerHTML=modelIcon(providerOf(run));
-  btn.addEventListener('click',e=>{e.stopPropagation();inspect(node.id,run.id);});
+  btn.dataset.name=run.model||'';
+  btn.addEventListener('click',e=>{
+    e.stopPropagation();
+    // On a touch screen the first tap opens the marker's card, the second the details.
+    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);return;}
+    inspect(node.id,run.id);
+  });
   return btn;
 }
 /* The provider's mark at the middle of a route line, so same-colored routes stay apart.
@@ -741,6 +748,7 @@ function drawGraph(graph, paths) {
     }
     n.addEventListener('click',e=>{
       e.stopPropagation();
+      if(window.touchPeek?.(n))return;  // touch: the first tap shows the dialogue
       if(node.type==='portal'&&node.destinationChapter&&chapters().includes(node.destinationChapter))changeChapter(node.destinationChapter);
       else showMomentInStory(node,users.map(view=>view.run.id));
     });
@@ -799,6 +807,7 @@ function openChapterView(){
   // Long chapters are unreadable when fitted, so start at a legible zoom on the first node.
   if(!state.rendered)return;
   state.viewTouched=false;
+  if(window.isPhoneLayout?.()){openAroundMoment();return;}
   fitGraph();
   if(state.scale>=MIN_READABLE_FIT)return;
   const nodes=[...state.rendered.graph.nodes.values()], first=nodes.reduce((a,b)=>b.x<a.x?b:a,nodes[0]);
@@ -807,6 +816,37 @@ function openChapterView(){
   state.scale=OPENING_ZOOM;
   state.panX=48-first.x*state.scale;
   state.panY=box.height/2-(first.y+first.height/2)*state.scale;
+  applyTransform();
+}
+/* The Story Moment at the top of the reading pane, if any. */
+function storyMomentInView(){
+  const top=$('storyScroll').getBoundingClientRect().top+40;
+  const el=[...$('storyContent').querySelectorAll('[data-moment]')].find(m=>m.getBoundingClientRect().bottom>top);
+  return el?.dataset.moment||null;
+}
+/* Phones: the Flowchart opens fitted around the current Moment and its neighbours, so a
+ * finger can read it straight away. The Moment is the selected node, else the one the Story
+ * was showing, else where the followed model entered the chapter. */
+function phoneFocusNode(){
+  const graph=state.rendered.graph, find=id=>id&&graph.nodes.get(graph.groupOf?.get(id)||id);
+  const followed=state.rendered.paths.find(p=>p.run.id===storyRun()?.id)||state.rendered.paths[0];
+  const firstVisited=[...graph.nodes.values()].filter(n=>followed?.path.visited.has(n.id)).sort((a,b)=>a.x-b.x)[0];
+  const nodes=[...graph.nodes.values()];
+  return find(state.selected?.id)||find(state.flowFocus)||firstVisited||nodes.reduce((a,b)=>b.x<a.x?b:a,nodes[0]);
+}
+function openAroundMoment(){
+  const graph=state.rendered.graph, node=phoneFocusNode();
+  if(!node)return fitGraph();
+  const box=$('viewport').getBoundingClientRect();
+  if(!box.width||!box.height)return;
+  const near=new Set([node.id]);
+  for(const e of graph.edges){if(e.from===node.id)near.add(e.to);if(e.to===node.id)near.add(e.from);}
+  const shown=[...near].map(id=>graph.nodes.get(id)).filter(Boolean);
+  const x0=Math.min(...shown.map(n=>n.x)),x1=Math.max(...shown.map(n=>n.x+n.width));
+  const y0=Math.min(...shown.map(n=>n.y)),y1=Math.max(...shown.map(n=>n.y+n.height));
+  state.scale=clamp(Math.min((box.width-32)/(x1-x0),(box.height-64)/(y1-y0)),.3,1.1);
+  state.panX=box.width/2-(x0+x1)/2*state.scale;
+  state.panY=box.height/2-(y0+y1)/2*state.scale;
   applyTransform();
 }
 function fitGraph(){
@@ -828,7 +868,7 @@ function centerSelectedNode({glide=false}={}) {
   const box=$('viewport').getBoundingClientRect();
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
-  state.panY=box.height*.50-(node.y+node.height/2)*state.scale;
+  state.panY=box.height*(window.isPhoneLayout?.()?.22:.50)-(node.y+node.height/2)*state.scale;
   const world=$('graphWorld');
   if(glide&&!reducedMotion()){
     world.classList.add('is-gliding');clearTimeout(state.glideTimer);
@@ -935,18 +975,35 @@ function setupInteractions(){
  $('zoomReset').addEventListener('click',fitToButton);
  $('closeDrawer').addEventListener('click',closeDrawer);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();if(state.pickerOpen){state.pickerOpen=false;updateSelectors();}}});
- const vp=$('viewport');let drag=null;
+ const vp=$('viewport');let drag=null,pinch=null;
+ // Two fingers pinch: the chart zooms around the point between them.
+ const touches=new Map();
+ const pinchState=()=>{const [a,b]=[...touches.values()];return {d:Math.hypot(a.x-b.x,a.y-b.y)||1,x:(a.x+b.x)/2,y:(a.y+b.y)/2};};
  vp.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch'){
+   touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(touches.size===2){drag=null;vp.classList.remove('dragging');pinch=pinchState();return;}
+  }
   if(e.button!==0||e.target.closest('.flow-node,.canvas-zoombar,.graph-notice,.canvas-legend'))return;
   drag={id:e.pointerId,x:e.clientX,y:e.clientY,px:state.panX,py:state.panY};
-  vp.classList.add('dragging');vp.setPointerCapture(e.pointerId);
+  vp.classList.add('dragging');try{vp.setPointerCapture(e.pointerId);}catch{}
  });
  vp.addEventListener('pointermove',e=>{
+  if(touches.has(e.pointerId))touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch&&touches.size===2){
+   const now=pinchState();
+   zoom(now.d/pinch.d,now.x,now.y);
+   state.panX+=now.x-pinch.x;state.panY+=now.y-pinch.y;applyTransform();
+   pinch=now;return;
+  }
   if(!drag||e.pointerId!==drag.id)return;
   state.viewTouched=true;
   state.panX=drag.px+e.clientX-drag.x;state.panY=drag.py+e.clientY-drag.y;applyTransform();
  });
- const end=e=>{if(drag&&drag.id===e.pointerId){drag=null;vp.classList.remove('dragging');}};
+ const end=e=>{
+  touches.delete(e.pointerId);if(touches.size<2)pinch=null;
+  if(drag&&drag.id===e.pointerId){drag=null;vp.classList.remove('dragging');}
+ };
  vp.addEventListener('pointerup',end);vp.addEventListener('pointercancel',end);
  vp.addEventListener('wheel',e=>{
   // Over a node's dialogue, the wheel scrolls the text instead of zooming.

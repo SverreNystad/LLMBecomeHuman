@@ -105,13 +105,19 @@
   });
   document.addEventListener('focusin', event => {
     const button = marker(event);
+    // A tap also focuses the marker; on touch the click decides (app.js), not the focus.
+    if (button && window.lastPointerWasTouch?.()) return;
     if (button) open(button); else if (current) hide();
   });
   document.addEventListener('focusout', event => { if (marker(event)) hide(); });
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && current) hide(true); });
   // Panning, zooming or clicking elsewhere moves the marker out from under the card.
   for (const type of ['pointerdown', 'wheel']) {
-    document.addEventListener(type, event => { if (current && !card?.contains(event.target)) hide(true); }, {capture: true, passive: true});
+    document.addEventListener(type, event => {
+      if (current && !card?.contains(event.target) && !current.contains(event.target)) hide(true);
+    }, {capture: true, passive: true});
   }
+  // Touch screens open the card with a first tap (app.js); a second tap opens the details.
+  window.unfoldCard = {open, isOpenFor: button => current === button && card?.classList.contains('is-open')};
 
 })();
