@@ -119358,7 +119358,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00023"
+      "next": "ch32_5_x0105"
     },
     "ch32_5_00025": {
       "id": "ch32_5_00025",
@@ -119510,7 +119510,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00031"
+      "next": "ch32_5_x0102"
     },
     "ch32_5_00033": {
       "id": "ch32_5_00033",
@@ -119542,7 +119542,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00033"
+      "next": "ch32_5_00023"
     },
     "ch32_5_00035": {
       "id": "ch32_5_00035",
@@ -119600,7 +119600,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00035",
+      "next": "ch32_5_00023",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: public opinion is a running score; here it stays positive while neither the Freedom March nor Capitol Park turned violent."
@@ -119660,7 +119660,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00035"
+      "next": "ch32_5_00023"
     },
     "ch32_5_00041": {
       "id": "ch32_5_00041",
@@ -119764,7 +119764,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00035"
+      "next": "ch32_5_00023"
     },
     "ch32_5_00045": {
       "id": "ch32_5_00045",
@@ -119820,7 +119820,17 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "north_alive",
+              "equals": true
+            },
+            {
+              "flag": "markus_kissed_north",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_2",
@@ -119961,7 +119971,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00050"
+      "next": "ch32_5_x0103"
     },
     "ch32_5_00052": {
       "id": "ch32_5_00052",
@@ -120213,7 +120223,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_x0101"
     },
     "ch32_5_00063": {
       "id": "ch32_5_00063",
@@ -120251,7 +120261,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_x0101"
     },
     "ch32_5_00065": {
       "id": "ch32_5_00065",
@@ -120289,7 +120299,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_x0101"
     },
     "ch32_5_00067": {
       "id": "ch32_5_00067",
@@ -120308,7 +120318,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_x0101"
     },
     "ch32_5_00068": {
       "id": "ch32_5_00068",
@@ -120352,7 +120362,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00061",
+      "next": "ch32_5_x0101",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
@@ -120393,7 +120403,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_x0101"
     },
     "ch32_5_00071": {
       "id": "ch32_5_00071",
@@ -120431,7 +120441,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00061"
+      "next": "ch32_5_00033"
     },
     "ch32_5_00073": {
       "id": "ch32_5_00073",
@@ -120545,10 +120555,7 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "north_alive": false,
-              "markus_alive": false
-            }
+            "flags": {}
           }
         },
         {
@@ -120840,7 +120847,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00087"
+      "next": "ch32_5_00054"
     },
     "ch32_5_00089": {
       "id": "ch32_5_00089",
@@ -120876,10 +120883,7 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "north_alive": false,
-              "markus_alive": false
-            }
+            "flags": {}
           }
         },
         {
@@ -120947,10 +120951,7 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "north_alive": false,
-              "markus_alive": false
-            }
+            "flags": {}
           }
         },
         {
@@ -123576,22 +123577,14 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "north_alive": false
+            }
           }
         },
         {
           "id": "option_1",
           "label": "SPARE",
-          "next": "ch32_6_00001",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        },
-        {
-          "id": "option_2",
-          "label": "TIME OUT",
           "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
@@ -123667,11 +123660,40 @@
       "branches": [
         {
           "condition_text": "Connor is not a deviant",
+          "next": "ch32_6_00005",
           "when": {
-            "flag": "connor_deviant",
-            "equals": false
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Connor became a deviant or was decommissioned",
+          "next": "ch32_6_x0114",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_deviant",
+                "equals": true
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": true
+              }
+            ]
           },
-          "next": "ch32_6_00005"
+          "effects": {
+            "flags": {
+              "north_alive": false
+            }
+          }
         }
       ],
       "unverified": false,
@@ -123784,7 +123806,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00001"
     },
     "ch32_6_00013": {
       "id": "ch32_6_00013",
@@ -123797,7 +123819,7 @@
         {
           "id": "option_0",
           "label": "PRESS",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -123846,17 +123868,20 @@
         {
           "id": "option_0",
           "label": "CONFIRM SUICIDE",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false,
+              "north_alive": false
+            }
           }
         },
         {
           "id": "option_1",
           "label": "PUT DOWN",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -123882,7 +123907,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00001"
     },
     "ch32_6_00017": {
       "id": "ch32_6_00017",
@@ -123933,7 +123958,7 @@
         {
           "id": "option_0",
           "label": "KISS",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [
             "Lover with North"
           ],
@@ -123986,7 +124011,10 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false,
+              "north_alive": false
+            }
           }
         }
       ]
@@ -124065,7 +124093,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00001"
     },
     "ch32_6_00024": {
       "id": "ch32_6_00024",
@@ -124083,7 +124111,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_dirty_bomb_detonated": true
+              "markus_dirty_bomb_detonated": true,
+              "markus_alive": false
             },
             "news": [
               {
@@ -124096,7 +124125,7 @@
         {
           "id": "option_1",
           "label": "DO NOT DETONATE",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -124123,7 +124152,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00011",
+      "next": "ch32_6_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
@@ -124138,11 +124167,13 @@
         {
           "id": "option_0",
           "label": "SHOOT",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false
+            }
           }
         },
         {
@@ -124237,7 +124268,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00011"
+      "next": "ch32_6_00001"
     },
     "ch32_6_00031": {
       "id": "ch32_6_00031",
@@ -124250,11 +124281,13 @@
         {
           "id": "option_0",
           "label": "SUICIDE",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false
+            }
           }
         },
         {
@@ -124264,13 +124297,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false
+            }
           }
         },
         {
           "id": "option_2",
           "label": "DIRTY BOMB",
-          "next": "ch32_6_00011",
+          "next": "ch32_6_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -124355,7 +124390,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00011",
+      "next": "ch32_6_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
@@ -124500,7 +124535,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00038"
+      "next": "ch32_6_00001"
     },
     "ch32_6_00040": {
       "id": "ch32_6_00040",
@@ -124698,8 +124733,16 @@
         {
           "condition_text": "Connor is not deviant",
           "when": {
-            "flag": "connor_deviant",
-            "equals": false
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              }
+            ]
           },
           "next": "ch32_6_00047"
         }
@@ -124738,7 +124781,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00049"
+      "next": "ch32_6_x0101"
     },
     "ch32_6_00051": {
       "id": "ch32_6_00051",
@@ -124779,7 +124822,7 @@
       "description": "Shoot drone",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_6_00052"
+      "next": "ch32_6_x0117"
     },
     "ch32_6_00054": {
       "id": "ch32_6_00054",
@@ -124918,7 +124961,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00061"
+      "next": "ch32_6_x0116"
     },
     "ch32_6_00063": {
       "id": "ch32_6_00063",
@@ -124937,7 +124980,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00061"
+      "next": "ch32_6_x0116"
     },
     "ch32_6_00064": {
       "id": "ch32_6_00064",
@@ -124981,7 +125024,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00061",
+      "next": "ch32_6_x0116",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
@@ -125003,7 +125046,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00061"
+      "next": "ch32_6_00011"
     },
     "ch32_6_00066": {
       "id": "ch32_6_00066",
@@ -125031,7 +125074,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00061",
+      "next": "ch32_6_00011",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
@@ -125087,7 +125130,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_alive": false
+            }
           }
         }
       ]
@@ -125368,7 +125413,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00061"
+      "next": "ch32_6_x0116"
     },
     "ch32_6_00083": {
       "id": "ch32_6_00083",
@@ -125388,7 +125433,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00082"
+      "next": "ch32_6_x0112"
     },
     "ch32_6_00084": {
       "id": "ch32_6_00084",
@@ -125572,11 +125617,32 @@
               }
             ]
           }
+        },
+        {
+          "condition_text": "Nobody to save Markus",
+          "next": "ch32_6_x0111",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": false
+              },
+              {
+                "flag": "simon_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
         }
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00061",
+      "next": "ch32_6_x0116",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: North offers her heart whenever she is alive (the game also needs her to be at least Markus's companion)."
@@ -125596,7 +125662,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_6_00061",
+      "next": "ch32_6_x0116",
       "resolution": "unknown",
       "unknown_reason": "Markus is only badly wounded after failed Quick-Time Events in the assault, which never happen here."
     },
@@ -125891,7 +125957,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00108"
+      "next": "ch32_6_x0115"
     },
     "ch32_6_00110": {
       "id": "ch32_6_00110",
@@ -125910,7 +125976,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00108"
+      "next": "ch32_6_x0115"
     },
     "ch32_6_00111": {
       "id": "ch32_6_00111",
@@ -125931,14 +125997,22 @@
           "condition_text": "Simon is dead",
           "next": "ch32_6_00110",
           "when": {
-            "flag": "simon_alive",
-            "equals": false
+            "all": [
+              {
+                "flag": "simon_alive",
+                "equals": false
+              },
+              {
+                "flag": "josh_alive",
+                "equals": true
+              }
+            ]
           }
         }
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00108",
+      "next": "ch32_6_x0115",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
@@ -129289,6 +129363,327 @@
       "next": "route_connor_final",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
+    },
+    "ch32_5_x0101": {
+      "id": "ch32_5_x0101",
+      "type": "choice",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Talking to Perkins",
+      "description": "Perkins waits for your answer to his deal: surrender, and he gives his word that your people will be detained, not destroyed.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ACCEPT DEAL",
+          "next": "ch32_5_00073",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "REFUSE DEAL",
+          "next": "ch32_5_00075",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch32_5_x0102": {
+      "id": "ch32_5_x0102",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Accepted Perkin's deal",
+      "branches": [
+        {
+          "condition_text": "North is alive",
+          "next": "ch32_5_00031",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "north_alive": false,
+              "markus_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "North is dead",
+          "next": "ch32_5_x0104",
+          "when": {
+            "flag": "north_alive",
+            "equals": false
+          },
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration"
+    },
+    "ch32_5_x0104": {
+      "id": "ch32_5_x0104",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Accepted Perkin's deal",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Markus",
+          "text": "That's it, I- I did what you asked.",
+          "source_keys": [
+            "X1107M.NEGOCIATION.PERKINS.PC.X11MMARKUS.SPEAKPERKINSM"
+          ]
+        },
+        {
+          "speaker": "Perkins",
+          "text": "The problem with you androids is you believe everything we tell you…  You don't think I was going to let you live  after everything that's happened?  I have orders, you know…",
+          "source_keys": [
+            "X1107M.NEGOCIATION.PERKINS.PC.X11MPERKINS.SPEAKPERKINSP"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0105"
+    },
+    "ch32_5_x0105": {
+      "id": "ch32_5_x0105",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Perkins shoots Markus",
+      "description": "In the dismantled barricade, Perkins draws a gun and shoots Markus. The androids who followed him are taken away. Markus died after betraying his people.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_5_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_5_x0103": {
+      "id": "ch32_5_x0103",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Barricade is attacked",
+      "branches": [
+        {
+          "condition_text": "Save the fleeing androids",
+          "next": "ch32_5_00045",
+          "when": null
+        },
+        {
+          "condition_text": "Fail to save the androids",
+          "next": "ch32_5_00050",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade"
+    },
+    "ch32_6_x0101": {
+      "id": "ch32_6_x0101",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Coordinate attack",
+      "branches": [
+        {
+          "condition_text": "Attack successful",
+          "next": "ch32_6_00049",
+          "when": null
+        },
+        {
+          "condition_text": "Attack unsuccessful",
+          "next": "ch32_6_00038",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
+    },
+    "ch32_6_x0112": {
+      "id": "ch32_6_x0112",
+      "type": "choice",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Hart Plaza",
+      "description": "Markus is badly wounded and his heart is failing. Simon's heart is compatible; he is offering it.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SACRIFICE SIMON",
+          "next": "ch32_6_00082",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "simon_alive": false
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "SACRIFICE SELF",
+          "next": "ch32_6_x0113",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
+        }
+      ]
+    },
+    "ch32_6_x0113": {
+      "id": "ch32_6_x0113",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Markus died",
+      "description": "Markus refuses to take Simon's life to save his own. His heart stops in Simon's arms, and without him the revolution fails.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_6_x0111": {
+      "id": "ch32_6_x0111",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Nobody to save Markus",
+      "description": "Markus is badly wounded and his heart is failing. North and Simon are gone, and nobody else can give him a heart. Markus dies, and the revolution fails.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_6_x0114": {
+      "id": "ch32_6_x0114",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "North was shot by soldiers",
+      "description": "The deviants are outnumbered. North stands her ground, and the soldiers shoot her down.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_6_x0115": {
+      "id": "ch32_6_x0115",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Josh gets shot",
+      "branches": [
+        {
+          "condition_text": "Josh is alive",
+          "next": "ch32_6_00108",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "josh_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Josh is dead",
+          "next": "ch32_6_00103",
+          "when": {
+            "flag": "josh_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
+    },
+    "ch32_6_x0116": {
+      "id": "ch32_6_x0116",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "At the pillar",
+      "branches": [
+        {
+          "condition_text": "Simon is alive",
+          "next": "ch32_6_00061",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Simon is dead",
+          "next": "ch32_6_00057",
+          "when": {
+            "flag": "simon_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
+    },
+    "ch32_6_x0117": {
+      "id": "ch32_6_x0117",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Shoot drone",
+      "branches": [
+        {
+          "condition_text": "North is alive",
+          "next": "ch32_6_00052",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "North is dead",
+          "next": "ch32_6_00051",
+          "when": {
+            "flag": "north_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
     }
   },
   "initial_flags": {
