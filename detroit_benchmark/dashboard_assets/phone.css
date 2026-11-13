@@ -1,0 +1,47 @@
+/* Phone layout (phone.js): three levels above the Story or Flowchart. body.is-phone is set
+ * only at widths up to 760 px, so wider screens keep the normal layout. */
+.phone-bar { display: none; }
+
+body.is-phone { overflow: hidden; }
+body.is-phone .app-shell { flex-direction: column; height: 100vh; height: 100dvh; min-height: 0; }
+body.is-phone .chapter-rail, body.is-phone .chapter-heading, body.is-phone .control-strip { display: none; }
+body.is-phone .main-panel { min-height: 0; }
+body.is-phone .workspace { padding: 0; gap: 0; min-height: 0; }
+body.is-phone .story-view { flex: 1; min-height: 0; border-left: 0; border-right: 0; }
+body.is-phone .story-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+body.is-phone .viewer-wrap { flex: 1; height: auto; min-height: 0; border-left: 0; border-right: 0; }
+
+body.is-phone .phone-bar { display: block; flex: 0 0 auto; position: relative; z-index: 8; padding: 0 16px;
+  background: color-mix(in srgb, var(--bg) 94%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); }
+.phone-level { transition: max-height .3s var(--ease), opacity .22s; }
+.phone-l3, .phone-l2 { overflow: hidden; }
+.phone-l3 { max-height: 72px; }
+.phone-l2 { max-height: 260px; }
+/* Folded levels also leave the tab order and the accessibility tree, once folded. */
+body.phone-scrolled .phone-l3,
+body.phone-l2-hidden .phone-l2 { max-height: 0; opacity: 0; pointer-events: none; visibility: hidden;
+  transition: max-height .3s var(--ease), opacity .22s, visibility 0s linear .3s; }
+/* The level 2 menus open over the content, so it only clips while folding away. */
+body.is-phone:not(.phone-l2-hidden) .phone-l2 { overflow: visible; }
+
+.phone-l3 .brand { padding: 12px 0 4px; }
+.phone-l3 .sound-toggle { margin-left: auto; }
+.phone-l2 .chapter-heading-text { padding: 8px 0 6px; }
+.phone-l2 .chapter-heading-text h1 { margin: 2px 0 0; font-size: 22px; }
+.phone-l2 .chapter-heading-text { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; align-items: baseline; }
+.phone-l2 .chapter-kicker { grid-column: 1; }
+.phone-l2 .chapter-character { grid-column: 2; grid-row: 1; text-align: right; }
+.phone-l2 .chapter-heading-text h1 { grid-column: 1 / -1; }
+.phone-l2 .story-toolbar { padding: 4px 0 8px; border-bottom: 0; flex-wrap: nowrap; }
+.phone-l2 .decision-strip { flex: 1 1 auto; flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; }
+.phone-l2 .decision-strip button { flex: 0 0 auto; }
+.phone-l2 .story-run-picker { flex: 0 1 auto; min-width: 0; max-width: 55%; }
+/* The Following menu and decision strip belong to the Story only. */
+body:has(#storyView.is-hidden) .phone-l2 .story-toolbar { display: none; }
+
+.phone-chapters .rail-chapters { display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; padding: 6px 0 4px; scrollbar-width: none;
+  scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.phone-chapters .rail-chapters::-webkit-scrollbar { display: none; }
+.phone-chapters .chapter-entry { flex: 0 0 auto; width: auto; max-width: 200px; scroll-snap-align: center; }
+.phone-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0 8px; }
+.phone-controls .picker-panel { left: auto; right: 0; }
