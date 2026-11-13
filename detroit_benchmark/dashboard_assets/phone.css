@@ -45,3 +45,26 @@ body:has(#storyView.is-hidden) .phone-l2 .story-toolbar { display: none; }
 .phone-chapters .chapter-entry { flex: 0 0 auto; width: auto; max-width: 200px; scroll-snap-align: center; }
 .phone-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0 8px; }
 .phone-controls .picker-panel { left: auto; right: 0; }
+
+/* ── Touch (#37) ──────────────────────────────────────── */
+/* The chart takes every finger gesture: one finger pans, two pinch. */
+body.is-phone .flow-viewport { touch-action: none; }
+/* A first tap on a node shows its dialogue, as hovering does. */
+.flow-node.is-peeked { z-index: 15; border-bottom-color: var(--node-accent, var(--accent)); }
+.flow-node.is-peeked .node-dialogue { visibility: visible; opacity: 1; pointer-events: auto;
+  clip-path: inset(0 -40px -40px -40px); transition: clip-path .3s var(--ease), opacity .12s, visibility 0s; }
+/* A tapped Story logo names its model. */
+.story-mark.is-named .story-mark-name { opacity: 1; visibility: visible; transition: opacity .1s, visibility 0s; }
+
+/* The details panel: a sheet from the bottom, up to about 70% of the screen. */
+.drawer-grip { display: none; }
+body.is-phone .reasoning-drawer { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 20;
+  width: auto; max-width: none; max-height: 70vh; max-height: 70dvh; display: flex; flex-direction: column;
+  border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; box-shadow: 0 -12px 40px rgba(28, 37, 48, .18);
+  animation: sheet-up .3s var(--ease); transition: transform .25s var(--ease); }
+body.is-phone .reasoning-drawer.is-dragging { transition: none; }
+/* The grip: drag it down to close the panel. */
+body.is-phone .reasoning-drawer .drawer-grip { display: block; flex: 0 0 auto; height: 26px; touch-action: none; cursor: grab; }
+body.is-phone .reasoning-drawer .drawer-grip::before { content: ""; display: block; width: 40px; height: 4px; margin: 11px auto 0; border-radius: 2px; background: var(--ink-faint); }
+body.is-phone .reasoning-drawer .drawer-content { overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; }
+@keyframes sheet-up { from { transform: translateY(100%); } }

@@ -105,11 +105,67 @@
     row.scrollTo({left: Math.max(0, left), behavior: 'auto'});
   }
 
+  /* Touch: taps stand in for hovering. */
+  let touched = false;
+  document.addEventListener('pointerdown', event => { touched = event.pointerType === 'touch'; }, {capture: true, passive: true});
+  window.lastPointerWasTouch = () => touched;
+  /* The first tap on an element "peeks" (shows what hovering would); the next one acts. */
+  window.touchPeek = el => {
+    if (!touched || el.classList.contains('is-peeked')) { clearPeeks(); return false; }
+    clearPeeks();
+    el.classList.add('is-peeked');
+    return true;
+  };
+  function clearPeeks(except) {
+    document.querySelectorAll('.is-peeked').forEach(el => { if (el !== except) el.classList.remove('is-peeked'); });
+  }
+  document.addEventListener('pointerdown', event => {
+    if (!event.target.closest?.('.is-peeked')) clearPeeks();
+  }, {capture: true, passive: true});
+  /* A tapped model logo in the Story names its model for a moment. */
+  const NAME_MS = 1800;
+  document.addEventListener('click', event => {
+    const mark = touched && event.target.closest?.('.story-mark');
+    if (!mark) return;
+    document.querySelectorAll('.story-mark.is-named').forEach(el => el.classList.remove('is-named'));
+    mark.classList.add('is-named');
+    clearTimeout(mark._nameTimer);
+    mark._nameTimer = setTimeout(() => mark.classList.remove('is-named'), NAME_MS);
+  });
+
+  /* The details panel slides up from the bottom; dragging it down closes it. */
+  const CLOSE_DRAG_PX = 90;
+  function setupSheet() {
+    const drawer = document.getElementById('reasoningDrawer');
+    let drag = null;
+    drawer.addEventListener('pointerdown', event => {
+      if (!query.matches || !event.target.closest('.drawer-grip')) return;
+      drag = {id: event.pointerId, y: event.clientY, dy: 0};
+      try { event.target.setPointerCapture(event.pointerId); } catch { /* synthetic or ended pointer */ }
+    });
+    drawer.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      drag.dy = Math.max(0, event.clientY - drag.y);
+      if (drag.dy > 4) { drawer.classList.add('is-dragging'); drawer.style.transform = `translateY(${drag.dy}px)`; }
+    });
+    const end = event => {
+      if (!drag || event.pointerId !== drag.id) return;
+      const close = drag.dy > CLOSE_DRAG_PX;
+      drag = null;
+      drawer.classList.remove('is-dragging');
+      drawer.style.transform = '';
+      if (close) document.getElementById('closeDrawer').click();
+    };
+    drawer.addEventListener('pointerup', end);
+    drawer.addEventListener('pointercancel', end);
+  }
+
   function sync() { if (query.matches) { if (!homes.length) enter(); } else if (homes.length) leave(); }
 
   document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('storyScroll')?.addEventListener('scroll', onStoryScroll, {passive: true});
     new MutationObserver(showActiveChapter).observe(document.getElementById('chapterList'), {childList: true, subtree: true, attributes: true, attributeFilter: ['class']});
+    setupSheet();
     sync();
   });
   query.addEventListener('change', sync);
