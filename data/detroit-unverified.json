@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 32,
+    "condition_nodes_unverified": 30,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -27320,19 +27320,26 @@
       "branches": [
         {
           "condition_text": "Connor found Ortiz's android in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": true
+          },
           "next": "ch12_00125"
         },
         {
           "condition_text": "Connor didn't find Ortiz's android in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
+          },
           "next": "ch12_00126"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00124",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart"
     },
     "ch12_00128": {
       "id": "ch12_00128",
@@ -27946,19 +27953,26 @@
       "branches": [
         {
           "condition_text": "Connor found the deviant in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": true
+          },
           "next": "ch12_00151"
         },
         {
           "condition_text": "Connor didn't find the deviant in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
+          },
           "next": "ch12_00152"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00146",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart"
     },
     "ch12_00154": {
       "id": "ch12_00154",
@@ -100782,7 +100796,7 @@
       "branches": [
         {
           "condition_text": "Connor is a deviant",
-          "next": "ch31_2_x0101",
+          "next": "ch31_2_x0102",
           "when": {
             "flag": "connor_deviant",
             "equals": true
@@ -118645,60 +118659,19 @@
       "heading": "Floor -49",
       "branches": [
         {
-          "condition_text": "Hank is still alive [Hank wasn't hostile in Last Chance, Connor ]",
+          "condition_text": "Hank is still alive",
           "next": "ch32_4_00101",
           "when": {
-            "any": [
-              {
-                "any": [
-                  {
-                    "flag": "connor_nest_rooftop",
-                    "equals": "saved_hank"
-                  },
-                  {
-                    "flag": "connor_public_enemy_chase",
-                    "equals": "save_hank"
-                  }
-                ]
-              },
-              {
-                "flag": "connor_firm_with_hank",
-                "equals": false
-              }
-            ]
+            "flag": "hank_alive",
+            "equals": true
           }
         },
         {
-          "condition_text": "Hank is dead [Hank was hostile in Last Chance, Connor",
+          "condition_text": "Hank is dead (he took his own life in Night of the Soul)",
           "next": "ch32_4_00107",
           "when": {
-            "all": [
-              {
-                "all": [
-                  {
-                    "not": {
-                      "flag": "connor_nest_rooftop",
-                      "equals": "saved_hank"
-                    }
-                  },
-                  {
-                    "not": {
-                      "flag": "connor_public_enemy_chase",
-                      "equals": "save_hank"
-                    }
-                  }
-                ]
-              },
-              {
-                "flag": "connor_firm_with_hank",
-                "equals": true
-              }
-            ]
-          },
-          "effects": {
-            "flags": {
-              "hank_alive": false
-            }
+            "flag": "hank_alive",
+            "equals": false
           }
         }
       ],
@@ -118707,7 +118680,7 @@
       "next": "ch32_4_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
-      "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners. A hostile Hank takes his own life in Night of the Soul."
+      "note": "Per the wiki, a new Connor arrives alone when Hank took his own life in Night of the Soul, and holds Hank hostage when he is alive. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch32_4_00109": {
       "id": "ch32_4_00109",
@@ -133080,7 +133053,7 @@
         },
         {
           "condition_text": "Hank is still on the force",
-          "next": "ch31_2_00001",
+          "next": "ch31_2_x0104",
           "when": {
             "not": {
               "all": [
@@ -133109,7 +133082,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
-      "note": "Approximation, as in Last Chance, Connor: Hank quits the force when he is hostile (Connor never saved him and was firm with him in Partners)."
+      "note": "Approximation, as in Last Chance, Connor: Hank quits the force when he is hostile (Connor never saved him and was firm with him in Partners). Any Connor still in the story visits him."
     },
     "ch31_2_x0103": {
       "id": "ch31_2_x0103",
@@ -133120,7 +133093,7 @@
       "description": "Connor leaves. Behind him, alone in his kitchen, Hank picks up his revolver one last time. Hank committed suicide.",
       "dialogue": [],
       "observations": [],
-      "next": "ch31_2_00001",
+      "next": "ch31_2_x0104",
       "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -133197,6 +133170,36 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor_at_the_CyberLife_Tower"
+    },
+    "ch31_2_x0104": {
+      "id": "ch31_2_x0104",
+      "type": "condition",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "Leaving Hank's",
+      "branches": [
+        {
+          "condition_text": "Connor is a deviant",
+          "next": "ch31_2_x0101",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Connor stayed a machine",
+          "next": "ch31_2_00001",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "The wiki's objective 'Find Lt Hank Anderson (if Hank quit the force)' has no machine-only condition, so a deviant Connor visits Hank before Connor on Sacred Ground; a machine Connor ends the night after Hank's. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     }
   },
   "initial_flags": {

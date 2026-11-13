@@ -818,7 +818,7 @@ function openChapterView(){
   state.panY=box.height/2-(first.y+first.height/2)*state.scale;
   applyTransform();
 }
-/* The Story Moment at the top of the reading pane, if any. */
+/* The Moment at the top of the Story's reading pane, if any. */
 function storyMomentInView(){
   const top=$('storyScroll').getBoundingClientRect().top+40;
   const el=[...$('storyContent').querySelectorAll('[data-moment]')].find(m=>m.getBoundingClientRect().bottom>top);

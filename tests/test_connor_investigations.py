@@ -107,7 +107,8 @@ def test_a_threatened_ralph_informs_and_connor_pursues(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "nid", ["ch12_00241", "ch12_00008", "ch18_00093", "ch12_00203"]
+    "nid",
+    ["ch12_00241", "ch12_00008", "ch18_00093", "ch12_00203", "ch12_00127", "ch12_00153"],
 )
 def test_lines_about_partners_and_kara_follow_a_rule(nid):
     assert load_dataset()["nodes"][nid]["resolution"] == "rule"

@@ -113,6 +113,26 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
+## On a phone
+
+At widths up to 760 px the controls stack in three levels above the Story or Flowchart:
+
+- **Top:** the LLM: Become Human brand and the sound toggle, only while the Story is scrolled to the top.
+- **Middle:** the chapter title and, in the Story, the Following menu and decision numbers. It folds away while you scroll down and comes back on a small scroll up; swiping up or down on the bars folds or unfolds it.
+- **Always on screen:** the chapter row (swipe it sideways, tap a chapter to open it), Story/Flowchart and **+** for choosing models. The row of chosen-model chips is not shown; use **+**.
+
+Touch works like hovering does on a computer:
+
+- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story); the first tap on a model's marker shows its card (the next opens the details).
+- **Details:** the details panel slides up from the bottom, up to about 70% of the screen. Drag its grip down or tap × to close it.
+- **Story:** tapping a model's logo names the model and shows its reason.
+
+Tablets and phones held sideways (wider than 760 px) keep the normal layout.
+
+![Phone: Story mid-chapter](images/phone_story_scrolled.png)
+![Phone: Flowchart around the current Moment](images/phone_flowchart_moment.png)
+![Phone: details from the bottom](images/phone_details.png)
+
 ## Visual previews
 
 These are from two **synthetic mock runs**, not genuine LLM responses or the actual game:
