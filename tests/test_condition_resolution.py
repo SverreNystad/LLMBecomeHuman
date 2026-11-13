@@ -762,25 +762,33 @@ def test_a_machine_connor_has_no_zen_garden_ending():
 
 
 @pytest.mark.parametrize(
-    "picks, reached, markus_alive",
+    "picks, memory, reached, markus_alive",
     [
         (
             {**MARKUS_LIVES, EXIT_WITH_MARKUS: "FIND THE EMERGENCY EXIT"},
+            KAMSKI_WITH_MARKUS,
             GUN_PUT_AWAY,
             True,
         ),
-        ({**MARKUS_LIVES, EXIT_WITH_MARKUS: "GIVE UP"}, MARKUS_SHOT, False),
+        (
+            {**MARKUS_LIVES, EXIT_WITH_MARKUS: "GIVE UP"},
+            KAMSKI_WITH_MARKUS,
+            MARKUS_SHOT,
+            False,
+        ),
         (
             {
                 **MARKUS_DIES,
                 ALONE_CHOICE: "SUICIDE",
                 EXIT_ALONE: "FIND THE EMERGENCY EXIT",
             },
+            KAMSKI_ALONE,
             GUN_TO_HIS_HEAD,
             False,
         ),
         (
             {**MARKUS_DIES, ALONE_CHOICE: "SUICIDE", EXIT_ALONE: "GIVE UP"},
+            KAMSKI_ALONE,
             STAYS_CONTROLLED,
             False,
         ),
@@ -788,16 +796,12 @@ def test_a_machine_connor_has_no_zen_garden_ending():
     ids=["escape-with-markus", "give-up-markus-shot", "escape-alone", "give-up-alone"],
 )
 def test_connor_remembers_kamskis_emergency_exit_and_chooses(
-    tmp_path, picks, reached, markus_alive
+    tmp_path, picks, memory, reached, markus_alive
 ):
     nodes, _, flags = _play_ending(tmp_path, picks)
-    kamski = (
-        KAMSKI_WITH_MARKUS if markus_alive or reached == MARKUS_SHOT else KAMSKI_ALONE
-    )
-    assert kamski in nodes
-    assert reached in nodes
+    assert memory in nodes and reached in nodes
     assert flags["markus_alive"] is markus_alive
-    line = _dataset()["nodes"][kamski]["dialogue"][0]
+    line = _dataset()["nodes"][memory]["dialogue"][0]
     assert line["speaker"] == "Kamski (memory)"
     assert "emergency exit" in line["text"]
 
