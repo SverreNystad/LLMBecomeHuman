@@ -1,5 +1,5 @@
 /* Motion between places: Story <-> Flowchart, chapter to chapter, and the model dropdown
- * closing. app.js adds the classes and runs the chapter slide; all of it is off for reduced
+ * and the Following menu closing. app.js adds the classes and runs the chapter slide; all of it is off for reduced
  * motion.
  */
 
@@ -34,9 +34,9 @@
   75%  { clip-path: inset(0 0 62% 0); translate: 3px 0; opacity: .6; }
   100% { clip-path: inset(0 0 100% 0); translate: -4px 0; opacity: 0; }
 }
-.picker-panel.is-closing:not(.is-hidden) { animation: glitch-out .22s steps(4, end) both; pointer-events: none; }
+:is(.picker-panel, .story-run-menu).is-closing:not(.is-hidden) { animation: glitch-out .22s steps(4, end) both; pointer-events: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .view-leave, .view-enter, #storyView.view-enter #storyContent > *, .title-glitch, .picker-panel.is-closing { animation: none !important; }
+  .view-leave, .view-enter, #storyView.view-enter #storyContent > *, .title-glitch, .picker-panel.is-closing, .story-run-menu.is-closing { animation: none !important; }
   .node-dialogue { transition: none !important; animation: none !important; }
 }

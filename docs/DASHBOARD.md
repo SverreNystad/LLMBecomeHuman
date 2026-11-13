@@ -38,8 +38,10 @@ Supply appropriate API keys to run the models. The dashboard itself uses **no** 
 
 Read one Run, chapter by chapter.
 
-- **Following:** the Run you read. The other selected Runs appear as comparisons; clicking a model chip follows it.
-- **Decision cards:** the options, the followed Run's choice and its reason, and whether the models agreed. Click another model's mark to read its reason.
+- **Following:** the Run you read, picked from the Following menu or by clicking a model chip. The other selected Runs appear as comparisons.
+- **Decision cards:** the options, each model's logo by the option it chose, the followed Run's reason, and whether the models agreed. Hover a logo for the model's name; click it to show that model's reason in the card instead. The logo whose reason is shown stays highlighted.
+- **No model chosen:** the controls that need a model hide, and the + button pulses.
+- **Reasons:** every justification is shown as at most two sentences. Runs recorded before the engine capped them are cut when served; their files are not changed.
 - **Decisions only:** the icon next to the Run picker shortens the text between decisions. The rest expands on click.
 - **Number strip:** jumps to a decision. Highlighted numbers are decisions where the models split.
 - **Moments:** click any line, scene or decision to open that Moment on the Flowchart, centred and highlighted.

@@ -14,7 +14,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .engine import canonical_hash, chapter_briefing, iter_events
+from .engine import canonical_hash, chapter_briefing, iter_events, limit_sentences
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -317,13 +317,24 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     return beat
 
 
+def _capped_justification(event: dict[str, Any]) -> dict[str, Any]:
+    """Runs recorded before the engine capped justifications are shown capped too."""
+    output = event.get("output")
+    if event.get("type") != "decision" or not isinstance(output, dict):
+        return event
+    rationale = output.get("rationale")
+    if not isinstance(rationale, str):
+        return event
+    return {**event, "output": {**output, "rationale": limit_sentences(rationale)}}
+
+
 def _parse_events(directory: str) -> tuple[list, dict]:
     """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
     visits: Counter = Counter()
     memories: dict[str, str] = {}
-    for event in iter_events(Path(directory)):
+    for event in map(_capped_justification, iter_events(Path(directory))):
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
@@ -723,7 +734,7 @@ def create_app(
         directory = _resolve_run(root, run_id)
         for event in iter_events(directory):
             if event.get("index") == event_index:
-                return event
+                return _capped_justification(event)
         raise HTTPException(status_code=404, detail="Unknown event")
 
     @app.get("/api/runs/{run_id}/decisions.csv")

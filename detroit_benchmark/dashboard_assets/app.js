@@ -10,7 +10,7 @@ const SCENE_NODE_WIDTH = 240, NODE_LOGO_STEP = 22, NODE_LOGO_PADDING = 12;
 const MAX_VISIBLE_RUNS = 6;
 /* Motion (motion.css): view switches, chapter slides and the picker closing. All skipped for
  * reduced motion. */
-const VIEW_LEAVE_MS = 160, VIEW_ENTER_MS = 320, CHAPTER_LEAVE_MS = 150, CHAPTER_ENTER_MS = 360, PICKER_CLOSE_MS = 220;
+const VIEW_LEAVE_MS = 160, VIEW_ENTER_MS = 320, CHAPTER_LEAVE_MS = 150, CHAPTER_ENTER_MS = 360, PICKER_CLOSE_MS = 220;  // matches glitch-out in motion.css
 const STORY_LINE_STEP_MS = 35, STORY_LINE_MS = 420, STORY_LINES_STAGGERED = 14;  // motion.css line-in
 const TITLE_GLITCH_MS = 400, CAMERA_REVEAL_MS = 520, CAMERA_CLOSE_UP = 1.5, CAMERA_MAX_SCALE = 1.45;
 const CHAPTER_LEAVE_PX = 18, CHAPTER_ENTER_PX = 26;
@@ -33,9 +33,9 @@ function cancelChapterSlide() {
   for (const el of [document.querySelector('.chapter-heading-text'), $('storyContent'), $('viewport')])
     el?.getAnimations().forEach(a => a.cancel());
 }
-/* The dropdown plays its opening glitch in reverse before it hides. */
-function setPickerPanel(open) {
-  const panel = $('pickerPanel');
+/* A dropdown (the model picker, the Following menu) plays its opening glitch in reverse
+ * before it hides. */
+function setDropdown(panel, open) {
   if (open) {panel.classList.remove('is-hidden', 'is-closing'); return;}
   if (panel.classList.contains('is-hidden') || panel.classList.contains('is-closing')) return;
   if (reducedMotion()) {panel.classList.add('is-hidden'); return;}
@@ -215,8 +215,10 @@ async function api(path){
 }
 function updateSelectors() {
   assignShadeSlots();
+  // With no model chosen, controls that need one hide and the + button pulses.
+  document.body.dataset.models=activeRuns().length?'some':'none';
   $('pickerToggle').setAttribute('aria-expanded',String(state.pickerOpen));
-  setPickerPanel(state.pickerOpen);
+  setDropdown($('pickerPanel'),state.pickerOpen);
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
@@ -916,7 +918,7 @@ function setupInteractions(){
  // The background follows the hovered node, else the selected one.
  $('graphNodes').addEventListener('mouseover',e=>{const n=e.target.closest('.flow-node');if(n)emitFlowScene(n.dataset.nodeId);});
  $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));
- $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
+ $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});

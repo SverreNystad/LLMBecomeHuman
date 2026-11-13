@@ -92,8 +92,10 @@ function renderRule(item) {
   if (!record.used_unverified_default || !taken) return '';
   return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`;
 }
-function modelMark(run, decision, label) {
-  return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || '—')}" data-why-label="${esc(label)}" style="--run-color:${routeColor(run)}" title="${esc(run.model)}" aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}</button>`;
+/* A model's logo beside the option it chose. Hovering names the model; clicking shows its
+ * justification in the card. The logo whose justification is shown is pressed. */
+function modelMark(run, decision, label, shown) {
+  return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || '—')}" data-why-label="${esc(label)}" aria-pressed="${shown}" style="--run-color:${routeColor(run)}" aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}<span class="story-mark-name" aria-hidden="true">${esc(run.model)}</span></button>`;
 }
 function agreementLabel(byChoice) {
   const counts = [...byChoice.values()].map(group => group.length).sort((a, b) => b - a);
@@ -109,8 +111,9 @@ function renderDecision(item, number, total, key, tables, run) {
   const exploration = Boolean(graphNode(record.node_id)?.exploration);
   const options = (record.available_choices || []).map(option => {
     const chosen = option.id === record.choice_id, group = byChoice.get(option.id) || [];
-    const others = group.filter(entry => entry.run.id !== run.id);
-    return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}</span><span class="story-option-models">${others.map(entry => modelMark(entry.run, entry.decision, option.label || option.id)).join('')}</span></li>`;
+    // The followed model's logo comes first, so its place in the row never moves.
+    const ordered = [...group.filter(entry => entry.run.id === run.id), ...group.filter(entry => entry.run.id !== run.id)];
+    return `<li class="${chosen ? 'is-chosen' : ''}"><span class="story-option-tick" aria-hidden="true">${chosen ? '✓' : ''}</span><span class="story-option-label">${esc(option.label || option.id)}</span><span class="story-option-models">${ordered.map(entry => modelMark(entry.run, entry.decision, option.label || option.id, entry.run.id === run.id)).join('')}</span></li>`;
   }).join('');
   const count = exploration
     ? `<span class="story-decision-count story-exploration" title="Exploration Choice: how thoroughly to search">${MAGNIFIER}Decision ${number} of ${total}</span>`
@@ -119,8 +122,7 @@ function renderDecision(item, number, total, key, tables, run) {
     <header>${count}${agreementLabel(byChoice)}</header>
     <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
     <ul class="story-options">${options}</ul>
-    <div class="story-why"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
-    <div class="story-other-why is-hidden" aria-live="polite"></div>
+    <div class="story-why" aria-live="polite"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
   </article>`;
 }
 function renderItem(item, context) {
@@ -187,9 +189,16 @@ function briefingOpener(briefing) {
 function caveatBanner(run) {
   return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
+function runLabelHtml(run) {
+  return `${esc(run.model)}${runStatusLabel(run) ? ` <small>(${esc(runStatusLabel(run))})</small>` : ''}`;
+}
 function renderStoryToolbar(run) {
-  $('storyRun').innerHTML = activeRuns().map(item => `<option value="${esc(item.id)}" ${item.id === run?.id ? 'selected' : ''}>${esc(item.model)}${runStatusLabel(item) ? ` (${esc(runStatusLabel(item))})` : ''}</option>`).join('');
+  $('storyRun').innerHTML = run
+    ? `<span class="story-run-logo" style="--run-color:${routeColor(run)}">${modelIcon(providerOf(run))}</span><span class="story-run-name">${runLabelHtml(run)}</span>`
+    : '';
   $('storyRun').disabled = !run;
+  if (!run) setFollowingMenu(false);
+  $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
   document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
 }
@@ -306,21 +315,56 @@ function setStoryRun(id) {
   renderChapterList();
   renderStory();
 }
-function showOtherReason(button) {
-  const card = button.closest('.story-decision'), panel = card.querySelector('.story-other-why');
-  const wasOpen = button.getAttribute('aria-pressed') === 'true';
-  card.querySelectorAll('.story-mark').forEach(mark => mark.setAttribute('aria-pressed', 'false'));
-  panel.classList.toggle('is-hidden', wasOpen);
-  if (wasOpen) return;
-  const run = runById(button.dataset.whyRun);
-  button.setAttribute('aria-pressed', 'true');
-  panel.style.setProperty('--run-color', routeColor(run));
-  panel.innerHTML = `<div class="story-why-label">${esc(run?.model)} chose ${esc(button.dataset.whyLabel)}</div><p>${esc(button.dataset.whyText)}</p>`;
+/* Shows one model's justification in a decision card. Says what it chose when that differs
+ * from the followed model's choice. Only this card changes; the Story keeps its model. */
+function showJustification(button) {
+  if (button.getAttribute('aria-pressed') === 'true') return;
+  const card = button.closest('.story-decision'), why = card.querySelector('.story-why');
+  card.querySelectorAll('.story-mark').forEach(mark => mark.setAttribute('aria-pressed', String(mark === button)));
+  const run = runById(button.dataset.whyRun), followed = run?.id === storyRun()?.id;
+  const sameChoice = button.closest('li')?.classList.contains('is-chosen');
+  const label = followed || sameChoice ? esc(run?.model) : `${esc(run?.model)} chose ${esc(button.dataset.whyLabel)}`;
+  why.style.setProperty('--why-color', followed ? '' : routeColor(run));
+  why.classList.toggle('is-other', !followed);
+  why.innerHTML = `<div class="story-why-label">${label}</div><p>${esc(button.dataset.whyText)}</p>`;
+  if (!reducedMotion()) playClass(why, 'why-swap', 300);
+}
+/* The Following menu: opens and closes with the model picker's glitch. */
+function setFollowingMenu(open) {
+  if (open && $('storyRun').disabled) return;
+  if (open && state.pickerOpen) {state.pickerOpen = false; updateSelectors();}
+  $('storyRun').setAttribute('aria-expanded', String(open));
+  setDropdown($('storyRunMenu'), open);
+  if (open) ($('storyRunMenu').querySelector('[aria-checked="true"]') || $('storyRunMenu').firstElementChild)?.focus();
+}
+function setupFollowingMenu() {
+  const menu = $('storyRunMenu'), isOpen = () => $('storyRun').getAttribute('aria-expanded') === 'true';
+  $('storyRun').addEventListener('click', event => {event.stopPropagation(); setFollowingMenu(!isOpen());});
+  menu.addEventListener('click', event => {
+    const option = event.target.closest('[data-run-id]');
+    if (!option) return;
+    setFollowingMenu(false);
+    $('storyRun').focus();
+    if (option.dataset.runId !== storyRun()?.id) setStoryRun(option.dataset.runId);
+  });
+  menu.addEventListener('keydown', event => {
+    const options = [...menu.querySelectorAll('[data-run-id]')], at = options.indexOf(document.activeElement);
+    const to = {ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: options.length - 1}[event.key];
+    if (to === undefined) return;
+    event.preventDefault();
+    options[(to + options.length) % options.length]?.focus();
+  });
+  // Tabbing out of the menu closes it.
+  $('storyRunPicker').addEventListener('focusout', event => {
+    if (isOpen() && !$('storyRunPicker').contains(event.relatedTarget)) setFollowingMenu(false);
+  });
+  document.addEventListener('click', event => {if (isOpen() && !event.target.closest('#storyRunPicker')) setFollowingMenu(false);});
+  document.addEventListener('keydown', event => {if (event.key === 'Escape' && isOpen()) {setFollowingMenu(false); $('storyRun').focus();}});
 }
 function setupStoryInteractions() {
   $('storyContent').addEventListener('click', event => {
     const mark = event.target.closest('[data-why-run]');
-    if (mark) return showOtherReason(mark);
+    if (mark) return showJustification(mark);
     const chapter = event.target.closest('[data-go-chapter]');
     if (chapter) return changeChapter(chapter.dataset.goChapter);
     if (event.target.closest('button, a, summary, select, input')) return;
@@ -332,7 +376,7 @@ function setupStoryInteractions() {
     const button = event.target.closest('[data-jump-decision]');
     if (button) $(`story-decision-${button.dataset.jumpDecision}`)?.scrollIntoView({block: 'start', behavior: 'smooth'});
   });
-  $('storyRun').addEventListener('change', event => setStoryRun(event.target.value));
+  setupFollowingMenu();
   $('storyScroll').addEventListener('scroll', trackStoryScene, {passive: true});
   document.querySelector('.main-panel').addEventListener('scroll', trackStoryScene, {passive: true});
   $('storyMode').addEventListener('click', () => {
