@@ -29,6 +29,7 @@ PEACEFUL = {
     "ch28_00040": "RUN AWAY",
     "ch28_00041": "DISPERSE",
     "ch28_00044": "DISPERSE",
+    "ch30_3_x0110": "GO BACK TO JERICHO",  # fleeing the march gets Markus voted out
 }
 
 # 32.6: the revolution.

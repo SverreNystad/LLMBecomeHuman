@@ -53,8 +53,13 @@ def test_a_connor_who_never_died_is_remembered_as_alive(tmp_path):
 
 
 def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_path):
-    # Shot by Daniel in The Hostage, then by the deviant in The Interrogation.
-    run = play_story(tmp_path, {"ch1_00016": "INTIMIDATE", "ch1_00013": "CONVINCE"})
+    # Shot by Daniel in The Hostage, then by the deviant in The Interrogation. Only a
+    # machine Connor whose Hank quit the force visits Hank in Night of the Soul.
+    machine = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
+    run = play_story(
+        tmp_path,
+        {"ch1_00016": "INTIMIDATE", "ch1_00013": "CONVINCE", **machine, **HOSTILE_HANK},
+    )
     assert {PREVIOUS_CONNOR, YOU_WOULD_COME_BACK, YOU_MUST_BE_MISTAKEN} <= set(
         run.nodes
     )
