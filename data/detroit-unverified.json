@@ -87473,7 +87473,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_1_00126"
+      "next": "ch30_1_x0111"
     },
     "ch30_1_00128": {
       "id": "ch30_1_00128",
@@ -87567,7 +87567,7 @@
         {
           "id": "option_1",
           "label": "DISTANT",
-          "next": "ch30_1_x0102",
+          "next": "ch30_1_x0112",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -95123,7 +95123,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00138"
+      "next": "ch30_3_x0102"
     },
     "ch30_3_00140": {
       "id": "ch30_3_00140",
@@ -95275,7 +95275,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00138"
+      "next": "ch30_3_x0102"
     },
     "ch30_3_00148": {
       "id": "ch30_3_00148",
@@ -95548,7 +95548,7 @@
       "description": "Connor arrives to find Markus",
       "dialogue": [],
       "observations": [],
-      "next": "ch30_3_00160"
+      "next": "ch30_3_00138"
     },
     "ch30_3_00162": {
       "id": "ch30_3_00162",
@@ -95567,7 +95567,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00161"
+      "next": "ch30_3_x0105"
     },
     "ch30_3_00163": {
       "id": "ch30_3_00163",
@@ -95586,7 +95586,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00161"
+      "next": "ch30_3_x0105"
     },
     "ch30_3_00164": {
       "id": "ch30_3_00164",
@@ -95691,7 +95691,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch30_3_00161",
+      "next": "ch30_3_x0105",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
       "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
@@ -96515,7 +96515,7 @@
       "description": "Connor arrives to find North",
       "dialogue": [],
       "observations": [],
-      "next": "ch30_3_00160"
+      "next": "ch30_3_x0109"
     },
     "ch30_3_00205": {
       "id": "ch30_3_00205",
@@ -96535,7 +96535,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00204"
+      "next": "ch30_3_x0107"
     },
     "ch30_3_00206": {
       "id": "ch30_3_00206",
@@ -97113,7 +97113,7 @@
       "description": "In the captain's cabin",
       "dialogue": [],
       "observations": [],
-      "next": "ch30_3_00229"
+      "next": "ch30_3_x0101"
     },
     "ch31_1_00001": {
       "id": "ch31_1_00001",
@@ -132405,6 +132405,296 @@
       "next": "ch32_1_00001",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_1_x0110": {
+      "id": "ch30_1_x0110",
+      "type": "scene",
+      "chapter": "30.1",
+      "character": "Kara",
+      "heading": "Kara & Alice left Jericho",
+      "description": "Nobody comes for Jericho tonight. At dawn Kara slips off the ship with Alice, and Luther if he is still with them, to find a way to the border.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_1_x0111": {
+      "id": "ch30_1_x0111",
+      "type": "condition",
+      "chapter": "30.1",
+      "character": "Kara",
+      "heading": "Returning to Alice",
+      "branches": [
+        {
+          "condition_text": "Connor found Jericho",
+          "next": "ch30_1_00126",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Connor did not find Jericho",
+          "next": "ch30_1_x0110",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_1_x0112": {
+      "id": "ch30_1_x0112",
+      "type": "condition",
+      "chapter": "30.1",
+      "character": "Kara",
+      "heading": "Returning to Alice",
+      "branches": [
+        {
+          "condition_text": "Connor found Jericho",
+          "next": "ch30_1_x0102",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Connor did not find Jericho",
+          "next": "ch30_1_x0110",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_3_x0101": {
+      "id": "ch30_3_x0101",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "In the captain's cabin",
+      "branches": [
+        {
+          "condition_text": "Markus is alive",
+          "next": "ch30_3_00229",
+          "when": {
+            "flag": "markus_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Markus died in Freedom March",
+          "next": "ch30_3_00160",
+          "when": {
+            "flag": "markus_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_3_x0102": {
+      "id": "ch30_3_x0102",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus died in Freedom March",
+      "branches": [
+        {
+          "condition_text": "Connor did not find Jericho",
+          "next": "ch30_3_x0103",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
+        },
+        {
+          "condition_text": "Connor found Jericho",
+          "next": "ch30_3_x0104",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_3_x0103": {
+      "id": "ch30_3_x0103",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "North stayed alone with her thoughts",
+      "description": "The others leave the cabin, and North stays alone with her thoughts. Nobody comes for Jericho tonight.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_3_x0104": {
+      "id": "ch30_3_x0104",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Jericho is under attack",
+      "description": "As Josh leaves the cabin, the alarms sound: soldiers are storming Jericho, and North runs to lead its people out.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_3_x0105": {
+      "id": "ch30_3_x0105",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Connor arrives to find Markus",
+      "branches": [
+        {
+          "condition_text": "Connor found Jericho",
+          "next": "ch30_3_00161",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Connor did not find Jericho",
+          "next": "ch30_3_x0106",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_3_x0106": {
+      "id": "ch30_3_x0106",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus stayed alone with his thoughts",
+      "description": "North leaves, and Markus stays alone in the captain's cabin with his thoughts. Nobody comes for Jericho tonight.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_3_x0107": {
+      "id": "ch30_3_x0107",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus is alive",
+      "branches": [
+        {
+          "condition_text": "Connor did not find Jericho",
+          "next": "ch30_3_x0108",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          },
+          "effects": {
+            "flags": {
+              "markus_left_jericho": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor found Jericho",
+          "next": "ch30_3_00204",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_3_x0108": {
+      "id": "ch30_3_x0108",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus left Jericho",
+      "description": "Markus walks off the ship and out of Jericho, leaving his people to North.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_3_x0109": {
+      "id": "ch30_3_x0109",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "On a rooftop",
+      "description": "From a rooftop across the harbor, Markus sees soldiers and helicopters close in on the freighter. Jericho is under attack.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_x0110",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_3_x0110": {
+      "id": "ch30_3_x0110",
+      "type": "choice",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "On a rooftop",
+      "description": "Jericho is under attack, and the people who voted Markus out are trapped inside.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "LEAVE FOREVER",
+          "next": "ch30_3_x0108",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_left_jericho": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GO BACK TO JERICHO",
+          "next": "ch30_3_00138",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
     }
   },
   "initial_flags": {
@@ -132447,6 +132737,7 @@
     "kara_alive": true,
     "alice_alive": true,
     "kara_captured": false,
-    "kara_todd_killed": false
+    "kara_todd_killed": false,
+    "markus_left_jericho": false
   }
 }
