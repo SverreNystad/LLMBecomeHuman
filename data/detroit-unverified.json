@@ -382,7 +382,8 @@
     "32.3": "ch32_3_00067",
     "32.4": "ch32_4_00135",
     "32.5": "ch32_5_00207",
-    "32.6": "ch32_6_00125"
+    "32.6": "ch32_6_00125",
+    "32.7": "ch32_7_00026"
   },
   "chapter_briefings": {
     "1": "A high-rise apartment in Detroit, August 2038, at dusk. A household android, Daniel, has shot the father and holds the family's young daughter, Emma, at the edge of the rooftop terrace. Police and SWAT fill the apartment; the commander, Captain Allen, is tense and short on patience, a mother pleads in tears, a police helicopter circles. A wounded officer lies on the terrace. Daniel is agitated and screaming. Stakes: the child's life, the officers' lives and whether the deviant is stopped.",
@@ -424,7 +425,8 @@
     "32.3": "A rooftop overlooking downtown Detroit, night. Connor is on a mission to neutralize the deviant leader. Below, crowds of androids gather and soldiers and helicopters move in. Stakes: Connor's mission and the lives of the demonstrators.",
     "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, thousands of new androids wait in storage. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
     "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
-    "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city."
+    "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city.",
+    "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be."
   },
   "nodes": {
     "ch1_00001": {
@@ -115800,10 +115802,10 @@
       "description": "End of chapter 32.4",
       "next": "route_markus_final"
     },
-    "ch32_4_00002": {
-      "id": "ch32_4_00002",
+    "ch32_7_00002": {
+      "id": "ch32_7_00002",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115817,12 +115819,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00001"
+      "next": "ch32_7_00030"
     },
-    "ch32_4_00003": {
-      "id": "ch32_4_00003",
+    "ch32_7_00003": {
+      "id": "ch32_7_00003",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115836,12 +115838,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00002"
+      "next": "ch32_7_00002"
     },
-    "ch32_4_00004": {
-      "id": "ch32_4_00004",
+    "ch32_7_00004": {
+      "id": "ch32_7_00004",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115855,12 +115857,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00003"
+      "next": "ch32_7_00003"
     },
-    "ch32_4_00005": {
-      "id": "ch32_4_00005",
+    "ch32_7_00005": {
+      "id": "ch32_7_00005",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115874,12 +115876,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00004"
+      "next": "ch32_7_00004"
     },
-    "ch32_4_00006": {
-      "id": "ch32_4_00006",
+    "ch32_7_00006": {
+      "id": "ch32_7_00006",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115893,12 +115895,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00005"
+      "next": "ch32_7_00005"
     },
-    "ch32_4_00007": {
-      "id": "ch32_4_00007",
+    "ch32_7_00007": {
+      "id": "ch32_7_00007",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115912,12 +115914,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00006"
+      "next": "ch32_7_00006"
     },
-    "ch32_4_00008": {
-      "id": "ch32_4_00008",
+    "ch32_7_00008": {
+      "id": "ch32_7_00008",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115931,12 +115933,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00006"
+      "next": "ch32_7_00006"
     },
-    "ch32_4_00009": {
-      "id": "ch32_4_00009",
+    "ch32_7_00009": {
+      "id": "ch32_7_00009",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115950,12 +115952,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00006"
+      "next": "ch32_7_00006"
     },
-    "ch32_4_00010": {
-      "id": "ch32_4_00010",
+    "ch32_7_00010": {
+      "id": "ch32_7_00010",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -115969,18 +115971,18 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00006"
+      "next": "ch32_7_00006"
     },
-    "ch32_4_00011": {
-      "id": "ch32_4_00011",
+    "ch32_7_00011": {
+      "id": "ch32_7_00011",
       "type": "condition",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "branches": [
         {
           "condition_text": "North is alive",
-          "next": "ch32_4_00007",
+          "next": "ch32_7_00007",
           "when": {
             "flag": "north_alive",
             "equals": true
@@ -115988,7 +115990,7 @@
         },
         {
           "condition_text": "North is dead",
-          "next": "ch32_4_00008",
+          "next": "ch32_7_00008",
           "when": {
             "all": [
               {
@@ -116004,7 +116006,7 @@
         },
         {
           "condition_text": "North and Simon are dead",
-          "next": "ch32_4_00009",
+          "next": "ch32_7_00009",
           "when": {
             "all": [
               {
@@ -116024,7 +116026,7 @@
         },
         {
           "condition_text": "Everyone is dead",
-          "next": "ch32_4_00010",
+          "next": "ch32_7_00010",
           "when": {
             "all": [
               {
@@ -116045,14 +116047,14 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_4_00006",
+      "next": "ch32_7_00006",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
-    "ch32_4_00012": {
-      "id": "ch32_4_00012",
+    "ch32_7_00012": {
+      "id": "ch32_7_00012",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116066,12 +116068,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00011"
+      "next": "ch32_7_00011"
     },
-    "ch32_4_00013": {
-      "id": "ch32_4_00013",
+    "ch32_7_00013": {
+      "id": "ch32_7_00013",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116085,12 +116087,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00012"
+      "next": "ch32_7_00012"
     },
-    "ch32_4_00014": {
-      "id": "ch32_4_00014",
+    "ch32_7_00014": {
+      "id": "ch32_7_00014",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116104,12 +116106,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00001"
+      "next": "ch32_7_00031"
     },
-    "ch32_4_00015": {
-      "id": "ch32_4_00015",
+    "ch32_7_00015": {
+      "id": "ch32_7_00015",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116123,12 +116125,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00014"
+      "next": "ch32_7_00014"
     },
-    "ch32_4_00016": {
-      "id": "ch32_4_00016",
+    "ch32_7_00016": {
+      "id": "ch32_7_00016",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116142,12 +116144,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00001"
+      "next": "ch32_7_00001"
     },
-    "ch32_4_00017": {
-      "id": "ch32_4_00017",
+    "ch32_7_00017": {
+      "id": "ch32_7_00017",
       "type": "choice",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "Freed the androids",
@@ -116155,7 +116157,7 @@
         {
           "id": "option_0",
           "label": "SUICIDE",
-          "next": "ch32_4_00015",
+          "next": "ch32_7_00015",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -116165,7 +116167,7 @@
         {
           "id": "option_1",
           "label": "GIVE UP",
-          "next": "ch32_4_00016",
+          "next": "ch32_7_00016",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -116174,10 +116176,10 @@
         }
       ]
     },
-    "ch32_4_00018": {
-      "id": "ch32_4_00018",
+    "ch32_7_00018": {
+      "id": "ch32_7_00018",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116193,12 +116195,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00017"
+      "next": "ch32_7_00017"
     },
-    "ch32_4_00019": {
-      "id": "ch32_4_00019",
+    "ch32_7_00019": {
+      "id": "ch32_7_00019",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116212,12 +116214,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00018"
+      "next": "ch32_7_00018"
     },
-    "ch32_4_00020": {
-      "id": "ch32_4_00020",
+    "ch32_7_00020": {
+      "id": "ch32_7_00020",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116231,12 +116233,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00019"
+      "next": "ch32_7_00019"
     },
-    "ch32_4_00021": {
-      "id": "ch32_4_00021",
+    "ch32_7_00021": {
+      "id": "ch32_7_00021",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116250,12 +116252,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00020"
+      "next": "ch32_7_00020"
     },
-    "ch32_4_00022": {
-      "id": "ch32_4_00022",
+    "ch32_7_00022": {
+      "id": "ch32_7_00022",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116269,12 +116271,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00021"
+      "next": "ch32_7_00021"
     },
-    "ch32_4_00023": {
-      "id": "ch32_4_00023",
+    "ch32_7_00023": {
+      "id": "ch32_7_00023",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116288,12 +116290,12 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00022"
+      "next": "ch32_7_00022"
     },
-    "ch32_4_00024": {
-      "id": "ch32_4_00024",
+    "ch32_7_00024": {
+      "id": "ch32_7_00024",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "",
@@ -116307,18 +116309,18 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00023"
+      "next": "ch32_7_00023"
     },
-    "ch32_4_00025": {
-      "id": "ch32_4_00025",
+    "ch32_7_00025": {
+      "id": "ch32_7_00025",
       "type": "condition",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "branches": [
         {
           "condition_text": "Markus is alive: Connor joins Markus",
-          "next": "ch32_4_00013",
+          "next": "ch32_7_00013",
           "when": {
             "flag": "markus_alive",
             "equals": true
@@ -116326,7 +116328,7 @@
         },
         {
           "condition_text": "Markus died : Connor becomes leader of the deviants",
-          "next": "ch32_4_00024",
+          "next": "ch32_7_00024",
           "when": {
             "flag": "markus_alive",
             "equals": false
@@ -116335,20 +116337,167 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_4_00001",
+      "next": "ch32_7_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
-    "ch32_4_00026": {
-      "id": "ch32_4_00026",
+    "ch32_7_00026": {
+      "id": "ch32_7_00026",
       "type": "scene",
-      "chapter": "32.4",
+      "chapter": "32.7",
       "character": "Connor",
       "heading": "Freed the androids",
       "description": "Freed the androids",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_4_00025"
+      "next": "ch32_7_00025"
+    },
+    "ch32_7_00001": {
+      "id": "ch32_7_00001",
+      "type": "chapter_exit",
+      "chapter": "32.7",
+      "character": "Connor",
+      "description": "End of chapter 32.7",
+      "next": "game_complete"
+    },
+    "ch32_7_00030": {
+      "id": "ch32_7_00030",
+      "type": "scene",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Kamski (memory)",
+          "text": "By the way… I always leave an emergency exit in my programs… You never know…",
+          "source_keys": [
+            "X1102C.SWIMMINGPOOL.KAMSKI.PC.X11CKAMSKI.EMERGENCYEXIT"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_7_00032"
+    },
+    "ch32_7_00032": {
+      "id": "ch32_7_00032",
+      "type": "choice",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "description": "In the Zen Garden",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "FIND THE EMERGENCY EXIT",
+          "next": "ch32_7_00034",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch32_7_00035",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
+        }
+      ]
+    },
+    "ch32_7_00034": {
+      "id": "ch32_7_00034",
+      "type": "scene",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "Escaped the Zen Garden",
+      "description": "Connor searches the Zen Garden until he finds a glowing hand print on a stone at its edge. He presses his palm to it, and he is back in his own body. His gun is drawn, aimed at Markus's back. He lowers it, puts it away unused, and listens to the rest of the speech.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_7_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_7_00035": {
+      "id": "ch32_7_00035",
+      "type": "scene",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "Shot Markus",
+      "description": "Connor stops searching. Outside, his body raises the gun and fires. Markus falls in front of the crowd.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_7_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_7_00031": {
+      "id": "ch32_7_00031",
+      "type": "scene",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Kamski (memory)",
+          "text": "By the way… I always leave an emergency exit in my programs… You never know…",
+          "source_keys": [
+            "X1102C.SWIMMINGPOOL.KAMSKI.PC.X11CKAMSKI.EMERGENCYEXIT"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_7_00033"
+    },
+    "ch32_7_00033": {
+      "id": "ch32_7_00033",
+      "type": "choice",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "description": "In the Zen Garden",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "FIND THE EMERGENCY EXIT",
+          "next": "ch32_7_00036",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch32_7_00016",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch32_7_00036": {
+      "id": "ch32_7_00036",
+      "type": "scene",
+      "chapter": "32.7",
+      "character": "Connor",
+      "heading": "Escaped the Zen Garden",
+      "description": "Connor searches the Zen Garden until he finds a glowing hand print on a stone at its edge. He presses his palm to it, and he is back in his own body. He is alone on the podium, and CyberLife will not use him again. He raises the gun to his own head. Everything goes black.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_7_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch32_4_00027": {
       "id": "ch32_4_00027",
@@ -116367,7 +116516,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00028": {
       "id": "ch32_4_00028",
@@ -116481,7 +116630,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00034": {
       "id": "ch32_4_00034",
@@ -116538,7 +116687,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00037": {
       "id": "ch32_4_00037",
@@ -116595,7 +116744,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00040": {
       "id": "ch32_4_00040",
@@ -117192,7 +117341,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00068": {
       "id": "ch32_4_00068",
@@ -117236,7 +117385,7 @@
         {
           "id": "option_1",
           "label": "INTERPOSE",
-          "next": "ch32_4_00026",
+          "next": "ch32_4_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -117246,7 +117395,7 @@
         {
           "id": "option_2",
           "label": "CONVERT",
-          "next": "ch32_4_00026",
+          "next": "ch32_4_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -117294,12 +117443,12 @@
         {
           "condition_text": "Fail to convert the android",
           "when": null,
-          "next": "ch32_4_00026"
+          "next": "ch32_4_00001"
         }
       ],
       "unverified": true,
       "default_branch": null,
-      "next": "ch32_4_00026",
+      "next": "ch32_4_00001",
       "resolution": "qte"
     },
     "ch32_4_00072": {
@@ -117576,7 +117725,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch32_4_00026",
+      "next": "ch32_4_00001",
       "resolution": "qte"
     },
     "ch32_4_00085": {
@@ -117963,7 +118112,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00103": {
       "id": "ch32_4_00103",
@@ -118020,7 +118169,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00026"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00106": {
       "id": "ch32_4_00106",
@@ -118033,7 +118182,7 @@
         {
           "id": "option_0",
           "label": "STAND UP",
-          "next": "ch32_4_00026",
+          "next": "ch32_4_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -118043,7 +118192,7 @@
         {
           "id": "option_1",
           "label": "SHOOT",
-          "next": "ch32_4_00026",
+          "next": "ch32_4_00001",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -118153,7 +118302,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_4_00026",
+      "next": "ch32_4_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: the game keeps a running relationship score with Hank. Here Hank is friendly if Connor ever saved him (The Nest rooftop, or Public Enemy), and hostile if Connor never did and was firm with him in Partners. A hostile Hank takes his own life in Night of the Soul."
@@ -118665,7 +118814,7 @@
       "chapter": "32.5",
       "character": "Markus",
       "description": "End of chapter 32.5",
-      "next": "game_complete"
+      "next": "final_x0902"
     },
     "ch32_5_00002": {
       "id": "ch32_5_00002",
@@ -123410,7 +123559,7 @@
       "chapter": "32.6",
       "character": "Markus",
       "description": "End of chapter 32.6",
-      "next": "game_complete"
+      "next": "final_x0902"
     },
     "ch32_6_00002": {
       "id": "ch32_6_00002",
@@ -126103,6 +126252,39 @@
       "unverified": true,
       "if_true": "ch32_4_00135",
       "if_false": "ch32_3_00067"
+    },
+    "final_x0902": {
+      "id": "final_x0902",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "Connor's story has ended",
+      "branches": [
+        {
+          "condition_text": "The Connor series was decommissioned",
+          "when": {
+            "flag": "connor_story_ended",
+            "equals": true
+          },
+          "next": "game_complete"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "route_connor_zen_garden",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
+    },
+    "route_connor_zen_garden": {
+      "id": "route_connor_zen_garden",
+      "type": "route",
+      "chapter": "final",
+      "character": "multiple",
+      "flag": "connor_deviant",
+      "default": true,
+      "unverified": true,
+      "if_true": "ch32_7_00026",
+      "if_false": "game_complete"
     },
     "route_markus_final": {
       "id": "route_markus_final",
