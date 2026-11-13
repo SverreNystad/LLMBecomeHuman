@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 45,
+    "condition_nodes_unverified": 41,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -6252,7 +6252,7 @@
       "description": "In Alice's room",
       "dialogue": [],
       "observations": [],
-      "next": "ch4_00022"
+      "next": "ch4_x0103"
     },
     "ch4_00024": {
       "id": "ch4_00024",
@@ -6375,7 +6375,7 @@
       "description": "In Todd's room",
       "dialogue": [],
       "observations": [],
-      "next": "ch4_00030",
+      "next": "ch4_x0101",
       "key": true
     },
     "ch4_00032": {
@@ -13011,29 +13011,6 @@
       "observations": [],
       "next": "ch7_00016"
     },
-    "ch7_00018": {
-      "id": "ch7_00018",
-      "type": "condition",
-      "chapter": "7",
-      "character": "Kara",
-      "heading": "In Todd's House",
-      "branches": [
-        {
-          "condition_text": "Talk to Alice",
-          "when": null,
-          "next": "ch7_00011"
-        },
-        {
-          "condition_text": "Open the window",
-          "when": null,
-          "next": "ch7_00017"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch7_00001",
-      "resolution": "unknown"
-    },
     "ch7_00019": {
       "id": "ch7_00019",
       "type": "scene",
@@ -13052,7 +13029,7 @@
         }
       ],
       "observations": [],
-      "next": "ch7_00018"
+      "next": "ch7_x0101"
     },
     "ch7_00020": {
       "id": "ch7_00020",
@@ -13318,7 +13295,7 @@
       "chapter": "7",
       "character": "Kara",
       "heading": "In Todd's House",
-      "description": "In Todd's House",
+      "description": "Alice is in her room and Todd is coming up the stairs. Kara can run with Alice, lock the room, speak to Todd, or wait.",
       "options": [
         {
           "id": "option_0",
@@ -13352,7 +13329,7 @@
         },
         {
           "id": "option_3",
-          "label": "OUT OF TIME",
+          "label": "WAIT",
           "next": "ch7_00032",
           "requirements_unverified": [],
           "relation_hints": [],
@@ -14182,7 +14159,21 @@
             "flags": {
               "kara_took_gun": true
             }
-          }
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "kara_ch4_upstairs_exploration",
+                  "equals": "thorough"
+                },
+                {
+                  "flag": "kara_ch4_upstairs_exploration",
+                  "equals": "key_only"
+                }
+              ]
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -20308,7 +20299,13 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_took_gun",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -22109,7 +22106,13 @@
             "flags": {
               "kara_has_money": true
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_took_gun",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -23369,29 +23372,6 @@
       ],
       "observations": [],
       "next": "ch10_00186"
-    },
-    "ch10_00188": {
-      "id": "ch10_00188",
-      "type": "condition",
-      "chapter": "10",
-      "character": "Kara",
-      "heading": "Try to steal money",
-      "branches": [
-        {
-          "condition_text": "Threaten the clerk with the gun",
-          "when": null,
-          "next": "ch10_00172"
-        },
-        {
-          "condition_text": "Use Alice as a diversion",
-          "when": null,
-          "next": "ch10_00187"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch10_00134",
-      "resolution": "unknown"
     },
     "ch10_00189": {
       "id": "ch10_00189",
@@ -39744,19 +39724,26 @@
       "branches": [
         {
           "condition_text": "Freed the androids in the basement",
-          "when": null,
+          "when": {
+            "flag": "kara_freed_zlatkos_androids",
+            "equals": true
+          },
           "next": "ch17_00005"
         },
         {
           "condition_text": "Didn't free the androids",
-          "when": null,
+          "when": {
+            "flag": "kara_freed_zlatkos_androids",
+            "equals": false
+          },
           "next": "ch17_00006"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch17_00004",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
     },
     "ch17_00008": {
       "id": "ch17_00008",
@@ -40275,29 +40262,6 @@
       "dialogue": [],
       "observations": [],
       "next": "ch17_00035"
-    },
-    "ch17_00037": {
-      "id": "ch17_00037",
-      "type": "condition",
-      "chapter": "17",
-      "character": "Kara",
-      "heading": "Find Alice",
-      "branches": [
-        {
-          "condition_text": "Set fire to the house",
-          "when": null,
-          "next": "ch17_00016"
-        },
-        {
-          "condition_text": "Hide",
-          "when": null,
-          "next": "ch17_00036"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch17_00014",
-      "resolution": "unknown"
     },
     "ch17_00038": {
       "id": "ch17_00038",
@@ -41222,7 +41186,7 @@
         }
       ],
       "observations": [],
-      "next": "ch17_x0001"
+      "next": "ch17_x0101"
     },
     "ch17_00095": {
       "id": "ch17_00095",
@@ -128480,7 +128444,7 @@
             "flag": "kara_ch10_shelter",
             "equals": "motel"
           },
-          "next": "ch13_00082"
+          "next": "ch13_x0201"
         },
         {
           "condition_text": "Kara stayed at the Squat",
@@ -128488,7 +128452,7 @@
             "flag": "kara_ch10_shelter",
             "equals": "squat"
           },
-          "next": "ch13_00179"
+          "next": "ch13_x0211"
         },
         {
           "condition_text": "Kara stayed at the Parking lot",
@@ -128496,10 +128460,10 @@
             "flag": "kara_ch10_shelter",
             "equals": "car"
           },
-          "next": "ch13_00201"
+          "next": "ch13_x0221"
         }
       ],
-      "next": "ch13_00201",
+      "next": "ch13_x0221",
       "unverified": false,
       "default_branch": 2,
       "resolution": "rule",
@@ -130676,6 +130640,509 @@
       "default_branch": 0,
       "resolution": "qte",
       "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart"
+    },
+    "ch4_x0101": {
+      "id": "ch4_x0101",
+      "type": "scene",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "In Todd's room",
+      "description": "Tidying Todd's nightstand, Kara finds a loaded pistol in the drawer. She puts it back where it was.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch4_00030",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0).",
+      "key": true
+    },
+    "ch4_x0103": {
+      "id": "ch4_x0103",
+      "type": "condition",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "In Alice's room",
+      "branches": [
+        {
+          "condition_text": "Kara cleaned each room carefully",
+          "next": "ch4_x0102",
+          "when": {
+            "flag": "kara_ch4_upstairs_exploration",
+            "equals": "thorough"
+          }
+        },
+        {
+          "condition_text": "Kara didn't air Alice's room",
+          "next": "ch4_00022",
+          "when": {
+            "not": {
+              "flag": "kara_ch4_upstairs_exploration",
+              "equals": "thorough"
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart"
+    },
+    "ch4_x0102": {
+      "id": "ch4_x0102",
+      "type": "scene",
+      "chapter": "4",
+      "character": "Kara",
+      "heading": "In Alice's room",
+      "description": "Kara opens Alice's window to air the room. Below it, the roof of the porch slopes down toward the garden: a way down from the upstairs.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch4_00022",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch7_x0101": {
+      "id": "ch7_x0101",
+      "type": "choice",
+      "chapter": "7",
+      "character": "Kara",
+      "heading": "In Todd's House",
+      "description": "The door is locked, and Todd is pounding on it. Alice is terrified. Kara has a moment to act.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "GRAB A LAMP",
+          "next": "ch7_x0102",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TALK TO ALICE",
+          "next": "ch7_00011",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "OPEN WINDOW",
+          "next": "ch7_00017",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "kara_ch4_upstairs_exploration",
+              "equals": "thorough"
+            }
+          ]
+        }
+      ]
+    },
+    "ch7_x0102": {
+      "id": "ch7_x0102",
+      "type": "scene",
+      "chapter": "7",
+      "character": "Kara",
+      "heading": "In Todd's House",
+      "description": "Kara grabs the bedside lamp and stands between the door and Alice. Todd breaks the door down.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch7_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch10_00188": {
+      "id": "ch10_00188",
+      "type": "choice",
+      "chapter": "10",
+      "character": "Kara",
+      "heading": "Try to steal money",
+      "description": "The clerk won't help. Kara and Alice need money for a room tonight, and the cash register is right there. A stack of cans stands across the store.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "THREATEN THE CLERK WITH THE GUN",
+          "next": "ch10_00172",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "kara_took_gun",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_1",
+          "label": "USE ALICE AS A DIVERSION",
+          "next": "ch10_00187",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch13_x0201": {
+      "id": "ch13_x0201",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "In the motel bathroom. The police are looking for an AX400 with Kara's face. With scissors and hair dye, she can change how she looks. What colour does she dye her hair?",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "BROWN",
+          "next": "ch13_x0209",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "brown"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "BLACK",
+          "next": "ch13_x0209",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "black"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WHITE",
+          "next": "ch13_x0209",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "white"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "BLONDE",
+          "next": "ch13_x0209",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "blonde"
+            }
+          }
+        }
+      ]
+    },
+    "ch13_x0209": {
+      "id": "ch13_x0209",
+      "type": "scene",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "Kara looks at herself in the mirror and pulls the LED from her temple. Without it, nobody can tell she is an android.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch13_00082",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch13_x0211": {
+      "id": "ch13_x0211",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "Upstairs in the squat, among old clothes. The police are looking for an AX400 with Kara's face. With scissors and hair dye, she can change how she looks. What colour does she dye her hair?",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "BROWN",
+          "next": "ch13_x0212",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "brown"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "BLACK",
+          "next": "ch13_x0212",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "black"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WHITE",
+          "next": "ch13_x0212",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "white"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "BLONDE",
+          "next": "ch13_x0212",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "blonde"
+            }
+          }
+        }
+      ]
+    },
+    "ch13_x0219": {
+      "id": "ch13_x0219",
+      "type": "scene",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "Kara looks at herself in the mirror and pulls the LED from her temple. Without it, nobody can tell she is an android.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch13_00179",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch13_x0221": {
+      "id": "ch13_x0221",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "In the parking lot, by a car's mirror. The police are looking for an AX400 with Kara's face. With scissors and hair dye, she can change how she looks. What colour does she dye her hair?",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "BROWN",
+          "next": "ch13_x0229",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "brown"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "BLACK",
+          "next": "ch13_x0229",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "black"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WHITE",
+          "next": "ch13_x0229",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "white"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "BLONDE",
+          "next": "ch13_x0229",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_hair_color": "blonde"
+            }
+          }
+        }
+      ]
+    },
+    "ch13_x0229": {
+      "id": "ch13_x0229",
+      "type": "scene",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "Kara looks at herself in the mirror and pulls the LED from her temple. Without it, nobody can tell she is an android.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch13_00201",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch13_x0212": {
+      "id": "ch13_x0212",
+      "type": "condition",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "branches": [
+        {
+          "condition_text": "Kara has the gun",
+          "next": "ch13_x0213",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Kara has no gun",
+          "next": "ch13_x0219",
+          "when": {
+            "flag": "kara_took_gun",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart"
+    },
+    "ch13_x0213": {
+      "id": "ch13_x0213",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Changing appearance",
+      "description": "Kara changes into clothes she found upstairs. Todd's gun is still in the pocket of her old ones.",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE THE GUN BACK",
+          "next": "ch13_x0219",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "FORGET THE GUN",
+          "next": "ch13_x0219",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_took_gun": false
+            }
+          }
+        }
+      ]
+    },
+    "ch17_x0101": {
+      "id": "ch17_x0101",
+      "type": "choice",
+      "chapter": "17",
+      "character": "Kara",
+      "heading": "Zlatko's basement",
+      "description": "In the basement, Zlatko keeps the androids he has taken apart and rebuilt locked in a cell. They reach through the bars, begging. The lock can be opened from outside.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "FREE THEM",
+          "next": "ch17_x0001",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_freed_zlatkos_androids": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LEAVE THEM",
+          "next": "ch17_x0001",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_freed_zlatkos_androids": false
+            }
+          }
+        }
+      ]
+    },
+    "ch17_00037": {
+      "id": "ch17_00037",
+      "type": "choice",
+      "chapter": "17",
+      "character": "Kara",
+      "heading": "Find Alice",
+      "description": "Alice is found, but Luther is coming to collect her and Zlatko is searching the house. Kara can hide with Alice, or set fire to the house to cover their escape.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SET FIRE",
+          "next": "ch17_00016",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_zlatko_escape": "fire"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "HIDE",
+          "next": "ch17_00036",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_zlatko_escape": "hide"
+            }
+          }
+        }
+      ]
     }
   },
   "initial_flags": {
