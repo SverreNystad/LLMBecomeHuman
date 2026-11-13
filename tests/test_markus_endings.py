@@ -139,14 +139,11 @@ def test_with_north_and_simon_dead_nobody_saves_markus(tmp_path):
 
 
 ENGINE_LABELS = ("TIME OUT", "TIMEOUT", "DEFAULT", "CommonTranslationKey", "OUT OF TIME")
-FIXED_CHAPTERS = {"7", "28", "32.1", "32.2", "32.5", "32.6"}
 
 
 def test_no_option_label_is_an_engine_or_timeout_string():
     for nid, node in load_dataset()["nodes"].items():
-        if node["type"] != "choice" or str(node["chapter"]) not in FIXED_CHAPTERS:
-            continue
-        for option in node["options"]:
+        for option in node.get("options", []):
             assert not any(s in option["label"] for s in ENGINE_LABELS), (
                 nid,
                 option["label"],

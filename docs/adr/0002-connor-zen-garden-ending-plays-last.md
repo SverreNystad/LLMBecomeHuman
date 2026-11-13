@@ -6,3 +6,4 @@ In the game, Connor's deviant ending (joining the androids after the battle, the
 
 - Runs recorded before this change keep their old routes. Their Connor ending sits inside 32.4, and no other Run can reach it there.
 - Connor shooting Markus in 32.7 sets Markus's Fate to dead after Markus's own ending has played. No later scene reads that Fate.
+- 32.7 plays only if the androids woke at CyberLife Tower (`connor_androids_woke`) and Connor survived it. On the wiki the Zen Garden scene happens in Hart Plaza among the androids Connor woke; every way the androids stay dormant also kills Connor, so neither case has a later scene to play.
