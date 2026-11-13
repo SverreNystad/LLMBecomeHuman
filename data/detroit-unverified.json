@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 47,
+    "condition_nodes_unverified": 45,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -351,7 +351,7 @@
     "6": "ch6_00170",
     "7": "ch7_00120",
     "8": "ch8_00069",
-    "9": "ch9_00138",
+    "9": "ch9_x0900",
     "10": "ch10_x0900",
     "11": "ch11_00027",
     "12": "ch12_00244",
@@ -9833,7 +9833,7 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00010"
+      "next": "ch6_x0101"
     },
     "ch6_00012": {
       "id": "ch6_00012",
@@ -9901,7 +9901,7 @@
         }
       ],
       "observations": [],
-      "next": "ch6_00014"
+      "next": "ch6_x0102"
     },
     "ch6_00016": {
       "id": "ch6_00016",
@@ -10108,7 +10108,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_partners_found_deviant": false
+            }
           }
         },
         {
@@ -10118,7 +10120,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_partners_found_deviant": false
+            }
           }
         }
       ]
@@ -10243,7 +10247,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         },
         {
@@ -10253,7 +10259,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         }
       ]
@@ -10378,7 +10386,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         },
         {
@@ -10388,7 +10398,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         }
       ]
@@ -10494,7 +10506,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         },
         {
@@ -10504,7 +10518,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_ch6_wrong_answer": true
+            }
           }
         }
       ]
@@ -15040,7 +15056,7 @@
       "chapter": "8",
       "character": "Markus",
       "description": "End of chapter 8",
-      "next": "ch9_00138"
+      "next": "ch9_x0900"
     },
     "ch8_00002": {
       "id": "ch8_00002",
@@ -24709,20 +24725,26 @@
       "branches": [
         {
           "condition_text": "Kara didn't die in Stormy Night",
-          "when": null,
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": false
+          },
           "next": "ch12_00005"
         },
         {
           "condition_text": "Kara died in Stormy Night",
-          "when": null,
+          "when": {
+            "flag": "kara_story_ended",
+            "equals": true
+          },
           "next": "ch12_00007"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00001",
-      "resolution": "qte",
-      "source": "https://detroit-become-human.fandom.com/wiki/Stormy_Night#Flowchart"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
     },
     "ch12_00009": {
       "id": "ch12_00009",
@@ -25439,7 +25461,7 @@
                 "equals": false
               },
               {
-                "flag": "quick_time_event_failed",
+                "flag": "kara_story_ended",
                 "equals": false
               }
             ]
@@ -25455,7 +25477,7 @@
                 "equals": true
               },
               {
-                "flag": "quick_time_event_failed",
+                "flag": "kara_story_ended",
                 "equals": false
               }
             ]
@@ -25465,7 +25487,7 @@
           "condition_text": "Kara died in Stormy Night",
           "next": "ch12_00042",
           "when": {
-            "flag": "quick_time_event_failed",
+            "flag": "kara_story_ended",
             "equals": true
           }
         }
@@ -28922,16 +28944,32 @@
           "condition_text": "Connor died in The Interrogation",
           "next": "ch12_00201",
           "when": {
-            "flag": "connor_died_in_interrogation",
-            "equals": true
+            "all": [
+              {
+                "flag": "connor_partners_found_deviant",
+                "equals": true
+              },
+              {
+                "flag": "connor_died_in_interrogation",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Connor failed to find the deviant in Partners",
+          "next": "ch12_00202",
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
           }
         }
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch12_00202",
+      "next": "ch12_00200",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
     },
     "ch12_00204": {
       "id": "ch12_00204",
@@ -29890,19 +29928,26 @@
       "branches": [
         {
           "condition_text": "Connor didn't find the deviant in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
+          },
           "next": "ch12_00220"
         },
         {
           "condition_text": "Connor found the deviant in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": true
+          },
           "next": "ch12_00240"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch12_00217",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Flowchart"
     },
     "ch12_00242": {
       "id": "ch12_00242",
@@ -30305,7 +30350,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00017"
+      "next": "ch13_00001"
     },
     "ch13_00019": {
       "id": "ch13_00019",
@@ -30354,7 +30399,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00020"
+      "next": "ch13_x0102"
     },
     "ch13_00022": {
       "id": "ch13_00022",
@@ -31820,7 +31865,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00094"
+      "next": "ch13_00023"
     },
     "ch13_00096": {
       "id": "ch13_00096",
@@ -31888,7 +31933,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00098"
+      "next": "ch13_x0101"
     },
     "ch13_00100": {
       "id": "ch13_00100",
@@ -31926,7 +31971,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00098"
+      "next": "ch13_x0101"
     },
     "ch13_00102": {
       "id": "ch13_00102",
@@ -31964,7 +32009,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00098"
+      "next": "ch13_x0101"
     },
     "ch13_00104": {
       "id": "ch13_00104",
@@ -31983,7 +32028,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00098"
+      "next": "ch13_x0101"
     },
     "ch13_00105": {
       "id": "ch13_00105",
@@ -32086,7 +32131,7 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00094"
+      "next": "ch13_00023"
     },
     "ch13_00109": {
       "id": "ch13_00109",
@@ -44172,19 +44217,26 @@
       "branches": [
         {
           "condition_text": "Ortiz's android wasn't found in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
+          },
           "next": "ch18_00091"
         },
         {
           "condition_text": "Ortiz's android was found in Partners",
-          "when": null,
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": true
+          },
           "next": "ch18_00092"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch18_00090",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Russian_Roulette#Flowchart"
     },
     "ch18_00094": {
       "id": "ch18_00094",
@@ -130495,6 +130547,135 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch6_x0102": {
+      "id": "ch6_x0102",
+      "type": "condition",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Talk to Hank",
+      "branches": [
+        {
+          "condition_text": "Every answer fit the evidence",
+          "next": "ch6_00010",
+          "when": {
+            "flag": "connor_ch6_wrong_answer",
+            "equals": false
+          },
+          "effects": {
+            "flags": {
+              "connor_partners_found_deviant": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor gave too many wrong answers",
+          "next": "ch6_00014",
+          "when": {
+            "flag": "connor_ch6_wrong_answer",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "connor_partners_found_deviant": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Approximation: the game tolerates some wrong answers without saying how many. Here Hank answers a wrong first guess with a hint (as in the transcript) and rejects the story after any later wrong answer."
+    },
+    "ch6_x0101": {
+      "id": "ch6_x0101",
+      "type": "scene",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Crime unsolved",
+      "description": "Hank walks out, and the officers pack up. Nobody searches the attic, where the deviant is still hiding. The crime is unsolved.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch9_x0900": {
+      "id": "ch9_x0900",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "The suspect was not found",
+      "branches": [
+        {
+          "condition_text": "The suspect wasn't found in Partners",
+          "next": "ch10_x0900",
+          "when": {
+            "flag": "connor_partners_found_deviant",
+            "equals": false
+          }
+        }
+      ],
+      "next": "ch9_00138",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
+    },
+    "ch13_x0101": {
+      "id": "ch13_x0101",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Connor investigates the squat",
+      "description": "Ralph says he has seen nobody. Upstairs is quiet, and Hank is getting impatient outside. There is still the space under the stairs.",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "CHECK UNDER THE STAIRS",
+          "next": "ch13_00098",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LEAVE",
+          "next": "ch13_00094",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch13_x0102": {
+      "id": "ch13_x0102",
+      "type": "condition",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Connor pursues Kara",
+      "branches": [
+        {
+          "condition_text": "Reach the fence in time",
+          "next": "ch13_00017",
+          "when": null
+        },
+        {
+          "condition_text": "Reach the fence too late",
+          "next": "ch13_00020",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart"
     }
   },
   "initial_flags": {
@@ -130529,6 +130710,7 @@
     "connor_deaths": 0,
     "connor_died_in_hostage": false,
     "connor_died_in_interrogation": false,
-    "connor_shot_by_hank": false
+    "connor_shot_by_hank": false,
+    "connor_ch6_wrong_answer": false
   }
 }
