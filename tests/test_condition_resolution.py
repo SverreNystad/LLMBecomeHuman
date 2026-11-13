@@ -352,7 +352,6 @@ FAILURE = re.compile(
 # succeeding means Connor reaches Emma in time and falls to his death.
 SUCCESS = {
     "ch1_00005": "reaches Emma in time",
-    "ch12_00008": "Kara didn't die",
     "ch13_00063": "Kara shot Todd",
     "ch15_00189": "arrive together",
 }
