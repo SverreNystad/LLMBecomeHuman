@@ -105,7 +105,7 @@ jobs:
 
     push-image:
         name: Push Docker images
-        needs: [build-and-test]
+        needs: [build-and-test-python, build-and-test-docker]
         runs-on: ubuntu-latest
         permissions:
             contents: read
