@@ -50,13 +50,17 @@ BRIEF_RETRY_INSTRUCTION = (
 )
 
 
-_SENTENCE_END = re.compile(r"(?<=[.!?])\s+")
+# A sentence ends at . ! ? or an ellipsis, optionally followed by a closing quote or bracket.
+_SENTENCE_END = re.compile(r"[.!?…]+[\"'”’)]*\s+")
 
 
 def limit_sentences(text: str, limit: int = RATIONALE_MAX_SENTENCES) -> str:
     """The first ``limit`` sentences of a rationale; the rest is dropped."""
-    sentences = _SENTENCE_END.split(text.strip())
-    return " ".join(sentences[:limit])
+    text = text.strip()
+    for count, end in enumerate(_SENTENCE_END.finditer(text), start=1):
+        if count == limit:
+            return text[: end.start()] + end.group().rstrip()
+    return text
 
 
 class BrokenReply(Exception):

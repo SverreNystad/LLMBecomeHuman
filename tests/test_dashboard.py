@@ -653,3 +653,42 @@ def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
     # Only installed images are named; the chapter's main image is the fallback.
     assert {m["art"] for m in scenes} == {"ch01_installed"}
     assert all("art" not in m for m in moments if m["type"] != "scene")
+
+
+def test_justifications_are_served_as_at_most_two_sentences(tmp_path):
+    # Runs recorded before the engine capped justifications still hold long ones.
+    target = tmp_path / "run"
+    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    long = "Wait… Hank is here. Saving him matters more. The mission can wait!"
+    with (target / "events.jsonl").open("a") as f:
+        f.write(
+            json.dumps(
+                {
+                    "index": 9000,
+                    "type": "decision",
+                    "node_id": "n",
+                    "chapter": "Extra",
+                    "input": {"current_scene": {"heading": "Roof"}},
+                    "output": {"choice_id": "option_0", "rationale": long},
+                    "label": "SAVE HANK",
+                }
+            )
+            + "\n"
+        )
+    c = TestClient(create_app(tmp_path))
+    run_id = c.get("/api/runs").json()["runs"][0]["id"]
+    expected = "Wait… Hank is here."
+    [moment] = c.get(f"/api/runs/{run_id}/story", params={"chapter": "Extra"}).json()[
+        "moments"
+    ]
+    assert moment["rationale"] == expected
+    decision = next(
+        d
+        for d in c.get(f"/api/runs/{run_id}").json()["decisions"]
+        if d["index"] == 9000
+    )
+    assert decision["rationale"] == expected
+    event = c.get(f"/api/runs/{run_id}/events/9000").json()
+    assert event["output"]["rationale"] == expected
+    recorded = [json.loads(line) for line in (target / "events.jsonl").open()]
+    assert recorded[-1]["output"]["rationale"] == long
