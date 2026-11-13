@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 33,
+    "condition_nodes_unverified": 32,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -375,7 +375,7 @@
     "30.1": "ch30_1_x0900",
     "30.2": "ch30_2_00154",
     "30.3": "ch30_3_00230",
-    "31.1": "ch31_1_x0001",
+    "31.1": "ch31_1_x0101",
     "31.2": "ch31_2_00054",
     "32.1": "ch32_1_00429",
     "32.2": "ch32_2_00249",
@@ -92258,7 +92258,7 @@
       "chapter": "30.3",
       "character": "Markus",
       "description": "End of chapter 30.3",
-      "next": "ch31_1_x0001"
+      "next": "ch31_1_x0101"
     },
     "ch30_3_00002": {
       "id": "ch30_3_00002",
@@ -97859,7 +97859,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00032"
+      "next": "ch31_1_x0106"
     },
     "ch31_1_00034": {
       "id": "ch31_1_00034",
@@ -97992,7 +97992,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00032"
+      "next": "ch31_1_x0106"
     },
     "ch31_1_00041": {
       "id": "ch31_1_00041",
@@ -98078,7 +98078,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00043"
+      "next": "ch31_1_x0105"
     },
     "ch31_1_00045": {
       "id": "ch31_1_00045",
@@ -98168,7 +98168,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00048"
+      "next": "ch31_1_x0104"
     },
     "ch31_1_00050": {
       "id": "ch31_1_00050",
@@ -98445,7 +98445,7 @@
       "description": "In the church : Jericho was attacked",
       "dialogue": [],
       "observations": [],
-      "next": "ch31_1_00061"
+      "next": "ch31_1_x0103"
     },
     "ch31_1_00063": {
       "id": "ch31_1_00063",
@@ -98465,7 +98465,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00064": {
       "id": "ch31_1_00064",
@@ -98504,7 +98504,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00066": {
       "id": "ch31_1_00066",
@@ -98542,7 +98542,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00068": {
       "id": "ch31_1_00068",
@@ -98580,7 +98580,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00070": {
       "id": "ch31_1_00070",
@@ -99191,7 +99191,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00100": {
       "id": "ch31_1_00100",
@@ -99210,7 +99210,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00101": {
       "id": "ch31_1_00101",
@@ -99229,7 +99229,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00062"
+      "next": "ch31_1_x0102"
     },
     "ch31_1_00102": {
       "id": "ch31_1_00102",
@@ -100303,7 +100303,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_2_00031"
+      "next": "ch31_2_x0103"
     },
     "ch31_2_00033": {
       "id": "ch31_2_00033",
@@ -100713,7 +100713,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_2_00048"
+      "next": "ch31_2_x0102"
     },
     "ch31_2_00050": {
       "id": "ch31_2_00050",
@@ -100771,7 +100771,7 @@
         }
       ],
       "observations": [],
-      "next": "ch31_2_00048"
+      "next": "ch31_2_x0102"
     },
     "ch31_2_00053": {
       "id": "ch31_2_00053",
@@ -100781,21 +100781,50 @@
       "heading": "In the Zen Garden",
       "branches": [
         {
-          "condition_text": "Connor died in Crossroads",
-          "when": null,
-          "next": "ch31_2_00051"
+          "condition_text": "Connor is a deviant",
+          "next": "ch31_2_x0101",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          }
         },
         {
-          "condition_text": "Connor stayed a machine and didn't die in Crossroads (killed Markus), North is leading a violent revolution",
-          "when": null,
-          "next": "ch31_2_00052"
+          "condition_text": "Connor died in Crossroads",
+          "next": "ch31_2_00051",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_died_in_crossroads",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Connor stayed a machine and didn't die in Crossroads",
+          "next": "ch31_2_00052",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_died_in_crossroads",
+                "equals": false
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "next": "ch31_2_00048",
-      "resolution": "unknown",
-      "unknown_reason": "Both versions need a failed Quick-Time Event in Crossroads (Connor shot, or Markus killed), which never happens here."
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     },
     "ch31_2_00054": {
       "id": "ch31_2_00054",
@@ -114562,7 +114591,7 @@
       "chapter": "32.3",
       "character": "Connor",
       "description": "End of chapter 32.3",
-      "next": "route_markus_final"
+      "next": "final_x0903"
     },
     "ch32_3_00002": {
       "id": "ch32_3_00002",
@@ -116122,7 +116151,7 @@
       "chapter": "32.4",
       "character": "Connor",
       "description": "End of chapter 32.4",
-      "next": "route_markus_final"
+      "next": "final_x0903"
     },
     "ch32_7_00002": {
       "id": "ch32_7_00002",
@@ -129677,7 +129706,7 @@
             "flag": "connor_story_ended",
             "equals": true
           },
-          "next": "route_markus_final"
+          "next": "final_x0903"
         }
       ],
       "unverified": false,
@@ -130512,7 +130541,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 1
+              "connor_deaths": 1,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130525,7 +130555,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 2
+              "connor_deaths": 2,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130538,7 +130569,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 3
+              "connor_deaths": 3,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130551,7 +130583,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 4
+              "connor_deaths": 4,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130564,7 +130597,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 5
+              "connor_deaths": 5,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130577,7 +130611,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 6
+              "connor_deaths": 6,
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -130590,7 +130625,8 @@
           },
           "effects": {
             "flags": {
-              "connor_deaths": 7
+              "connor_deaths": 7,
+              "connor_died_in_crossroads": true
             }
           }
         }
@@ -132695,6 +132731,392 @@
           }
         }
       ]
+    },
+    "ch31_1_x0101": {
+      "id": "ch31_1_x0101",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Markus's story",
+      "branches": [
+        {
+          "condition_text": "Markus is dead or left Jericho",
+          "next": "ch31_2_x0901",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus is here",
+          "next": "ch31_1_x0001",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              }
+            ]
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_1_x0102": {
+      "id": "ch31_1_x0102",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "In the church : Jericho was attacked",
+      "branches": [
+        {
+          "condition_text": "Jericho was attacked",
+          "next": "ch31_1_00062",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Jericho wasn't attacked",
+          "next": "ch31_1_00008",
+          "when": {
+            "flag": "connor_knows_jericho",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_1_x0103": {
+      "id": "ch31_1_x0103",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Talking with Simon",
+      "branches": [
+        {
+          "condition_text": "Simon is here",
+          "next": "ch31_1_00061",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Simon is not here",
+          "next": "ch31_1_x0104",
+          "when": {
+            "not": {
+              "flag": "simon_alive",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_1_x0104": {
+      "id": "ch31_1_x0104",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Talking with Josh",
+      "branches": [
+        {
+          "condition_text": "Josh is here",
+          "next": "ch31_1_00048",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Josh is not here",
+          "next": "ch31_1_x0105",
+          "when": {
+            "not": {
+              "flag": "josh_alive",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_1_x0105": {
+      "id": "ch31_1_x0105",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Talking with Connor",
+      "branches": [
+        {
+          "condition_text": "Connor is here",
+          "next": "ch31_1_00043",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": true
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Connor is not here",
+          "next": "ch31_1_x0106",
+          "when": {
+            "not": {
+              "all": [
+                {
+                  "flag": "connor_deviant",
+                  "equals": true
+                },
+                {
+                  "flag": "connor_story_ended",
+                  "equals": false
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_1_x0106": {
+      "id": "ch31_1_x0106",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Talking with North",
+      "branches": [
+        {
+          "condition_text": "North is here",
+          "next": "ch31_1_00032",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "North is not here",
+          "next": "ch31_1_x0900",
+          "when": {
+            "not": {
+              "flag": "north_alive",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_2_x0101": {
+      "id": "ch31_2_x0101",
+      "type": "condition",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "In the church : Jericho was attacked",
+      "branches": [
+        {
+          "condition_text": "Markus is dead or left Jericho",
+          "next": "ch31_2_00031",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus leads the androids",
+          "next": "ch31_2_00001",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              }
+            ]
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "ch31_2_x0102": {
+      "id": "ch31_2_x0102",
+      "type": "condition",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "At Hank's house",
+      "branches": [
+        {
+          "condition_text": "Hank quit the force",
+          "next": "ch31_2_00048",
+          "when": {
+            "all": [
+              {
+                "not": {
+                  "flag": "connor_nest_rooftop",
+                  "equals": "saved_hank"
+                }
+              },
+              {
+                "not": {
+                  "flag": "connor_public_enemy_chase",
+                  "equals": "save_hank"
+                }
+              },
+              {
+                "flag": "connor_firm_with_hank",
+                "equals": true
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "hank_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Hank is still on the force",
+          "next": "ch31_2_00001",
+          "when": {
+            "not": {
+              "all": [
+                {
+                  "not": {
+                    "flag": "connor_nest_rooftop",
+                    "equals": "saved_hank"
+                  }
+                },
+                {
+                  "not": {
+                    "flag": "connor_public_enemy_chase",
+                    "equals": "save_hank"
+                  }
+                },
+                {
+                  "flag": "connor_firm_with_hank",
+                  "equals": true
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Approximation, as in Last Chance, Connor: Hank quits the force when he is hostile (Connor never saved him and was firm with him in Partners)."
+    },
+    "ch31_2_x0103": {
+      "id": "ch31_2_x0103",
+      "type": "scene",
+      "chapter": "31.2",
+      "character": "Connor",
+      "heading": "Hank committed suicide",
+      "description": "Connor leaves. Behind him, alone in his kitchen, Hank picks up his revolver one last time. Hank committed suicide.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch31_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "final_x0903": {
+      "id": "final_x0903",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "Markus's story has ended",
+      "branches": [
+        {
+          "condition_text": "Markus is dead or left Jericho",
+          "next": "final_x0902",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus is here",
+          "next": "route_markus_final",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              }
+            ]
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
     }
   },
   "initial_flags": {
@@ -132738,6 +133160,8 @@
     "alice_alive": true,
     "kara_captured": false,
     "kara_todd_killed": false,
-    "markus_left_jericho": false
+    "markus_left_jericho": false,
+    "hank_alive": true,
+    "connor_died_in_crossroads": false
   }
 }
