@@ -116673,16 +116673,32 @@
           "condition_text": "Markus is alive: Connor joins Markus",
           "next": "ch32_7_00013",
           "when": {
-            "flag": "markus_alive",
-            "equals": true
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              }
+            ]
           }
         },
         {
           "condition_text": "Markus died : Connor becomes leader of the deviants",
           "next": "ch32_7_00024",
           "when": {
-            "flag": "markus_alive",
-            "equals": false
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
+              }
+            ]
           }
         }
       ],
@@ -117152,7 +117168,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_androids_woke": true
+            }
           }
         },
         {
@@ -117162,7 +117180,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -117172,7 +117192,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -117182,7 +117204,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         }
       ]
@@ -117719,7 +117743,7 @@
       "chapter": "32.4",
       "character": "Connor",
       "heading": "Floor -49",
-      "description": "Floor -49",
+      "description": "Connor stops the conversion to save Hank. The new Connor holds Hank at gunpoint; Connor can shoot, throw himself at him, resume the conversion, or do nothing.",
       "options": [
         {
           "id": "option_0",
@@ -117736,7 +117760,7 @@
         {
           "id": "option_1",
           "label": "INTERPOSE",
-          "next": "ch32_4_00001",
+          "next": "ch32_4_00066",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -117746,21 +117770,26 @@
         {
           "id": "option_2",
           "label": "CONVERT",
-          "next": "ch32_4_00001",
+          "next": "ch32_4_00085",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "hank_alive": false,
+              "connor_androids_woke": true
+            }
           }
         },
         {
           "id": "option_3",
-          "label": "t( CommonTranslationKey.DefaultChoice )",
+          "label": "DO NOTHING",
           "next": "ch32_4_00068",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         }
       ]
@@ -117998,7 +118027,7 @@
       "chapter": "32.4",
       "character": "Connor",
       "heading": "Floor -49",
-      "description": "Floor -49",
+      "description": "The conversion is under way. The new Connor, wounded, comes for Connor, who is badly damaged. Connor can try to stand, shoot, transfer himself into the new Connor's body, or talk to him.",
       "options": [
         {
           "id": "option_0",
@@ -118007,7 +118036,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -118017,7 +118048,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -118032,12 +118065,14 @@
         },
         {
           "id": "option_3",
-          "label": "t( CommonTranslationKey.DefaultChoice )",
+          "label": "TALK TO HIM",
           "next": "ch32_4_00081",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         }
       ]
@@ -118125,7 +118160,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "hank_alive": false,
+              "connor_androids_woke": true
+            }
           }
         }
       ]
@@ -118528,7 +118566,7 @@
       "chapter": "32.4",
       "character": "Connor",
       "heading": "Floor -49",
-      "description": "Floor -49",
+      "description": "The new Connor has shot Connor and comes closer before the conversion finishes. Connor can try to stand, shoot, transfer himself into the new Connor's body, or talk to him.",
       "options": [
         {
           "id": "option_0",
@@ -118537,7 +118575,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -118547,7 +118587,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         },
         {
@@ -118557,17 +118599,21 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_androids_woke": true
+            }
           }
         },
         {
           "id": "option_3",
-          "label": "t(CommonTranslationKey.DefaultChoice)",
+          "label": "TALK TO HIM",
           "next": "ch32_4_00105",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_story_ended": true
+            }
           }
         }
       ]
@@ -118648,6 +118694,11 @@
                 "equals": true
               }
             ]
+          },
+          "effects": {
+            "flags": {
+              "hank_alive": false
+            }
           }
         }
       ],
@@ -119195,10 +119246,10 @@
       "heading": "Media reacts to the outcome of the demonstration",
       "branches": [
         {
-          "condition_text": "Connor freed the CyberLife androids",
+          "condition_text": "Connor woke the CyberLife androids",
           "next": "ch32_5_00002",
           "when": {
-            "flag": "connor_deviant",
+            "flag": "connor_androids_woke",
             "equals": true
           }
         }
@@ -126696,7 +126747,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "route_connor_zen_garden",
+      "next": "final_x0904",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Last_Chance,_Connor#Notes"
     },
@@ -133117,6 +133168,35 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart"
+    },
+    "final_x0904": {
+      "id": "final_x0904",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "The androids stayed dormant",
+      "branches": [
+        {
+          "condition_text": "The androids woke",
+          "next": "route_connor_zen_garden",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "The androids stayed dormant",
+          "next": "game_complete",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor_at_the_CyberLife_Tower"
     }
   },
   "initial_flags": {
@@ -133162,6 +133242,7 @@
     "kara_todd_killed": false,
     "markus_left_jericho": false,
     "hank_alive": true,
-    "connor_died_in_crossroads": false
+    "connor_died_in_crossroads": false,
+    "connor_androids_woke": false
   }
 }
