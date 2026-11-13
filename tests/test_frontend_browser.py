@@ -99,7 +99,7 @@ def test_chapter_flowchart_browser_interactions():
                 page.locator("#decisionStrip button").count()
                 == page.locator(".story-decision").count()
             )
-            # Clicking another model's logo shows its Justification in place.
+            # Clicking another model's logo shows its justification in place.
             followed_model = page.evaluate("storyRun().model")
             other_id = first_card.locator(
                 ".story-mark[aria-pressed='false']"
@@ -440,7 +440,7 @@ def test_title_screen_sound_and_marker_card(live_dashboard):
             card.wait_for()
             assert "CHOSE" in card.inner_text().upper()
             assert page.locator(".unfold-card-why").inner_text().strip()
-            # A long Justification scrolls inside the card instead of being cut off.
+            # A long justification scrolls inside the card instead of being cut off.
             assert page.evaluate("""() => {
               const why = getComputedStyle(document.querySelector('.unfold-card-why'));
               return [why.overflowY, why.webkitLineClamp];
@@ -612,12 +612,14 @@ def test_story_marks_following_menu_and_empty_state(live_dashboard):
             assert name.inner_text() == other_model
             assert other.get_attribute("title") is None
 
-            # Clicking it swaps the card's Justification to that model's, in place.
+            # Clicking it swaps the card's justification to that model's, in place.
             other.click()
             assert other.get_attribute("aria-pressed") == "true"
             assert own.get_attribute("aria-pressed") == "false"
             assert other_model in card.locator(".story-why-label").inner_text()
-            assert card.locator(".story-other-why").count() == 0
+            assert card.locator(".story-why p").inner_text() == other.get_attribute(
+                "data-why-text"
+            )
             assert page.evaluate("storyRun().id") == followed
 
             # The Following menu glitches open, follows the picked model, and glitches shut.

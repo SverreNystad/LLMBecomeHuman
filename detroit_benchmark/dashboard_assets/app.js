@@ -35,7 +35,6 @@ function cancelChapterSlide() {
 }
 /* A dropdown (the model picker, the Following menu) plays its opening glitch in reverse
  * before it hides. */
-function setPickerPanel(open) {setDropdown($('pickerPanel'), open);}
 function setDropdown(panel, open) {
   if (open) {panel.classList.remove('is-hidden', 'is-closing'); return;}
   if (panel.classList.contains('is-hidden') || panel.classList.contains('is-closing')) return;
@@ -219,7 +218,7 @@ function updateSelectors() {
   // With no model chosen, controls that need one hide and the + button pulses.
   document.body.dataset.models=activeRuns().length?'some':'none';
   $('pickerToggle').setAttribute('aria-expanded',String(state.pickerOpen));
-  setPickerPanel(state.pickerOpen);
+  setDropdown($('pickerPanel'),state.pickerOpen);
   $('pickerToggle').classList.toggle('on',state.pickerOpen);
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));

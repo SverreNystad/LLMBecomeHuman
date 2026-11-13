@@ -93,7 +93,7 @@ function renderRule(item) {
   return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`;
 }
 /* A model's logo beside the option it chose. Hovering names the model; clicking shows its
- * Justification in the card. The logo whose Justification is shown is pressed. */
+ * justification in the card. The logo whose justification is shown is pressed. */
 function modelMark(run, decision, label, shown) {
   return `<button type="button" class="story-mark" data-why-run="${esc(run.id)}" data-why-text="${esc(decision.rationale || '—')}" data-why-label="${esc(label)}" aria-pressed="${shown}" style="--run-color:${routeColor(run)}" aria-label="${esc(run.model)} chose ${esc(label)}. Show its reason.">${modelIcon(providerOf(run))}<span class="story-mark-name" aria-hidden="true">${esc(run.model)}</span></button>`;
 }
@@ -189,15 +189,16 @@ function briefingOpener(briefing) {
 function caveatBanner(run) {
   return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
-function followingName(run) {
+function runLabelHtml(run) {
   return `${esc(run.model)}${runStatusLabel(run) ? ` <small>(${esc(runStatusLabel(run))})</small>` : ''}`;
 }
 function renderStoryToolbar(run) {
   $('storyRun').innerHTML = run
-    ? `<span class="story-run-logo" style="--run-color:${routeColor(run)}">${modelIcon(providerOf(run))}</span><span class="story-run-name">${followingName(run)}</span>`
+    ? `<span class="story-run-logo" style="--run-color:${routeColor(run)}">${modelIcon(providerOf(run))}</span><span class="story-run-name">${runLabelHtml(run)}</span>`
     : '';
   $('storyRun').disabled = !run;
-  $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="option" class="story-run-option" data-run-id="${esc(item.id)}" aria-selected="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${followingName(item)}</span></button>`).join('');
+  if (!run) setFollowingMenu(false);
+  $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
   document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
 }
@@ -314,7 +315,7 @@ function setStoryRun(id) {
   renderChapterList();
   renderStory();
 }
-/* Shows one model's Justification in a decision card. Says what it chose when that differs
+/* Shows one model's justification in a decision card. Says what it chose when that differs
  * from the followed model's choice. Only this card changes; the Story keeps its model. */
 function showJustification(button) {
   if (button.getAttribute('aria-pressed') === 'true') return;
@@ -334,7 +335,7 @@ function setFollowingMenu(open) {
   if (open && state.pickerOpen) {state.pickerOpen = false; updateSelectors();}
   $('storyRun').setAttribute('aria-expanded', String(open));
   setDropdown($('storyRunMenu'), open);
-  if (open) ($('storyRunMenu').querySelector('[aria-selected="true"]') || $('storyRunMenu').firstElementChild)?.focus();
+  if (open) ($('storyRunMenu').querySelector('[aria-checked="true"]') || $('storyRunMenu').firstElementChild)?.focus();
 }
 function setupFollowingMenu() {
   const menu = $('storyRunMenu'), isOpen = () => $('storyRun').getAttribute('aria-expanded') === 'true';
@@ -348,10 +349,14 @@ function setupFollowingMenu() {
   });
   menu.addEventListener('keydown', event => {
     const options = [...menu.querySelectorAll('[data-run-id]')], at = options.indexOf(document.activeElement);
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-      event.preventDefault();
-      options[(at + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length]?.focus();
-    }
+    const to = {ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: options.length - 1}[event.key];
+    if (to === undefined) return;
+    event.preventDefault();
+    options[(to + options.length) % options.length]?.focus();
+  });
+  // Tabbing out of the menu closes it.
+  $('storyRunPicker').addEventListener('focusout', event => {
+    if (isOpen() && !$('storyRunPicker').contains(event.relatedTarget)) setFollowingMenu(false);
   });
   document.addEventListener('click', event => {if (isOpen() && !event.target.closest('#storyRunPicker')) setFollowingMenu(false);});
   document.addEventListener('keydown', event => {if (event.key === 'Escape' && isOpen()) {setFollowingMenu(false); $('storyRun').focus();}});
