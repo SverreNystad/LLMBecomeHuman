@@ -14157,7 +14157,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_took_gun": true
+              "kara_took_gun": true,
+              "kara_todd_killed": true
             }
           },
           "requires": [
@@ -101928,7 +101929,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00012"
+      "next": "ch32_1_x0110"
     },
     "ch32_1_00056": {
       "id": "ch32_1_00056",
@@ -102103,7 +102104,15 @@
             "flag": "markus_peaceful",
             "equals": false
           },
-          "next": "ch32_1_00063"
+          "next": "ch32_1_00063",
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true,
+              "luther_alive": false
+            }
+          }
         }
       ],
       "unverified": false,
@@ -102166,7 +102175,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_border_sacrifice": "self"
+              "kara_border_sacrifice": "self",
+              "kara_alive": false,
+              "kara_story_ended": true
             }
           }
         },
@@ -102181,7 +102192,13 @@
               "kara_border_sacrifice": "luther",
               "luther_alive": false
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_2",
@@ -103117,7 +103134,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00113"
+      "next": "ch32_1_x0107"
     },
     "ch32_1_00115": {
       "id": "ch32_1_00115",
@@ -103206,21 +103223,27 @@
         {
           "id": "option_0",
           "label": "KEEP LIVING",
-          "next": "ch32_1_00113",
+          "next": "ch32_1_x0108",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "alice_alive": false
+            }
           }
         },
         {
           "id": "option_1",
           "label": "GIVE UP",
-          "next": "ch32_1_00113",
+          "next": "ch32_1_x0109",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true
+            }
           }
         }
       ]
@@ -103318,7 +103341,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00113"
+      "next": "ch32_1_00012"
     },
     "ch32_1_00125": {
       "id": "ch32_1_00125",
@@ -103337,7 +103360,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00113"
+      "next": "ch32_1_00012"
     },
     "ch32_1_00126": {
       "id": "ch32_1_00126",
@@ -103428,7 +103451,13 @@
             "flag": "kara_coastguard_response",
             "equals": "protect_alice"
           },
-          "next": "ch32_1_00118"
+          "next": "ch32_1_00118",
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "kara_story_ended": true
+            }
+          }
         },
         {
           "condition_text": "Alice was injured",
@@ -103481,7 +103510,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00113",
+      "next": "ch32_1_00012",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_River"
     },
@@ -103954,7 +103983,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00140"
+      "next": "ch32_1_00166"
     },
     "ch32_1_00153": {
       "id": "ch32_1_00153",
@@ -104211,7 +104240,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00140"
+      "next": "ch32_1_x0106"
     },
     "ch32_1_00166": {
       "id": "ch32_1_00166",
@@ -104274,7 +104303,13 @@
             "flags": {
               "kara_coastguard_response": "hide"
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": false
+            }
+          ]
         },
         {
           "id": "option_3",
@@ -104284,7 +104319,11 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "surrender"
+              "kara_coastguard_response": "surrender",
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true,
+              "luther_alive": false
             }
           }
         },
@@ -104312,19 +104351,13 @@
             "flags": {
               "kara_coastguard_response": "use_luther"
             }
-          }
-        },
-        {
-          "id": "option_6",
-          "label": "t(CommonTranslationKey.DefaultChoice)",
-          "next": "ch32_1_00166",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {
-              "kara_coastguard_response": "surrender"
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
             }
-          }
+          ]
         }
       ]
     },
@@ -105111,7 +105144,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00205"
+      "next": "ch32_1_x0105"
     },
     "ch32_1_00209": {
       "id": "ch32_1_00209",
@@ -105140,7 +105173,13 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -105149,17 +105188,27 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true,
+              "luther_alive": false
+            }
           }
         },
         {
           "id": "option_2",
           "label": "FLEE",
-          "next": "ch32_1_00205",
+          "next": "ch32_1_x0105",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true,
+              "luther_alive": false
+            }
           }
         }
       ]
@@ -105230,7 +105279,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00212"
+      "next": "ch32_1_00113"
     },
     "ch32_1_00214": {
       "id": "ch32_1_00214",
@@ -105249,7 +105298,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00212"
+      "next": "ch32_1_00113"
     },
     "ch32_1_00215": {
       "id": "ch32_1_00215",
@@ -105385,7 +105434,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00220"
+      "next": "ch32_1_00205"
     },
     "ch32_1_00222": {
       "id": "ch32_1_00222",
@@ -105644,7 +105693,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00230"
+      "next": "ch32_1_x0102"
     },
     "ch32_1_00236": {
       "id": "ch32_1_00236",
@@ -105724,6 +105773,13 @@
           "when": {
             "flag": "luther_alive",
             "equals": false
+          },
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true
+            }
           }
         }
       ],
@@ -106076,9 +106132,16 @@
             "flags": {
               "kara_todd_approach": "your_story"
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_ch4_upstairs_exploration",
+              "equals": "thorough"
+            }
+          ]
         }
-      ]
+      ],
+      "note": "Approximation: YOUR STORY needs Alice's box from A New Home, which the story does not record; it is offered when Kara cleaned each room upstairs carefully."
     },
     "ch32_1_00254": {
       "id": "ch32_1_00254",
@@ -106165,7 +106228,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00257"
+      "next": "ch32_1_x0103"
     },
     "ch32_1_00259": {
       "id": "ch32_1_00259",
@@ -106290,7 +106353,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00259"
+      "next": "ch32_1_00220"
     },
     "ch32_1_00266": {
       "id": "ch32_1_00266",
@@ -106835,7 +106898,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00291"
+      "next": "ch32_1_00259"
     },
     "ch32_1_00293": {
       "id": "ch32_1_00293",
@@ -106933,7 +106996,7 @@
       "description": "At the bus terminal",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_1_00297"
+      "next": "ch32_1_x0101"
     },
     "ch32_1_00299": {
       "id": "ch32_1_00299",
@@ -132168,6 +132231,180 @@
       "next": "ch32_2_00006",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0101": {
+      "id": "ch32_1_x0101",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "At the bus terminal",
+      "branches": [
+        {
+          "condition_text": "Arrive on time",
+          "next": "ch32_1_00291",
+          "when": null
+        },
+        {
+          "condition_text": "Took too much time - miss the bus",
+          "next": "ch32_1_00297",
+          "when": null
+        }
+      ],
+      "unverified": true,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit"
+    },
+    "ch32_1_x0103": {
+      "id": "ch32_1_x0103",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Watch terminal TV",
+      "branches": [
+        {
+          "condition_text": "Todd is alive",
+          "next": "ch32_1_00257",
+          "when": {
+            "flag": "kara_todd_killed",
+            "equals": false
+          }
+        },
+        {
+          "condition_text": "Todd was killed in Stormy Night",
+          "next": "ch32_1_x0104",
+          "when": {
+            "flag": "kara_todd_killed",
+            "equals": true
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit"
+    },
+    "ch32_1_x0104": {
+      "id": "ch32_1_x0104",
+      "type": "choice",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Find a way to the border",
+      "description": "No tickets, and soldiers are checking IDs across the terminal. Kara can search the terminal for another way out, or keep Alice out of sight and wait for another bus.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SEARCH THE TERMINAL",
+          "next": "ch32_1_00230",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "WAIT FOR ANOTHER BUS",
+          "next": "ch32_1_00212",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch32_1_x0102": {
+      "id": "ch32_1_x0102",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Soldiers executed Kara & Alice",
+      "description": "The soldiers check them, find two androids, and execute Kara and Alice on the spot.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0105": {
+      "id": "ch32_1_x0105",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Soldiers executed Kara & Alice",
+      "description": "The soldiers see through them at once. Kara, Alice and anyone with them are executed in the terminal.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0106": {
+      "id": "ch32_1_x0106",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "The group died",
+      "description": "The coastguard opens fire on the boat. Nobody survives the crossing.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0107": {
+      "id": "ch32_1_x0107",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Kara died and Alice survived",
+      "description": "Kara is too damaged to go on. She shuts down on the riverbank, and Alice goes on to Canada without her.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0108": {
+      "id": "ch32_1_x0108",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Alice died and Kara continued alone",
+      "description": "Alice doesn't wake up. Kara carries her the last steps into Canada and goes on alone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0109": {
+      "id": "ch32_1_x0109",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Kara & Alice died",
+      "description": "Alice doesn't wake up. Kara lies down beside her on the riverbank and lets herself shut down.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0110": {
+      "id": "ch32_1_x0110",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Everyone was arrested and killed",
+      "description": "With Markus's androids attacking the camps on every screen, the guards take no chances. Everyone in Kara's group is arrested and killed.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     }
   },
   "initial_flags": {
@@ -132209,6 +132446,7 @@
     "markus_capitol_park_failed": false,
     "kara_alive": true,
     "alice_alive": true,
-    "kara_captured": false
+    "kara_captured": false,
+    "kara_todd_killed": false
   }
 }

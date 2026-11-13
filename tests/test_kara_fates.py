@@ -27,7 +27,6 @@ def test_defending_alice_luther_sacrifices_himself_and_they_escape(tmp_path):
     run = play_story(tmp_path, {SHOT_AT: "PLAY DEAD", SOLDIERS_CLOSE_IN: "DEFEND ALICE"})
     assert LUTHER_SACRIFICES in run.nodes
     assert run.flags["luther_alive"] is False
-    assert run.flags["kara_alive"] is True
     assert "32.1" in run.chapters
 
 

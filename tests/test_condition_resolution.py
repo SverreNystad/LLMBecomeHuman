@@ -544,9 +544,11 @@ REFUSE_PERKINS = {
 
 def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
     # Connor's Zen Garden ending plays after Markus's, so Markus must survive his.
-    default = _endgame_branches(tmp_path / "a", REFUSE_PERKINS)
+    # Kara persuades Todd, and Adam takes her to the river.
+    river = {"ch32_1_00253": "YOUR STORY"}
+    default = _endgame_branches(tmp_path / "a", {**REFUSE_PERKINS, **river})
     chosen = _endgame_branches(
-        tmp_path / "b", {**SPARE_LUTHER, **LEAVE_NORTH, **REFUSE_PERKINS}
+        tmp_path / "b", {**SPARE_LUTHER, **LEAVE_NORTH, **REFUSE_PERKINS, **river}
     )
     # Kara: Luther sent as a diversion is gone on the boat; spared, he is there.
     assert (default["ch32_1_00179"], chosen["ch32_1_00179"]) == (1, 0)
