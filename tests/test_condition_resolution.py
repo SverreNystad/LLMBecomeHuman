@@ -532,7 +532,8 @@ def test_endgame_conditions_are_rules_or_say_why_not():
 
 
 # Earlier choices that decide a side character's fate.
-SPARE_LUTHER = {"ch32_1_00209": "PAPERS"}  # not DIVERSION LUTHER at the bus terminal
+# Luther lives through Crossroads (Kara stays still) and isn't sent as a diversion.
+SPARE_LUTHER = {"ch30_1_00005": "DON'T MOVE", "ch32_1_00209": "PAPERS"}
 LEAVE_NORTH = {"ch30_3_00040": "RUN"}  # North is shot in Crossroads and left behind
 REFUSE_PERKINS = {
     "ch32_5_00076": "REFUSE DEAL",
