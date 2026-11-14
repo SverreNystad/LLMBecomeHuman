@@ -53,9 +53,9 @@ def dashboard(tmp_path, gate):
 
 def start_from_form(page, model):
     open_form(page)
-    page.locator("#ownRunKey").fill(KEY)
-    page.locator("#ownRunModel").fill(model)
-    page.locator("#ownRunStart").click()
+    page.locator("#visitorRunKey").fill(KEY)
+    page.locator("#visitorRunModel").fill(model)
+    page.locator("#visitorRunStart").click()
 
 
 def test_stop_shows_only_on_the_visitors_own_playing_run_and_leaves_it_partial(
@@ -78,7 +78,7 @@ def test_stop_shows_only_on_the_visitors_own_playing_run_and_leaves_it_partial(
     stop = page.locator("[data-stop-run]")
     stop.wait_for()
     assert stop.count() == 1
-    assert "gpt-stoppable-1" in page.locator(".own-run-playing").inner_text()
+    assert "gpt-stoppable-1" in page.locator(".visitor-run-playing").inner_text()
 
     # Another visitor (a fresh browser) sees no Stop button for it.
     other = new_page()
@@ -111,16 +111,16 @@ def test_the_form_shows_the_busy_and_already_playing_messages(
     page = open_dashboard(dashboard(**limits))
     page.locator(".story-decision").first.wait_for()
     start_from_form(page, "gpt-first-1")
-    page.locator("#ownRunPanel").wait_for(state="hidden")
+    page.locator("#visitorRunPanel").wait_for(state="hidden")
 
     start_from_form(page, "gpt-second-1")
-    error = page.locator("#ownRunError")
+    error = page.locator("#visitorRunError")
     error.wait_for()
     page.wait_for_function(
-        "document.querySelector('#ownRunError').textContent.length > 0"
+        "document.querySelector('#visitorRunError').textContent.length > 0"
     )
     assert expected in error.inner_text()
     assert "Try again later" in error.inner_text() or expected != "busy"
-    assert page.locator("#ownRunPanel").is_visible()
+    assert page.locator("#visitorRunPanel").is_visible()
     assert "is-notice" in error.get_attribute("class")
     assert page.errors == []

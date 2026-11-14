@@ -101,29 +101,29 @@ def opened_form(open_dashboard, url, viewport="desktop"):
 
 
 def listed_options(page):
-    return page.locator("#ownRunModels [role=option]").all_inner_texts()
+    return page.locator("#visitorRunModels [role=option]").all_inner_texts()
 
 
 def test_entering_a_key_fills_a_model_list_that_filters_as_you_type(
     open_dashboard, form_dashboard
 ):
     page = opened_form(open_dashboard, form_dashboard)
-    page.locator("#ownRunProvider").select_option("openai")
-    page.locator("#ownRunKey").fill("sk-good")
-    status = page.locator("#ownRunModelsStatus")
+    page.locator("#visitorRunProvider").select_option("openai")
+    page.locator("#visitorRunKey").fill("sk-good")
+    status = page.locator("#visitorRunModelsStatus")
     status.filter(has_text="4 models").wait_for()
 
-    page.locator("#ownRunModel").click()
-    page.locator("#ownRunModels").wait_for()
+    page.locator("#visitorRunModel").click()
+    page.locator("#visitorRunModels").wait_for()
     assert listed_options(page) == LISTED
-    page.locator("#ownRunModel").press_sequentially("BETA")
+    page.locator("#visitorRunModel").press_sequentially("BETA")
     page.wait_for_function(
-        "document.querySelectorAll('#ownRunModels [role=option]').length === 2"
+        "document.querySelectorAll('#visitorRunModels [role=option]').length === 2"
     )
     assert listed_options(page) == ["gpt-beta", "gpt-beta-mini"]
-    page.locator("#ownRunModels [role=option]", has_text="gpt-beta-mini").click()
-    assert page.locator("#ownRunModel").input_value() == "gpt-beta-mini"
-    assert page.locator("#ownRunModels").is_hidden()
+    page.locator("#visitorRunModels [role=option]", has_text="gpt-beta-mini").click()
+    assert page.locator("#visitorRunModel").input_value() == "gpt-beta-mini"
+    assert page.locator("#visitorRunModels").is_hidden()
     assert page.errors == []
 
 
@@ -131,20 +131,20 @@ def test_a_rejected_key_and_an_unreachable_provider_read_differently_and_a_typed
     open_dashboard, form_dashboard, model
 ):
     page = opened_form(open_dashboard, form_dashboard)
-    status = page.locator("#ownRunModelsStatus")
-    page.locator("#ownRunKey").fill("sk-rejected")
+    status = page.locator("#visitorRunModelsStatus")
+    page.locator("#visitorRunKey").fill("sk-rejected")
     status.filter(has_text="rejected").wait_for()
     rejected = status.inner_text()
-    page.locator("#ownRunKey").fill("sk-unreachable")
+    page.locator("#visitorRunKey").fill("sk-unreachable")
     status.filter(has_text="reach").wait_for()
     unreachable = status.inner_text()
     assert rejected != unreachable
     assert "sk-" not in rejected + unreachable
 
-    page.locator("#ownRunModel").fill("my-own-model-id")
-    assert page.locator("#ownRunModels").is_hidden()
+    page.locator("#visitorRunModel").fill("my-own-model-id")
+    assert page.locator("#visitorRunModels").is_hidden()
     model.allow(1000)
-    page.locator("#ownRunStart").click()
+    page.locator("#visitorRunStart").click()
     page.wait_for_function(
         "[...document.querySelectorAll('.run-chip')].some(c => c.getAttribute('aria-label').startsWith('my-own-model-id'))"
     )
@@ -155,27 +155,27 @@ def test_the_estimate_is_an_approximation_without_a_price_and_warns_of_a_public_
     open_dashboard, form_dashboard
 ):
     page = opened_form(open_dashboard, form_dashboard)
-    page.locator("#ownRunProvider").select_option("openai")
-    estimate = page.locator("#ownRunEstimate")
-    page.locator("#ownRunModel").fill("gpt-alpha")
+    page.locator("#visitorRunProvider").select_option("openai")
+    estimate = page.locator("#visitorRunEstimate")
+    page.locator("#visitorRunModel").fill("gpt-alpha")
     estimate.filter(has_text="input tokens").wait_for()
     text = estimate.inner_text()
     assert "approximation" in text.lower()
     assert re.search(r"About [\d.]+[kM]?–[\d.]+[kM]? input tokens", text), text
     assert not re.search(r"[$€£]|price|cost", text, re.IGNORECASE)
-    assert page.locator("#ownRunWarning").is_hidden()
+    assert page.locator("#visitorRunWarning").is_hidden()
 
-    page.locator("#ownRunModel").fill("gpt-beta")
-    page.locator("#ownRunWarning").wait_for(state="visible")
-    assert "only you" in page.locator("#ownRunWarning").inner_text()
-    page.locator("#ownRunProvider").select_option("openrouter")
-    page.locator("#ownRunWarning").wait_for(state="hidden")
+    page.locator("#visitorRunModel").fill("gpt-beta")
+    page.locator("#visitorRunWarning").wait_for(state="visible")
+    assert "only you" in page.locator("#visitorRunWarning").inner_text()
+    page.locator("#visitorRunProvider").select_option("openrouter")
+    page.locator("#visitorRunWarning").wait_for(state="hidden")
     assert page.errors == []
 
 
 def live_count(page, kind):
     text = page.locator(
-        f".own-run-playing .own-run-live-count[data-kind={kind}]"
+        f".visitor-run-playing .visitor-run-live-count[data-kind={kind}]"
     ).inner_text()
     return int(text.replace(",", ""))
 
@@ -184,25 +184,25 @@ def test_a_playing_run_shows_its_token_counts_rising_next_to_its_estimate(
     open_dashboard, form_dashboard, model
 ):
     page = opened_form(open_dashboard, form_dashboard)
-    page.locator("#ownRunKey").fill("sk-good")
-    page.locator("#ownRunModel").fill("gpt-live-1")
-    page.locator("#ownRunStart").click()
-    page.locator("#ownRunPanel").wait_for(state="hidden")
+    page.locator("#visitorRunKey").fill("sk-good")
+    page.locator("#visitorRunModel").fill("gpt-live-1")
+    page.locator("#visitorRunStart").click()
+    page.locator("#visitorRunPanel").wait_for(state="hidden")
 
     page.locator("#pickerToggle").click()
-    live = page.locator(".own-run-playing", has_text="gpt-live-1")
+    live = page.locator(".visitor-run-playing", has_text="gpt-live-1")
     live.wait_for()
     assert "Estimate: about" in live.inner_text()
     model.allow(2)
     page.wait_for_function(
-        "Number(document.querySelector('.own-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > 0",
+        "Number(document.querySelector('.visitor-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > 0",
         timeout=10000,
     )
     first = live_count(page, "input")
     assert live_count(page, "output") > 0
     model.allow(2)
     page.wait_for_function(
-        f"Number(document.querySelector('.own-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > {first}",
+        f"Number(document.querySelector('.visitor-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > {first}",
         timeout=10000,
     )
     model.allow(100000)

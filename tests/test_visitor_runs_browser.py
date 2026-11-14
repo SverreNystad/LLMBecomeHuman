@@ -79,8 +79,8 @@ def own_runs_dashboard(tmp_path, gate):
 
 def open_form(page):
     page.locator("#pickerToggle").click()
-    page.locator("#ownRunOpen").click()
-    page.locator("#ownRunPanel").wait_for()
+    page.locator("#visitorRunOpen").click()
+    page.locator("#visitorRunPanel").wait_for()
 
 
 def chip_models(page):
@@ -95,8 +95,8 @@ def test_without_the_flag_there_is_no_form(open_dashboard, detroit_dashboard):
     page.locator("#pickerToggle").click()
     page.locator("#pickerList .picker-run").first.wait_for()
     page.wait_for_timeout(300)
-    assert page.locator("#ownRunOpen").count() == 0
-    assert page.locator("#ownRunPanel").count() == 0
+    assert page.locator("#visitorRunOpen").count() == 0
+    assert page.locator("#visitorRunPanel").count() == 0
 
 
 def test_start_shows_the_run_as_playing_and_it_is_still_listed_after_a_reload(
@@ -106,19 +106,19 @@ def test_start_shows_the_run_as_playing_and_it_is_still_listed_after_a_reload(
     page.locator(".story-decision").first.wait_for()
     shown_before = len(chip_models(page))
     open_form(page)
-    page.locator("#ownRunProvider").select_option("openai")
-    page.locator("#ownRunKey").fill(KEY)
-    assert page.locator("#ownRunKey").get_attribute("type") == "password"
-    assert "never stored" in page.locator("#ownRunPanel").inner_text()
-    page.locator("#ownRunModel").fill("gpt-visitor-1")
-    page.locator("#ownRunStart").click()
+    page.locator("#visitorRunProvider").select_option("openai")
+    page.locator("#visitorRunKey").fill(KEY)
+    assert page.locator("#visitorRunKey").get_attribute("type") == "password"
+    assert "never stored" in page.locator("#visitorRunPanel").inner_text()
+    page.locator("#visitorRunModel").fill("gpt-visitor-1")
+    page.locator("#visitorRunStart").click()
 
     # Added to the Shown Runs, and listed in the picker as playing.
     page.wait_for_function(
         "[...document.querySelectorAll('.run-chip')].some(c => c.getAttribute('aria-label').startsWith('gpt-visitor-1'))"
     )
     assert len(chip_models(page)) == min(shown_before + 1, 6)
-    assert page.locator("#ownRunPanel").is_hidden()
+    assert page.locator("#visitorRunPanel").is_hidden()
     page.locator("#pickerToggle").click()
     entry = page.locator(".picker-run", has_text="gpt-visitor-1")
     assert "playing" in entry.inner_text()
@@ -132,13 +132,15 @@ def test_start_shows_the_run_as_playing_and_it_is_still_listed_after_a_reload(
     assert page.errors == []
 
 
-def test_on_a_phone_opening_the_form_focuses_no_field(
+def test_on_a_phone_opening_the_form_by_touch_focuses_no_field(
     open_dashboard, own_runs_dashboard
 ):
     page = open_dashboard(own_runs_dashboard, "phone")
     page.locator(".story-decision").first.wait_for()
-    open_form(page)
+    page.locator("#pickerToggle").tap()
+    page.locator("#visitorRunOpen").tap()
+    page.locator("#visitorRunPanel").wait_for()
     page.wait_for_timeout(400)
     focused = page.evaluate("document.activeElement?.tagName")
     assert focused not in ("INPUT", "SELECT", "TEXTAREA")
-    assert page.locator("#ownRunPanel").bounding_box()["width"] <= 390
+    assert page.locator("#visitorRunPanel").bounding_box()["width"] <= 390

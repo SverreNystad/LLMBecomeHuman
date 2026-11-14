@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 
 from detroit_benchmark.dashboard import create_app
 from detroit_benchmark.engine import create_model
+from detroit_benchmark.visitor_runs import scrub
 from tests.test_benchmark import fake_chat_module
 
 KEY = "sk-sentinel-0f3c9a7d1e5b4f2a"
@@ -137,3 +138,14 @@ def test_the_key_never_reaches_the_runs_folder_or_the_logs_even_on_errors(
         client.get("/api/runs", params={"visitor_runs": [broken]}),
     ):
         assert KEY not in response.text
+
+
+def test_scrub_also_removes_a_masked_echo_of_the_key():
+    key = "sk-proj-abcdefghijklmnop1234"
+    text = f"Incorrect API key provided: sk-pro**********1234 (full: {key})"
+    scrubbed = scrub(text, key)
+    assert key not in scrubbed
+    assert "sk-pro" not in scrubbed and "1234" not in scrubbed
+    assert scrubbed.startswith("Incorrect API key provided: ")
+    # A short key's pieces are not removed: they would match ordinary text.
+    assert scrub("error 1234 at sk-abc", "sk-abc1234") == "error 1234 at sk-abc"

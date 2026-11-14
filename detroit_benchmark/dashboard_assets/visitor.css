@@ -1,83 +1,83 @@
 /* "Play your own Run" (visitor.js): an entry under the model picker and the form it opens.
  * Every colour is a theme token from styles.css. */
-.own-run-entry { padding-top: 8px; margin-top: 8px; border-top: 1px solid var(--line-soft); }
-.own-run-entry button { width: 100%; padding: 6px 2px; font-size: 12px; text-align: left; color: var(--highlight); }
-.own-run-entry button:hover { color: var(--ink); }
+.visitor-run-entry { padding-top: 8px; margin-top: 8px; border-top: 1px solid var(--line-soft); }
+.visitor-run-entry button { width: 100%; padding: 6px 2px; font-size: 12px; text-align: left; color: var(--highlight); }
+.visitor-run-entry button:hover { color: var(--ink); }
 
 /* This browser's playing Visitor Runs, each with Stop. */
-.own-run-playing:empty { display: none; }
-.own-run-playing { display: grid; gap: 6px; margin-bottom: 6px; }
-.own-run-playing-run { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink); }
-.own-run-playing-run span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.own-run-playing-run small { color: var(--ink-muted); }
-.own-run-entry .own-run-playing-run button {
+.visitor-run-playing:empty { display: none; }
+.visitor-run-playing { display: grid; gap: 6px; margin-bottom: 6px; }
+.visitor-run-playing-run { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink); }
+.visitor-run-playing-run span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.visitor-run-playing-run small { color: var(--ink-muted); }
+.visitor-run-entry .visitor-run-playing-run button {
   width: auto; flex: none; padding: 3px 12px; border: 1px solid var(--danger); border-radius: 999px;
   font-size: 12px; text-align: center; color: var(--danger);
 }
-.own-run-entry .own-run-playing-run button:hover { color: var(--surface-solid); background: var(--danger); }
-.own-run-entry .own-run-playing-run button:disabled { opacity: .55; pointer-events: none; }
+.visitor-run-entry .visitor-run-playing-run button:hover { color: var(--surface-solid); background: var(--danger); }
+.visitor-run-entry .visitor-run-playing-run button:disabled { opacity: .55; pointer-events: none; }
 
-.own-run-panel {
+.visitor-run-panel {
   position: fixed; z-index: 40; top: 72px; left: 50%; transform: translateX(-50%);
   width: 360px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 96px); overflow-y: auto;
   padding: 16px; background: var(--surface-solid); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
-.own-run-panel.is-hidden { display: none; }
-.own-run-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.own-run-head h2 { margin: 0; font-size: 15px; font-weight: 500; }
-.own-run-close { width: 28px; height: 28px; font-size: 18px; color: var(--ink-muted); }
-.own-run-close:hover { color: var(--ink); }
-.own-run-note { margin: 8px 0 12px; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
-.own-run-form label { display: block; margin-bottom: 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
-.own-run-form select, .own-run-form input {
+.visitor-run-panel.is-hidden { display: none; }
+.visitor-run-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.visitor-run-head h2 { margin: 0; font-size: 15px; font-weight: 500; }
+.visitor-run-close { width: 28px; height: 28px; font-size: 18px; color: var(--ink-muted); }
+.visitor-run-close:hover { color: var(--ink); }
+.visitor-run-note { margin: 8px 0 12px; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
+.visitor-run-form label { display: block; margin-bottom: 10px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.visitor-run-form select, .visitor-run-form input {
   display: block; width: 100%; height: 34px; margin-top: 4px; padding: 0 10px;
   border: 1px solid var(--line-soft); border-radius: var(--radius); background: var(--bg); color: var(--ink);
   /* 16px stops phones zooming in on focus. */
   font: inherit; font-size: 16px; letter-spacing: 0; text-transform: none; outline: 0;
 }
-.own-run-form select:focus, .own-run-form input:focus { border-color: var(--highlight); }
-.own-run-error { min-height: 1em; margin: 0 0 8px; font-size: 12px; color: var(--danger); }
-.own-run-error:empty { display: none; }
+.visitor-run-form select:focus, .visitor-run-form input:focus { border-color: var(--highlight); }
+.visitor-run-error { min-height: 1em; margin: 0 0 8px; font-size: 12px; color: var(--danger); }
+.visitor-run-error:empty { display: none; }
 /* Busy or already playing: a refusal to read, not an alarm. */
-.own-run-error.is-notice {
+.visitor-run-error.is-notice {
   padding: 8px 10px; border-left: 2px solid var(--highlight);
   background: var(--highlight-soft); color: var(--ink); line-height: 1.45;
 }
-.own-run-actions { display: flex; justify-content: flex-end; }
-.own-run-actions button {
+.visitor-run-actions { display: flex; justify-content: flex-end; }
+.visitor-run-actions button {
   padding: 7px 18px; border-radius: 999px; font-size: 13px;
   background: var(--highlight); color: var(--surface-solid);
 }
-.own-run-actions button:disabled { opacity: .5; }
+.visitor-run-actions button:disabled { opacity: .5; }
 
-/* The model list (#72): the provider's models under the model field, filtered as you type. */
-.own-run-models-status { margin: -4px 0 10px; font-size: 12px; line-height: 1.4; color: var(--ink-muted); }
-.own-run-models-status:empty { display: none; }
-.own-run-models-status[data-state="rejected"], .own-run-models-status[data-state="failed"] { color: var(--danger); }
-.own-run-models {
+/* The model list: the provider's models under the model field, filtered as you type. */
+.visitor-run-models-status { margin: -4px 0 10px; font-size: 12px; line-height: 1.4; color: var(--ink-muted); }
+.visitor-run-models-status:empty { display: none; }
+.visitor-run-models-status[data-state="rejected"], .visitor-run-models-status[data-state="failed"] { color: var(--danger); }
+.visitor-run-models {
   margin: -6px 0 10px; padding: 2px 0; list-style: none; max-height: 180px; overflow-y: auto;
   border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-solid);
 }
-.own-run-models.is-hidden { display: none; }
-.own-run-models li { padding: 6px 10px; font-size: 13px; color: var(--ink); cursor: pointer; overflow-wrap: anywhere; }
-.own-run-models li:hover, .own-run-models li[aria-selected="true"] { background: var(--highlight-soft); }
+.visitor-run-models.is-hidden { display: none; }
+.visitor-run-models li { padding: 6px 10px; font-size: 13px; color: var(--ink); cursor: pointer; overflow-wrap: anywhere; }
+.visitor-run-models li:hover, .visitor-run-models li[aria-selected="true"] { background: var(--highlight-soft); }
 
-/* The token estimate (#73): an approximation, never a price. */
-.own-run-estimate { margin: 0 0 12px; padding: 8px 10px; border-left: 2px solid var(--highlight); background: var(--surface-sunken); }
-.own-run-estimate.is-hidden { display: none; }
-.own-run-estimate p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
-.own-run-estimate strong { font-weight: 600; color: var(--ink); }
-.own-run-estimate .own-run-estimate-note { margin-top: 4px; color: var(--ink-muted); }
+/* The token estimate: an approximation, never a price. */
+.visitor-run-estimate { margin: 0 0 12px; padding: 8px 10px; border-left: 2px solid var(--highlight); background: var(--surface-sunken); }
+.visitor-run-estimate.is-hidden { display: none; }
+.visitor-run-estimate p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
+.visitor-run-estimate strong { font-weight: 600; color: var(--ink); }
+.visitor-run-estimate .visitor-run-estimate-note { margin-top: 4px; color: var(--ink-muted); }
 
-/* Live token counts of each playing Visitor Run, under its Stop row (#73). */
-.own-run-live-run { margin: -4px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
-.own-run-live-count { font-variant-numeric: tabular-nums; color: var(--ink); }
-.own-run-live-run small { display: block; font-size: 11px; color: var(--ink-muted); }
+/* Live token counts of each playing Visitor Run, under its Stop row. */
+.visitor-run-live-run { margin: -4px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
+.visitor-run-live-count { font-variant-numeric: tabular-nums; color: var(--ink); }
+.visitor-run-live-run small { display: block; font-size: 11px; color: var(--ink-muted); }
 
 @media (min-width: 761px) {
-  .own-run-form select, .own-run-form input { font-size: 13px; }
+  .visitor-run-form select, .visitor-run-form input { font-size: 13px; }
 }
 
-/* Publication (#76): a public Run of the chosen model already exists. */
-.own-run-warning { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--highlight); }
-.own-run-warning[hidden] { display: none; }
+/* The public-Run warning: a public Run of the chosen model already exists. */
+.visitor-run-warning { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--highlight); }
+.visitor-run-warning[hidden] { display: none; }

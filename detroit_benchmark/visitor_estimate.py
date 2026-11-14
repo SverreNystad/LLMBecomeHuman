@@ -1,4 +1,4 @@
-"""The token estimate a visitor sees before starting a Visitor Run (#73).
+"""The token estimate a visitor sees before starting a Visitor Run.
 
 It comes from the story itself: the prompts of every decision and Memory Update along the
 story's shortest and longest routes, measured in characters exactly as the engine builds

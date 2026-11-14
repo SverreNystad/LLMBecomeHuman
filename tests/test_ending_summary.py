@@ -202,6 +202,23 @@ def test_a_crafted_ending_says_who_lived_and_how(craft):
     }
 
 
+@pytest.mark.parametrize(
+    ("kara_flags", "sentence"),
+    [
+        ({"kara_captured": True}, "Kara was captured. Alice is alive."),
+        ({"kara_alive": False}, "Kara died. Alice is alive."),
+    ],
+)
+def test_alice_is_with_kara_only_if_kara_is_free(craft, kara_flags, sentence):
+    flags = {"kara_alive": True, "kara_captured": False, "alice_alive": True}
+    kara_flags = {**flags, **kara_flags}
+    route = ("route_kara_final", "kara_captured", kara_flags["kara_captured"], False)
+    root = craft(flags=kara_flags, routes=[route])
+    kara = _character(_summary(root, "crafted"), "Kara")
+    assert kara["sentence"] == sentence
+    assert kara["alice_with_her"] is False
+
+
 def test_markus_whose_story_ended_early_has_no_revolution_outcome(craft):
     # The story's starting facts say "not peaceful"; that is a default, not an outcome.
     root = craft(

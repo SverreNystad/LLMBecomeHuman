@@ -22,8 +22,11 @@ from detroit_benchmark.visitor_estimate import (
     token_range,
 )
 from detroit_benchmark.visitor_runs import (
+    MAX_MODEL_PAGES,
     ProviderAuthError,
     ProviderUnreachable,
+    RateLimit,
+    TooManyRequests,
     list_models,
 )
 
@@ -360,3 +363,52 @@ def test_a_run_of_the_story_uses_tokens_within_the_estimate_and_its_counts_rise_
     assert len(set(seen)) >= 3 and seen == sorted(seen)
     for kind in ("input_tokens", "output_tokens"):
         assert found[kind]["low"] <= run[f"total_{kind}"] <= found[kind]["high"], kind
+
+
+def test_listing_is_limited_per_visitor_to_ten_a_minute(tmp_path):
+    client = visitor_client(tmp_path, model_lister=lambda provider, key: ["m"])
+    ip = {"CF-Connecting-IP": "203.0.113.20"}
+
+    def send(headers):
+        return client.post(
+            "/api/visitor-runs/models",
+            json={"provider": "openai", "key": KEY},
+            headers=headers,
+        )
+
+    assert [send(ip).status_code for _ in range(10)] == [200] * 10
+    refused = send(ip)
+    assert refused.status_code == 429
+    assert "Wait a minute" in refused.json()["detail"]
+    # Another visitor is not held back.
+    assert send({"CF-Connecting-IP": "203.0.113.21"}).status_code == 200
+
+
+def test_the_rate_limit_forgets_requests_outside_its_window():
+    now = [0.0]
+    limit = RateLimit(2, window=60, clock=lambda: now[0])
+    limit.check("a")
+    limit.check("a")
+    with pytest.raises(TooManyRequests):
+        limit.check("a")
+    now[0] = 61
+    limit.check("a")
+
+
+@pytest.mark.parametrize("provider", ["anthropic", "google"])
+def test_a_paged_model_list_is_read_at_most_twenty_pages_deep(provider):
+    pages = []
+
+    def handler(request):
+        pages.append(request)
+        n = len(pages)
+        if provider == "anthropic":
+            body = {"data": [{"id": f"m{n}"}], "has_more": True, "last_id": f"m{n}"}
+        else:
+            body = {"models": [{"name": f"models/m{n}"}], "nextPageToken": f"t{n}"}
+        return httpx.Response(200, json=body)
+
+    with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        ids = list_models(provider, KEY, client=client)
+    assert len(pages) == MAX_MODEL_PAGES == 20
+    assert len(ids) == 20

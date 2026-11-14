@@ -527,6 +527,15 @@ def iter_events(directory: Path):
         return
 
 
+def read_json_object(path: Path) -> dict | None:
+    """The JSON object in this file, or None when it is missing, unreadable or not an object."""
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
 def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
     """Write JSON so a crash never leaves a half-written file."""
     temp = path.with_suffix(".tmp")

@@ -76,19 +76,19 @@ def test_the_form_warns_before_start_when_a_public_run_of_the_model_exists(
     page = open_dashboard(publishing_dashboard)
     page.locator(".story-decision").first.wait_for()
     open_form(page)
-    warning = page.locator("#ownRunWarning")
-    page.locator("#ownRunProvider").select_option("openai")
+    warning = page.locator("#visitorRunWarning")
+    page.locator("#visitorRunProvider").select_option("openai")
 
-    page.locator("#ownRunModel").fill("gpt-nobody-ran")
+    page.locator("#visitorRunModel").fill("gpt-nobody-ran")
     page.wait_for_timeout(600)
     assert warning.is_hidden()
 
-    page.locator("#ownRunModel").fill("gpt-baked-1")
+    page.locator("#visitorRunModel").fill("gpt-baked-1")
     warning.wait_for()
     assert warning.inner_text() == WARNING
 
     # The same model id under another provider is another model.
-    page.locator("#ownRunProvider").select_option("openrouter")
+    page.locator("#visitorRunProvider").select_option("openrouter")
     warning.wait_for(state="hidden")
     assert page.errors == []
 
@@ -115,7 +115,7 @@ def test_a_public_visitor_run_is_listed_for_everyone_like_any_other_run(
 
     page.keyboard.press("Escape")
     open_form(page)
-    page.locator("#ownRunProvider").select_option("openai")
-    page.locator("#ownRunModel").fill("gpt-first-1")
-    page.locator("#ownRunWarning").wait_for()
+    page.locator("#visitorRunProvider").select_option("openai")
+    page.locator("#visitorRunModel").fill("gpt-first-1")
+    page.locator("#visitorRunWarning").wait_for()
     assert page.errors == []

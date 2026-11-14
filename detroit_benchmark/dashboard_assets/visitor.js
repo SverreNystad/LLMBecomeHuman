@@ -13,11 +13,9 @@
  */
 (() => {
   'use strict';
+  // The form is built once the config answers, after app.js has run, so app.js's globals
+  // (esc, modelName, autoFocus) are there to use.
   const STORAGE_KEY = 'llmbh.visitorRuns';
-  const PROVIDER_NAMES = {
-    openai: 'OpenAI', anthropic: 'Anthropic', google: 'Google', xai: 'xAI',
-    deepseek: 'DeepSeek', mistral: 'Mistral', openrouter: 'OpenRouter',
-  };
 
   function storedIds() {
     try {
@@ -37,36 +35,37 @@
 
   function build(providers) {
     const entry = document.createElement('div');
-    entry.className = 'own-run-entry';
-    entry.innerHTML = '<button type="button" id="ownRunOpen">Play your own Run</button>';
+    entry.className = 'visitor-run-entry';
+    entry.innerHTML = '<button type="button" id="visitorRunOpen">Play your own Run</button>';
     document.getElementById('pickerPanel').append(entry);
     entry.querySelector('button').addEventListener('click', open);
     buildPlaying(entry);
 
     panel = document.createElement('div');
-    panel.className = 'own-run-panel is-hidden';
-    panel.id = 'ownRunPanel';
+    panel.className = 'visitor-run-panel is-hidden';
+    panel.id = 'visitorRunPanel';
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-labelledby', 'ownRunTitle');
+    panel.setAttribute('aria-labelledby', 'visitorRunTitle');
     panel.innerHTML = `
-      <form class="own-run-form" novalidate>
-        <div class="own-run-head"><h2 id="ownRunTitle">Play your own Run</h2>
-          <button type="button" class="own-run-close" aria-label="Close" title="Close">×</button></div>
-        <p class="own-run-note">Your model plays the whole story under the default goal, on this server.
+      <form class="visitor-run-form" novalidate>
+        <div class="visitor-run-head"><h2 id="visitorRunTitle">Play your own Run</h2>
+          <button type="button" class="visitor-run-close" aria-label="Close" title="Close">×</button></div>
+        <p class="visitor-run-note">Your model plays the whole story under the default goal, on this server.
           Your API key is sent to the server for this Run only and never stored.</p>
-        <label>Provider<select id="ownRunProvider" required>${providers.map(p =>
-          `<option value="${p}">${PROVIDER_NAMES[p] || p}</option>`).join('')}</select></label>
-        <label>API key<input id="ownRunKey" type="password" autocomplete="off" spellcheck="false" required></label>
-        <label>Model id<input id="ownRunModel" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. gpt-4.1-mini" required
-          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ownRunModels"></label>
-        <p class="own-run-models-status" id="ownRunModelsStatus" aria-live="polite"></p>
-        <ul class="own-run-models is-hidden" id="ownRunModels" role="listbox" aria-label="Models"></ul>
-        <div class="own-run-estimate is-hidden" id="ownRunEstimate" aria-live="polite"></div>
-        <p class="own-run-error" id="ownRunError" role="alert"></p>
-        <div class="own-run-actions"><button type="submit" id="ownRunStart">Start</button></div>
+        <label>Provider<select id="visitorRunProvider" required>${providers.map(p =>
+          `<option value="${esc(p)}">${esc(modelName(p))}</option>`).join('')}</select></label>
+        <label>API key<input id="visitorRunKey" type="password" autocomplete="off" spellcheck="false" required></label>
+        <label>Model id<input id="visitorRunModel" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. gpt-4.1-mini" required
+          role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="visitorRunModels"></label>
+        <p class="visitor-run-models-status" id="visitorRunModelsStatus" aria-live="polite"></p>
+        <ul class="visitor-run-models is-hidden" id="visitorRunModels" role="listbox" aria-label="Models"></ul>
+        <div class="visitor-run-estimate is-hidden" id="visitorRunEstimate" aria-live="polite"></div>
+        <p class="visitor-run-warning" id="visitorRunWarning" hidden>A public Run of this model already exists. Yours will be saved but only you will see it.</p>
+        <p class="visitor-run-error" id="visitorRunError" role="alert"></p>
+        <div class="visitor-run-actions"><button type="submit" id="visitorRunStart">Start</button></div>
       </form>`;
     document.body.append(panel);
-    panel.querySelector('.own-run-close').addEventListener('click', close);
+    panel.querySelector('.visitor-run-close').addEventListener('click', close);
     panel.querySelector('form').addEventListener('submit', e => { e.preventDefault(); start(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
     setUpModelList();
@@ -78,20 +77,22 @@
     document.getElementById('pickerToggle').getAttribute('aria-expanded') === 'true'
       && document.getElementById('pickerToggle').click();
     panel.classList.remove('is-hidden');
-    panel.querySelector('#ownRunError').textContent = '';
-    // On a phone no field focuses by itself, so the keyboard stays down until asked for.
-    if (!window.isPhoneLayout?.()) panel.querySelector('#ownRunProvider').focus();
+    panel.querySelector('#visitorRunError').textContent = '';
+    // After a touch no field focuses by itself, so the keyboard stays down until asked for.
+    autoFocus(panel.querySelector('#visitorRunProvider'));
+    // A Run of the chosen model may have become public since the form was last open.
+    updateEstimate();
   }
   function close() {
     if (!panel || panel.classList.contains('is-hidden')) return;
     panel.classList.add('is-hidden');
-    panel.querySelector('#ownRunKey').value = '';
+    panel.querySelector('#visitorRunKey').value = '';
   }
 
   async function start() {
     const field = id => panel.querySelector(id);
-    const error = field('#ownRunError'), button = field('#ownRunStart');
-    const body = { provider: field('#ownRunProvider').value, key: field('#ownRunKey').value.trim(), model: field('#ownRunModel').value.trim() };
+    const error = field('#visitorRunError'), button = field('#visitorRunStart');
+    const body = { provider: field('#visitorRunProvider').value, key: field('#visitorRunKey').value.trim(), model: field('#visitorRunModel').value.trim() };
     if (!body.key || !body.model) { error.textContent = 'Enter your API key and a model id.'; return; }
     error.textContent = '';
     error.classList.remove('is-notice');
@@ -116,7 +117,7 @@
     }
   }
 
-  /* ---- The model list (#72) ------------------------------------------------------------
+  /* ---- The model list ------------------------------------------------------------------
    * Once a key is entered, the server lists the provider's models for it. The model field
    * then filters that list as you type; it stays a free-text field, so a listing that fails
    * (a rejected key, an unreachable provider) never stops you typing a model id. */
@@ -125,12 +126,12 @@
   const field = id => panel.querySelector(id);
 
   function setUpModelList() {
-    const key = field('#ownRunKey'), model = field('#ownRunModel'), list = field('#ownRunModels');
+    const key = field('#visitorRunKey'), model = field('#visitorRunModel'), list = field('#visitorRunModels');
     let timer = null;
     const soon = delay => { clearTimeout(timer); timer = setTimeout(fetchModels, delay); };
     key.addEventListener('input', () => soon(600));
     key.addEventListener('change', () => soon(0));
-    field('#ownRunProvider').addEventListener('change', () => soon(0));
+    field('#visitorRunProvider').addEventListener('change', () => soon(0));
     model.addEventListener('input', () => { highlighted = -1; showList(); });
     model.addEventListener('focus', showList);
     model.addEventListener('blur', () => setTimeout(hideList, 150));
@@ -144,7 +145,7 @@
   }
 
   async function fetchModels() {
-    const status = field('#ownRunModelsStatus'), key = field('#ownRunKey').value.trim();
+    const status = field('#visitorRunModelsStatus'), key = field('#visitorRunKey').value.trim();
     const request = ++listRequest;
     listedModels = [];
     hideList();
@@ -154,7 +155,7 @@
     try {
       const res = await fetch('/api/visitor-runs/models', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: field('#ownRunProvider').value, key }),
+        body: JSON.stringify({ provider: field('#visitorRunProvider').value, key }),
       });
       let reply = {};
       try { reply = await res.json(); } catch (_) { /* not JSON */ }
@@ -168,22 +169,22 @@
       say('listed', listedModels.length
         ? `${listedModels.length} models listed: type to search, or enter any model id.`
         : 'The provider listed no models. Type a model id.');
-      if (document.activeElement === field('#ownRunModel')) showList();
+      if (document.activeElement === field('#visitorRunModel')) showList();
     } catch (_) {
       if (request === listRequest) say('failed', 'Could not list the models. You can still type a model id.');
     }
   }
 
   function matches() {
-    const query = field('#ownRunModel').value.trim().toLowerCase();
+    const query = field('#visitorRunModel').value.trim().toLowerCase();
     return listedModels.filter(id => id.toLowerCase().includes(query)).slice(0, MAX_LISTED);
   }
   function showList() {
-    const list = field('#ownRunModels'), found = matches();
+    const list = field('#visitorRunModels'), found = matches();
     if (!found.length) { hideList(); return; }
     list.replaceChildren(...found.map((id, i) => {
       const item = document.createElement('li');
-      item.id = `ownRunModelOption${i}`;
+      item.id = `visitorRunModelOption${i}`;
       item.setAttribute('role', 'option');
       item.setAttribute('aria-selected', String(i === highlighted));
       item.dataset.model = id;
@@ -191,22 +192,22 @@
       return item;
     }));
     list.classList.remove('is-hidden');
-    field('#ownRunModel').setAttribute('aria-expanded', 'true');
+    field('#visitorRunModel').setAttribute('aria-expanded', 'true');
   }
   function hideList() {
     if (!panel) return;
-    field('#ownRunModels').classList.add('is-hidden');
-    field('#ownRunModel').setAttribute('aria-expanded', 'false');
-    field('#ownRunModel').removeAttribute('aria-activedescendant');
+    field('#visitorRunModels').classList.add('is-hidden');
+    field('#visitorRunModel').setAttribute('aria-expanded', 'false');
+    field('#visitorRunModel').removeAttribute('aria-activedescendant');
   }
   function choose(id) {
-    field('#ownRunModel').value = id;
+    field('#visitorRunModel').value = id;
     hideList();
     updateEstimate();
   }
   function moveInList(e) {
-    const open = !field('#ownRunModels').classList.contains('is-hidden');
-    const items = open ? [...field('#ownRunModels').children] : [];
+    const open = !field('#visitorRunModels').classList.contains('is-hidden');
+    const items = open ? [...field('#visitorRunModels').children] : [];
     if (e.key === 'Escape' && open) { e.stopPropagation(); hideList(); return; }
     if (e.key === 'Enter' && open && items[highlighted]) {
       e.preventDefault();
@@ -218,19 +219,21 @@
     highlighted = (highlighted + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length;
     items.forEach((item, i) => item.setAttribute('aria-selected', String(i === highlighted)));
     items[highlighted].scrollIntoView({ block: 'nearest' });
-    field('#ownRunModel').setAttribute('aria-activedescendant', items[highlighted].id);
+    field('#visitorRunModel').setAttribute('aria-activedescendant', items[highlighted].id);
   }
 
-  /* ---- The token estimate (#73) ---------------------------------------------------------
+  /* ---- The token estimate and the public-Run warning --------------------------------------
    * Shown once a model id is entered: about how many tokens a Run of the story takes, as an
-   * approximation and never a price. (The public-Run warning is watchPublicRun's, below.) */
+   * approximation and never a price. A model's first complete Visitor Run is public and any
+   * later one private, so the same answer also says whether a public Run of the chosen
+   * provider and model id exists; if so, the form warns before Start. */
   let estimateRequest = 0;
 
   function setUpEstimate() {
     let timer = null;
     const soon = () => { clearTimeout(timer); timer = setTimeout(updateEstimate, 300); };
-    field('#ownRunModel').addEventListener('input', soon);
-    field('#ownRunProvider').addEventListener('change', soon);
+    field('#visitorRunModel').addEventListener('input', soon);
+    field('#visitorRunProvider').addEventListener('change', soon);
   }
 
   const estimateFor = (provider, model) =>
@@ -241,58 +244,32 @@
   const tokenRange = range => `${tokenCount(range.low)}–${tokenCount(range.high)}`;
 
   async function updateEstimate() {
-    const box = field('#ownRunEstimate'), model = field('#ownRunModel').value.trim();
+    const box = field('#visitorRunEstimate'), model = field('#visitorRunModel').value.trim();
+    const warning = field('#visitorRunWarning');
     const request = ++estimateRequest;
-    if (!model) { box.classList.add('is-hidden'); box.replaceChildren(); return; }
+    if (!model) { box.classList.add('is-hidden'); box.replaceChildren(); warning.hidden = true; return; }
     try {
-      const found = await estimateFor(field('#ownRunProvider').value, model);
+      const found = await estimateFor(field('#visitorRunProvider').value, model);
       if (request !== estimateRequest) return;
+      warning.hidden = !found.public_run_exists;
       box.innerHTML = `
-        <p class="own-run-estimate-range">About <strong>${tokenRange(found.input_tokens)}</strong> input tokens
+        <p class="visitor-run-estimate-range">About <strong>${tokenRange(found.input_tokens)}</strong> input tokens
           and <strong>${tokenRange(found.output_tokens)}</strong> output tokens.</p>
-        <p class="own-run-estimate-note">An approximation from the story's shortest and longest routes, not a quote:
+        <p class="visitor-run-estimate-note">An approximation from the story's shortest and longest routes, not a quote:
           your provider counts the real tokens.</p>`;
       box.classList.remove('is-hidden');
     } catch (_) {
-      if (request === estimateRequest) box.classList.add('is-hidden');
+      if (request === estimateRequest) { box.classList.add('is-hidden'); warning.hidden = true; }
     }
   }
 
-  /* Publication (#76): a model's first complete Visitor Run is public; any later one is private.
-   * Before Start, the form warns when a public Run of the chosen provider and model id exists. */
-  function watchPublicRun() {
-    const warning = document.createElement('p');
-    warning.className = 'own-run-warning';
-    warning.id = 'ownRunWarning';
-    warning.hidden = true;
-    warning.textContent = 'A public Run of this model already exists. Yours will be saved but only you will see it.';
-    panel.querySelector('#ownRunError').before(warning);
-    let timer = 0, asked = 0;
-    const check = async () => {
-      const provider = panel.querySelector('#ownRunProvider').value;
-      const model = panel.querySelector('#ownRunModel').value.trim();
-      const ask = ++asked;
-      if (!model) { warning.hidden = true; return; }
-      try {
-        const res = await fetch('/api/visitor-runs/public?' + new URLSearchParams({ provider, model }), { cache: 'no-store' });
-        const reply = res.ok ? await res.json() : {};
-        if (ask === asked) warning.hidden = !reply.public_run_exists;
-      } catch (_) { if (ask === asked) warning.hidden = true; }
-    };
-    const soon = () => { clearTimeout(timer); timer = setTimeout(check, 250); };
-    const form = panel.querySelector('form');
-    form.addEventListener('input', e => { if (e.target.id !== 'ownRunKey') soon(); });
-    form.addEventListener('change', e => { if (e.target.id !== 'ownRunKey') soon(); });
-    document.getElementById('ownRunOpen').addEventListener('click', soon);
-  }
-
-  /* Stop (#74): this browser's playing Visitor Runs, above the entry. */
+  /* Stop: this browser's playing Visitor Runs, above the entry. */
   const POLL_MS = 4000;
   let playingList = null;
 
   function buildPlaying(entry) {
     playingList = document.createElement('div');
-    playingList.className = 'own-run-playing';
+    playingList.className = 'visitor-run-playing';
     playingList.setAttribute('aria-live', 'polite');
     entry.prepend(playingList);
     playingList.addEventListener('click', e => {
@@ -315,7 +292,7 @@
         runs = ((await res.json()).runs || []).filter(r => ids.has(r.id) && r.status === 'running');
       } catch (_) { return; }
     }
-    // Each playing Run's estimate, fetched once, sits next to its live token counts (#73).
+    // Each playing Run's estimate, fetched once, sits next to its live token counts.
     await Promise.all(runs.map(async run => {
       if (playingEstimates.has(run.id)) return;
       try { playingEstimates.set(run.id, await estimateFor(run.provider, run.model)); } catch (_) { /* shown without */ }
@@ -327,18 +304,17 @@
   const tokensSoFar = n => Number(n || 0).toLocaleString('en-US');
   function liveTokens(run) {
     const found = playingEstimates.get(run.id);
-    return `<p class="own-run-live-run">
-      <span class="own-run-live-count" data-kind="input">${tokensSoFar(run.total_input_tokens)}</span> input and
-      <span class="own-run-live-count" data-kind="output">${tokensSoFar(run.total_output_tokens)}</span> output tokens so far${found
+    return `<p class="visitor-run-live-run">
+      <span class="visitor-run-live-count" data-kind="input">${tokensSoFar(run.total_input_tokens)}</span> input and
+      <span class="visitor-run-live-count" data-kind="output">${tokensSoFar(run.total_output_tokens)}</span> output tokens so far${found
         ? `<small>Estimate: about ${tokenRange(found.input_tokens)} input and ${tokenRange(found.output_tokens)} output</small>` : ''}</p>`;
   }
 
-  const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
   function renderPlaying(runs) {
     const stopping = new Set([...playingList.querySelectorAll('[data-stop-run]:disabled')].map(b => b.dataset.stopRun));
-    playingList.innerHTML = runs.map(run => `<div class="own-run-playing-run">
-      <span><strong>${escapeHtml(run.model)}</strong> <small>your Run, playing</small></span>
-      <button type="button" data-stop-run="${escapeHtml(run.id)}" ${stopping.has(run.id) ? 'disabled' : ''}
+    playingList.innerHTML = runs.map(run => `<div class="visitor-run-playing-run">
+      <span><strong>${esc(run.model)}</strong> <small>your Run, playing</small></span>
+      <button type="button" data-stop-run="${esc(run.id)}" ${stopping.has(run.id) ? 'disabled' : ''}
         title="Stop after the current model call; the Run is kept as partial">${stopping.has(run.id) ? 'Stopping…' : 'Stop'}</button></div>
       ${liveTokens(run)}`).join('');
   }
@@ -354,6 +330,6 @@
 
   fetch('/api/visitor-runs/config', { cache: 'no-store' })
     .then(res => (res.ok ? res.json() : null))
-    .then(config => { if (config) { build(config.providers || []); watchPublicRun(); } })
+    .then(config => { if (config) build(config.providers || []); })
     .catch(() => { /* Visitor Runs off or unreachable: no form */ });
 })();

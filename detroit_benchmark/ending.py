@@ -73,6 +73,9 @@ OUTCOMES: dict[str, dict[Any, str]] = {
         False: "Alice died.",
         None: "Whether Alice is with her is unknown.",
         "with_kara_unknown": "It is unknown how Kara's story ended or whether Alice is with her.",
+        # Alice is with Kara only if Kara is free; otherwise only her own fate is told.
+        "alive_apart": "Alice is alive.",
+        "unknown_apart": "Whether Alice is alive is unknown.",
     },
     # Markus
     "markus_peaceful": {
@@ -199,17 +202,30 @@ def ending_summary(
         kara_outcome, kara_line = "free", _say("kara_alive", True)
     else:
         kara_outcome, kara_line = "unknown", _say("kara_alive", None)
+    if kara_outcome == "free":
+        alice_with_her, alice_line = alice, _say("alice_alive", alice)
+    else:
+        # A captured or dead Kara, or one who left Alice behind, is not with her.
+        alice_with_her = (
+            False if kara_outcome in ("dead", "left", "captured") or alice is False
+            else UNKNOWN
+        )
+        alice_line = (
+            ""
+            if left is True
+            else _say("alice_alive", False)
+            if alice is False
+            else OUTCOMES["alice_alive"]["alive_apart"]
+            if alice is True
+            else OUTCOMES["alice_alive"]["unknown_apart"]
+        )
     kara = {
         "name": "Kara",
         "outcome": kara_outcome,
-        "alice_with_her": False
-        if alice is False or kara_outcome == "left"
-        else alice
-        if kara_outcome in ("free", "captured")
-        else UNKNOWN,
+        "alice_with_her": alice_with_her,
         "sentence": OUTCOMES["alice_alive"]["with_kara_unknown"]
         if kara_outcome == "unknown" and alice is None
-        else _join(kara_line, "" if left is True else _say("alice_alive", alice)),
+        else _join(kara_line, alice_line),
     }
 
     markus_alive = value("markus_alive")

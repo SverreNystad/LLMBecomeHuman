@@ -14,6 +14,14 @@ import json
 import time
 from collections import Counter
 from functools import lru_cache
+from pathlib import Path
+from typing import Any
+from urllib.parse import quote
+
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from .ending import ending_summary, route_question
 from .engine import (
@@ -22,27 +30,29 @@ from .engine import (
     create_model,
     iter_events,
     limit_sentences,
+    read_json_object as _json_file,
 )
+from .visitor_estimate import story_estimate
 from .visitor_runs import (
     PROVIDERS,
     VISITOR_FOLDER,
     VISITOR_STORY,
+    AlreadyPlaying,
+    Busy,
     ModelFactory,
     ModelLister,
+    PlayingRuns,
+    ProviderAuthError,
+    ProviderUnreachable,
+    Publications,
+    RateLimit,
+    TooManyRequests,
+    is_public,
     list_models,
+    mark_cut_off_runs,
     scrub,
     start_visitor_run,
 )
-from .visitor_runs import is_public, public_run_exists, settle_publications
-from .visitor_runs import AlreadyPlaying, Busy, PlayingRuns, mark_cut_off_runs
-from pathlib import Path
-from typing import Any
-from urllib.parse import quote
-
-from fastapi import FastAPI, HTTPException, Query, Request
-from pydantic import BaseModel
-from fastapi.responses import FileResponse, Response
-from fastapi.staticfiles import StaticFiles
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
 ART_RECHECK_SECONDS = 30
@@ -103,14 +113,6 @@ DETROIT_CHAPTER_TITLES = {
 }
 
 
-def _json_file(path: Path) -> dict[str, Any] | None:
-    try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-        return obj if isinstance(obj, dict) else None
-    except (OSError, json.JSONDecodeError):
-        return None
-
-
 def _run_id(root: Path, directory: Path) -> str:
     rel = directory.relative_to(root).as_posix()
     return base64.urlsafe_b64encode(rel.encode("utf-8")).decode("ascii").rstrip("=")
@@ -150,25 +152,10 @@ def _is_private(root: Path, directory: Path) -> bool:
     )
 
 
-class VisitorRunStart(BaseModel):
-    provider: str
-    model: str
-    key: str
-
-
 def _visitor_ip(request: Request) -> str:
     """The client IP that identifies a visitor: Cloudflare's connecting IP, else the peer."""
     forwarded = request.headers.get("cf-connecting-ip", "").strip()
     return forwarded or (request.client.host if request.client else "unknown")
-
-
-def _reserve_slot(playing: PlayingRuns, request: Request):
-    try:
-        return playing.reserve(_visitor_ip(request))
-    except AlreadyPlaying as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from None
-    except Busy as exc:
-        raise HTTPException(status_code=503, detail=str(exc)) from None
 
 
 def _seconds_since_write(directory: Path) -> float:
@@ -755,11 +742,13 @@ def create_app(
     visitor_story: str | Path = VISITOR_STORY,
     max_playing: int = 2,
     max_playing_per_visitor: int = 1,
+    model_listings_per_minute: int = 10,
 ) -> FastAPI:
     """The dashboard app. With ``allow_own_runs``, visitors can play Visitor Runs with their
     own key: ``model_lister`` (provider, key) -> model ids and ``model_factory`` (the shape of
     :func:`engine.create_model`) are the real ones unless a test injects fakes. At most
-    ``max_playing`` Visitor Runs play at once, and ``max_playing_per_visitor`` per client IP."""
+    ``max_playing`` Visitor Runs play at once, and ``max_playing_per_visitor`` per client IP;
+    a client IP may list a provider's models ``model_listings_per_minute`` times a minute."""
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
@@ -770,6 +759,8 @@ def create_app(
     app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
     # Lists a provider's models for the Visitor Run form.
     app.state.model_lister = model_lister or list_models
+    # Empty unless Visitor Runs are on.
+    playing = PlayingRuns(max_playing, max_playing_per_visitor)
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -787,9 +778,12 @@ def create_app(
     def list_runs(visitor_runs: list[str] = Query([])):
         """Every Run except private Visitor Runs, which are listed only when named."""
         named = set(visitor_runs)
-        if allow_own_runs:
-            settle_publications(root)  # Complete Runs a restart left undecided.
-        runs =(_metadata(root, path) for path in _discovered_runs(root))
+        # A Visitor Run is playing until its thread has ended and its publication is decided.
+        still_playing = playing.playing_ids()
+        runs = (
+            {**run, "status": "running"} if run["id"] in still_playing else run
+            for run in (_metadata(root, path) for path in _discovered_runs(root))
+        )
         return {
             "runs": sorted(
                 (
@@ -803,61 +797,15 @@ def create_app(
             )
         }
 
-    playing = PlayingRuns(max_playing, max_playing_per_visitor)
     if allow_own_runs:
-        mark_cut_off_runs(root)
-
-    if allow_own_runs:
-        # The form's model list and token estimate (#72, #73).
-        _add_visitor_form_routes(app, root, story_path)
-
-        @app.get("/api/visitor-runs/config")
-        def visitor_run_config():
-            return {"providers": list(PROVIDERS)}
-
-        @app.post("/api/visitor-runs")
-        def start_run(body: VisitorRunStart, request: Request):
-            if body.provider not in PROVIDERS:
-                raise HTTPException(status_code=422, detail="Unknown provider")
-            model, key = body.model.strip(), body.key.strip()
-            if not model or not key:
-                raise HTTPException(
-                    status_code=422, detail="Enter a key and a model id"
-                )
-            slot = _reserve_slot(playing, request)
-            try:
-                directory = start_visitor_run(
-                    root,
-                    story_path,
-                    body.provider,
-                    model,
-                    key,
-                    model_factory,
-                    stop=slot.stop,
-                    on_end=lambda: playing.release(slot),
-                )
-            except Exception as exc:
-                playing.release(slot)
-                detail = scrub(f"Could not start the Run: {exc}", key)
-                raise HTTPException(status_code=500, detail=detail) from None
-            slot.run_id = _run_id(root, directory)
-            return {"id": slot.run_id}
-
-        @app.post("/api/visitor-runs/{run_id}/stop", status_code=202)
-        def stop_run(run_id: str):
-            """Stops a playing Visitor Run after its current model call; it stays partial."""
-            if not playing.stop(run_id):
-                raise HTTPException(status_code=404, detail="No such Run is playing")
-            return {"id": run_id, "stopping": True}
-
-    if allow_own_runs:
-        # Publication (#76): the form warns before Start when a public Run of the model exists.
-
-        @app.get("/api/visitor-runs/public")
-        def visitor_run_public(provider: str, model: str):
-            return {
-                "public_run_exists": public_run_exists(root, provider, model.strip())
-            }
+        _add_visitor_run_routes(
+            app,
+            root,
+            story_path,
+            playing,
+            model_factory,
+            RateLimit(model_listings_per_minute),
+        )
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):
@@ -1005,24 +953,52 @@ def create_app(
     return app
 
 
+class VisitorRunStart(BaseModel):
+    provider: str
+    model: str
+    key: str
+
+
 class VisitorModelsRequest(BaseModel):
     provider: str
     key: str
 
 
-def _add_visitor_form_routes(app: FastAPI, root: Path, story_path: Path) -> None:
-    """The Visitor Run form's model list (#72) and token estimate (#73)."""
-    from .visitor_estimate import story_estimate
-    from .visitor_runs import ProviderAuthError, ProviderUnreachable
+def _require_known_provider(provider: str) -> None:
+    if provider not in PROVIDERS:
+        raise HTTPException(status_code=422, detail="Unknown provider")
+
+
+def _add_visitor_run_routes(
+    app: FastAPI,
+    root: Path,
+    story_path: Path,
+    playing: PlayingRuns,
+    model_factory: ModelFactory,
+    model_listings: RateLimit,
+) -> None:
+    """Every Visitor Run route: the form's config, model list and token estimate, the
+    public-Run check, Start and Stop. Registered only with ``allow_own_runs``."""
+    # A Run a restart cut off is partial; a complete one a restart left undecided is decided.
+    mark_cut_off_runs(root)
+    publications = Publications(root)
+    publications.settle()
+
+    @app.get("/api/visitor-runs/config")
+    def visitor_run_config():
+        return {"providers": list(PROVIDERS)}
 
     @app.post("/api/visitor-runs/models")
-    def list_visitor_models(body: VisitorModelsRequest):
+    def list_visitor_models(body: VisitorModelsRequest, request: Request):
         """The model ids the provider lists for this key. The key is never echoed."""
         key = body.key.strip()
-        if body.provider not in PROVIDERS:
-            raise HTTPException(status_code=422, detail="Unknown provider")
+        _require_known_provider(body.provider)
         if not key:
             raise HTTPException(status_code=422, detail="Enter your API key")
+        try:
+            model_listings.check(_visitor_ip(request))
+        except TooManyRequests as exc:
+            raise HTTPException(status_code=429, detail=str(exc)) from None
         try:
             ids = app.state.model_lister(body.provider, key)
         except ProviderAuthError:
@@ -1041,13 +1017,60 @@ def _add_visitor_form_routes(app: FastAPI, root: Path, story_path: Path) -> None
     @app.get("/api/visitor-runs/estimate")
     def estimate_visitor_run(provider: str, model: str):
         """About how many tokens a Visitor Run uses, and whether a public Run of this
-        exact model exists already (the form warns of that through
-        /api/visitor-runs/public)."""
-        if provider not in PROVIDERS:
-            raise HTTPException(status_code=422, detail="Unknown provider")
+        exact model exists already (the form warns before Start if so)."""
+        _require_known_provider(provider)
         return {
             **story_estimate(story_path),
             "approximate": True,
-            # The publication rule's own answer (#76), as /api/visitor-runs/public gives it.
-            "public_run_exists": public_run_exists(root, provider, model.strip()),
+            "public_run_exists": publications.public_run_exists(provider, model.strip()),
         }
+
+    @app.get("/api/visitor-runs/public")
+    def visitor_run_public(provider: str, model: str):
+        return {
+            "public_run_exists": publications.public_run_exists(provider, model.strip())
+        }
+
+    @app.post("/api/visitor-runs")
+    def start_run(body: VisitorRunStart, request: Request):
+        _require_known_provider(body.provider)
+        model, key = body.model.strip(), body.key.strip()
+        if not model or not key:
+            raise HTTPException(status_code=422, detail="Enter a key and a model id")
+        try:
+            slot = playing.reserve(_visitor_ip(request))
+        except AlreadyPlaying as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from None
+        except Busy as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from None
+
+        def ended():
+            try:
+                publications.settle()  # Public if the first complete Run of its model.
+            finally:
+                playing.release(slot)
+
+        try:
+            directory = start_visitor_run(
+                root,
+                story_path,
+                body.provider,
+                model,
+                key,
+                model_factory,
+                stop_requested=slot.stop_requested,
+                on_end=ended,
+            )
+        except Exception as exc:
+            playing.release(slot)
+            detail = scrub(f"Could not start the Run: {exc}", key)
+            raise HTTPException(status_code=500, detail=detail) from None
+        slot.run_id = _run_id(root, directory)
+        return {"id": slot.run_id}
+
+    @app.post("/api/visitor-runs/{run_id}/stop", status_code=202)
+    def stop_run(run_id: str):
+        """Stops a playing Visitor Run after its current model call; it stays partial."""
+        if not playing.stop(run_id):
+            raise HTTPException(status_code=404, detail="No such Run is playing")
+        return {"id": run_id, "stopping": True}

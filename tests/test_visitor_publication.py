@@ -14,6 +14,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from detroit_benchmark import visitor_runs
 from detroit_benchmark.dashboard import create_app
 from tests.test_visitor_runs import (
     listing,
@@ -218,3 +219,31 @@ def test_without_the_flag_public_visitor_runs_are_still_listed_but_the_check_is_
         ).status_code
         == 404
     )
+
+
+def test_publication_is_settled_at_start_up_and_when_a_run_ends_not_per_request(
+    tmp_path, monkeypatch
+):
+    scans = []
+    real = visitor_runs._public_models
+    monkeypatch.setattr(
+        visitor_runs, "_public_models", lambda root: scans.append(root) or real(root)
+    )
+    client = visitor_client(tmp_path)
+    assert len(scans) == 1  # At start-up.
+
+    for _ in range(5):
+        listing(client)
+        public_run_exists(client, "openai", "gpt-test-1")
+        client.get(
+            "/api/visitor-runs/estimate",
+            params={"provider": "openai", "model": "gpt-test-1"},
+        )
+    assert len(scans) == 1
+
+    run = play(client)
+    assert len(scans) == 2  # When the Run ended.
+    # The cached answer was refreshed then.
+    assert public_run_exists(client, "openai", "gpt-test-1") is True
+    assert public_ids(client) == [run["id"]]
+    assert len(scans) == 2

@@ -11,15 +11,16 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import secrets
 import threading
+import time
+from collections import deque
 from collections.abc import Callable
 from pathlib import Path
 
 import httpx
 
-from .engine import DEFAULT_GOAL, Runner, _write_json_atomic
+from .engine import DEFAULT_GOAL, Runner, _write_json_atomic, read_json_object
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,10 @@ _MODEL_LISTS = {
     "mistral": "https://api.mistral.ai/v1/models",
     "openrouter": "https://openrouter.ai/api/v1/models",
 }
+
+
+# A provider's model list is read at most this many pages deep.
+MAX_MODEL_PAGES = 20
 
 
 class ProviderAuthError(Exception):
@@ -107,17 +112,18 @@ def _listed_ids(client: httpx.Client, provider: str, key: str) -> list[str]:
         url = "https://api.anthropic.com/v1/models"
         headers = {"x-api-key": key, "anthropic-version": "2023-06-01"}
         ids, params = [], {"limit": 1000}
-        while True:
+        for _ in range(MAX_MODEL_PAGES):
             body = _provider_get(client, url, key, headers=headers, params=params)
             ids += [m["id"] for m in body.get("data", [])]
             if not (body.get("has_more") and body.get("last_id")):
-                return ids
+                break
             params = {"limit": 1000, "after_id": body["last_id"]}
+        return ids
     if provider == "google":
         url = "https://generativelanguage.googleapis.com/v1beta/models"
         headers = {"x-goog-api-key": key}
         ids, params = [], {"pageSize": 1000}
-        while True:
+        for _ in range(MAX_MODEL_PAGES):
             body = _provider_get(client, url, key, headers=headers, params=params)
             ids += [
                 m["name"].removeprefix("models/")
@@ -127,8 +133,9 @@ def _listed_ids(client: httpx.Client, provider: str, key: str) -> list[str]:
                 in m.get("supportedGenerationMethods", ["generateContent"])
             ]
             if not body.get("nextPageToken"):
-                return ids
+                break
             params = {"pageSize": 1000, "pageToken": body["nextPageToken"]}
+        return ids
     headers = {"Authorization": f"Bearer {key}"}
     if provider == "openrouter":
         # OpenRouter lists its models to anyone, so the key is checked on its own.
@@ -138,8 +145,17 @@ def _listed_ids(client: httpx.Client, provider: str, key: str) -> list[str]:
 
 
 def scrub(text: str, key: str) -> str:
-    """Text that might echo the key (provider error messages do), with the key removed."""
-    return text.replace(key, "[key]") if key else text
+    """Text that might echo the key (provider error messages do), with the key removed.
+
+    Providers also echo a key masked, as its first or last few characters ("sk-abc...wxyz"),
+    so for a key long enough that they don't give it away, every occurrence of its first 6
+    and of its last 4 characters is removed too."""
+    if not key:
+        return text
+    text = text.replace(key, "[key]")
+    if len(key) >= 12:
+        text = text.replace(key[:6], "[key]").replace(key[-4:], "[key]")
+    return text
 
 
 def start_visitor_run(
@@ -150,14 +166,15 @@ def start_visitor_run(
     key: str,
     model_factory: ModelFactory,
     *,
-    stop: threading.Event | None = None,
+    stop_requested: threading.Event | None = None,
     on_end: Callable[[], None] | None = None,
 ) -> Path:
     """Starts a Visitor Run under the default goal and returns its folder. Its first files
     are written before this returns, so the Run is listed (as playing) straight away.
 
-    Setting ``stop`` ends the Run after the model call under way; it is kept as a partial
-    Run. A Run that fails is kept as partial too. ``on_end`` is called once it ends, however."""
+    Setting ``stop_requested`` ends the Run after the model call under way; it is kept as a partial
+    Run. A Run that fails is kept as partial too. ``on_end`` is called once it ends, however
+    (the dashboard then decides whether a complete Run is public)."""
     graph = json.loads(story.read_text(encoding="utf-8"))
     directory = root / VISITOR_FOLDER / secrets.token_urlsafe(18)
     runner = Runner(
@@ -174,11 +191,10 @@ def start_visitor_run(
     def play():
         try:
             while runner.state["status"] == "running":
-                if stop is not None and stop.is_set():
+                if stop_requested is not None and stop_requested.is_set():
                     runner.halt(STOPPED_BY_VISITOR)
                     break
                 runner.step()
-            settle_publications(root)  # Public if the first complete Run of its model.
         except Exception as exc:  # The Run ends partial; the visitor sees why.
             reason = scrub(f"The Run failed: {type(exc).__name__}: {exc}", key)
             logger.warning("Visitor Run %s stopped: %s", directory.name, reason)
@@ -193,24 +209,20 @@ def start_visitor_run(
     return directory
 
 
-# --- Publication (#76) -------------------------------------------------------------------
+# --- Publication ----------------------------------------------------------------------------
 # A Visitor Run that completes becomes public (listed for everyone) if no complete public
 # Run of the same exact provider and model id exists yet, counting the Runs baked into the
 # runs root. The decision is made once, under a lock, and kept in the Run's folder in a
 # file written atomically, so it survives restarts. Partial and playing Runs are never
-# public and stay undecided. A complete Run whose decision a restart cut off is decided by
-# the next listing, in order of completion.
+# public and stay undecided. Decisions are settled at start-up (for complete Runs a restart
+# cut off before theirs, in order of completion) and whenever a Visitor Run ends.
 
 PUBLICATION_FILE = "publication.json"
 _publication_lock = threading.Lock()
 
 
 def _read_json(path: Path) -> dict:
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-        return value if isinstance(value, dict) else {}
-    except (OSError, ValueError):
-        return {}
+    return read_json_object(path) or {}
 
 
 def _model_of(directory: Path) -> tuple[str, str]:
@@ -249,43 +261,78 @@ def _public_models(root: Path) -> set[tuple[str, str]]:
     return {_model_of(d) for d in baked + visitors}
 
 
-def public_run_exists(root: Path, provider: str, model_id: str) -> bool:
-    """Whether a complete public Run of this exact provider and model id exists: one baked
-    into the runs root or a Visitor Run made public."""
-    settle_publications(root)
-    return (provider, model_id) in _public_models(root)
+class Publications:
+    """Which models under a runs root have a complete public Run: one baked into the runs
+    root or a Visitor Run made public. :meth:`settle` works it out; the dashboard calls it
+    at start-up and whenever a Visitor Run ends, and the answer is kept until the next
+    call, so a visitor's request never scans the runs root."""
 
+    def __init__(self, root: Path):
+        self.root = root
+        self._public: set[tuple[str, str]] = set()
 
-def _write_atomically(path: Path, value: dict) -> None:
-    temporary = path.with_name(f".{path.name}.{secrets.token_hex(4)}.tmp")
-    temporary.write_text(json.dumps(value), encoding="utf-8")
-    os.replace(temporary, path)
-
-
-def settle_publications(root: Path) -> None:
-    """Decides, once and for good, whether each complete Visitor Run not yet decided is
-    public: the first of its model to complete is, unless a public Run of it exists."""
-    with _publication_lock:
-        undecided = [
-            d
-            for d in _visitor_runs(root)
-            if not (d / PUBLICATION_FILE).exists() and _is_complete(d)
-        ]
-        if not undecided:
-            return
-        undecided.sort(
-            key=lambda d: _read_json(d / "summary.json").get("completed_at") or ""
-        )
-        public = _public_models(root)
-        for directory in undecided:
-            model = _model_of(directory)
-            _write_atomically(
-                directory / PUBLICATION_FILE, {"public": model not in public}
+    def settle(self) -> None:
+        """Decides, once and for good, whether each complete Visitor Run not yet decided is
+        public: the first of its model to complete is, unless a public Run of it exists."""
+        with _publication_lock:
+            public = _public_models(self.root)
+            undecided = [
+                d
+                for d in _visitor_runs(self.root)
+                if not (d / PUBLICATION_FILE).exists() and _is_complete(d)
+            ]
+            undecided.sort(
+                key=lambda d: _read_json(d / "summary.json").get("completed_at") or ""
             )
-            public.add(model)
+            for directory in undecided:
+                model = _model_of(directory)
+                _write_json_atomic(
+                    directory / PUBLICATION_FILE, {"public": model not in public}
+                )
+                public.add(model)
+            self._public = public
+
+    def public_run_exists(self, provider: str, model_id: str) -> bool:
+        """Whether a complete public Run of this exact provider and model id exists."""
+        with _publication_lock:
+            return (provider, model_id) in self._public
 
 
-# Stop and play limits (#74, #75)
+# --- Stop and play limits ---------------------------------------------------------------------
+
+
+class TooManyRequests(Exception):
+    """This visitor asked too often within the window."""
+
+
+class RateLimit:
+    """At most ``limit`` requests per visitor (a client IP) in any ``window`` seconds."""
+
+    def __init__(
+        self, limit: int, window: float = 60, clock: Callable[[], float] = time.monotonic
+    ):
+        self.limit = limit
+        self.window = window
+        self._clock = clock
+        self._seen: dict[str, deque[float]] = {}
+        self._lock = threading.Lock()
+
+    def check(self, visitor: str) -> None:
+        """Counts a request; raises TooManyRequests when this visitor is over the limit."""
+        now = self._clock()
+        with self._lock:
+            # Forgets visitors whose requests all fall outside the window.
+            for other in [v for v, t in self._seen.items() if t[-1] <= now - self.window]:
+                del self._seen[other]
+            seen = self._seen.setdefault(visitor, deque())
+            while seen and seen[0] <= now - self.window:
+                seen.popleft()
+            if len(seen) >= self.limit:
+                raise TooManyRequests(
+                    "Too many model listings from your address. Wait a minute and try"
+                    " again, or type a model id."
+                )
+            seen.append(now)
 
 
 class Busy(Exception):
@@ -301,7 +348,7 @@ class Slot:
 
     def __init__(self, visitor: str):
         self.visitor = visitor
-        self.stop = threading.Event()
+        self.stop_requested = threading.Event()
         self.run_id: str | None = None
 
 
@@ -338,13 +385,18 @@ class PlayingRuns:
             if slot in self._slots:
                 self._slots.remove(slot)
 
+    def playing_ids(self) -> set[str]:
+        """The ids of the Runs whose slot is still held: their thread has not ended yet."""
+        with self._lock:
+            return {slot.run_id for slot in self._slots if slot.run_id is not None}
+
     def stop(self, run_id: str) -> bool:
         """Asks the playing Run with this id to stop; False if no such Run is playing."""
         with self._lock:
             slot = next((s for s in self._slots if s.run_id == run_id), None)
         if slot is None:
             return False
-        slot.stop.set()
+        slot.stop_requested.set()
         return True
 
 
@@ -354,9 +406,8 @@ def mark_cut_off_runs(root: Path) -> None:
     for checkpoint in (root / VISITOR_FOLDER).glob("*/checkpoint.json"):
         if (checkpoint.parent / "summary.json").exists():
             continue
-        try:
-            saved = json.loads(checkpoint.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+        saved = read_json_object(checkpoint)
+        if saved is None:
             continue
         state = saved.get("state") or {}
         if state.get("status") != "running":
