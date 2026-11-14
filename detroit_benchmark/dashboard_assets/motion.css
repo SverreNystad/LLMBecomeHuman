@@ -39,4 +39,6 @@
 @media (prefers-reduced-motion: reduce) {
   .view-leave, .view-enter, #storyView.view-enter #storyContent > *, .title-glitch, .picker-panel.is-closing, .story-run-menu.is-closing { animation: none !important; }
   .node-dialogue { transition: none !important; animation: none !important; }
+  /* Model-bar chips change size at once. */
+  .run-chip-more { transition: none !important; }
 }
