@@ -184,16 +184,16 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .selected-run-chips { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 2px; }
 /* One line, always: when the chips don't fit they shrink to logos (named on hover), all but the
    Followed Run's; if even the logos don't fit, edge fades and arrows show there is more. */
-.model-bar { position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
+.model-bar { --model-bar-fade: 36px; position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
 .selected-run-chips::-webkit-scrollbar { display: none; }
 .selected-run-chips.is-compact .run-chip:not(.is-followed) { position: relative; gap: 0; padding: 0 3px; }
 .selected-run-chips.is-compact .run-chip:not(.is-followed) .run-chip-label { display: none; }
 /* A logo's × floats on its corner, shown on hover, so it takes no room. */
 .selected-run-chips.is-compact .run-chip:not(.is-followed) .run-chip-remove { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; font-size: 11px; border-radius: 50%; background: var(--surface-solid); border: 1px solid var(--line); opacity: 0; transition: opacity .15s; }
 .selected-run-chips.is-compact .run-chip:not(.is-followed):is(:hover, :focus-within) .run-chip-remove { opacity: 1; }
-.model-bar.fade-start .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 36px); mask-image: linear-gradient(to right, transparent 0, #000 36px); }
-.model-bar.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 36px); mask-image: linear-gradient(to left, transparent 0, #000 36px); }
-.model-bar.fade-start.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 36px, #000 calc(100% - 36px), transparent 100%); }
+.model-bar.fade-start .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade)); mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade)); }
+.model-bar.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 var(--model-bar-fade)); mask-image: linear-gradient(to left, transparent 0, #000 var(--model-bar-fade)); }
+.model-bar.fade-start.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade), #000 calc(100% - var(--model-bar-fade)), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade), #000 calc(100% - var(--model-bar-fade)), transparent 100%); }
 .model-bar-arrow { position: absolute; top: 50%; z-index: 1; width: 22px; height: 22px; display: grid; place-items: center; margin-top: -11px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-solid); color: var(--ink-soft); font-size: 15px; line-height: 1; }
 .model-bar-arrow:hover { border-color: var(--highlight); color: var(--highlight); }
 .model-bar-arrow[data-scroll="-1"] { left: 0; }
@@ -289,11 +289,15 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .story-mark[aria-pressed="true"] img { filter: brightness(0) invert(1); }
 .story-mark[aria-pressed="true"] .mock-icon { color: var(--mark-on-fill); }
 @media (prefers-reduced-motion: reduce) { .story-mark[aria-pressed="true"] { transition-delay: 0s; } }
-/* The model's name, shown quickly above its logo in dark glass. */
-.story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; padding: 3px 8px; white-space: nowrap; pointer-events: none;
+/* A model's name in dark glass: shown quickly above a Story logo, and at once below a
+ * collapsed model-bar logo (.model-bar-name, placed by app.js outside the scrolling bar). */
+.story-mark-name, .model-bar-name { padding: 3px 8px; white-space: nowrap; pointer-events: none;
   font-size: 11px; font-weight: 400; letter-spacing: .04em; color: #e8eef5; background: linear-gradient(160deg, rgba(24, 32, 44, .94), rgba(10, 14, 20, .96));
   border: 1px solid var(--run-color); box-shadow: 0 6px 18px rgba(5, 10, 18, .3), 0 0 12px -4px var(--run-color);
   opacity: 0; visibility: hidden; transition: opacity .1s, visibility 0s linear .1s; }
+.story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; }
+.model-bar-name { position: fixed; top: 0; left: 0; z-index: 30; }
+.model-bar-name.is-shown { opacity: 1; visibility: visible; transition: opacity .1s, visibility 0s; }
 .story-mark:is(:hover, :focus-visible) .story-mark-name { opacity: 1; visibility: visible; transition: opacity .1s .08s, visibility 0s .08s; animation: glitch-in .22s steps(4, end) .08s both; }
 .story-why { margin-top: 14px; font-size: 14.5px; line-height: 1.55; }
 .story-why p { margin: 0; font-weight: 300; }

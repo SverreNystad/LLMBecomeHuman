@@ -223,7 +223,7 @@ function updateSelectors() {
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
+  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" aria-label="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
   $('searchRuns').value=state.search;
   renderPickerList();
@@ -233,6 +233,7 @@ function updateSelectors() {
    arrows and fades for whatever is still out of view. */
 function fitModelBar(){
   const chips=$('selectedRunChips');
+  hideModelBarName();
   chips.classList.remove('is-compact');
   if(chips.scrollWidth>chips.clientWidth+1)chips.classList.add('is-compact');
   updateModelBarArrows();
@@ -244,8 +245,29 @@ function updateModelBarArrows(){
   bar.querySelector('[data-scroll="-1"]').classList.toggle('is-hidden',!before);
   bar.querySelector('[data-scroll="1"]').classList.toggle('is-hidden',!after);
 }
+/* A collapsed logo's model name, shown at once on hover or focus. It lives outside the bar,
+   whose scrolling would clip it. */
+function showModelBarName(chip){
+  const label=$('modelBarName'),chips=$('selectedRunChips');
+  if(!chip||!chips.classList.contains('is-compact')||chip.classList.contains('is-followed')){hideModelBarName();return;}
+  label.textContent=chip.getAttribute('aria-label');
+  label.style.setProperty('--run-color',chip.style.getPropertyValue('--run-color'));
+  const box=chip.getBoundingClientRect(),width=label.offsetWidth;
+  const left=clamp(box.left+box.width/2-width/2,8,document.documentElement.clientWidth-width-8);
+  label.style.transform=`translate(${Math.round(left)}px,${Math.round(box.bottom+8)}px)`;
+  label.classList.add('is-shown');
+}
+function hideModelBarName(){$('modelBarName')?.classList.remove('is-shown');}
 function setupModelBar(){
   const chips=$('selectedRunChips');
+  const label=document.createElement('span');
+  label.id='modelBarName';label.className='model-bar-name';label.setAttribute('aria-hidden','true');
+  document.body.append(label);
+  chips.addEventListener('pointerover',e=>showModelBarName(e.target.closest('.run-chip')));
+  chips.addEventListener('pointerleave',hideModelBarName);
+  chips.addEventListener('focusin',e=>showModelBarName(e.target.closest('.run-chip')));
+  chips.addEventListener('focusout',hideModelBarName);
+  chips.addEventListener('scroll',hideModelBarName,{passive:true});
   chips.addEventListener('scroll',updateModelBarArrows,{passive:true});
   $('modelBar').querySelectorAll('[data-scroll]').forEach(btn=>btn.addEventListener('click',()=>
     chips.scrollBy({left:Number(btn.dataset.scroll)*Math.max(60,chips.clientWidth*.7),behavior:reducedMotion()?'auto':'smooth'})));

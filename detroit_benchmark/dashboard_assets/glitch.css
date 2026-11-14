@@ -52,7 +52,7 @@
 .picker-panel:not(.is-hidden), .story-run-menu:not(.is-hidden), .reasoning-drawer:not(.is-hidden) { animation: glitch-in .3s steps(5, end) 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(button, [role="button"], .flow-node, .chapter-entry, .run-chip, .picker-run, .story-options li, .legend-line, .unfold-card, .picker-panel, .story-run-menu, .reasoning-drawer, .node-dialogue, .story-mark-name, .story-why) {
+  :is(button, [role="button"], .flow-node, .chapter-entry, .run-chip, .picker-run, .story-options li, .legend-line, .unfold-card, .picker-panel, .story-run-menu, .reasoning-drawer, .node-dialogue, .story-mark-name, .model-bar-name, .story-why) {
     animation: none !important;
   }
 }
