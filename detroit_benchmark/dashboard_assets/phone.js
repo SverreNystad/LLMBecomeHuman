@@ -133,28 +133,39 @@
     mark._nameTimer = setTimeout(() => mark.classList.remove('is-named'), NAME_MS);
   });
 
-  /* The details panel slides up from the bottom; dragging it down closes it. */
-  const CLOSE_DRAG_PX = 90;
+  /* The details panel slides up from the bottom at about 45% of the screen. Dragging its grip
+   * up grows it to 70% (folding level 2 away, for chart room), dragging down shrinks it back,
+   * and dragging well below the opening height closes it. */
+  const CLOSE_DRAG_PX = 90, OPEN_SHARE = .45, TALL_SHARE = .7;
   function setupSheet() {
     const drawer = document.getElementById('reasoningDrawer');
+    const screen = () => document.documentElement.clientHeight;
     let drag = null;
     drawer.addEventListener('pointerdown', event => {
       if (!query.matches || !event.target.closest('.drawer-grip')) return;
-      drag = {id: event.pointerId, y: event.clientY, dy: 0};
+      drag = {id: event.pointerId, y: event.clientY, h: drawer.offsetHeight, moved: false};
       try { event.target.setPointerCapture(event.pointerId); } catch { /* synthetic or ended pointer */ }
     });
     drawer.addEventListener('pointermove', event => {
       if (!drag || event.pointerId !== drag.id) return;
-      drag.dy = Math.max(0, event.clientY - drag.y);
-      if (drag.dy > 4) { drawer.classList.add('is-dragging'); drawer.style.transform = `translateY(${drag.dy}px)`; }
+      const dy = event.clientY - drag.y;
+      if (!drag.moved && Math.abs(dy) <= 4) return;
+      drag.moved = true;
+      drawer.classList.add('is-dragging');
+      drawer.style.height = `${Math.max(0, Math.min(screen() * TALL_SHARE, drag.h - dy))}px`;
     });
     const end = event => {
       if (!drag || event.pointerId !== drag.id) return;
-      const close = drag.dy > CLOSE_DRAG_PX;
+      const moved = drag.moved, h = drawer.offsetHeight;
       drag = null;
       drawer.classList.remove('is-dragging');
-      drawer.style.transform = '';
-      if (close) document.getElementById('closeDrawer').click();
+      drawer.style.height = '';
+      if (!moved) return;
+      const open = screen() * OPEN_SHARE, tall = screen() * TALL_SHARE;
+      if (h < open - CLOSE_DRAG_PX) { document.getElementById('closeDrawer').click(); return; }
+      const grow = h > (open + tall) / 2;
+      drawer.classList.toggle('is-tall', grow);
+      if (grow) setLevel2(false);
     };
     drawer.addEventListener('pointerup', end);
     drawer.addEventListener('pointercancel', end);

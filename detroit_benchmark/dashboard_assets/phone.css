@@ -56,15 +56,17 @@ body.is-phone .flow-viewport { touch-action: none; }
 /* A tapped Story logo names its model. */
 .story-mark.is-named .story-mark-name { opacity: 1; visibility: visible; transition: opacity .1s, visibility 0s; }
 
-/* The details panel: a sheet from the bottom, up to about 70% of the screen. */
+/* The details panel: a sheet from the bottom, opening at about 45% of the screen; dragged
+ * up it grows to 70% (phone.js), and the Flowchart keeps its node above it (app.js). */
 .drawer-grip { display: none; }
 body.is-phone .reasoning-drawer { position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 20;
-  width: auto; max-width: none; max-height: 70vh; max-height: 70dvh; display: flex; flex-direction: column;
+  width: auto; max-width: none; height: 45vh; height: 45dvh; max-height: 70vh; max-height: 70dvh; display: flex; flex-direction: column;
   border-left: 0; border-top: 1px solid var(--line); border-radius: 14px 14px 0 0; box-shadow: 0 -12px 40px rgba(28, 37, 48, .18);
-  animation: sheet-up .3s var(--ease); transition: transform .25s var(--ease); }
+  animation: sheet-up .3s var(--ease); transition: height .25s var(--ease); }
+body.is-phone .reasoning-drawer.is-tall { height: 70vh; height: 70dvh; }
 body.is-phone .reasoning-drawer.is-dragging { transition: none; }
-/* The grip: drag it down to close the panel. */
+/* The grip: drag it up to grow the panel, down to shrink or close it. */
 body.is-phone .reasoning-drawer .drawer-grip { display: block; flex: 0 0 auto; height: 26px; touch-action: none; cursor: grab; }
 body.is-phone .reasoning-drawer .drawer-grip::before { content: ""; display: block; width: 40px; height: 4px; margin: 11px auto 0; border-radius: 2px; background: var(--ink-faint); }
-body.is-phone .reasoning-drawer .drawer-content { overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; }
+body.is-phone .reasoning-drawer .drawer-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; touch-action: pan-y; overscroll-behavior: contain; }
 @keyframes sheet-up { from { transform: translateY(100%); } }
