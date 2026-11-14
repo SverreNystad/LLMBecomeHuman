@@ -407,11 +407,12 @@ async function setView(view) {
 }
 function renderChapterList() {
   const all = chapters();
-  const followed = storyRun(), cleared = !followed, storyDetail = followed && state.details.get(followed.id);
+  const followed = storyRun(), storyDetail = followed && state.details.get(followed.id);
   const decisionCounts = new Map((storyDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
+    // Chapters the Followed Run never reached fade; with no Shown Runs, every chapter fades.
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
-    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${(followed||cleared)&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reached?'':'not-reached'}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
       <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
