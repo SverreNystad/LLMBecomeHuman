@@ -713,7 +713,7 @@ function createLogo(node, view) {
   btn.addEventListener('click',e=>{
     e.stopPropagation();
     // On a touch screen the first tap opens the marker's card, the second the details.
-    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);return;}
+    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);fitDecisionCard(node);return;}
     inspect(node.id,run.id);
   });
   return btn;
@@ -990,6 +990,21 @@ function fitNodeInView(node,{glide=false}={}){
 /* Phones: a tapped node's dialogue glides into view. */
 function fitPeekedNode(node){
   if(window.isPhoneLayout?.())fitNodeInView(node,{glide:true});
+}
+/* Phones: a model's decision card unfolds below its node (unfold.js); the node and the
+ * whole card glide into view as a dialogue does. The card keeps its screen size, so its
+ * world size depends on the scale: a few passes settle it. A card still too tall is
+ * capped to the room below the node and scrolls inside. */
+function fitDecisionCard(node){
+  const card=window.isPhoneLayout?.()&&document.querySelector('#unfoldCard.is-open');
+  if(!card)return;
+  state.viewTouched=true;
+  const rects=nodeWorldRects(node), bottom=Math.max(...rects.map(r=>r.y+r.height)), gap=window.unfoldCard.gap;
+  const withCard=()=>[...rects,{x:node.x,y:bottom+gap/state.scale,width:card.offsetWidth/state.scale,height:card.offsetHeight/state.scale}];
+  for(let pass=0;pass<3;pass++)fitWorldRects(withCard(),{glide:true});
+  const room=visibleChartArea().bottom-FIT_PAD-(state.panY+bottom*state.scale+gap);
+  if(card.offsetHeight>room)card.style.setProperty('--card-room',`${Math.max(60,room)}px`);
+  window.unfoldCard.follow(()=>$('graphWorld').classList.contains('is-gliding'));
 }
 function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();

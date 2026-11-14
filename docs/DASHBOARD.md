@@ -125,7 +125,7 @@ At widths up to 760 px the controls stack in three levels above the Story or Flo
 
 Touch works like hovering does on a computer:
 
-- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story) and glides the box and its dialogue into view, zooming out no further than 0.85×; a dialogue still too tall starts at the top of the screen and scrolls inside itself. The first tap on a model's marker shows its card (the next opens the details).
+- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story) and glides the box and its dialogue into view, zooming out no further than 0.85×; a dialogue still too tall starts at the top of the screen and scrolls inside itself. The first tap on a model's marker unfolds its decision card below the box and glides the box and the whole card into view by the same rules; a card still too tall sits right under the box at the top of the screen and scrolls inside itself. The next tap opens the details.
 - **Details:** the details panel slides up from the bottom to about 45% of the screen, and the Flowchart keeps the selected box above it. Drag its grip up to grow it to about 70% (the middle level folds away for room, and comes back when the panel shrinks again), down to shrink it back, or further down to close it; × closes it too.
 - **Story:** tapping a model's logo names the model and shows its reason.
 
