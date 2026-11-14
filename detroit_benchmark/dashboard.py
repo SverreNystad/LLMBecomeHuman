@@ -15,7 +15,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .ending import ending_summary
+from .ending import ending_summary, route_question
 from .engine import (
     canonical_hash,
     chapter_briefing,
@@ -547,6 +547,11 @@ def _flowchart_projection(
                 }
                 for o in node.get("options", [])
             ]
+        if node.get("type") == "route" and "heading" not in node:
+            # The Flowchart labels a route node with the question its flag answers.
+            question = route_question(str(node.get("flag")))
+            if question:
+                nodes[node_id]["heading"] = question
         if node.get("type") == "condition":
             nodes[node_id]["branches"] = [
                 {k: b[k] for k in ("next", "condition_text") if k in b}
