@@ -60,6 +60,14 @@ _Avoid_: Decision Atlas, graph, map
 The reader view that follows one Run's text, moment by moment.
 _Avoid_: transcript, reader, log
 
+**Shown Runs**:
+The Runs the viewer has chosen to compare. Both the Story and the Flowchart draw them; the dashboard calls them "models".
+_Avoid_: selected models, chips, overlays
+
+**Followed Run**:
+The one Shown Run whose text the Story is showing. Other Shown Runs appear in the Story only as their choices and reasons at each decision.
+_Avoid_: anchor run, story run, active model
+
 **Moment**:
 A single point in a Run that both the Story and the Flowchart can show; clicking it in one view opens it in the other.
 _Avoid_: event, step, node (in user-facing language)
