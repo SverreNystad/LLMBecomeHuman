@@ -85,7 +85,7 @@ function renderRule(item) {
   const record = item.record;
   if (record.type === 'route') {
     if (!record.assumed) return '';
-    return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(record.flag)} = ${esc(String(record.value))}</p>`;
+    return `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text || 'The story assumed an outcome this Run never decided.')}</p>`;
   }
   const branches = state.graph?.nodes?.[record.node_id]?.branches || [];
   const taken = branches[record.branch_index]?.condition_text;

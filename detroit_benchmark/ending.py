@@ -134,6 +134,14 @@ def route_question(flag: str) -> str | None:
     return OUTCOMES.get(flag, {}).get("question")
 
 
+def assumed_route_text(flag: str, value: Any) -> str:
+    """What the story assumed at a Final Routes node the Run never decided, in words."""
+    sentence = OUTCOMES.get(flag, {}).get(value) if isinstance(value, bool) else None
+    if not sentence:
+        return "This Run never decided this, so the story assumed an outcome."
+    return f"This Run never decided this, so the story assumed: {sentence}"
+
+
 def _say(flag: str, value: Any) -> str:
     entry = OUTCOMES[flag]
     return entry.get(value if value in entry else None, "")
@@ -280,8 +288,11 @@ def ending_summary(
         "headlines": [str(item) for item in news[-HEADLINES:]],
     }
 
+    known = [c["outcome"] for c in (connor, kara, markus)] + [f["fate"] for f in fates]
     return {
         "finished": finished,
+        # False when the Run carries no outcome at all (it predates the story tracking them).
+        "recorded": any(outcome != "unknown" for outcome in known),
         "characters": [connor, kara, markus],
         "fates": fates,
         "world": world,

@@ -23,7 +23,7 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
-from .ending import ending_summary, route_question
+from .ending import assumed_route_text, ending_summary, route_question
 from .engine import (
     canonical_hash,
     chapter_briefing,
@@ -338,6 +338,8 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
             value=event.get("value"),
             assumed=event.get("assumed", False),
         )
+        if beat["assumed"]:
+            beat["text"] = assumed_route_text(event.get("flag"), event.get("value"))
     elif kind == "ending":
         beat.update(description=event.get("description"))
     elif kind == "memory_update":

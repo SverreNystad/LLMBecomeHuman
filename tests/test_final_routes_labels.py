@@ -44,3 +44,23 @@ def test_no_final_routes_heading_or_branch_text_is_snake_case():
     ]
     for text in texts:
         assert not SNAKE_CASE.search(text), text
+
+
+def _final_story_beats(runs_dir: Path) -> list[dict]:
+    client = TestClient(create_app(runs_dir))
+    beats = []
+    for run in client.get("/api/runs").json()["runs"]:
+        response = client.get(f"/api/runs/{run['id']}/story", params={"chapter": "final"})
+        if response.status_code == 200:
+            beats += response.json()["moments"]
+    return beats
+
+
+def test_assumed_final_routes_read_as_sentences_in_the_story():
+    """A route the Run never decided says, in words, what the story assumed."""
+    beats = [b for b in _final_story_beats(PROJECT / "runs") if b.get("type") == "route"]
+    assumed = [b for b in beats if b.get("assumed")]
+    assert assumed, "the saved Runs assume their Final Routes"
+    for beat in assumed:
+        assert beat["text"] and not SNAKE_CASE.search(beat["text"]), beat
+        assert "assumed" in beat["text"].lower()

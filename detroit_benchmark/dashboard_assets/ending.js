@@ -15,6 +15,9 @@ function endingColumn(run) {
   if (!summary?.finished) {
     return `<article class="ending-run is-unfinished" data-run-id="${esc(run.id)}" style="--run-color:${routeColor(run)}">${head}<p class="ending-unfinished">Story not finished</p></article>`;
   }
+  if (summary.recorded === false) {
+    return `<article class="ending-run is-unrecorded" data-run-id="${esc(run.id)}" style="--run-color:${routeColor(run)}">${head}<p class="ending-unfinished">This Run was played before the story tracked who lives and how each story ends, so it has no ending to show.</p></article>`;
+  }
   const characters = summary.characters.map(entry =>
     `<div class="ending-character" data-character="${esc(entry.name.toLowerCase())}"><dt>${esc(entry.name)}</dt><dd>${esc(entry.sentence)}</dd></div>`).join('');
   const fates = summary.fates.map(fate =>

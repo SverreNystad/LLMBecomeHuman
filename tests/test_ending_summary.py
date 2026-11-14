@@ -239,3 +239,15 @@ def test_an_unfinished_run_is_marked_not_finished(craft):
     # Kara has got away so far, but a Run still playing has not set her free.
     assert _character(summary, "Kara")["outcome"] == "unknown"
     assert summary["fates"][1] == {"name": "Alice", "fate": "alive", "text": "Alive"}
+
+
+def test_a_run_that_recorded_no_outcomes_says_so():
+    """Runs played before the story tracked Fates finish with every outcome unknown; the
+    summary says no outcome was recorded instead of listing unknowns."""
+    root = Path(__file__).resolve().parents[1] / "runs"
+    client = TestClient(create_app(root))
+    runs = client.get("/api/runs").json()["runs"]
+    run_id = next(r["id"] for r in runs if r.get("model") == "claude-sonnet-5-5")
+    summary = client.get(f"/api/runs/{run_id}").json()["ending_summary"]
+    assert summary["finished"] is True
+    assert summary["recorded"] is False
