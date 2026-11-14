@@ -62,6 +62,7 @@ The Ending Summary is written on the server in `ending.py`. Every sentence, and 
 - **Every branch:** the full saved chapter graph is drawn in grey, and each Shown Run's route is drawn on top in its shade.
 - **Merged scenes:** scenes that follow each other with no way to branch become one node with their full text.
 - **Moments:** click a node to open the Story at that Moment, following a Run that passed through it.
+- **Final Routes:** each route node is labelled with the question its outcome answers, such as "Was Kara captured?", taken from the same table as the Ending Summary, so no node shows an internal flag name.
 - **Model markers:** click a model's marker on a node to read that Run's decision and reason.
 - **Compatibility:** only Runs that share a story graph can be shown together. Clear the selection to switch stories.
 - **Pan and zoom:** drag, scroll, or use the controls at the top right.
@@ -113,7 +114,7 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/runs?visitor_runs=ID…`       | Discover available recorded experiments; private Visitor Runs are listed only when their ids are named            |
 | `GET /api/runs/{id}`                   | Events, timeline, compact decision records, and the Run's `ending_summary`                                       |
 | `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order, each with its `moment` id    |
-| `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
+| `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id, and each route node a `heading` (its question) |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
 | `GET /api/compare?run_ids=A&run_ids=B` | Existing pairwise structured comparison API (the frontend fetches each log on its own) |
 | `GET /api/art/manifest`                | Scene-art entries from `data/scene-art.json` whose image is installed locally                                    |

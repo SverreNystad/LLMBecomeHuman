@@ -589,9 +589,11 @@ function buildChapterGraph(chapter) {
     const type = n.type === 'condition' || n.type === 'route' ? 'junction'
                : n.type === 'chapter_exit' ? 'exit' : n.type;
     const label = n.heading || ({choice:'CHOICE',condition:'CONDITION',route:'STORY BRANCH',chapter_exit:'CHAPTER COMPLETE',ending:'STORY END'}[n.type] || shortTitle(n.id,26));
+    // A route node headed by its question needs room to read it in full.
+    const small = n.type === 'condition' || (n.type === 'route' && !n.heading);
     nodes.set(n.id, {id:n.id, parent:null, type, label, node:n,
-                     width: n.type === 'choice' ? 180 : n.type === 'condition'||n.type === 'route' ? 135 : 190,
-                     height: n.type === 'condition'||n.type === 'route' ? 39 : 60});
+                     width: n.type === 'choice' ? 180 : small ? 135 : 190,
+                     height: small ? 39 : 60});
   }
   for (const n of originals) {
     if (n.type === 'scene') continue;

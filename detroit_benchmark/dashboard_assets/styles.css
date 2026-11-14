@@ -364,6 +364,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .flow-node.kind-option { border-radius: 18px; font-size: 12px; }
 .flow-node.kind-option.visited { border-color: var(--accent); }
 .flow-node.kind-junction { min-height: 0; border-style: dashed; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.flow-node.kind-junction .node-label { -webkit-line-clamp: 3; }
 .flow-node.kind-exit, .flow-node.kind-ending { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
 .flow-node.kind-portal { border-style: dashed; font-size: 10.5px; letter-spacing: .08em; }
 .flow-node.kind-portal:hover { border-color: var(--accent); color: var(--accent); }
