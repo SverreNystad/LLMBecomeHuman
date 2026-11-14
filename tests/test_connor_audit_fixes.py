@@ -1,0 +1,206 @@
+"""Connor's chapters follow the wiki's flowcharts: Fates and deaths are recorded where
+they happen, and options appear only when the game offers them."""
+
+import pytest
+
+from detroit_benchmark.engine import pick_branch
+from tests.dataset import load_dataset, play_story
+
+MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
+HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}
+KAMSKI_GAVE_JERICHO = {"ch27_00024": "JERICHO LOCATION"}  # and Connor shot Chloe
+
+# The Hostage
+FINAL_DEMAND, MOVE_CLOSER_OR_GIVE_UP, BLUFF_NODE = "ch1_00019", "ch1_00024", "ch1_00028"
+FINAL_PLEA, DANIEL_JUMPS_WITH_EMMA = "ch1_00009", "ch1_x0104"
+WOUNDED_COP = "ch1_00063"
+# The Interrogation
+APPROACH, CONFESSION, BACK_TO_THE_CELL = "ch9_00095", "ch9_00058", "ch9_x0103"
+NO_CONFESSION_GAVIN = "ch12_00148"
+# The Nest, Public Enemy, Meet Kamski, Last Chance
+EMMA_SAVED_LINE, EMMA_DIED_LINE = "ch15_00110", "ch15_00115"
+COP_FROM_THE_HOSTAGE = "ch24_00098"
+HANK_GREETS_A_RETURNING_CONNOR = "ch27_00106"
+REACTIVATE_DANIEL = "ch29_00029"
+# The Bridge and the tower
+BRIDGE_TOPICS, PASSWORD = "ch22_00080", "ch32_4_00042"
+RUSHED_RUSSIAN_ROULETTE = {"ch18_x0001": "WAIT FOR HANK"}
+# Night of the Soul
+HANKS_HOUSE_SUICIDE = "ch31_2_00048"
+# Connor's Last Mission (32.3)
+HANK_ON_THE_ROOF, ALLEN_OR_HANK = "ch32_3_00047", "ch32_3_00066"
+ROOFTOP_TALK, LEAVE_OR_ATTACK = "ch32_3_00033", "ch32_3_00020"
+SPARE_OR_KILL, ALLEN_FIGHT_OR_FLEE = "ch32_3_00015", "ch32_3_00052"
+CROWD, ZEN_GARDEN = "ch32_3_00008", "ch32_3_x0101"
+ROOFTOP_QTE_DEATHS = [("ch32_3_00013", 1), ("ch32_3_00019", 1), ("ch32_3_00050", 1)]
+
+
+def death_ladder_at(graph: dict, nid: str) -> bool:
+    """``nid`` adds one to Connor's Deaths, whatever the count was."""
+    node = graph["nodes"][nid]
+    for deaths in range(7):
+        idx, _, _ = pick_branch(node, {"connor_deaths": deaths})
+        if idx is None:
+            return False
+        if node["branches"][idx]["effects"]["flags"]["connor_deaths"] != deaths + 1:
+            return False
+    return True
+
+
+# The Hostage
+
+
+def test_moving_closer_after_daniels_warning_he_jumps_with_emma(tmp_path):
+    run = play_story(tmp_path, {BLUFF_NODE: "BLUFF", MOVE_CLOSER_OR_GIVE_UP: "MOVE CLOSER"})
+    assert DANIEL_JUMPS_WITH_EMMA in run.nodes
+    assert FINAL_PLEA not in run.nodes
+    assert run.flags["emma_saved"] is False
+
+
+def test_refusing_daniels_demand_he_jumps_with_emma(tmp_path):
+    run = play_story(tmp_path, {FINAL_DEMAND: "REFUSE"})
+    assert DANIEL_JUMPS_WITH_EMMA in run.nodes
+    assert FINAL_PLEA not in run.nodes
+    assert run.flags["emma_saved"] is False
+    assert EMMA_DIED_LINE in run.nodes and EMMA_SAVED_LINE not in run.nodes
+
+
+def test_a_saved_emma_is_remembered_in_the_nest(tmp_path):
+    run = play_story(tmp_path, {})
+    assert run.flags["emma_saved"] is True
+    assert EMMA_SAVED_LINE in run.nodes and EMMA_DIED_LINE not in run.nodes
+
+
+def test_shooting_daniel_with_the_hidden_gun_makes_the_news():
+    plea = load_dataset()["nodes"][FINAL_PLEA]
+    use_gun = next(o for o in plea["options"] if o["label"] == "USE GUN")
+    assert use_gun["effects"]["news"]
+
+
+@pytest.mark.parametrize("pick, saved", [("IGNORE", True), ("OBEY", False)])
+def test_the_cop_connor_saved_thanks_him_in_public_enemy(tmp_path, pick, saved):
+    run = play_story(tmp_path, {WOUNDED_COP: pick})
+    assert (COP_FROM_THE_HOSTAGE in run.nodes) is saved
+
+
+def test_daniel_who_shot_connor_remembers_it_in_last_chance():
+    node = load_dataset()["nodes"][REACTIVATE_DANIEL]
+    idx, _, _ = pick_branch(node, {"connor_daniel_final_plea": "convince"})
+    assert node["branches"][idx]["condition_text"].startswith("Daniel killed Connor")
+
+
+# The Interrogation
+
+
+def test_giving_up_on_the_interrogation_gets_no_confession(tmp_path):
+    run = play_story(tmp_path, {APPROACH: "GIVE UP"})
+    assert CONFESSION not in run.nodes
+    assert BACK_TO_THE_CELL in run.nodes
+    assert NO_CONFESSION_GAVIN in run.nodes
+
+
+# Cole's photo
+
+
+def test_without_seeing_coles_photo_connor_cannot_name_him(tmp_path):
+    run = play_story(tmp_path, RUSHED_RUSSIAN_ROULETTE)
+    assert "PHOTO" not in run.offered(BRIDGE_TOPICS)
+    assert "COLE" not in run.offered(PASSWORD)
+
+
+def test_having_seen_coles_photo_connor_can_name_him(tmp_path):
+    run = play_story(tmp_path, {})
+    assert "PHOTO" in run.offered(BRIDGE_TOPICS)
+    assert "COLE" in run.offered(PASSWORD)
+
+
+# Meet Kamski
+
+
+@pytest.mark.parametrize("deaths, line", [(1, "first time"), (2, "multiple"), (3, "multiple")])
+def test_hank_greets_connor_by_how_often_he_died(deaths, line):
+    node = load_dataset()["nodes"][HANK_GREETS_A_RETURNING_CONNOR]
+    idx, _, _ = pick_branch(node, {"connor_deaths": deaths})
+    assert line in node["branches"][idx]["condition_text"]
+
+
+# Hank quitting the force
+
+
+def test_a_hostile_hank_does_not_quit_when_kamski_gave_up_jericho(tmp_path):
+    run = play_story(tmp_path, {**MACHINE, **HOSTILE_HANK, **KAMSKI_GAVE_JERICHO})
+    assert run.flags["hank_quit_force"] is False
+    assert HANKS_HOUSE_SUICIDE not in run.nodes
+    assert HANK_ON_THE_ROOF in run.nodes
+
+
+def test_a_hostile_hank_who_quit_is_replaced_by_allen_on_the_roof(tmp_path):
+    run = play_story(tmp_path, {**MACHINE, **HOSTILE_HANK})
+    assert run.flags["hank_quit_force"] is True
+    assert HANK_ON_THE_ROOF not in run.nodes
+    assert ALLEN_FIGHT_OR_FLEE in run.nodes
+
+
+def test_allen_intervening_reads_as_a_sentence():
+    node = load_dataset()["nodes"][ALLEN_OR_HANK]
+    assert not any("{{" in b["condition_text"] for b in node["branches"])
+
+
+# Connor's Last Mission: the rooftop
+
+
+def test_connor_can_leave_the_rooftop_only_after_insisting_about_cole(tmp_path):
+    plain = play_story(tmp_path / "a", MACHINE)
+    insist = play_story(tmp_path / "b", {**MACHINE, ROOFTOP_TALK: "HANK'S SON (INSIST)"})
+    assert "LEAVE" not in plain.offered(LEAVE_OR_ATTACK)
+    assert "LEAVE" in insist.offered(LEAVE_OR_ATTACK)
+
+
+def test_a_hostile_hank_cannot_talk_connor_off_the_rooftop(tmp_path):
+    run = play_story(
+        tmp_path,
+        {**MACHINE, **HOSTILE_HANK, **KAMSKI_GAVE_JERICHO, ROOFTOP_TALK: "HANK'S SON (INSIST)"},
+    )
+    assert "LEAVE" not in run.offered(LEAVE_OR_ATTACK)
+
+
+@pytest.mark.parametrize("pick", ["KILL HANK", "SAVE HANK"])
+def test_hank_dies_on_the_rooftop_either_way_after_the_fight(tmp_path, pick):
+    # Sparing him, Hank rushes Connor, who dodges; Hank falls to his death.
+    run = play_story(tmp_path, {**MACHINE, LEAVE_OR_ATTACK: "ATTACK", SPARE_OR_KILL: pick})
+    assert run.flags["hank_alive"] is False
+
+
+def test_jumping_off_the_roof_from_allen_adds_a_death(tmp_path):
+    fight = play_story(tmp_path / "a", {**MACHINE, **HOSTILE_HANK})
+    flee = play_story(tmp_path / "b", {**MACHINE, **HOSTILE_HANK, ALLEN_FIGHT_OR_FLEE: "FLEE"})
+    assert flee.flags["connor_deaths"] == fight.flags["connor_deaths"] + 1
+
+
+@pytest.mark.parametrize("nid, branch", ROOFTOP_QTE_DEATHS)
+def test_every_rooftop_death_adds_one(nid, branch):
+    graph = load_dataset()
+    assert death_ladder_at(graph, graph["nodes"][nid]["branches"][branch]["next"])
+
+
+# Connor's Last Mission: the crowd
+
+
+def test_shooting_markus_in_the_crowd_ends_his_story(tmp_path):
+    run = play_story(tmp_path, {**MACHINE, CROWD: "SHOOT"})
+    assert run.flags["markus_alive"] is False
+    assert "32.5" not in run.chapters
+
+
+def test_refusing_to_shoot_connor_can_escape_amanda_and_markus_lives(tmp_path):
+    run = play_story(
+        tmp_path, {**MACHINE, CROWD: "DON'T SHOOT", ZEN_GARDEN: "FIND THE EMERGENCY EXIT"}
+    )
+    # Markus lives on into his own Demonstration (32.5).
+    assert "32.5" in run.chapters
+
+
+def test_giving_up_in_the_zen_garden_amanda_shoots_markus(tmp_path):
+    run = play_story(tmp_path, {**MACHINE, CROWD: "DON'T SHOOT", ZEN_GARDEN: "GIVE UP"})
+    assert run.flags["markus_alive"] is False
+    assert "32.5" not in run.chapters

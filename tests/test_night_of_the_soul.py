@@ -73,7 +73,8 @@ def test_hank_quits_and_kills_himself_only_if_hostile(tmp_path, hostile):
     picks = {**MACHINE} | (HOSTILE_HANK if hostile else {})
     run = play_story(tmp_path, picks)
     assert (HANKS_HOUSE in run.nodes) is hostile
-    assert run.flags["hank_alive"] is not hostile
+    # Hank's Fate can change later, on the rooftop in 32.3.
+    assert (HANK_SUICIDE in run.nodes) is hostile
 
 
 def test_without_a_raid_markus_speaks_to_the_people_not_in_the_church(tmp_path):
