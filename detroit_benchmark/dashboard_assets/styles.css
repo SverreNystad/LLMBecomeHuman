@@ -18,6 +18,15 @@
   --ink-muted: #8a939c;
   --ink-faint: #b4bbc2;
 
+  /* Title screen: always dark, whatever the dashboard theme. */
+  --title-ground: #0b0f15;
+  --title-ink: #eef3f8;
+  --title-ink-soft: rgba(225, 233, 242, .62);
+
+  /* A shown Story logo: white icon and faint inner glow on its Run's colour. */
+  --mark-on-fill: #fff;
+  --mark-fill-glow: rgba(255, 255, 255, .45);
+
   /* Menu highlight blue. */
   --highlight: #2f8ce6;
   --highlight-soft: rgba(47, 140, 230, .12);
@@ -275,10 +284,10 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .story-mark:hover, .story-mark:focus-visible, .story-mark[aria-pressed="true"] { transform: scale(1.12); }
 .story-mark:is(:hover, :focus-visible):not([aria-pressed="true"]) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 25%, transparent), inset 0 0 0 0 transparent, inset 0 0 0 0 transparent; }
 /* The shown logo: filled with its Run's colour, a white icon, a faint inner glow, no outer ring. */
-.story-mark[aria-pressed="true"] { background-color: var(--run-color); box-shadow: 0 0 0 0 transparent, inset 0 0 5px 1px rgba(255, 255, 255, .45), inset 0 0 0 12px var(--run-color);
+.story-mark[aria-pressed="true"] { background-color: var(--run-color); box-shadow: 0 0 0 0 transparent, inset 0 0 5px 1px var(--mark-fill-glow), inset 0 0 0 12px var(--run-color);
   transition: transform .2s var(--ease), box-shadow .25s var(--ease), background-color 0s .25s; }
 .story-mark[aria-pressed="true"] img { filter: brightness(0) invert(1); }
-.story-mark[aria-pressed="true"] .mock-icon { color: #fff; }
+.story-mark[aria-pressed="true"] .mock-icon { color: var(--mark-on-fill); }
 @media (prefers-reduced-motion: reduce) { .story-mark[aria-pressed="true"] { transition-delay: 0s; } }
 /* The model's name, shown quickly above its logo in dark glass. */
 .story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; padding: 3px 8px; white-space: nowrap; pointer-events: none;

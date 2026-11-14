@@ -6,11 +6,9 @@ html.title-on .app-shell { opacity: 0; }
 
 .title-screen {
   /* Always dark, with or without art; the dashboard behind keeps its light theme. */
-  --title-ink: #eef3f8;
-  --title-ink-soft: rgba(225, 233, 242, .62);
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-items: center;
-  background: #0b0f15;
+  background: var(--title-ground);
   color: var(--title-ink);
   overflow: hidden; outline: none; cursor: default;
   opacity: 0;
