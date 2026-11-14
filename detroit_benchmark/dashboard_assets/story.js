@@ -204,8 +204,14 @@ function renderStoryToolbar(run) {
   if (!run) setFollowingMenu(false);
   $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
-  document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
+  let newlyFollowed = null;
+  document.querySelectorAll('.run-chip').forEach(chip => {
+    const followed = state.view === 'story' && chip.dataset.focusId === run?.id;
+    if (followed && !chip.classList.contains('is-followed')) newlyFollowed = chip;
+    chip.classList.toggle('is-followed', followed);
+  });
   fitModelBar();
+  revealModelBarChip(newlyFollowed);
 }
 function renderDecisionStrip(decisions) {
   $('decisionStrip').innerHTML = decisions.length
