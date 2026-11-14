@@ -101,6 +101,18 @@ helm upgrade --install llmbecomehuman ./k8s -f k8s/production_values.yaml
 helm upgrade --install llmbecomehuman ./k8s -f k8s/production_values.yaml --set image.tag=sha-abc1234
 ```
 
+**Automatic redeploys with Keel:**
+
+Kubernetes never checks the registry for a running pod, so a new `latest` from CI isn't picked up on its own. [Keel](https://keel.sh) runs in the cluster, polls GHCR (every 5 minutes, set by `keel.pollSchedule`) and rolls out the Deployment when the image behind `latest` changes. `production_values.yaml` turns this on with `keel.enabled: true`, which adds the `keel.sh/*` annotations to the Deployment. The Keel controller itself is installed once per cluster:
+
+```bash
+helm repo add keel https://charts.keel.sh
+helm repo update
+helm upgrade --install keel keel/keel --namespace keel --create-namespace --set helmProvider.enabled=false
+```
+
+`helmProvider.enabled=false` makes Keel act on the Deployment annotations only, instead of also managing Helm releases. Watch it work with `kubectl -n keel logs deploy/keel -f`. To redeploy straight away instead of waiting for the next poll, run `kubectl rollout restart deploy/llmbecomehuman-llm-become-human`.
+
 **Verify:**
 
 ```bash
