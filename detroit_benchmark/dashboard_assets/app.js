@@ -907,9 +907,9 @@ function centerSelectedNode({glide=false}={}) {
   if (!state.selected || !state.rendered) return;
   const node=state.rendered.graph.nodes.get(state.selected.id);
   if(!node)return;
-  state.viewTouched=true;
   // Phones: the node, and its dialogue if showing, fit in the chart above the sheet.
-  if(window.isPhoneLayout?.()){fitWorldRects(nodeWorldRects(node),{glide});return;}
+  if(window.isPhoneLayout?.()){fitNodeInView(node,{glide});return;}
+  state.viewTouched=true;
   const box=$('viewport').getBoundingClientRect();
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
@@ -960,11 +960,14 @@ function nodeWorldRects(node){
   if(dialogue)rects.push({x:node.x-1,y:node.y+node.height-1,width:node.width+2,height:dialogue.offsetHeight});
   return rects;
 }
+/* A node, and its dialogue when it is showing, fit in the visible chart area. */
+function fitNodeInView(node,{glide=false}={}){
+  state.viewTouched=true;
+  fitWorldRects(nodeWorldRects(node),{glide});
+}
 /* Phones: a tapped node's dialogue glides into view. */
 function fitPeekedNode(node){
-  if(!window.isPhoneLayout?.())return;
-  state.viewTouched=true;
-  fitWorldRects(nodeWorldRects(node),{glide:true});
+  if(window.isPhoneLayout?.())fitNodeInView(node,{glide:true});
 }
 function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();
