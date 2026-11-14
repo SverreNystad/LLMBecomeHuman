@@ -1186,10 +1186,11 @@ class Runner:
             raise RuntimeError(f"Unsupported node type {kind}")
 
     def halt(self, reason: str):
-        """Stops a playing Run where it is, recording why; its events so far stay."""
+        """Stops a playing Run where it is, recording why; it is kept as a partial Run
+        with its events so far."""
         if self.state["status"] != "running":
             return
-        self.state["status"] = "stopped"
+        self.state["status"] = "partial"
         self.state["stop_reason"] = reason
         self._checkpoint()
 

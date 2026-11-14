@@ -90,7 +90,7 @@ const providerFamily = run => PROVIDERS[providerOf(run)]?.family || null;
 const markSrc = provider => {const mark=PROVIDERS[String(provider||'').toLowerCase()]?.mark; return mark?`/assets/${mark}-mark.svg`:null;};
 const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'run'}`;
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
-const runStatusLabel = run => ({running: 'playing', stopped: 'stopped'})[run?.status] || '';
+const runStatusLabel = run => ({running: 'playing', stopped: 'stopped', partial: 'partial'})[run?.status] || '';
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
 const providerStyle = run => providerFamily(run) || 'other';
 const runSortKey = run => `${providerOf(run)}\u0000${run?.model || ''}\u0000${run?.name || ''}`;
