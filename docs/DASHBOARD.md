@@ -49,8 +49,13 @@ Read one Run, chapter by chapter.
 - **Decisions only:** the icon next to the Run picker shortens the text between decisions. The rest expands on click.
 - **Number strip:** jumps to a decision. Highlighted numbers are decisions where the models split.
 - **Moments:** click any line, scene or decision to open that Moment on the Flowchart, centred and highlighted.
+- **Ending:** the Final Routes chapter opens with the Ending Summary, one column per Shown Run in their order and colours (a phone shows the Followed Run only). Each column says, in plain sentences, whether Connor became deviant or stayed a machine, how many times he died and whether his story ended; whether Kara ended free, captured or dead and whether Alice is with her; whether Markus's revolution was peaceful or violent and whether he lived. Below that are the Fates of Hank, Alice, Luther, Simon, North and Josh (alive, dead or unknown) and, under Detroit, how the revolution ended with the last three Public News headlines. A Run still playing shows "Story not finished". Anything the Run never recorded, or a final route the engine had to assume, is shown as unknown, never guessed. The card notes that outcomes come from the Run's recorded route, which is not verified game data.
+
+![Ending Summary on a wide screen](images/ending_summary_desktop.png)
 
 Chapter titles live in `dashboard.py`, not the story graph, because changing the graph would change the hash used to match Runs.
+
+The Ending Summary is written on the server in `ending.py`. Every sentence, and the question each outcome answers (such as "Was Kara captured?"), comes from its one table, `OUTCOMES`, so the wording is corrected in one place.
 
 ## Flowchart
 
@@ -106,7 +111,7 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | Route                                  | Purpose                                                                                                          |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `GET /api/runs?visitor_runs=ID…`       | Discover available recorded experiments; private Visitor Runs are listed only when their ids are named            |
-| `GET /api/runs/{id}`                   | Events, timeline, and compact decision records                                                                   |
+| `GET /api/runs/{id}`                   | Events, timeline, compact decision records, and the Run's `ending_summary`                                       |
 | `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order, each with its `moment` id    |
 | `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |

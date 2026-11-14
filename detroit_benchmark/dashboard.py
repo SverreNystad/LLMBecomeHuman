@@ -15,6 +15,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
+from .ending import ending_summary
 from .engine import (
     canonical_hash,
     chapter_briefing,
@@ -410,7 +411,28 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
         "decisions_by_chapter": [
             {"chapter": ch, "choices": chapter_counts[ch]} for ch in ordered_chapters
         ],
+        "ending_summary": ending_summary(
+            meta["final_flags"] or {},
+            [ev for ev in events if ev["type"] == "route"],
+            _public_news(directory),
+            finished=meta["status"] == "complete",
+        ),
     }
+
+
+def _public_news(directory: Path) -> list[str]:
+    """Public News lives only in the checkpoint; it is re-read only when that changes."""
+    return list(
+        _cached_news(
+            str(directory / "checkpoint.json"), _stamp(directory / "checkpoint.json")
+        )
+    )
+
+
+@lru_cache(maxsize=64)
+def _cached_news(path: str, _stamp) -> tuple[str, ...]:
+    news = ((_json_file(Path(path)) or {}).get("state") or {}).get("news") or []
+    return tuple(str(item) for item in news if isinstance(item, str))
 
 
 def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
