@@ -27,6 +27,10 @@ uv run mkdocs serve
 
 This will build the documentation and start a local server at [http://127.0.0.1:8000/](http://127.0.0.1:8000/) where you can browse the docs and API reference. Get the documentation according to the latest commit on main by viewing the `gh-pages` branch on GitHub: [https://sverrenystad.github.io/LLMBecomeHuman/](sverrenystad.github.io/LLMBecomeHuman/).
 
+## Docker Compose
+
+`docker compose up --build -d dashboard` serves the dashboard at [http://127.0.0.1:8000](http://127.0.0.1:8000). The saved Runs (`./runs`), the synthetic previews (`./demo_runs`) and the story data (`./data`) are mounted read-only. The one writable mount is `./visitor_runs` at `/app/saved_runs/visitors`, the Visitor Run folder under the runs root. Docker creates it on first start and it is gitignored.
+
 ## Kubernetes (Helm)
 
 The Helm chart in `k8s/` deploys the dashboard image. It ships with three values files that are layered on top of each other:
@@ -94,6 +98,17 @@ Production runs the image that CI pushes to `ghcr.io/sverrenystad/llmbecomehuman
 ```bash
 helm upgrade --install llmbecomehuman ./k8s -f k8s/production_values.yaml
 ```
+
+**Visitor Run volume:**
+
+Visitor Runs are kept on a PersistentVolumeClaim, separate from the Runs baked into the image, so redeploys don't wipe them. `production_values.yaml` turns it on with `visitorRuns.persistence.enabled: true`. The chart then:
+
+- creates the claim `<release>-llm-become-human-visitor-runs` (`visitorRuns.persistence.size`, default `5Gi`, on the default StorageClass unless `storageClassName` is set; `existingClaim` uses a claim you made yourself);
+- mounts it at `/app/saved_runs/visitors`, the Visitor Run folder under the dashboard's runs root (`--runs-dir /app/saved_runs`);
+- sets `podSecurityContext.fsGroup: 1000` so the non-root app user can write to it;
+- switches the Deployment to the `Recreate` strategy, so the old pod stops before the new one starts and two pods never share the volume. A redeploy therefore has a few seconds of downtime. The chart refuses to render with `replicaCount` above 1 or with autoscaling while the volume is on.
+
+The claim carries `helm.sh/resource-policy: keep`, so `helm uninstall` leaves it, and the Visitor Runs, in place. Delete it by hand with `kubectl delete pvc llmbecomehuman-llm-become-human-visitor-runs` if you really want them gone. To review every Visitor Run locally, copy the folder out (`kubectl cp <pod>:/app/saved_runs/visitors ./visitor_runs`) and point a dashboard at it.
 
 `latest` is pulled again on every pod start. To roll out or roll back to a specific commit, pin its tag:
 

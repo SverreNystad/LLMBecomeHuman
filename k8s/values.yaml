@@ -166,6 +166,23 @@ volumeMounts: []
   #   mountPath: "/etc/foo"
   #   readOnly: true
 
+# Visitor Runs: a persistent volume mounted at the Visitor Run folder under the
+# dashboard's runs root (--runs-dir /app/saved_runs), so Visitor Runs survive redeploys.
+# It is separate from the Runs baked into the image (/app/saved_runs/runs and /previews).
+# When enabled, the Deployment uses the Recreate strategy so two pods never share the
+# volume, and the chart refuses to render with more than one replica or with autoscaling.
+visitorRuns:
+  persistence:
+    enabled: false
+    mountPath: /app/saved_runs/visitors
+    size: 5Gi
+    accessModes:
+      - ReadWriteOnce
+    # Empty uses the cluster's default StorageClass.
+    storageClassName: ""
+    # Name of an existing PersistentVolumeClaim to use instead of creating one.
+    existingClaim: ""
+
 nodeSelector: {}
 
 tolerations: []
