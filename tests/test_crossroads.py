@@ -52,7 +52,9 @@ def test_with_markus_dead_north_holds_the_cabin(tmp_path):
     "label, left", [("LEAVE FOREVER", True), ("GO BACK TO JERICHO", False)]
 )
 def test_a_voted_out_markus_chooses_to_leave_or_go_back(tmp_path, label, left):
-    run = play_story(tmp_path, {**FLED_THE_MARCH, ROOFTOP: label})
+    # A machine Connor never blows up the ship, so going back reaches the corridor.
+    machine_with_north = {"ch30_2_00097": "REMAIN A MACHINE"}  # North's cabin
+    run = play_story(tmp_path, {**FLED_THE_MARCH, **machine_with_north, ROOFTOP: label})
     assert OUSTED in run.nodes
     assert NORTH_CABIN not in run.nodes
     assert run.flags["markus_left_jericho"] is left
@@ -75,6 +77,10 @@ def test_reaching_the_gun_stays_a_quick_time_event():
 MARKUS_CABIN_30_2, NORTH_CABIN_30_2 = "ch30_2_00149", "ch30_2_00117"
 CARGO_HALL, DEVIANT_CORRIDOR = "ch30_2_00033", "ch30_2_00090"
 CONNOR_ESCAPED = "ch30_2_x0103"
+IN_THE_HOLD, CARGO_HALL_CHOICE = "ch30_2_00019", "ch30_2_00029"
+NORTH_CONFRONTS_CONNOR = "ch30_2_00097"
+MARKUS_SETS_THE_CHARGES, BOMB_WENT_OFF = "ch30_3_00135", "ch30_3_00007"
+NORTH_IS_SHOT = "ch30_3_00034"
 MACHINE_WITH_MARKUS = {"ch30_2_00124": "REMAIN A MACHINE"}
 MARKUS_DIES_IN_THE_MARCH = {
     "ch19_00081": "REFUSE",
@@ -111,7 +117,7 @@ THIN_ICE = "ch31_2_00051"
 def test_a_machine_connor_is_destroyed_in_the_hold(tmp_path, markus_here):
     picks = MACHINE_WITH_MARKUS if markus_here else {
         **MARKUS_DIES_IN_THE_MARCH,
-        "ch30_2_00097": "REMAIN A MACHINE",
+        NORTH_CONFRONTS_CONNOR: "REMAIN A MACHINE",
     }
     run = play_story(tmp_path / "machine", picks)
     deviant = play_story(tmp_path / "deviant", {} if markus_here else MARKUS_DIES_IN_THE_MARCH)
@@ -122,6 +128,14 @@ def test_a_machine_connor_is_destroyed_in_the_hold(tmp_path, markus_here):
 
 
 def test_running_from_the_soldier_gets_connor_shot(tmp_path):
-    run = play_story(tmp_path, {**MACHINE_WITH_MARKUS, "ch30_2_00029": "RUN"})
+    run = play_story(tmp_path, {**MACHINE_WITH_MARKUS, CARGO_HALL_CHOICE: "RUN"})
     assert run.flags["connor_died_in_crossroads"] is True
-    assert "ch30_2_00019" not in run.nodes  # never reaches the hold
+    assert IN_THE_HOLD not in run.nodes
+
+
+def test_a_voted_out_markus_who_goes_back_finds_connor_s_bomb_already_gone_off(tmp_path):
+    run = play_story(tmp_path, {**FLED_THE_MARCH, ROOFTOP: "GO BACK TO JERICHO"})
+    assert CONNOR_ESCAPED in run.nodes
+    assert MARKUS_SETS_THE_CHARGES not in run.nodes
+    assert BOMB_WENT_OFF in run.nodes
+    assert CORRIDOR not in run.nodes and NORTH_IS_SHOT not in run.nodes

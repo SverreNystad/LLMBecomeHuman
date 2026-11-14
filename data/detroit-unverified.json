@@ -89746,7 +89746,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_x0103"
+      "next": "ch30_2_x0107"
     },
     "ch30_2_00036": {
       "id": "ch30_2_00036",
@@ -132752,7 +132752,7 @@
         {
           "id": "option_1",
           "label": "GO BACK TO JERICHO",
-          "next": "ch30_3_00138",
+          "next": "ch30_3_x0112",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -133281,8 +133281,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 1,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133296,8 +133295,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 2,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133311,8 +133309,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 3,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133326,8 +133323,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 4,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133341,8 +133337,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 5,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133356,8 +133351,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 6,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133371,8 +133365,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 7,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         }
@@ -133381,7 +133374,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
-      "note": "Wiki: in the Corridor Confrontation a soldier kills the machine Connor either way."
+      "note": "Per the wiki, in the corridor confrontation a soldier kills the machine Connor whether or not North gets away. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch30_2_x0105": {
       "id": "ch30_2_x0105",
@@ -133400,8 +133393,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 1,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133415,8 +133407,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 2,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133430,8 +133421,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 3,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133445,8 +133435,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 4,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133460,8 +133449,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 5,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133475,8 +133463,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 6,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         },
@@ -133490,8 +133477,7 @@
           "effects": {
             "flags": {
               "connor_deaths": 7,
-              "connor_died_in_crossroads": true,
-              "connor_deviant": false
+              "connor_died_in_crossroads": true
             }
           }
         }
@@ -133500,14 +133486,14 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
-      "note": "Wiki: Run, or Fail to Neutralize Assailant: Machine Connor was destroyed."
+      "note": "Per the wiki, a machine Connor who runs from the soldier, or loses the fight, is destroyed. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch30_2_x0106": {
       "id": "ch30_2_x0106",
       "type": "condition",
       "chapter": "30.2",
       "character": "Connor",
-      "heading": "Deviant Connor was destroyed on the ship",
+      "heading": "Connor is destroyed on the ship",
       "branches": [
         {
           "condition_text": "Connor had died 0 times",
@@ -133619,7 +133605,77 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
-      "note": "Wiki: Deviant Connor was destroyed on the ship; CyberLife will send a new Connor, a machine again (Thin Ice)."
+      "note": "Per the wiki, a deviant Connor shot on the ship is destroyed and CyberLife sends a new one; Thin Ice in Night of the Soul shows the replacement is a machine. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0107": {
+      "id": "ch30_2_x0107",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Explosive armed",
+      "branches": [
+        {
+          "condition_text": "Connor armed the explosives in the hold",
+          "next": "ch30_2_x0103",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "markus_jericho_blown_up": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Only a deviant Connor reaches the hold. The flag also tells a voted-out Markus who goes back that the ship is already sinking."
+    },
+    "ch30_3_x0112": {
+      "id": "ch30_3_x0112",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Back to Jericho",
+      "branches": [
+        {
+          "condition_text": "Connor already blew up Jericho",
+          "next": "ch30_3_x0113",
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Jericho is still afloat",
+          "next": "ch30_3_00138",
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 1,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: here Connor's Crossroads (30.2) plays before Markus's rooftop choice, so Connor may already have set off the charges with North."
+    },
+    "ch30_3_x0113": {
+      "id": "ch30_3_x0113",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Surviving characters jump",
+      "description": "Markus gets back as the charges in the hold go off. Jericho lists and starts to sink, and he jumps into the river with the last of his people.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     }
   },
   "initial_flags": {

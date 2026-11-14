@@ -38,6 +38,7 @@ HEART = "ch32_6_00068"
 NORTH_LEADS = "ch32_6_00010"
 ASSAULT_SUCCESSFUL, ASSAULT_FAILED = "ch32_6_00049", "ch32_6_00038"
 NOBODY_TO_SAVE_MARKUS = "ch32_6_x0111"
+BADLY_WOUNDED = "ch32_6_00093"  # leads to the heart choice or nobody to save him
 
 # 32.7 (ADR 0002): Connor's ending with Markus, or alone.
 KAMSKI_WITH_MARKUS, KAMSKI_ALONE = "ch32_7_00030", "ch32_7_00031"
@@ -129,8 +130,8 @@ def test_quick_time_events_succeed_so_markus_is_never_badly_wounded(tmp_path, pi
     assert run.flags["markus_alive"] is True
 
 
-def test_the_heart_choice_and_nobody_to_save_markus_stay_as_failure_branches():
-    wounded = load_dataset()["nodes"]["ch32_6_00093"]
+def test_markus_badly_wounded_is_a_quick_time_event_failure():
+    wounded = load_dataset()["nodes"][BADLY_WOUNDED]
     assert wounded["resolution"] == "qte"
     assert wounded["default_branch"] is None  # success: the fall-through next
 
