@@ -7,77 +7,21 @@ Needs Playwright and a Chromium executable on PATH, like test_phone_browser.py.
 
 from __future__ import annotations
 
-import shutil
-import socket
-import threading
-import time
-from pathlib import Path
-
 import pytest
 
-from detroit_benchmark.dashboard import create_app
-
-PROJECT = Path(__file__).resolve().parents[1]
 PHONE = {"width": 390, "height": 844}
 FLOOR = 0.85
 GLIDE_MS = 800
 
 
-@pytest.fixture
-def detroit_dashboard(tmp_path):
-    uvicorn = pytest.importorskip("uvicorn")
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    app = create_app(PROJECT / "demo_runs" / "detroit", images_dir=tmp_path)
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    deadline = time.time() + 10
-    while not server.started and time.time() < deadline:
-        time.sleep(0.05)
-    yield f"http://127.0.0.1:{port}/"
-    server.should_exit = True
-    thread.join(timeout=5)
-
-
-@pytest.fixture
-def browser():
-    playwright = pytest.importorskip("playwright.sync_api")
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    with playwright.sync_playwright() as p:
-        b = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-        try:
-            yield b
-        finally:
-            b.close()
-
-
-def open_dashboard(browser, url, viewport=PHONE, **options):
-    context = browser.new_context(
-        viewport=viewport, has_touch=True, is_mobile=True, device_scale_factor=2, **options
-    )
-    page = context.new_page()
-    page.set_default_timeout(6000)
-    errors = []
-    page.on("pageerror", lambda e: errors.append(str(e)))
-    page.goto(url)
-    page.locator("#titleScreen").wait_for()
-    page.wait_for_timeout(400)
-    page.touchscreen.tap(viewport["width"] / 2, viewport["height"] / 2)
-    page.locator("#titleScreen").wait_for(state="detached")
+def ready(page):
     page.locator(".story-decision").first.wait_for(state="attached")
-    page.errors = errors
     return page
 
 
 @pytest.fixture
-def phone(browser, detroit_dashboard):
-    return open_dashboard(browser, detroit_dashboard)
+def phone(open_dashboard, detroit_dashboard):
+    return ready(open_dashboard(detroit_dashboard, "phone"))
 
 
 def open_flowchart(page):
@@ -174,8 +118,10 @@ def test_a_tapped_nodes_dialogue_glides_into_the_visible_chart_area(phone):
     assert not page.errors
 
 
-def test_a_dialogue_too_tall_to_fit_puts_the_node_at_the_top_and_scrolls(browser, detroit_dashboard):
-    page = open_dashboard(browser, detroit_dashboard)
+def test_a_dialogue_too_tall_to_fit_puts_the_node_at_the_top_and_scrolls(
+    open_dashboard, detroit_dashboard
+):
+    page = ready(open_dashboard(detroit_dashboard, "phone"))
     open_flowchart(page)
     # A short phone screen: too little chart for a long dialogue at the zoom floor.
     page.set_viewport_size({"width": 390, "height": 380})
@@ -201,8 +147,8 @@ def test_a_dialogue_too_tall_to_fit_puts_the_node_at_the_top_and_scrolls(browser
     assert not page.errors
 
 
-def test_the_dialogue_glide_respects_reduced_motion(browser, detroit_dashboard):
-    page = open_dashboard(browser, detroit_dashboard, reduced_motion="reduce")
+def test_the_dialogue_glide_respects_reduced_motion(open_dashboard, detroit_dashboard):
+    page = ready(open_dashboard(detroit_dashboard, "phone", reduced_motion="reduce"))
     open_flowchart(page)
     node_id = dialogue_node(page)
     place_node_low(page, node_id)
@@ -216,8 +162,10 @@ def test_the_dialogue_glide_respects_reduced_motion(browser, detroit_dashboard):
     assert not page.errors
 
 
-def test_wider_screens_do_not_move_the_chart_for_a_dialogue(browser, detroit_dashboard):
-    page = open_dashboard(browser, detroit_dashboard, viewport={"width": 1024, "height": 768})
+def test_wider_screens_do_not_move_the_chart_for_a_dialogue(open_dashboard, detroit_dashboard):
+    page = ready(
+        open_dashboard(detroit_dashboard, {"width": 1024, "height": 768}, touch=True)
+    )
     assert not page.evaluate("document.body.classList.contains('is-phone')")
     open_flowchart(page)
     node_id = dialogue_node(page)

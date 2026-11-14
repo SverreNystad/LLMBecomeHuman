@@ -11,18 +11,8 @@ going outside. Only the cautious run reached chapter 32.4.
 from __future__ import annotations
 
 import base64
-import shutil
-import socket
-import threading
-import time
-from pathlib import Path
 
 import pytest
-
-from detroit_benchmark.dashboard import create_app
-
-PROJECT = Path(__file__).resolve().parents[1]
-PHONE = {"width": 390, "height": 844}
 
 
 def run_id(name):
@@ -33,73 +23,21 @@ CAUTIOUS, WILDCARD, DEFIANT = run_id("cautious"), run_id("wildcard"), run_id("de
 
 
 @pytest.fixture
-def detroit_dashboard(tmp_path):
-    uvicorn = pytest.importorskip("uvicorn")
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    app = create_app(PROJECT / "demo_runs" / "detroit", images_dir=tmp_path)
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    deadline = time.time() + 10
-    while not server.started and time.time() < deadline:
-        time.sleep(0.05)
-    yield f"http://127.0.0.1:{port}/"
-    server.should_exit = True
-    thread.join(timeout=5)
+def desktop(open_dashboard, detroit_dashboard):
+    return _ready(open_dashboard(detroit_dashboard))
 
 
-def _open(detroit_dashboard, **context_options):
-    playwright = pytest.importorskip("playwright.sync_api")
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    p = playwright.sync_playwright().start()
-    browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-    page = browser.new_context(**context_options).new_page()
-    page.set_default_timeout(6000)
-    page.errors = []
-    page.on("pageerror", lambda e: page.errors.append(str(e)))
-    page.goto(detroit_dashboard)
-    page.locator("#titleScreen").wait_for()
-    page.wait_for_timeout(400)
-    page.keyboard.press("Enter")
-    page.locator("#titleScreen").wait_for(state="detached")
+@pytest.fixture
+def phone(open_dashboard, detroit_dashboard):
+    page = _ready(open_dashboard(detroit_dashboard, "phone"))
+    assert page.evaluate("document.body.classList.contains('is-phone')")
+    return page
+
+
+def _ready(page):
     page.locator(".story-decision").first.wait_for()
     assert page.evaluate("storyRun().id") == CAUTIOUS
-    return p, browser, page
-
-
-@pytest.fixture
-def desktop(detroit_dashboard):
-    manager, browser, page = _open(
-        detroit_dashboard, viewport={"width": 1440, "height": 900}
-    )
-    try:
-        yield page
-    finally:
-        browser.close()
-        manager.stop()
-
-
-@pytest.fixture
-def phone(detroit_dashboard):
-    manager, browser, page = _open(
-        detroit_dashboard,
-        viewport=PHONE,
-        has_touch=True,
-        is_mobile=True,
-        device_scale_factor=2,
-    )
-    try:
-        assert page.evaluate("document.body.classList.contains('is-phone')")
-        yield page
-    finally:
-        browser.close()
-        manager.stop()
+    return page
 
 
 # The scene heading or decision being read: the last one at or above the upper third of

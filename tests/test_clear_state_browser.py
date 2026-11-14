@@ -5,88 +5,22 @@ Needs Playwright and a Chromium executable on PATH, like test_frontend_browser.p
 
 from __future__ import annotations
 
-import shutil
-import socket
-import threading
-import time
-from pathlib import Path
-
 import pytest
 
-from detroit_benchmark.dashboard import create_app
 
-PROJECT = Path(__file__).resolve().parents[1]
-DESKTOP = {"width": 1440, "height": 900}
-PHONE = {"width": 390, "height": 844}
+@pytest.fixture
+def desktop(open_dashboard, detroit_dashboard):
+    return _ready(open_dashboard(detroit_dashboard))
 
 
 @pytest.fixture
-def detroit_dashboard(tmp_path):
-    uvicorn = pytest.importorskip("uvicorn")
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    app = create_app(PROJECT / "demo_runs" / "detroit", images_dir=tmp_path)
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    deadline = time.time() + 10
-    while not server.started and time.time() < deadline:
-        time.sleep(0.05)
-    yield f"http://127.0.0.1:{port}/"
-    server.should_exit = True
-    thread.join(timeout=5)
+def phone(open_dashboard, detroit_dashboard):
+    return _ready(open_dashboard(detroit_dashboard, "phone"))
 
 
-def _open(p, url, *, phone=False):
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-    if phone:
-        context = browser.new_context(
-            viewport=PHONE, has_touch=True, is_mobile=True, device_scale_factor=2
-        )
-    else:
-        context = browser.new_context(viewport=DESKTOP)
-    page = context.new_page()
-    page.set_default_timeout(6000)
-    page.errors = []
-    page.on("pageerror", lambda e: page.errors.append(str(e)))
-    page.goto(url)
-    page.locator("#titleScreen").wait_for()
-    page.wait_for_timeout(400)
-    if phone:
-        page.touchscreen.tap(195, 420)
-    else:
-        page.keyboard.press("Enter")
-    page.locator("#titleScreen").wait_for(state="detached")
+def _ready(page):
     page.locator(".story-decision").first.wait_for()
-    return browser, page
-
-
-@pytest.fixture
-def desktop(detroit_dashboard):
-    playwright = pytest.importorskip("playwright.sync_api")
-    with playwright.sync_playwright() as p:
-        browser, page = _open(p, detroit_dashboard)
-        try:
-            yield page
-        finally:
-            browser.close()
-
-
-@pytest.fixture
-def phone(detroit_dashboard):
-    playwright = pytest.importorskip("playwright.sync_api")
-    with playwright.sync_playwright() as p:
-        browser, page = _open(p, detroit_dashboard, phone=True)
-        try:
-            yield page
-        finally:
-            browser.close()
+    return page
 
 
 def clear(page):
