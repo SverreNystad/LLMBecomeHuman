@@ -2,7 +2,7 @@
  *
  * Loaded in <head> (not deferred) so the dashboard is hidden before its first paint.
  * Dismissing it is the user gesture that unlocks sound (see sound.js).
- * Uses the local title art when installed, otherwise the LED ring over the grey theme.
+ * Uses the local title art when installed, otherwise the LED ring over a dark ground.
  */
 (() => {
   'use strict';
