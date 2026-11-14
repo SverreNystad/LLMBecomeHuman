@@ -25,6 +25,10 @@ REACTIVATE_DANIEL = "ch29_00029"
 # The Bridge and the tower
 BRIDGE_TOPICS, PASSWORD = "ch22_00080", "ch32_4_00042"
 RUSHED_RUSSIAN_ROULETTE = {"ch18_x0001": "WAIT FOR HANK"}
+# The Nest: asking Hank about the highway needs a chase that morning (On the Run).
+HIGHWAY_TOPIC = "ch15_00132"
+KARA_UNSEEN = {"ch13_x0301": "FOLLOW HANK"}
+CHASE_THEN_STOPPED = {"ch13_x0301": "CHECK THE DOOR", "ch13_00009": "GIVE UP"}
 # Night of the Soul
 HANKS_HOUSE_SUICIDE = "ch31_2_00048"
 # Connor's Last Mission (32.3)
@@ -198,6 +202,17 @@ def test_refusing_to_shoot_connor_can_escape_amanda_and_markus_lives(tmp_path):
     )
     # Markus lives on into his own Demonstration (32.5).
     assert "32.5" in run.chapters
+
+
+def test_without_a_chase_connor_never_asks_about_the_highway(tmp_path):
+    run = play_story(tmp_path, KARA_UNSEEN)
+    assert run.flags["kara_chased_by_connor"] is False
+    assert "HIGHWAY" not in run.offered(HIGHWAY_TOPIC)
+
+
+def test_stopped_at_the_highway_connor_can_ask_hank_why(tmp_path):
+    run = play_story(tmp_path, CHASE_THEN_STOPPED)
+    assert "HIGHWAY" in run.offered(HIGHWAY_TOPIC)
 
 
 def test_giving_up_in_the_zen_garden_amanda_shoots_markus(tmp_path):

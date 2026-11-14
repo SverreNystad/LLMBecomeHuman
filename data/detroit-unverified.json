@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 26,
+    "condition_nodes_unverified": 23,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -37015,6 +37015,10 @@
             "flags": {}
           },
           "requires": [
+            {
+              "flag": "kara_chased_by_connor",
+              "equals": true
+            },
             {
               "flag": "connor_highway_pursuit",
               "equals": false
