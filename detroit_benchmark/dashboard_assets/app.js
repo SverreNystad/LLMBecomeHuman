@@ -68,7 +68,7 @@ const state = {
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
   toastTimer: null, selectionHydrated: false, shadeSlots: new Map(), focusedId: null, viewTouched: false,
-  view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null
+  view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null, emptyShown: false
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
 /* Every provider the dashboard knows: its family (gemini and grok are aliases), its display
@@ -249,18 +249,29 @@ async function toggleRun(id,enabled){
   if(!enabled&&selected)state.selectedIds=state.selectedIds.filter(x=>x!==id);
   if(state.focusedId===id)state.focusedId=null;
   state.selected=null;closeDrawer();
-  const changedAnchor=!state.selectedIds.length || !state.graph || !state.graphHash || state.graphHash!==anchorRun()?.graph_sha256;
+  const changedAnchor=!state.selectedIds.length || !state.graph || !state.details.size || !state.graphHash || state.graphHash!==anchorRun()?.graph_sha256;
   updateSelectors();
-  if(!state.selectedIds.length){state.graph=null;state.details.clear();renderChapterList();displayNoRuns();return;}
+  if(!state.selectedIds.length){state.details.clear();displayNoRuns();return;}
   await loadCurrent(changedAnchor);
 }
+/* No Shown Runs. The last loaded story graph still lists its chapters, all faded, and the
+ * current chapter keeps its Character theme; with no story graph at all there is nothing to list. */
+const CHOOSE_MODEL='<button type="button" class="choose-model" data-choose-model>Choose a model</button>';
 function displayNoRuns(){
+ state.emptyShown=true;
  $('graphEmpty').classList.remove('is-hidden');
- $('graphEmpty').innerHTML='<strong>Choose a model</strong>';
+ $('graphEmpty').innerHTML=CHOOSE_MODEL;
+ $('graphNotice').classList.add('is-hidden');
  $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();$('canvasLegend').innerHTML='<summary class="legend-title">Models</summary>';
- $('storyContent').innerHTML='<div class="story-empty"><strong>Choose a model</strong></div>';$('decisionStrip').replaceChildren();renderStoryToolbar(null);
- $('chapterList').replaceChildren();
- state.rendered=null;state.chapter=null;setCharacterTheme(null);
+ $('storyContent').innerHTML=`<div class="story-empty">${CHOOSE_MODEL}</div>`;$('decisionStrip').replaceChildren();renderStoryToolbar(null);
+ state.rendered=null;
+ if(!chapters().includes(state.chapter))state.chapter=chapters()[0]||null;
+ renderChapterList();
+ if(state.chapter){renderChapterHeading(state.chapter);emitScene();}
+ else setCharacterTheme(null);
+}
+function openPicker(){
+ setFollowingMenu(false);state.pickerOpen=true;updateSelectors();$('searchRuns').focus();
 }
 async function refreshRuns({reselect=false}={}){
  if(state.busyRefresh)return;
@@ -280,7 +291,7 @@ async function refreshRuns({reselect=false}={}){
    }
    if(!results.length){state.selectedIds=[];state.graph=null;state.details.clear();updateSelectors();displayNoRuns();return;}
    updateSelectors();
-   if(!state.selectedIds.length){displayNoRuns();return;}
+   if(!state.selectedIds.length){if(!state.emptyShown)displayNoRuns();return;}
    if(reselect||!state.graph||!state.details.size)await loadCurrent(true);
    else if(activeRuns().some(r=>r.status==='running'||state.details.get(r.id)?.run.status!==r.status))await refreshEventsInPlace();
  }catch(error){toast('Could not load runs: '+error.message);}
@@ -298,7 +309,9 @@ async function loadCurrent(fit=true){
      ...selected.map(r=>api(`/api/runs/${encodeURIComponent(r.id)}`))
    ]);
    if(request!==state.requestVersion)return;
-   const switched=state.graphHash!==anchor.graph_sha256;
+   // Coming back from Clear, the chapter in view stays if this story has it.
+   const fromClear=Boolean(state.graph)&&!state.details.size;
+   const switched=state.graphHash!==anchor.graph_sha256&&!(fromClear&&(graph.chapters||[]).includes(state.chapter));
    state.graph=graph;state.graphHash=anchor.graph_sha256;
    state.details=new Map(selected.map((run,i)=>[run.id,details[i]]));
    const chapters=graph.chapters||[];
@@ -371,11 +384,11 @@ async function setView(view) {
 }
 function renderChapterList() {
   const all = chapters();
-  const followed = storyRun(), storyDetail = followed && state.details.get(followed.id);
+  const followed = storyRun(), cleared = !followed, storyDetail = followed && state.details.get(followed.id);
   const decisionCounts = new Map((storyDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
-    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${followed&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${(followed||cleared)&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
       <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
@@ -768,13 +781,19 @@ function showMomentInStory(node,visitorIds){
  state.storyRunId=runId;
  setView('story');renderChapterList();
 }
-function renderChapter(fit=true){
- if(!state.graph||!state.chapter)return;
- const chapter=state.chapter;
+function renderChapterHeading(chapter){
  $('chapterIndexLabel').textContent=chapterNumber(chapter)?`Chapter ${chapterNumber(chapter)}`:'Endings';
  setCharacterTheme(chapterCharacter(chapter));
- emitScene();
  $('chapterTitle').textContent=chapterTitle(chapter);
+ $('chapterSubtitle').textContent=chapterCharacter(chapter)||'';
+}
+function renderChapter(fit=true){
+ if(!state.graph||!state.chapter)return;
+ if(!activeRuns().length){displayNoRuns();return;}
+ state.emptyShown=false;
+ const chapter=state.chapter;
+ renderChapterHeading(chapter);
+ emitScene();
  if(state.view==='story'){state.rendered=null;return renderStory({keepScroll:!fit});}
  renderFlowchart(fit);
 }
@@ -960,6 +979,11 @@ function setupInteractions(){
  $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));
  $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
+ // "Choose a model" in the Story and the Flowchart opens the picker.
+ for(const host of [$('storyContent'),$('graphEmpty')])host.addEventListener('click',e=>{
+  if(!e.target.closest('[data-choose-model]'))return;
+  e.stopPropagation();openPicker();
+ });
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});
  $('bestOfEach').addEventListener('click',async()=>{
@@ -968,7 +992,7 @@ function setupInteractions(){
   state.selectedIds=best;state.focusedId=null;
   updateSelectors();await loadCurrent(!sameStory);
  });
- $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});
+ $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.details.clear();state.selected=null;closeDrawer();updateSelectors();displayNoRuns();});
  const fitToButton=()=>{fitGraph();state.viewTouched=true;};
  $('zoomIn').addEventListener('click',()=>zoom(1.2));
  $('zoomOut').addEventListener('click',()=>zoom(1/1.2));
@@ -984,7 +1008,7 @@ function setupInteractions(){
    touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
    if(touches.size===2){drag=null;vp.classList.remove('dragging');pinch=pinchState();return;}
   }
-  if(e.button!==0||e.target.closest('.flow-node,.canvas-zoombar,.graph-notice,.canvas-legend'))return;
+  if(e.button!==0||e.target.closest('.flow-node,.canvas-zoombar,.graph-notice,.canvas-legend,.choose-model'))return;
   drag={id:e.pointerId,x:e.clientX,y:e.clientY,px:state.panX,py:state.panY};
   vp.classList.add('dragging');try{vp.setPointerCapture(e.pointerId);}catch{}
  });
