@@ -201,6 +201,7 @@ function renderStoryToolbar(run) {
   $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
   document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
+  fitModelBar();
 }
 function renderDecisionStrip(decisions) {
   $('decisionStrip').innerHTML = decisions.length
