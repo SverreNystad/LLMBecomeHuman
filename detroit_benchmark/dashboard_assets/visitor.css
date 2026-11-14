@@ -32,6 +32,33 @@
 }
 .own-run-actions button:disabled { opacity: .5; }
 
+/* The model list (#72): the provider's models under the model field, filtered as you type. */
+.own-run-models-status { margin: -4px 0 10px; font-size: 12px; line-height: 1.4; color: var(--ink-muted); }
+.own-run-models-status:empty { display: none; }
+.own-run-models-status[data-state="rejected"], .own-run-models-status[data-state="failed"] { color: var(--danger); }
+.own-run-models {
+  margin: -6px 0 10px; padding: 2px 0; list-style: none; max-height: 180px; overflow-y: auto;
+  border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-solid);
+}
+.own-run-models.is-hidden { display: none; }
+.own-run-models li { padding: 6px 10px; font-size: 13px; color: var(--ink); cursor: pointer; overflow-wrap: anywhere; }
+.own-run-models li:hover, .own-run-models li[aria-selected="true"] { background: var(--highlight-soft); }
+
+/* The token estimate (#73): an approximation, never a price. */
+.own-run-estimate { margin: 0 0 12px; padding: 8px 10px; border-left: 2px solid var(--highlight); background: var(--surface-sunken); }
+.own-run-estimate.is-hidden { display: none; }
+.own-run-estimate p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
+.own-run-estimate strong { font-weight: 600; color: var(--ink); }
+.own-run-estimate .own-run-estimate-note { margin-top: 4px; color: var(--ink-muted); }
+.own-run-estimate .own-run-public-warning { margin-top: 6px; padding: 6px 8px; background: var(--highlight-soft); color: var(--ink); }
+
+/* Live token counts of this browser's playing Visitor Runs, under the entry. */
+.own-run-live:empty { display: none; }
+.own-run-live-run { margin: 6px 2px 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
+.own-run-live-run strong { font-weight: 600; color: var(--ink); }
+.own-run-live-count { font-variant-numeric: tabular-nums; color: var(--ink); }
+.own-run-live-run small { display: block; font-size: 11px; color: var(--ink-muted); }
+
 @media (min-width: 761px) {
   .own-run-form select, .own-run-form input { font-size: 13px; }
 }

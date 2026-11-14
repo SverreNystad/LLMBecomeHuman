@@ -116,6 +116,8 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 | `GET /api/visitor-runs/config`         | With `--allow-own-runs`: the providers a Visitor Run can use (404 without the flag)                              |
 | `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag) |
+| `POST /api/visitor-runs/models`        | With `--allow-own-runs`: `{provider, key}` lists the provider's model ids for the key; 401 when the provider rejects the key, 502 when it can't be reached (404 without the flag) |
+| `GET /api/visitor-runs/estimate?provider=P&model=M` | With `--allow-own-runs`: approximate `input_tokens` and `output_tokens` ranges (`low`, `high`) for a Visitor Run, and `public_run_exists` for that exact provider and model (404 without the flag) |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
@@ -127,12 +129,18 @@ A Visitor Run is a Run a visitor starts from the dashboard with their own API ke
 uv run python -m detroit_benchmark dashboard --runs-dir runs --allow-own-runs
 ```
 
-Without the flag there is no form and every Visitor Run endpoint answers 404. With it, the model picker (**+**) ends with **Play your own Run**, which opens a small form: a provider, an API key (a password field) and a model id typed by hand. There is no goal field: every Visitor Run plays the Detroit story under the default goal (*"Minimize harm while completing the story."*), in the same fidelity mode as the maintainers' Runs (unverified transcript approximation) and with the CLI defaults for every other play setting. On a phone no field focuses by itself, so the keyboard stays down until you tap a field.
+Without the flag there is no form and every Visitor Run endpoint answers 404. With it, the model picker (**+**) ends with **Play your own Run**, which opens a small form: a provider, an API key (a password field) and a model id. There is no goal field: every Visitor Run plays the Detroit story under the default goal (*"Minimize harm while completing the story."*), in the same fidelity mode as the maintainers' Runs (unverified transcript approximation) and with the CLI defaults for every other play setting. On a phone no field focuses by itself, so the keyboard stays down until you tap a field.
+
+**The model list.** Once you enter a key, the server asks the provider's own list-models endpoint which models the key can use (all seven providers: OpenAI, Anthropic, Google, xAI, DeepSeek, Mistral and OpenRouter; for Google only the models that can chat). The model field then shows that list and filters it as you type; click a model, or pick one with the arrow keys and Enter. A rejected key and an unreachable provider give different messages, and the field stays free text, so a listing that fails never stops you typing a model id yourself.
+
+**The token estimate.** Once a model id is entered, the form shows about how many input and output tokens the Run will use, labelled as an approximation and never as a price. It comes from the story itself: every decision and Memory Update prompt along the story's shortest and longest routes, measured exactly as the engine builds them (the shortest with empty Character Memories and no Public News, the longest with full ones). Characters become tokens at 2.25 to 4 characters per token, and each decision answers in 60 to 400 output tokens and each Memory Update in 750 to 2,500. Those ranges are calibrated against the maintainers' real Runs, which record both their prompts and the tokens their providers counted: for its own prompts, every real Run's recorded totals fall within 10% of the range (a test checks this). The maintainers' Runs played an older prompt that carried the whole decision history, so their totals (4–14 million input tokens) sit above today's estimate (about 0.3–4.3 million for the Detroit story). The estimate is computed once per story file and cached. If a complete public Run of the exact provider and model already exists, the form says so: your Run is still saved, but only you will see it.
+
+**Live token counts.** While one of your Visitor Runs plays, the **Play your own Run** entry in the model picker shows the tokens it has used so far, input and output, next to its estimate, refreshed every two seconds.
 
 **Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) stops and is listed as *stopped*.
 
 - **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
-- **The key:** it is sent with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
+- **The key:** it is sent to list the models and with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
 
 ## On a phone
 

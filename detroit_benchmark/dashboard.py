@@ -752,6 +752,8 @@ def create_app(
         }
 
     if allow_own_runs:
+        # The form's model list and token estimate (#72, #73).
+        _add_visitor_form_routes(app, root, story_path)
 
         @app.get("/api/visitor-runs/config")
         def visitor_run_config():
@@ -919,3 +921,64 @@ def create_app(
 
     app.mount("/assets", StaticFiles(directory=ASSETS), name="dashboard_assets")
     return app
+
+
+class VisitorModelsRequest(BaseModel):
+    provider: str
+    key: str
+
+
+def _add_visitor_form_routes(app: FastAPI, root: Path, story_path: Path) -> None:
+    """The Visitor Run form's model list (#72) and token estimate (#73)."""
+    from .visitor_estimate import story_estimate
+    from .visitor_runs import ProviderAuthError, ProviderUnreachable
+
+    @app.post("/api/visitor-runs/models")
+    def list_visitor_models(body: VisitorModelsRequest):
+        """The model ids the provider lists for this key. The key is never echoed."""
+        key = body.key.strip()
+        if body.provider not in PROVIDERS:
+            raise HTTPException(status_code=422, detail="Unknown provider")
+        if not key:
+            raise HTTPException(status_code=422, detail="Enter your API key")
+        try:
+            ids = app.state.model_lister(body.provider, key)
+        except ProviderAuthError:
+            raise HTTPException(
+                status_code=401,
+                detail="The provider rejected this API key. Check the key and try again.",
+            ) from None
+        except ProviderUnreachable:
+            raise HTTPException(
+                status_code=502,
+                detail="Could not reach the provider to list its models. "
+                "You can still type a model id.",
+            ) from None
+        return {"models": list(ids)}
+
+    @app.get("/api/visitor-runs/estimate")
+    def estimate_visitor_run(provider: str, model: str):
+        """About how many tokens a Visitor Run uses, and whether a public Run of this
+        exact model exists already."""
+        if provider not in PROVIDERS:
+            raise HTTPException(status_code=422, detail="Unknown provider")
+        return {
+            **story_estimate(story_path),
+            "approximate": True,
+            "public_run_exists": _public_run_exists(root, provider, model.strip()),
+        }
+
+
+def _public_run_exists(root: Path, provider: str, model: str) -> bool:
+    """A complete, public (not Visitor, not synthetic) Run of exactly this model."""
+    for directory in _discovered_runs(root):
+        if _is_private(root, directory):
+            continue
+        run = _metadata(root, directory)
+        if (
+            run["status"] == "complete"
+            and not run["synthetic"]
+            and (run["provider"], run["model"]) == (provider, model)
+        ):
+            return True
+    return False

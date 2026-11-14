@@ -50,32 +50,88 @@ _MODEL_LISTS = {
 }
 
 
-def list_models(provider: str, key: str) -> list[str]:
-    """The model ids the provider's list-models endpoint returns for this key."""
+class ProviderAuthError(Exception):
+    """The provider rejected the key. The message never contains the key."""
+
+
+class ProviderUnreachable(Exception):
+    """The provider could not be reached, or failed to answer. The message never
+    contains the key."""
+
+
+def list_models(
+    provider: str, key: str, client: httpx.Client | None = None
+) -> list[str]:
+    """The model ids the provider's list-models endpoint returns for this key, sorted.
+
+    Raises :class:`ProviderAuthError` when the provider rejects the key and
+    :class:`ProviderUnreachable` when it can't be reached or fails; neither message
+    contains the key. ``client`` is for tests (an httpx MockTransport).
+    """
+    owned = client is None
+    client = client or httpx.Client(timeout=20)
+    try:
+        return sorted(_listed_ids(client, provider, key))
+    except httpx.HTTPError as exc:
+        reason = scrub(f"{type(exc).__name__}: {exc}", key)
+        raise ProviderUnreachable(reason) from None
+    finally:
+        if owned:
+            client.close()
+
+
+def _provider_get(client: httpx.Client, url: str, key: str, **options) -> dict:
+    response = client.get(url, **options)
+    if response.status_code in (401, 403) or _google_rejected_key(response):
+        raise ProviderAuthError(
+            f"The provider rejected the key ({response.status_code})"
+        )
+    if response.status_code >= 400:
+        raise ProviderUnreachable(f"The provider answered {response.status_code}")
+    return response.json()
+
+
+def _google_rejected_key(response: httpx.Response) -> bool:
+    """Google answers a bad key with 400 and the reason API_KEY_INVALID."""
+    return response.status_code == 400 and (
+        "API_KEY_INVALID" in response.text or "API key not valid" in response.text
+    )
+
+
+def _listed_ids(client: httpx.Client, provider: str, key: str) -> list[str]:
+    """Every page of the provider's model list."""
     if provider == "anthropic":
-        url, headers, params = (
-            "https://api.anthropic.com/v1/models",
-            {"x-api-key": key, "anthropic-version": "2023-06-01"},
-            {"limit": 1000},
-        )
-    elif provider == "google":
-        url, headers, params = (
-            "https://generativelanguage.googleapis.com/v1beta/models",
-            {"x-goog-api-key": key},
-            {"pageSize": 1000},
-        )
-    else:
-        url, headers, params = (
-            _MODEL_LISTS[provider],
-            {"Authorization": f"Bearer {key}"},
-            {},
-        )
-    response = httpx.get(url, headers=headers, params=params, timeout=20)
-    response.raise_for_status()
-    body = response.json()
+        url = "https://api.anthropic.com/v1/models"
+        headers = {"x-api-key": key, "anthropic-version": "2023-06-01"}
+        ids, params = [], {"limit": 1000}
+        while True:
+            body = _provider_get(client, url, key, headers=headers, params=params)
+            ids += [m["id"] for m in body.get("data", [])]
+            if not (body.get("has_more") and body.get("last_id")):
+                return ids
+            params = {"limit": 1000, "after_id": body["last_id"]}
     if provider == "google":
-        return sorted(m["name"].removeprefix("models/") for m in body.get("models", []))
-    return sorted(m["id"] for m in body.get("data", []))
+        url = "https://generativelanguage.googleapis.com/v1beta/models"
+        headers = {"x-goog-api-key": key}
+        ids, params = [], {"pageSize": 1000}
+        while True:
+            body = _provider_get(client, url, key, headers=headers, params=params)
+            ids += [
+                m["name"].removeprefix("models/")
+                for m in body.get("models", [])
+                # Only models that can chat; embedding models can't play a Run.
+                if "generateContent"
+                in m.get("supportedGenerationMethods", ["generateContent"])
+            ]
+            if not body.get("nextPageToken"):
+                return ids
+            params = {"pageSize": 1000, "pageToken": body["nextPageToken"]}
+    headers = {"Authorization": f"Bearer {key}"}
+    if provider == "openrouter":
+        # OpenRouter lists its models to anyone, so the key is checked on its own.
+        _provider_get(client, "https://openrouter.ai/api/v1/key", key, headers=headers)
+    body = _provider_get(client, _MODEL_LISTS[provider], key, headers=headers)
+    return [m["id"] for m in body.get("data", [])]
 
 
 def scrub(text: str, key: str) -> str:
