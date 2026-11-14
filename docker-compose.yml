@@ -26,6 +26,8 @@ services:
       - ./runs:/app/saved_runs/runs:ro
       # Show bundled synthetic previews alongside real saved runs.
       - ./demo_runs:/app/saved_runs/previews:ro
+      # Visitor Runs: the one writable folder under the runs root (gitignored).
+      - ./visitor_runs:/app/saved_runs/visitors
       - ./data:/app/data:ro
       # Optional local concept art (gitignored, never baked into the image).
       - ./images:/app/images:ro

@@ -234,6 +234,9 @@ __marimo__/
 # data/
 upstream-detroit/
 
+# Visitor Runs written by the docker-compose dashboard (may hold any visitor's Run)
+visitor_runs/
+
 # Python/editor cache
 .venv/
 venv/

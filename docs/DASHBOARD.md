@@ -23,6 +23,8 @@ uv run python -m detroit_benchmark dashboard --runs-dir runs
 
 Supply appropriate API keys to run the models. The dashboard itself uses **no** API keys or model calls. `--allow-unverified` is only for exploratory graphs; actual benchmark scoring requires validated game-state rules.
 
+The dashboard shows every Run found anywhere under `--runs-dir`. In the Docker image the runs root is `/app/saved_runs`: the maintainers' Runs sit in `runs/`, the synthetic previews in `previews/`, and Visitor Runs get their own writable `visitors/` folder. In production that folder is a persistent volume, so Visitor Runs survive redeploys. See [Developer Setup](developer_setup.md#docker-compose).
+
 
 ## Look and feel
 

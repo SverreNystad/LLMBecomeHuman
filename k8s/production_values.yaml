@@ -21,3 +21,15 @@ cloudflared:
 keel:
   enabled: true
   pollSchedule: "@every 5m"
+
+# Visitor Runs live on a persistent volume so redeploys don't wipe them.
+# This switches the Deployment to the Recreate strategy (one pod on the volume at a time).
+visitorRuns:
+  persistence:
+    enabled: true
+    size: 5Gi
+
+# The app runs as uid 1000 (see securityContext in values.yaml); fsGroup makes the
+# mounted Visitor Runs volume writable for it.
+podSecurityContext:
+  fsGroup: 1000
