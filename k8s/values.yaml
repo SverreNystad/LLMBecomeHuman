@@ -172,9 +172,11 @@ volumeMounts: []
 # When enabled, the Deployment uses the Recreate strategy so two pods never share the
 # volume, and the chart refuses to render with more than one replica or with autoscaling.
 visitorRuns:
+  # Start the dashboard with --allow-own-runs (the Play your own Run form). Needs persistence.
+  allowOwnRuns: false
   persistence:
     enabled: false
-    mountPath: /app/saved_runs/visitors
+    mountPath: /app/saved_runs/visitor-runs
     size: 5Gi
     accessModes:
       - ReadWriteOnce

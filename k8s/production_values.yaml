@@ -24,7 +24,9 @@ keel:
 
 # Visitor Runs live on a persistent volume so redeploys don't wipe them.
 # This switches the Deployment to the Recreate strategy (one pod on the volume at a time).
+# Visitors can play their own Runs with their own API keys (ADR 0003).
 visitorRuns:
+  allowOwnRuns: true
   persistence:
     enabled: true
     size: 5Gi

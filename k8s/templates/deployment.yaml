@@ -56,6 +56,13 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.visitorRuns.allowOwnRuns }}
+          # The image's CMD plus --allow-own-runs (the image has no ENTRYPOINT, so args replaces CMD).
+          args: ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/saved_runs", "--graphs-dir", "/app/data", "--host", "0.0.0.0", "--port", "{{ .Values.containerPort }}", "--allow-own-runs"]
+          {{- if not .Values.visitorRuns.persistence.enabled }}
+          {{- fail "visitorRuns.allowOwnRuns needs visitorRuns.persistence.enabled, or Visitor Runs are lost on every redeploy" }}
+          {{- end }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http

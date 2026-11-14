@@ -19,6 +19,8 @@ services:
       - 0.0.0.0
       - --port
       - "8000"
+      # Visitors can play their own Runs (ADR 0003); they are saved in ./visitor_runs.
+      - --allow-own-runs
     ports:
       - "127.0.0.1:${DASHBOARD_PORT:-8000}:8000"
     volumes:
@@ -27,7 +29,7 @@ services:
       # Show bundled synthetic previews alongside real saved runs.
       - ./demo_runs:/app/saved_runs/previews:ro
       # Visitor Runs: the one writable folder under the runs root (gitignored).
-      - ./visitor_runs:/app/saved_runs/visitors
+      - ./visitor_runs:/app/saved_runs/visitor-runs
       - ./data:/app/data:ro
       # Optional local concept art (gitignored, never baked into the image).
       - ./images:/app/images:ro
