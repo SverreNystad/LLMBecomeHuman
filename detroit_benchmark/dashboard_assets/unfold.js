@@ -53,7 +53,22 @@
       <p class="unfold-card-why">${esc(decision.rationale || 'No reason recorded.')}</p>`;
   }
 
+  /* Phones have no room beside a node, so the card unfolds below it (and below its
+   * dialogue when showing), and app.js fits the node and card into view. */
+  function placeBelow(button) {
+    const node = button.closest('.flow-node'), box = node.getBoundingClientRect(), width = card.offsetWidth;
+    const dialogue = node.classList.contains('is-peeked') && node.querySelector('.node-dialogue');
+    const bottom = Math.max(box.bottom, dialogue ? dialogue.getBoundingClientRect().bottom : 0);
+    const left = Math.min(Math.max(8, box.left), window.innerWidth - width - 8);
+    const mark = button.getBoundingClientRect();
+    card.dataset.side = 'below';
+    card.style.left = `${left}px`;
+    card.style.top = `${bottom + GAP}px`;
+    card.style.setProperty('--line-x', `${Math.min(Math.max(12, mark.left + mark.width / 2 - left), width - 12)}px`);
+  }
+
   function place(button) {
+    if (window.isPhoneLayout?.()) return placeBelow(button);
     const box = button.getBoundingClientRect(), width = card.offsetWidth, height = card.offsetHeight;
     const roomRight = window.innerWidth - box.right - GAP;
     const side = roomRight >= width + 8 || box.left - GAP < width ? 'right' : 'left';
@@ -76,6 +91,7 @@
     card.querySelector('.unfold-card-body').innerHTML = cardMarkup(moment);
     card.style.setProperty('--card-color', moment.color || 'var(--accent)');
     card.classList.remove('is-open');
+    card.style.removeProperty('--card-room');
     place(button);
     button.setAttribute('aria-describedby', card.id);
     current = button;
@@ -117,7 +133,28 @@
       if (current && !card?.contains(event.target) && !current.contains(event.target)) hide(true);
     }, {capture: true, passive: true});
   }
+  /* The card sits on the screen, not in the chart: while the chart moves (moving() says
+   * so, and its marker is still shifting), the card keeps to its marker each frame. A
+   * transition starts a frame or two late, even the near-instant one reduced motion leaves,
+   * so it watches a few frames before trusting a still marker. */
+  const SETTLE_FRAMES = 6;
+  let following = false;
+  function follow(moving) {
+    if (following) return;
+    following = true;
+    let frames = 0, last = '';
+    const step = () => {
+      if (!current) { following = false; return; }
+      place(current);
+      const box = current.getBoundingClientRect(), at = `${box.left},${box.top}`;
+      const shifting = at !== last;
+      last = at;
+      if (moving() || shifting || ++frames < SETTLE_FRAMES) requestAnimationFrame(step);
+      else following = false;
+    };
+    step();
+  }
   // Touch screens open the card with a first tap (app.js); a second tap opens the details.
-  window.unfoldCard = {open, isOpenFor: button => current === button && card?.classList.contains('is-open')};
+  window.unfoldCard = {open, follow, gap: GAP, isOpenFor: button => current === button && card?.classList.contains('is-open')};
 
 })();

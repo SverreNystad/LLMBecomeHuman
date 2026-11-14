@@ -15,6 +15,7 @@ import time
 from collections import Counter
 from functools import lru_cache
 
+from .ending import ending_summary, route_question
 from .engine import (
     canonical_hash,
     chapter_briefing,
@@ -32,11 +33,13 @@ from .visitor_runs import (
     scrub,
     start_visitor_run,
 )
+from .visitor_runs import is_public, public_run_exists, settle_publications
+from .visitor_runs import AlreadyPlaying, Busy, PlayingRuns, mark_cut_off_runs
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from pydantic import BaseModel
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -141,14 +144,31 @@ def _discovered_runs(root: Path) -> list[Path]:
 
 
 def _is_private(root: Path, directory: Path) -> bool:
-    """Visitor Runs are private: only a request naming their id lists them."""
-    return directory.relative_to(root).parts[0] == VISITOR_FOLDER
+    """Visitor Runs are private, unless made public: only a request naming their id lists them."""
+    return directory.relative_to(root).parts[0] == VISITOR_FOLDER and not is_public(
+        directory
+    )
 
 
 class VisitorRunStart(BaseModel):
     provider: str
     model: str
     key: str
+
+
+def _visitor_ip(request: Request) -> str:
+    """The client IP that identifies a visitor: Cloudflare's connecting IP, else the peer."""
+    forwarded = request.headers.get("cf-connecting-ip", "").strip()
+    return forwarded or (request.client.host if request.client else "unknown")
+
+
+def _reserve_slot(playing: PlayingRuns, request: Request):
+    try:
+        return playing.reserve(_visitor_ip(request))
+    except AlreadyPlaying as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from None
+    except Busy as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from None
 
 
 def _seconds_since_write(directory: Path) -> float:
@@ -230,6 +250,7 @@ def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
         "end_description": summary.get("end_description"),
         "final_flags": summary.get("final_flags", state.get("flags", {})),
         "graph_sha256": exp.get("graph_sha256", summary.get("graph_sha256")),
+        "stop_reason": state.get("stop_reason"),
     }
 
 
@@ -410,7 +431,28 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
         "decisions_by_chapter": [
             {"chapter": ch, "choices": chapter_counts[ch]} for ch in ordered_chapters
         ],
+        "ending_summary": ending_summary(
+            meta["final_flags"] or {},
+            [ev for ev in events if ev["type"] == "route"],
+            _public_news(directory),
+            finished=meta["status"] == "complete",
+        ),
     }
+
+
+def _public_news(directory: Path) -> list[str]:
+    """Public News lives only in the checkpoint; it is re-read only when that changes."""
+    return list(
+        _cached_news(
+            str(directory / "checkpoint.json"), _stamp(directory / "checkpoint.json")
+        )
+    )
+
+
+@lru_cache(maxsize=64)
+def _cached_news(path: str, _stamp) -> tuple[str, ...]:
+    news = ((_json_file(Path(path)) or {}).get("state") or {}).get("news") or []
+    return tuple(str(item) for item in news if isinstance(item, str))
 
 
 def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
@@ -525,6 +567,11 @@ def _flowchart_projection(
                 }
                 for o in node.get("options", [])
             ]
+        if node.get("type") == "route" and "heading" not in node:
+            # The Flowchart labels a route node with the question its flag answers.
+            question = route_question(str(node.get("flag")))
+            if question:
+                nodes[node_id]["heading"] = question
         if node.get("type") == "condition":
             nodes[node_id]["branches"] = [
                 {k: b[k] for k in ("next", "condition_text") if k in b}
@@ -706,10 +753,13 @@ def create_app(
     model_lister: ModelLister | None = None,
     model_factory: ModelFactory = create_model,
     visitor_story: str | Path = VISITOR_STORY,
+    max_playing: int = 2,
+    max_playing_per_visitor: int = 1,
 ) -> FastAPI:
     """The dashboard app. With ``allow_own_runs``, visitors can play Visitor Runs with their
     own key: ``model_lister`` (provider, key) -> model ids and ``model_factory`` (the shape of
-    :func:`engine.create_model`) are the real ones unless a test injects fakes."""
+    :func:`engine.create_model`) are the real ones unless a test injects fakes. At most
+    ``max_playing`` Visitor Runs play at once, and ``max_playing_per_visitor`` per client IP."""
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
@@ -737,7 +787,9 @@ def create_app(
     def list_runs(visitor_runs: list[str] = Query([])):
         """Every Run except private Visitor Runs, which are listed only when named."""
         named = set(visitor_runs)
-        runs = (_metadata(root, path) for path in _discovered_runs(root))
+        if allow_own_runs:
+            settle_publications(root)  # Complete Runs a restart left undecided.
+        runs =(_metadata(root, path) for path in _discovered_runs(root))
         return {
             "runs": sorted(
                 (
@@ -751,6 +803,10 @@ def create_app(
             )
         }
 
+    playing = PlayingRuns(max_playing, max_playing_per_visitor)
+    if allow_own_runs:
+        mark_cut_off_runs(root)
+
     if allow_own_runs:
         # The form's model list and token estimate (#72, #73).
         _add_visitor_form_routes(app, root, story_path)
@@ -760,7 +816,7 @@ def create_app(
             return {"providers": list(PROVIDERS)}
 
         @app.post("/api/visitor-runs")
-        def start_run(body: VisitorRunStart):
+        def start_run(body: VisitorRunStart, request: Request):
             if body.provider not in PROVIDERS:
                 raise HTTPException(status_code=422, detail="Unknown provider")
             model, key = body.model.strip(), body.key.strip()
@@ -768,14 +824,40 @@ def create_app(
                 raise HTTPException(
                     status_code=422, detail="Enter a key and a model id"
                 )
+            slot = _reserve_slot(playing, request)
             try:
                 directory = start_visitor_run(
-                    root, story_path, body.provider, model, key, model_factory
+                    root,
+                    story_path,
+                    body.provider,
+                    model,
+                    key,
+                    model_factory,
+                    stop=slot.stop,
+                    on_end=lambda: playing.release(slot),
                 )
             except Exception as exc:
+                playing.release(slot)
                 detail = scrub(f"Could not start the Run: {exc}", key)
                 raise HTTPException(status_code=500, detail=detail) from None
-            return {"id": _run_id(root, directory)}
+            slot.run_id = _run_id(root, directory)
+            return {"id": slot.run_id}
+
+        @app.post("/api/visitor-runs/{run_id}/stop", status_code=202)
+        def stop_run(run_id: str):
+            """Stops a playing Visitor Run after its current model call; it stays partial."""
+            if not playing.stop(run_id):
+                raise HTTPException(status_code=404, detail="No such Run is playing")
+            return {"id": run_id, "stopping": True}
+
+    if allow_own_runs:
+        # Publication (#76): the form warns before Start when a public Run of the model exists.
+
+        @app.get("/api/visitor-runs/public")
+        def visitor_run_public(provider: str, model: str):
+            return {
+                "public_run_exists": public_run_exists(root, provider, model.strip())
+            }
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):
@@ -959,26 +1041,13 @@ def _add_visitor_form_routes(app: FastAPI, root: Path, story_path: Path) -> None
     @app.get("/api/visitor-runs/estimate")
     def estimate_visitor_run(provider: str, model: str):
         """About how many tokens a Visitor Run uses, and whether a public Run of this
-        exact model exists already."""
+        exact model exists already (the form warns of that through
+        /api/visitor-runs/public)."""
         if provider not in PROVIDERS:
             raise HTTPException(status_code=422, detail="Unknown provider")
         return {
             **story_estimate(story_path),
             "approximate": True,
-            "public_run_exists": _public_run_exists(root, provider, model.strip()),
+            # The publication rule's own answer (#76), as /api/visitor-runs/public gives it.
+            "public_run_exists": public_run_exists(root, provider, model.strip()),
         }
-
-
-def _public_run_exists(root: Path, provider: str, model: str) -> bool:
-    """A complete, public (not Visitor, not synthetic) Run of exactly this model."""
-    for directory in _discovered_runs(root):
-        if _is_private(root, directory):
-            continue
-        run = _metadata(root, directory)
-        if (
-            run["status"] == "complete"
-            and not run["synthetic"]
-            and (run["provider"], run["model"]) == (provider, model)
-        ):
-            return True
-    return False

@@ -163,19 +163,19 @@ def test_the_estimate_is_an_approximation_without_a_price_and_warns_of_a_public_
     assert "approximation" in text.lower()
     assert re.search(r"About [\d.]+[kM]?–[\d.]+[kM]? input tokens", text), text
     assert not re.search(r"[$€£]|price|cost", text, re.IGNORECASE)
-    assert page.locator("#ownRunPublicWarning").count() == 0
+    assert page.locator("#ownRunWarning").is_hidden()
 
     page.locator("#ownRunModel").fill("gpt-beta")
-    page.locator("#ownRunPublicWarning").wait_for()
-    assert "only you" in page.locator("#ownRunPublicWarning").inner_text()
+    page.locator("#ownRunWarning").wait_for(state="visible")
+    assert "only you" in page.locator("#ownRunWarning").inner_text()
     page.locator("#ownRunProvider").select_option("openrouter")
-    page.locator("#ownRunPublicWarning").wait_for(state="detached")
+    page.locator("#ownRunWarning").wait_for(state="hidden")
     assert page.errors == []
 
 
 def live_count(page, kind):
     text = page.locator(
-        f"#ownRunLive .own-run-live-count[data-kind={kind}]"
+        f".own-run-playing .own-run-live-count[data-kind={kind}]"
     ).inner_text()
     return int(text.replace(",", ""))
 
@@ -190,19 +190,19 @@ def test_a_playing_run_shows_its_token_counts_rising_next_to_its_estimate(
     page.locator("#ownRunPanel").wait_for(state="hidden")
 
     page.locator("#pickerToggle").click()
-    live = page.locator("#ownRunLive .own-run-live-run", has_text="gpt-live-1")
+    live = page.locator(".own-run-playing", has_text="gpt-live-1")
     live.wait_for()
     assert "Estimate: about" in live.inner_text()
     model.allow(2)
     page.wait_for_function(
-        "Number(document.querySelector('#ownRunLive [data-kind=input]')?.textContent.replace(/,/g, '')) > 0",
+        "Number(document.querySelector('.own-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > 0",
         timeout=10000,
     )
     first = live_count(page, "input")
     assert live_count(page, "output") > 0
     model.allow(2)
     page.wait_for_function(
-        f"Number(document.querySelector('#ownRunLive [data-kind=input]')?.textContent.replace(/,/g, '')) > {first}",
+        f"Number(document.querySelector('.own-run-playing [data-kind=input]')?.textContent.replace(/,/g, '')) > {first}",
         timeout=10000,
     )
     model.allow(100000)

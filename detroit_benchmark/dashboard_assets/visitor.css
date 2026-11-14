@@ -4,6 +4,19 @@
 .own-run-entry button { width: 100%; padding: 6px 2px; font-size: 12px; text-align: left; color: var(--highlight); }
 .own-run-entry button:hover { color: var(--ink); }
 
+/* This browser's playing Visitor Runs, each with Stop. */
+.own-run-playing:empty { display: none; }
+.own-run-playing { display: grid; gap: 6px; margin-bottom: 6px; }
+.own-run-playing-run { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink); }
+.own-run-playing-run span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.own-run-playing-run small { color: var(--ink-muted); }
+.own-run-entry .own-run-playing-run button {
+  width: auto; flex: none; padding: 3px 12px; border: 1px solid var(--danger); border-radius: 999px;
+  font-size: 12px; text-align: center; color: var(--danger);
+}
+.own-run-entry .own-run-playing-run button:hover { color: var(--surface-solid); background: var(--danger); }
+.own-run-entry .own-run-playing-run button:disabled { opacity: .55; pointer-events: none; }
+
 .own-run-panel {
   position: fixed; z-index: 40; top: 72px; left: 50%; transform: translateX(-50%);
   width: 360px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 96px); overflow-y: auto;
@@ -25,6 +38,11 @@
 .own-run-form select:focus, .own-run-form input:focus { border-color: var(--highlight); }
 .own-run-error { min-height: 1em; margin: 0 0 8px; font-size: 12px; color: var(--danger); }
 .own-run-error:empty { display: none; }
+/* Busy or already playing: a refusal to read, not an alarm. */
+.own-run-error.is-notice {
+  padding: 8px 10px; border-left: 2px solid var(--highlight);
+  background: var(--highlight-soft); color: var(--ink); line-height: 1.45;
+}
 .own-run-actions { display: flex; justify-content: flex-end; }
 .own-run-actions button {
   padding: 7px 18px; border-radius: 999px; font-size: 13px;
@@ -50,15 +68,16 @@
 .own-run-estimate p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
 .own-run-estimate strong { font-weight: 600; color: var(--ink); }
 .own-run-estimate .own-run-estimate-note { margin-top: 4px; color: var(--ink-muted); }
-.own-run-estimate .own-run-public-warning { margin-top: 6px; padding: 6px 8px; background: var(--highlight-soft); color: var(--ink); }
 
-/* Live token counts of this browser's playing Visitor Runs, under the entry. */
-.own-run-live:empty { display: none; }
-.own-run-live-run { margin: 6px 2px 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
-.own-run-live-run strong { font-weight: 600; color: var(--ink); }
+/* Live token counts of each playing Visitor Run, under its Stop row (#73). */
+.own-run-live-run { margin: -4px 0 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); overflow-wrap: anywhere; }
 .own-run-live-count { font-variant-numeric: tabular-nums; color: var(--ink); }
 .own-run-live-run small { display: block; font-size: 11px; color: var(--ink-muted); }
 
 @media (min-width: 761px) {
   .own-run-form select, .own-run-form input { font-size: 13px; }
 }
+
+/* Publication (#76): a public Run of the chosen model already exists. */
+.own-run-warning { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--highlight); }
+.own-run-warning[hidden] { display: none; }

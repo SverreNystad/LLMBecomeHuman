@@ -5,6 +5,11 @@
  * and sends them with the Run listing (window.visitorRunsQuery), so they stay listed after a
  * reload. Start hands the new Run to app.js (window.showStartedRun) to join the Shown Runs.
  * The key is sent to list the provider's models and with Start only; it is never kept in the page.
+ *
+ * This browser's playing Visitor Runs are listed above the entry, each with its live token counts,
+ * its estimate and a Stop button; it knows their ids, so the button shows on no one else's Run.
+ * A refused Start (the site is busy, or a Run of this visitor's is already playing) is shown in
+ * the form as a notice.
  */
 (() => {
   'use strict';
@@ -36,6 +41,7 @@
     entry.innerHTML = '<button type="button" id="ownRunOpen">Play your own Run</button>';
     document.getElementById('pickerPanel').append(entry);
     entry.querySelector('button').addEventListener('click', open);
+    buildPlaying(entry);
 
     panel = document.createElement('div');
     panel.className = 'own-run-panel is-hidden';
@@ -65,7 +71,6 @@
     document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
     setUpModelList();
     setUpEstimate();
-    setUpLiveTokens(entry);
   }
 
   function open() {
@@ -89,15 +94,20 @@
     const body = { provider: field('#ownRunProvider').value, key: field('#ownRunKey').value.trim(), model: field('#ownRunModel').value.trim() };
     if (!body.key || !body.model) { error.textContent = 'Enter your API key and a model id.'; return; }
     error.textContent = '';
+    error.classList.remove('is-notice');
     button.disabled = true;
     try {
       const res = await fetch('/api/visitor-runs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       let reply = {};
       try { reply = await res.json(); } catch (_) { /* not JSON */ }
-      if (!res.ok) throw new Error(typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`);
+      if (!res.ok) {
+        // Busy and already playing are refusals to read, not failures.
+        error.classList.toggle('is-notice', res.status === 409 || res.status === 503);
+        throw new Error(typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`);
+      }
       remember(reply.id);
-      refreshLiveTokens();
       close();
+      refreshPlaying();
       await window.showStartedRun?.(reply.id);
     } catch (err) {
       error.textContent = err.message;
@@ -213,7 +223,7 @@
 
   /* ---- The token estimate (#73) ---------------------------------------------------------
    * Shown once a model id is entered: about how many tokens a Run of the story takes, as an
-   * approximation and never a price, and a warning when a public Run of the model exists. */
+   * approximation and never a price. (The public-Run warning is watchPublicRun's, below.) */
   let estimateRequest = 0;
 
   function setUpEstimate() {
@@ -241,64 +251,109 @@
         <p class="own-run-estimate-range">About <strong>${tokenRange(found.input_tokens)}</strong> input tokens
           and <strong>${tokenRange(found.output_tokens)}</strong> output tokens.</p>
         <p class="own-run-estimate-note">An approximation from the story's shortest and longest routes, not a quote:
-          your provider counts the real tokens.</p>
-        ${found.public_run_exists ? `<p class="own-run-public-warning" id="ownRunPublicWarning">A public Run of this
-          model already exists. Yours will be saved, but only you will see it.</p>` : ''}`;
+          your provider counts the real tokens.</p>`;
       box.classList.remove('is-hidden');
     } catch (_) {
       if (request === estimateRequest) box.classList.add('is-hidden');
     }
   }
 
-  /* ---- Live token counts (#73) ----------------------------------------------------------
-   * Under the "Play your own Run" entry, each of this browser's playing Visitor Runs shows
-   * the tokens it has used so far next to its estimate, refreshed while it plays. */
-  const LIVE_REFRESH_MS = 2000;
-  const liveEstimates = new Map();
-  let liveBox = null, liveTimer = null;
-
-  function setUpLiveTokens(entry) {
-    liveBox = document.createElement('div');
-    liveBox.className = 'own-run-live';
-    liveBox.id = 'ownRunLive';
-    entry.append(liveBox);
-    refreshLiveTokens();
+  /* Publication (#76): a model's first complete Visitor Run is public; any later one is private.
+   * Before Start, the form warns when a public Run of the chosen provider and model id exists. */
+  function watchPublicRun() {
+    const warning = document.createElement('p');
+    warning.className = 'own-run-warning';
+    warning.id = 'ownRunWarning';
+    warning.hidden = true;
+    warning.textContent = 'A public Run of this model already exists. Yours will be saved but only you will see it.';
+    panel.querySelector('#ownRunError').before(warning);
+    let timer = 0, asked = 0;
+    const check = async () => {
+      const provider = panel.querySelector('#ownRunProvider').value;
+      const model = panel.querySelector('#ownRunModel').value.trim();
+      const ask = ++asked;
+      if (!model) { warning.hidden = true; return; }
+      try {
+        const res = await fetch('/api/visitor-runs/public?' + new URLSearchParams({ provider, model }), { cache: 'no-store' });
+        const reply = res.ok ? await res.json() : {};
+        if (ask === asked) warning.hidden = !reply.public_run_exists;
+      } catch (_) { if (ask === asked) warning.hidden = true; }
+    };
+    const soon = () => { clearTimeout(timer); timer = setTimeout(check, 250); };
+    const form = panel.querySelector('form');
+    form.addEventListener('input', e => { if (e.target.id !== 'ownRunKey') soon(); });
+    form.addEventListener('change', e => { if (e.target.id !== 'ownRunKey') soon(); });
+    document.getElementById('ownRunOpen').addEventListener('click', soon);
   }
 
-  async function refreshLiveTokens() {
-    clearTimeout(liveTimer);
-    const ids = storedIds();
-    let playing = [];
-    if (ids.length) {
+  /* Stop (#74): this browser's playing Visitor Runs, above the entry. */
+  const POLL_MS = 4000;
+  let playingList = null;
+
+  function buildPlaying(entry) {
+    playingList = document.createElement('div');
+    playingList.className = 'own-run-playing';
+    playingList.setAttribute('aria-live', 'polite');
+    entry.prepend(playingList);
+    playingList.addEventListener('click', e => {
+      const button = e.target.closest('[data-stop-run]');
+      if (button) stopRun(button);
+    });
+    document.getElementById('pickerToggle').addEventListener('click', refreshPlaying);
+    refreshPlaying();
+    setInterval(() => { if (storedIds().length && !document.hidden) refreshPlaying(); }, POLL_MS);
+  }
+
+  async function refreshPlaying() {
+    if (!playingList) return;
+    const ids = new Set(storedIds());
+    let runs = [];
+    if (ids.size) {
       try {
         const res = await fetch('/api/runs' + window.visitorRunsQuery(), { cache: 'no-store' });
-        const runs = res.ok ? (await res.json()).runs || [] : [];
-        playing = runs.filter(run => ids.includes(run.id) && run.status === 'running');
-      } catch (_) { /* try again next time */ }
+        if (!res.ok) return;
+        runs = ((await res.json()).runs || []).filter(r => ids.has(r.id) && r.status === 'running');
+      } catch (_) { return; }
     }
-    await Promise.all(playing.map(async run => {
-      if (liveEstimates.has(run.id)) return;
-      try { liveEstimates.set(run.id, await estimateFor(run.provider, run.model)); } catch (_) { /* shown without */ }
+    // Each playing Run's estimate, fetched once, sits next to its live token counts (#73).
+    await Promise.all(runs.map(async run => {
+      if (playingEstimates.has(run.id)) return;
+      try { playingEstimates.set(run.id, await estimateFor(run.provider, run.model)); } catch (_) { /* shown without */ }
     }));
-    liveBox.replaceChildren(...playing.map(liveLine));
-    if (playing.length) liveTimer = setTimeout(refreshLiveTokens, LIVE_REFRESH_MS);
+    renderPlaying(runs);
   }
 
-  function liveLine(run) {
-    const line = document.createElement('p');
-    line.className = 'own-run-live-run';
-    line.dataset.runId = run.id;
-    const count = n => Number(n || 0).toLocaleString('en-US');
-    const found = liveEstimates.get(run.id);
-    line.innerHTML = `<strong></strong> playing: <span class="own-run-live-count" data-kind="input">${count(run.total_input_tokens)}</span>
-      input and <span class="own-run-live-count" data-kind="output">${count(run.total_output_tokens)}</span> output tokens so far`
-      + (found ? `<small>Estimate: about ${tokenRange(found.input_tokens)} input and ${tokenRange(found.output_tokens)} output</small>` : '');
-    line.querySelector('strong').textContent = run.model;
-    return line;
+  const playingEstimates = new Map();
+  const tokensSoFar = n => Number(n || 0).toLocaleString('en-US');
+  function liveTokens(run) {
+    const found = playingEstimates.get(run.id);
+    return `<p class="own-run-live-run">
+      <span class="own-run-live-count" data-kind="input">${tokensSoFar(run.total_input_tokens)}</span> input and
+      <span class="own-run-live-count" data-kind="output">${tokensSoFar(run.total_output_tokens)}</span> output tokens so far${found
+        ? `<small>Estimate: about ${tokenRange(found.input_tokens)} input and ${tokenRange(found.output_tokens)} output</small>` : ''}</p>`;
+  }
+
+  const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  function renderPlaying(runs) {
+    const stopping = new Set([...playingList.querySelectorAll('[data-stop-run]:disabled')].map(b => b.dataset.stopRun));
+    playingList.innerHTML = runs.map(run => `<div class="own-run-playing-run">
+      <span><strong>${escapeHtml(run.model)}</strong> <small>your Run, playing</small></span>
+      <button type="button" data-stop-run="${escapeHtml(run.id)}" ${stopping.has(run.id) ? 'disabled' : ''}
+        title="Stop after the current model call; the Run is kept as partial">${stopping.has(run.id) ? 'Stopping…' : 'Stop'}</button></div>
+      ${liveTokens(run)}`).join('');
+  }
+
+  async function stopRun(button) {
+    button.disabled = true;
+    button.textContent = 'Stopping…';
+    try {
+      await fetch(`/api/visitor-runs/${encodeURIComponent(button.dataset.stopRun)}/stop`, { method: 'POST' });
+    } catch (_) { /* the next refresh shows where it stands */ }
+    refreshPlaying();
   }
 
   fetch('/api/visitor-runs/config', { cache: 'no-store' })
     .then(res => (res.ok ? res.json() : null))
-    .then(config => { if (config) build(config.providers || []); })
+    .then(config => { if (config) { build(config.providers || []); watchPublicRun(); } })
     .catch(() => { /* Visitor Runs off or unreachable: no form */ });
 })();
