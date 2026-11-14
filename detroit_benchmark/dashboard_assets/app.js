@@ -930,7 +930,7 @@ function visibleChartArea(){
   const vp=$('viewport').getBoundingClientRect(), sheet=$('reasoningDrawer');
   let bottom=vp.height;
   if(window.isPhoneLayout?.()&&!sheet.classList.contains('is-hidden'))
-    bottom=Math.min(bottom,document.documentElement.clientHeight-sheet.offsetHeight-vp.top);
+    bottom=Math.min(bottom,document.documentElement.clientHeight-(window.phoneSheetHeight?.()??sheet.offsetHeight)-vp.top);
   return {left:0,top:0,right:vp.width,bottom:Math.max(0,bottom)};
 }
 /* Fits world rectangles into the visible chart area: zooms out as needed, but not below
@@ -1111,11 +1111,13 @@ function setupInteractions(){
  let resizeDebounce;
  new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>{
   // Closing the drawer also resizes the canvas; that must not undo where the viewer has moved to.
-  if(state.selected)centerSelectedNode();
+  // Phones: the selected node glides back above the sheet (level 2 folding resizes the chart).
+  if(state.selected)centerSelectedNode({glide:!!window.isPhoneLayout?.()});
   else if(!state.viewTouched)openChapterView();
  },130);}).observe(vp);
- // Phones: whenever the sheet's height changes, the selected node stays in view above it.
- new ResizeObserver(()=>{if(state.selected&&window.isPhoneLayout?.())centerSelectedNode();}).observe($('reasoningDrawer'));
+ // Phones: once the sheet settles at a new height (phone.js), the selected node glides back
+ // into view above it.
+ window.fitSelectedNode=()=>{if(state.selected&&window.isPhoneLayout?.())centerSelectedNode({glide:true});};
 }
 async function init(){
  setupInteractions();setupStoryInteractions();setupModelBar();

@@ -271,3 +271,111 @@ def test_the_selected_nodes_dialogue_fits_above_the_open_sheet(phone):
     assert_shown_above_sheet(page, sel)
     assert_shown_above_sheet(page, f"{sel} .node-dialogue")
     assert not page.errors
+
+
+def grip(page, phase, dy=0):
+    """One step of a drag on the sheet's grip: "down", "move" (to dy) or "up" (at dy)."""
+    page.evaluate(
+        """([phase, dy]) => {
+          const grip = document.querySelector('.drawer-grip'), r = grip.getBoundingClientRect();
+          window.__gripStart ??= r.top + r.height / 2;
+          const type = {down: 'pointerdown', move: 'pointermove', up: 'pointerup'}[phase];
+          grip.dispatchEvent(new PointerEvent(type, {pointerId: 7, pointerType: 'touch', isPrimary: true, clientX: r.left + r.width / 2, clientY: window.__gripStart + dy, bubbles: true}));
+          if (phase === 'up') delete window.__gripStart;
+        }""",
+        [phase, dy],
+    )
+
+
+def level_2_folded(page):
+    return page.evaluate("document.body.classList.contains('phone-l2-hidden')")
+
+
+def chart_view(page):
+    return page.evaluate("[state.scale, state.panX, state.panY]")
+
+
+def test_snapping_the_sheet_back_to_45_percent_unfolds_level_2(phone):
+    page = phone
+    open_flowchart(page)
+    open_moment(page)
+    assert not level_2_folded(page)
+    drag_grip(page, -400)
+    assert level_2_folded(page)
+    drag_grip(page, 120)
+    assert 0.40 * PHONE["height"] <= sheet_height(page) <= 0.50 * PHONE["height"]
+    assert not level_2_folded(page)
+    assert not page.errors
+
+
+def test_snapping_back_leaves_level_2_folded_when_the_sheet_did_not_fold_it(phone):
+    page = phone
+    open_flowchart(page)
+    open_moment(page)
+    # Level 2 was already away before the sheet grew.
+    page.evaluate("document.body.classList.add('phone-l2-hidden')")
+    drag_grip(page, -400)
+    drag_grip(page, 120)
+    assert level_2_folded(page)
+    assert not page.errors
+
+
+def test_the_chart_holds_still_while_dragging_and_glides_once_on_release(phone):
+    page = phone
+    open_flowchart(page)
+    node_id = open_moment(page)
+    before = chart_view(page)
+    grip(page, "down")
+    for step in range(1, 7):
+        grip(page, "move", -400 * step / 6)
+        page.wait_for_timeout(60)
+        assert chart_view(page) == before
+    page.evaluate(
+        """() => { window.__fits = 0; const apply = window.applyTransform;
+          window.applyTransform = (...a) => { window.__fits++; return apply(...a); }; }"""
+    )
+    grip(page, "up", -400)
+    # The sheet folds level 2 away, so the glide waits for the chart to finish growing.
+    page.wait_for_function("document.getElementById('graphWorld').classList.contains('is-gliding')")
+    page.wait_for_timeout(GLIDE_MS)
+    assert page.evaluate("window.__fits") == 1
+    assert_shown_above_sheet(page, node_selector(node_id))
+    assert not page.errors
+
+
+def test_the_release_refit_respects_reduced_motion(open_dashboard, detroit_dashboard):
+    page = ready(open_dashboard(detroit_dashboard, "phone", reduced_motion="reduce"))
+    open_flowchart(page)
+    node_id = open_moment(page)
+    page.evaluate(
+        """() => { window.__glided = false;
+          new MutationObserver(() => { if (document.getElementById('graphWorld').classList.contains('is-gliding')) window.__glided = true; })
+            .observe(document.getElementById('graphWorld'), {attributes: true}); }"""
+    )
+    # Level 2 is already away, so each snap re-fits the chart straight away.
+    page.evaluate("document.body.classList.add('phone-l2-hidden')")
+    for dy in (-400, 120):
+        grip(page, "down")
+        grip(page, "move", dy)
+        grip(page, "up", dy)
+        page.wait_for_timeout(100)
+        assert_shown_above_sheet(page, node_selector(node_id))
+    assert not page.evaluate("window.__glided")
+    assert not page.errors
+
+
+def test_the_sheet_heights_come_from_its_css_custom_properties(phone):
+    page = phone
+    open_flowchart(page)
+    open_moment(page)
+    page.add_style_tag(content="#reasoningDrawer { --sheet-open: 30; --sheet-tall: 60; }")
+    page.wait_for_timeout(400)
+    assert 0.28 * PHONE["height"] <= sheet_height(page) <= 0.32 * PHONE["height"]
+    # The drag stops at the tall height and snaps to it.
+    grip(page, "down")
+    grip(page, "move", -600)
+    assert sheet_height(page) <= 0.60 * PHONE["height"] + 1
+    grip(page, "up", -600)
+    page.wait_for_timeout(GLIDE_MS)
+    assert 0.58 * PHONE["height"] <= sheet_height(page) <= 0.60 * PHONE["height"] + 1
+    assert not page.errors

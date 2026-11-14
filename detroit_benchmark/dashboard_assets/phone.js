@@ -14,7 +14,7 @@
   const SCROLL_HIDE_PX = 8, SCROLL_SHOW_PX = 6, TOP_PX = 4, SWIPE_PX = 24;
   window.isPhoneLayout = () => query.matches;
 
-  let bar = null, levels = null, homes = [], lastY = 0;
+  let bar = null, levels = null, homes = [], lastY = 0, sheetFoldedLevel2 = false;
 
   function ensureBar() {
     if (bar) return bar;
@@ -65,6 +65,7 @@
   }
 
   function setLevel2(shown) {
+    sheetFoldedLevel2 = false;
     document.body.classList.toggle('phone-l2-hidden', !shown);
   }
 
@@ -134,12 +135,19 @@
   });
 
   /* The details panel slides up from the bottom at about 45% of the screen. Dragging its grip
-   * up grows it to 70% (folding level 2 away, for chart room), dragging down shrinks it back,
-   * and dragging well below the opening height closes it. */
-  const CLOSE_DRAG_PX = 90, OPEN_SHARE = .45, TALL_SHARE = .7;
+   * up grows it to 70% (folding level 2 away, for chart room), dragging down shrinks it back
+   * (unfolding level 2 again if the sheet folded it), and dragging well below the opening
+   * height closes it. The heights are --sheet-open and --sheet-tall in phone.css. The chart
+   * holds still while dragging and re-fits once the sheet settles. */
+  const CLOSE_DRAG_PX = 90;
   function setupSheet() {
     const drawer = document.getElementById('reasoningDrawer');
     const screen = () => document.documentElement.clientHeight;
+    const share = name => parseFloat(getComputedStyle(drawer).getPropertyValue(name)) / 100;
+    // The height the sheet is at or settling to (its CSS height transitions after a snap).
+    window.phoneSheetHeight = () => drawer.classList.contains('is-dragging')
+      ? drawer.offsetHeight
+      : screen() * share(drawer.classList.contains('is-tall') ? '--sheet-tall' : '--sheet-open');
     let drag = null;
     drawer.addEventListener('pointerdown', event => {
       if (!query.matches || !event.target.closest('.drawer-grip')) return;
@@ -152,7 +160,7 @@
       if (!drag.moved && Math.abs(dy) <= 4) return;
       drag.moved = true;
       drawer.classList.add('is-dragging');
-      drawer.style.height = `${Math.max(0, Math.min(screen() * TALL_SHARE, drag.h - dy))}px`;
+      drawer.style.height = `${Math.max(0, Math.min(screen() * share('--sheet-tall'), drag.h - dy))}px`;
     });
     const end = event => {
       if (!drag || event.pointerId !== drag.id) return;
@@ -161,11 +169,17 @@
       drawer.classList.remove('is-dragging');
       drawer.style.height = '';
       if (!moved) return;
-      const open = screen() * OPEN_SHARE, tall = screen() * TALL_SHARE;
+      const open = screen() * share('--sheet-open'), tall = screen() * share('--sheet-tall');
       if (h < open - CLOSE_DRAG_PX) { document.getElementById('closeDrawer').click(); return; }
       const grow = h > (open + tall) / 2;
       drawer.classList.toggle('is-tall', grow);
-      if (grow) setLevel2(false);
+      if (grow && !document.body.classList.contains('phone-l2-hidden')) {
+        setLevel2(false);
+        sheetFoldedLevel2 = true;
+      } else if (!grow && sheetFoldedLevel2) setLevel2(true);
+      // Folding or unfolding level 2 resizes the chart, which re-fits it once that settles
+      // (app.js); otherwise re-fit now.
+      else window.fitSelectedNode?.();
     };
     drawer.addEventListener('pointerup', end);
     drawer.addEventListener('pointercancel', end);
