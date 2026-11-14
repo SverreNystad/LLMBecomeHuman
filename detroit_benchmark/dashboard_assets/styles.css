@@ -40,6 +40,18 @@
   --shade-1: var(--connor-1); --shade-2: var(--connor-2); --shade-3: var(--connor-3);
   --shade-4: var(--connor-4); --shade-5: var(--connor-5); --shade-6: var(--connor-6);
 
+  /* Ending Summary card (ending.css): built on the theme's surfaces and inks. */
+  --ending-surface: var(--surface-solid);
+  --ending-line: var(--line-soft);
+  --ending-label: var(--ink-muted);
+  --ending-text: var(--ink-soft);
+  --ending-alive: var(--ink);
+  --ending-dead: var(--markus-4);
+  --ending-unknown: var(--ink-faint);
+  --ending-connor: var(--connor-3);
+  --ending-kara: var(--kara-4);
+  --ending-markus: var(--markus-3);
+
   /* Per-provider route line styles, so same-hue routes stay apart. */
   --dash-openai: none;
   --dash-anthropic: 9 4;
