@@ -56453,7 +56453,13 @@
         {
           "condition_text": "Fail to help Simon",
           "when": null,
-          "next": "ch23_00027"
+          "next": "ch23_00027",
+          "effects": {
+            "flags": {
+              "markus_simon_fate": "killed_in_broadcast",
+              "simon_alive": false
+            }
+          }
         },
         {
           "condition_text": "Save Simon",
@@ -69126,8 +69132,7 @@
           ],
           "effects": {
             "flags": {
-              "markus_capitol_park_peaceful": true,
-              "markus_capitol_park_violent": false
+              "markus_capitol_park_peaceful": true
             },
             "news": [
               {
@@ -75962,7 +75967,13 @@
               "markus_march_violent": false,
               "markus_march_fled": false,
               "markus_march_stood_under_fire": true
-            }
+            },
+            "news": [
+              {
+                "headline": "Android marchers stand motionless under police gunfire",
+                "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -75996,7 +76007,7 @@
             },
             "news": [
               {
-                "headline": "Android march disperses on police orders",
+                "headline": "Android marchers flee downtown plaza under police fire",
                 "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart"
               }
             ]
@@ -92724,7 +92735,12 @@
         {
           "condition_text": "Fail to run to exit (Connor stayed a machine) - Markus dies",
           "when": null,
-          "next": "ch30_3_00022"
+          "next": "ch30_3_00022",
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
         }
       ],
       "unverified": true,
@@ -92937,7 +92953,12 @@
             "flag": "connor_deviant",
             "equals": true
           },
-          "next": "ch30_3_00031"
+          "next": "ch30_3_00031",
+          "effects": {
+            "flags": {
+              "north_alive": false
+            }
+          }
         },
         {
           "condition_text": "Connor stayed a machine - Markus dies, North escapes",
@@ -92945,7 +92966,12 @@
             "flag": "connor_deviant",
             "equals": false
           },
-          "next": "ch30_3_00033"
+          "next": "ch30_3_00033",
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
         }
       ],
       "unverified": false,
@@ -93006,7 +93032,12 @@
         {
           "condition_text": "Markus is injured - cannot save North",
           "when": null,
-          "next": "ch30_3_00017"
+          "next": "ch30_3_00017",
+          "effects": {
+            "flags": {
+              "north_alive": false
+            }
+          }
         },
         {
           "condition_text": "Markus is not injured",
@@ -98147,7 +98178,7 @@
         {
           "condition_text": "North died in Crossroads",
           "when": {
-            "flag": "markus_saved_north",
+            "flag": "north_alive",
             "equals": false
           },
           "next": "ch31_1_00046"
@@ -98432,7 +98463,7 @@
         {
           "condition_text": "North is dead",
           "when": {
-            "flag": "markus_saved_north",
+            "flag": "north_alive",
             "equals": false
           },
           "next": "ch31_1_00059"
@@ -119649,39 +119680,44 @@
           }
         },
         {
+          "condition_text": "Markus sacrificed himself",
+          "next": "ch32_5_00021",
+          "when": {
+            "flag": "markus_barricade_response",
+            "equals": "sacrifice"
+          },
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
+        },
+        {
           "condition_text": "The demonstration failed - Markus and the androids died",
           "next": "ch32_5_00021",
           "when": {
-            "any": [
+            "all": [
               {
-                "flag": "markus_barricade_response",
-                "equals": "sacrifice"
-              },
-              {
-                "all": [
+                "any": [
                   {
-                    "any": [
-                      {
-                        "flag": "markus_barricade_response",
-                        "equals": "kiss"
-                      },
-                      {
-                        "flag": "markus_barricade_response",
-                        "equals": "sing"
-                      }
-                    ]
+                    "flag": "markus_barricade_response",
+                    "equals": "kiss"
                   },
                   {
-                    "any": [
-                      {
-                        "flag": "markus_march_violent",
-                        "equals": true
-                      },
-                      {
-                        "flag": "markus_capitol_park_violent",
-                        "equals": true
-                      }
-                    ]
+                    "flag": "markus_barricade_response",
+                    "equals": "sing"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "flag": "markus_march_violent",
+                    "equals": true
+                  },
+                  {
+                    "flag": "markus_capitol_park_violent",
+                    "equals": true
                   }
                 ]
               }
@@ -119689,7 +119725,10 @@
           },
           "effects": {
             "flags": {
-              "markus_alive": false
+              "markus_alive": false,
+              "north_alive": false,
+              "simon_alive": false,
+              "josh_alive": false
             }
           }
         },
@@ -129868,7 +129907,12 @@
         {
           "condition_text": "Fail to save the androids",
           "next": "ch32_5_00050",
-          "when": null
+          "when": null,
+          "effects": {
+            "flags": {
+              "north_alive": false
+            }
+          }
         }
       ],
       "unverified": true,
@@ -131853,8 +131897,15 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_capitol_park_statue": "destroyed"
-            }
+              "markus_capitol_park_statue": "destroyed",
+              "markus_capitol_park_violent": true
+            },
+            "news": [
+              {
+                "headline": "Androids tear down the statue in Capitol Park after raiding CyberLife store",
+                "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Public_Opinion"
+              }
+            ]
           }
         },
         {
@@ -131877,8 +131928,7 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_capitol_park_statue": "none",
-              "markus_capitol_park_violent": false
+              "markus_capitol_park_statue": "none"
             }
           }
         }
