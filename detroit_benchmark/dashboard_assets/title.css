@@ -5,11 +5,12 @@ html.title-on .app-shell { opacity: 0; }
 .app-shell { transition: opacity 1.2s var(--ease) .15s; }
 
 .title-screen {
-  --title-ink: var(--ink);
-  --title-ink-soft: var(--ink-muted);
+  /* Always dark, with or without art; the dashboard behind keeps its light theme. */
+  --title-ink: #eef3f8;
+  --title-ink-soft: rgba(225, 233, 242, .62);
   position: fixed; inset: 0; z-index: 100;
   display: grid; place-items: center;
-  background: var(--bg);
+  background: #0b0f15;
   color: var(--title-ink);
   overflow: hidden; outline: none; cursor: default;
   opacity: 0;
@@ -18,9 +19,9 @@ html.title-on .app-shell { opacity: 0; }
 .title-screen.is-shown { opacity: 1; }
 .title-screen.is-leaving { opacity: 0; transition-duration: 1.1s; pointer-events: none; }
 
-/* Without art: a faint light behind the ring, over the grey theme. */
+/* Without art: a blue glow behind the ring, over the dark ground. */
 .title-art, .title-veil { position: absolute; inset: 0; }
-.title-veil { background: radial-gradient(ellipse 60% 45% at 50% 48%, color-mix(in srgb, var(--highlight) 10%, transparent), transparent 70%); }
+.title-veil { background: radial-gradient(ellipse 60% 45% at 50% 48%, color-mix(in srgb, var(--connor-2) 18%, transparent), transparent 70%); }
 
 /* With art: the game's own lettering is softened into light, and ours sits on top. */
 .title-art {
@@ -29,7 +30,6 @@ html.title-on .app-shell { opacity: 0; }
   filter: blur(44px) saturate(1.2) brightness(.7);
   transition: opacity 2.4s var(--ease), transform 8s var(--ease);
 }
-.title-screen.has-art { --title-ink: #eef3f8; --title-ink-soft: rgba(225, 233, 242, .62); background: #0b0f15; }
 .title-screen.has-art .title-art { opacity: 1; transform: scale(1.06); }
 .title-screen.has-art .title-veil { background: radial-gradient(ellipse 70% 55% at 50% 50%, transparent, rgba(5, 8, 12, .55)); }
 
@@ -43,7 +43,7 @@ html.title-on .app-shell { opacity: 0; }
 .title-screen .title-ring .led-ring-light { stroke-width: 2.4; animation: none; }
 .title-screen .title-ring .led-ring-glow { stroke-width: 6; animation: title-pulse 3.6s ease-in-out infinite; }
 .title-screen .title-ring .led-ring-core { stroke: color-mix(in srgb, var(--title-ink) 18%, transparent); stroke-width: .6; }
-.title-screen.has-art .title-ring .led-ring-light { filter: drop-shadow(0 0 3px rgba(140, 202, 255, .7)); }
+.title-screen .title-ring .led-ring-light { filter: drop-shadow(0 0 3px rgba(140, 202, 255, .7)); }
 
 .title-name { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 14px; font-weight: 300; text-align: center; }
 /* "LLM": heavy, wide capitals cut by a horizontal slice; the slice's two halves drift apart
