@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 29,
+    "condition_nodes_unverified": 26,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -22106,8 +22106,15 @@
           ],
           "effects": {
             "flags": {
-              "kara_has_money": true
-            }
+              "kara_has_money": true,
+              "kara_robbed_store": true
+            },
+            "news": [
+              {
+                "headline": "Android with a child holds up Detroit convenience store at gunpoint",
+                "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
+              }
+            ]
           },
           "requires": [
             {
@@ -24004,7 +24011,8 @@
           "effects": {
             "flags": {
               "kara_stole_clothes": false,
-              "kara_has_money": false
+              "kara_has_money": false,
+              "kara_robbed_store": false
             }
           }
         },
@@ -24017,7 +24025,8 @@
           "effects": {
             "flags": {
               "kara_stole_clothes": false,
-              "kara_has_money": false
+              "kara_has_money": false,
+              "kara_robbed_store": false
             }
           }
         }
@@ -30523,7 +30532,43 @@
       "description": "Kara and Alice in the street",
       "dialogue": [],
       "observations": [],
-      "next": "ch13_00028"
+      "next": "ch13_x0302"
+    },
+    "ch13_x0302": {
+      "id": "ch13_x0302",
+      "type": "condition",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Kara and Alice in the street",
+      "branches": [
+        {
+          "condition_text": "Sneak past the police forces",
+          "next": "ch13_x0303",
+          "when": null
+        },
+        {
+          "condition_text": "Spotted by police",
+          "next": "ch13_00028",
+          "when": null
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Kara_&_Alice_In_The_Street"
+    },
+    "ch13_x0303": {
+      "id": "ch13_x0303",
+      "type": "scene",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Reached the train safely",
+      "description": "Kara and Alice slip from cover to cover past the patrols and reach the train station without being seen.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch13_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Kara_&_Alice_In_The_Street",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch13_00030": {
       "id": "ch13_00030",
@@ -30572,7 +30617,39 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00031"
+      "next": "ch13_x0301"
+    },
+    "ch13_x0301": {
+      "id": "ch13_x0301",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "Police is at the motel",
+      "description": "Hank heads for room 28. In the corner to the right of the stairs, another door stands closed.",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Eastern_Motel",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "CHECK THE DOOR",
+          "next": "ch13_00023",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "FOLLOW HANK",
+          "next": "ch13_00031",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch13_00033": {
       "id": "ch13_00033",
@@ -31359,7 +31436,7 @@
           "condition_text": "Todd was killed in Stormy Night",
           "next": "ch13_00064",
           "when": {
-            "flag": "kara_took_gun",
+            "flag": "kara_todd_killed",
             "equals": true
           }
         },
@@ -31367,7 +31444,7 @@
           "condition_text": "Todd is alive",
           "next": "ch13_00068",
           "when": {
-            "flag": "kara_took_gun",
+            "flag": "kara_todd_killed",
             "equals": false
           }
         }
@@ -40878,19 +40955,42 @@
       "branches": [
         {
           "condition_text": "Kara robbed the supermarket in On The Run , in her android uniform",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_robbed_store",
+                "equals": true
+              },
+              {
+                "flag": "kara_stole_clothes",
+                "equals": false
+              }
+            ]
+          },
           "next": "ch17_00076"
         },
         {
           "condition_text": "Kara robbed the supermarket in On The Run , in stolen clothes",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_robbed_store",
+                "equals": true
+              },
+              {
+                "flag": "kara_stole_clothes",
+                "equals": true
+              }
+            ]
+          },
           "next": "ch17_00077"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch17_00048",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
     },
     "ch17_00079": {
       "id": "ch17_00079",
@@ -40920,14 +41020,18 @@
       "branches": [
         {
           "condition_text": "Connor ran after Kara in On The Run",
-          "when": null,
+          "when": {
+            "flag": "kara_chased_by_connor",
+            "equals": true
+          },
           "next": "ch17_00079"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch17_00078",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
     },
     "ch17_00081": {
       "id": "ch17_00081",
@@ -50466,7 +50570,13 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_ch21_stance",
+              "equals": "gun"
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -50507,7 +50617,73 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00019"
+      "next": "ch21_x0201"
+    },
+    "ch21_x0201": {
+      "id": "ch21_x0201",
+      "type": "choice",
+      "chapter": "21",
+      "character": "Kara",
+      "heading": "In the tavern",
+      "description": "Shapes move in the dark outside the tavern, drawn by the firelight. Luther stands up between them and Alice. The bag is within reach.",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Pirates%27_Cove#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "GRAB THE GUN",
+          "next": "ch21_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_stance": "gun"
+            }
+          },
+          "requires": [
+            {
+              "flag": "kara_took_gun",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_1",
+          "label": "GRAB A BURNING STICK",
+          "next": "ch21_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_stance": "stick"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "PROTECT ALICE",
+          "next": "ch21_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_stance": "shield"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "PUT OUT THE FIRE",
+          "next": "ch21_00019",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch21_stance": "fire"
+            }
+          }
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch21_00021": {
       "id": "ch21_00021",
@@ -50848,7 +51024,15 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "kara_ch21_exploration",
+                "equals": "rush"
+              }
+            }
+          ]
         },
         {
           "id": "option_1",
@@ -50860,7 +51044,15 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "kara_ch21_exploration",
+                "equals": "rush"
+              }
+            }
+          ]
         },
         {
           "id": "option_2",
@@ -52862,14 +53054,18 @@
       "branches": [
         {
           "condition_text": "Kara set the house on fire in Zlatko",
-          "when": null,
+          "when": {
+            "flag": "kara_zlatko_escape",
+            "equals": "fire"
+          },
           "next": "ch21_00134"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch21_00133",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Pirates%27_Cove#Public_Opinion"
     },
     "ch21_00136": {
       "id": "ch21_00136",
@@ -87714,7 +87910,7 @@
           "condition_text": "Todd chased Kara escaping in Stormy Night",
           "next": "ch30_1_00136",
           "when": {
-            "flag": "kara_took_gun",
+            "flag": "kara_todd_killed",
             "equals": false
           }
         }
@@ -103753,7 +103949,13 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_body_on_boat",
+              "equals": true
+            }
+          ]
         },
         {
           "id": "option_4",
@@ -103841,7 +104043,8 @@
           },
           "effects": {
             "flags": {
-              "luther_alive": false
+              "luther_alive": false,
+              "luther_body_on_boat": true
             }
           }
         }
@@ -103945,7 +104148,8 @@
           },
           "effects": {
             "flags": {
-              "luther_alive": false
+              "luther_alive": false,
+              "luther_body_on_boat": true
             }
           }
         }
@@ -104107,7 +104311,8 @@
           },
           "effects": {
             "flags": {
-              "luther_alive": false
+              "luther_alive": false,
+              "luther_body_on_boat": true
             }
           }
         }
@@ -104325,7 +104530,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "accelerate"
+              "kara_coastguard_response": "accelerate",
+              "luther_body_on_boat": false
             }
           }
         },
@@ -104337,7 +104543,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "protect_alice"
+              "kara_coastguard_response": "protect_alice",
+              "luther_body_on_boat": false
             }
           }
         },
@@ -104349,7 +104556,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "hide"
+              "kara_coastguard_response": "hide",
+              "luther_body_on_boat": false
             }
           },
           "requires": [
@@ -104383,7 +104591,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "plunge"
+              "kara_coastguard_response": "plunge",
+              "luther_body_on_boat": false
             }
           }
         },
@@ -104397,7 +104606,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_coastguard_response": "use_luther"
+              "kara_coastguard_response": "use_luther",
+              "luther_alive": false,
+              "luther_body_on_boat": true
             }
           },
           "requires": [
@@ -105813,6 +106024,11 @@
           "when": {
             "flag": "luther_alive",
             "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
           }
         },
         {
@@ -107329,7 +107545,15 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "luther_checkpoint_shooting": true
+            },
+            "news": [
+              {
+                "headline": "Shots fired at army checkpoint in Detroit during curfew",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Leaving_Detroit"
+              }
+            ]
           }
         },
         {
@@ -109281,7 +109505,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "luther_alive": false
+            }
           }
         }
       ]
@@ -109748,6 +109974,22 @@
           "when": {
             "flag": "luther_alive",
             "equals": false
+          }
+        },
+        {
+          "condition_text": "Jericho was attacked & Luther alive (he stayed behind)",
+          "next": "ch32_1_00427",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_knows_jericho",
+                "equals": true
+              },
+              {
+                "flag": "luther_alive",
+                "equals": true
+              }
+            ]
           }
         }
       ],
@@ -110888,7 +111130,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00056"
+      "next": "ch32_2_x0207"
+    },
+    "ch32_2_x0207": {
+      "id": "ch32_2_x0207",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Ask scarred android",
+      "branches": [
+        {
+          "condition_text": "The scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_00056",
+          "when": {
+            "flag": "kara_freed_zlatkos_androids",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not the scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_x0101",
+          "when": {
+            "not": {
+              "flag": "kara_freed_zlatkos_androids",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00058": {
       "id": "ch32_2_00058",
@@ -110938,7 +111211,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00059"
+      "next": "ch32_2_x0206"
+    },
+    "ch32_2_x0206": {
+      "id": "ch32_2_x0206",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Send Ralph",
+      "branches": [
+        {
+          "condition_text": "Ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_00059",
+          "when": {
+            "flag": "ralph_attacked_connor",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_x0207",
+          "when": {
+            "not": {
+              "flag": "ralph_attacked_connor",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00061": {
       "id": "ch32_2_00061",
@@ -111356,7 +111660,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00080"
+      "next": "ch32_2_x0205"
+    },
+    "ch32_2_x0205": {
+      "id": "ch32_2_x0205",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to scarred android",
+      "branches": [
+        {
+          "condition_text": "The scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_00080",
+          "when": {
+            "flag": "kara_freed_zlatkos_androids",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not the scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_00078",
+          "when": {
+            "not": {
+              "flag": "kara_freed_zlatkos_androids",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00082": {
       "id": "ch32_2_00082",
@@ -111443,7 +111778,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00085"
+      "next": "ch32_2_x0204"
+    },
+    "ch32_2_x0204": {
+      "id": "ch32_2_x0204",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to Ralph",
+      "branches": [
+        {
+          "condition_text": "Ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_00085",
+          "when": {
+            "flag": "ralph_attacked_connor",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_x0205",
+          "when": {
+            "not": {
+              "flag": "ralph_attacked_connor",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00087": {
       "id": "ch32_2_00087",
@@ -111473,7 +111839,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00087"
+      "next": "ch32_2_x0203"
+    },
+    "ch32_2_x0203": {
+      "id": "ch32_2_x0203",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to Luther",
+      "branches": [
+        {
+          "condition_text": "Luther is alive",
+          "next": "ch32_2_00087",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not luther is alive",
+          "next": "ch32_2_x0204",
+          "when": {
+            "not": {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00089": {
       "id": "ch32_2_00089",
@@ -112203,6 +112600,37 @@
       "observations": [],
       "next": "ch32_2_00126"
     },
+    "ch32_2_x0208": {
+      "id": "ch32_2_x0208",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to Luther",
+      "branches": [
+        {
+          "condition_text": "Luther is alive",
+          "next": "ch32_2_00127",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not luther is alive",
+          "next": "ch32_2_00114",
+          "when": {
+            "not": {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+    },
     "ch32_2_00128": {
       "id": "ch32_2_00128",
       "type": "scene",
@@ -112220,7 +112648,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00127"
+      "next": "ch32_2_x0208"
     },
     "ch32_2_00129": {
       "id": "ch32_2_00129",
@@ -112258,7 +112686,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00127"
+      "next": "ch32_2_x0208"
     },
     "ch32_2_00131": {
       "id": "ch32_2_00131",
@@ -112296,7 +112724,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00127"
+      "next": "ch32_2_x0208"
     },
     "ch32_2_00133": {
       "id": "ch32_2_00133",
@@ -112404,7 +112832,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00136"
+      "next": "ch32_2_x0202"
+    },
+    "ch32_2_x0202": {
+      "id": "ch32_2_x0202",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to scarred android",
+      "branches": [
+        {
+          "condition_text": "The scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_00136",
+          "when": {
+            "flag": "kara_freed_zlatkos_androids",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not the scarred android is in the camp (Kara freed him in Zlatko)",
+          "next": "ch32_2_x0208",
+          "when": {
+            "not": {
+              "flag": "kara_freed_zlatkos_androids",
+              "equals": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_2_00138": {
       "id": "ch32_2_00138",
@@ -113414,7 +113873,118 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00189"
+      "next": "ch32_2_x0210"
+    },
+    "ch32_2_x0210": {
+      "id": "ch32_2_x0210",
+      "type": "choice",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "At the recycling center",
+      "description": "Kara drops the body by the disposal truck. Its engine is running and nobody is watching her. Alice is still back in the enclosure.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "GO BACK",
+          "next": "ch32_2_00189",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CLIMB INTO THE TRUCK",
+          "next": "ch32_2_x0211",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_left_alone": true,
+              "kara_story_ended": true
+            }
+          }
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0211": {
+      "id": "ch32_2_x0211",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Kara leaves the camp without Alice",
+      "branches": [
+        {
+          "condition_text": "Markus frees the camp",
+          "next": "ch32_2_x0212",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_peaceful",
+                "equals": false
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Nobody frees the camp",
+          "next": "ch32_2_x0213",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_peaceful",
+                "equals": true
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "alice_alive": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center"
+    },
+    "ch32_2_x0212": {
+      "id": "ch32_2_x0212",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Kara leaves the camp without Alice",
+      "description": "Kara hides in the truck and leaves the camp alone. Hours later Markus's androids storm the camp, and Alice walks out free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0213": {
+      "id": "ch32_2_x0213",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Kara leaves the camp without Alice",
+      "description": "Kara hides in the truck and leaves the camp alone. Nobody comes to free the camp, and Alice dies in the recycling machine.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch32_2_00191": {
       "id": "ch32_2_00191",
@@ -128396,7 +128966,7 @@
             "flag": "kara_ch32_exploration",
             "equals": "thorough"
           },
-          "next": "ch32_2_00159"
+          "next": "ch32_2_x0201"
         },
         {
           "condition_text": "Checking key areas only",
@@ -128404,7 +128974,38 @@
             "flag": "kara_ch32_exploration",
             "equals": "key_only"
           },
-          "next": "ch32_2_00127"
+          "next": "ch32_2_x0208"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+    },
+    "ch32_2_x0201": {
+      "id": "ch32_2_x0201",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Ralph talking",
+      "branches": [
+        {
+          "condition_text": "Ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_00159",
+          "when": {
+            "flag": "ralph_attacked_connor",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
+          "next": "ch32_2_00139",
+          "when": {
+            "not": {
+              "flag": "ralph_attacked_connor",
+              "equals": true
+            }
+          }
         }
       ],
       "unverified": false,
@@ -128449,7 +129050,7 @@
         {
           "id": "option_2",
           "label": "HEAD FOR THE LINE",
-          "next": "ch32_2_00127",
+          "next": "ch32_2_x0208",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -128590,7 +129191,13 @@
             "flag": "kara_ch10_shelter",
             "equals": "motel"
           },
-          "next": "ch13_x0201"
+          "next": "ch13_x0201",
+          "effects": {
+            "flags": {
+              "kara_chased_by_connor": false,
+              "ralph_attacked_connor": false
+            }
+          }
         },
         {
           "condition_text": "Kara stayed at the Squat",
@@ -128598,7 +129205,13 @@
             "flag": "kara_ch10_shelter",
             "equals": "squat"
           },
-          "next": "ch13_x0211"
+          "next": "ch13_x0211",
+          "effects": {
+            "flags": {
+              "kara_chased_by_connor": false,
+              "ralph_attacked_connor": false
+            }
+          }
         },
         {
           "condition_text": "Kara stayed at the Parking lot",
@@ -128606,7 +129219,13 @@
             "flag": "kara_ch10_shelter",
             "equals": "car"
           },
-          "next": "ch13_x0221"
+          "next": "ch13_x0221",
+          "effects": {
+            "flags": {
+              "kara_chased_by_connor": false,
+              "ralph_attacked_connor": false
+            }
+          }
         }
       ],
       "next": "ch13_x0221",
@@ -130756,7 +131375,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "ralph_attacked_connor": true
+            }
           }
         },
         {
@@ -130781,12 +131402,22 @@
         {
           "condition_text": "Reach the fence in time",
           "next": "ch13_00017",
-          "when": null
+          "when": null,
+          "effects": {
+            "flags": {
+              "kara_chased_by_connor": true
+            }
+          }
         },
         {
           "condition_text": "Reach the fence too late",
           "next": "ch13_00020",
-          "when": null
+          "when": null,
+          "effects": {
+            "flags": {
+              "kara_chased_by_connor": true
+            }
+          }
         }
       ],
       "unverified": true,
@@ -130928,7 +131559,15 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_robbed_store": true
+            },
+            "news": [
+              {
+                "headline": "Android with a child holds up Detroit convenience store at gunpoint",
+                "source": "https://detroit-become-human.fandom.com/wiki/Zlatko#Flowchart"
+              }
+            ]
           },
           "requires": [
             {
