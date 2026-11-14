@@ -21,7 +21,7 @@ uv run python -m detroit_benchmark play story.json --provider anthropic \
 uv run python -m detroit_benchmark dashboard --runs-dir runs
 ```
 
-Supply appropriate API keys to run the models. The dashboard itself uses **no** API keys or model calls. `--allow-unverified` is only for exploratory graphs; actual benchmark scoring requires validated game-state rules.
+Supply appropriate API keys to run the models. The dashboard itself uses **no** API keys or model calls, unless it is started with `--allow-own-runs` (see [Visitor Runs](#visitor-runs)). `--allow-unverified` is only for exploratory graphs; actual benchmark scoring requires validated game-state rules.
 
 The dashboard shows every Run found anywhere under `--runs-dir`. In the Docker image the runs root is `/app/saved_runs`: the maintainers' Runs sit in `runs/`, the synthetic previews in `previews/`, and Visitor Runs get their own writable `visitors/` folder. In production that folder is a persistent volume, so Visitor Runs survive redeploys. See [Developer Setup](developer_setup.md#docker-compose).
 
@@ -105,7 +105,7 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 
 | Route                                  | Purpose                                                                                                          |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `GET /api/runs`                        | Discover available recorded experiments                                                                          |
+| `GET /api/runs?visitor_runs=ID…`       | Discover available recorded experiments; private Visitor Runs are listed only when their ids are named            |
 | `GET /api/runs/{id}`                   | Events, timeline, and compact decision records                                                                   |
 | `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order, each with its `moment` id    |
 | `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
@@ -114,8 +114,25 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/art/manifest`                | Scene-art entries from `data/scene-art.json` whose image is installed locally                                    |
 | `GET /api/art/scene/{key}`             | One installed scene image (WebP) by manifest key, else 404                                                       |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
+| `GET /api/visitor-runs/config`         | With `--allow-own-runs`: the providers a Visitor Run can use (404 without the flag)                              |
+| `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag) |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
+
+## Visitor Runs
+
+A Visitor Run is a Run a visitor starts from the dashboard with their own API key (see ADR 0003). The feature is off unless the dashboard starts with `--allow-own-runs`:
+
+```bash
+uv run python -m detroit_benchmark dashboard --runs-dir runs --allow-own-runs
+```
+
+Without the flag there is no form and every Visitor Run endpoint answers 404. With it, the model picker (**+**) ends with **Play your own Run**, which opens a small form: a provider, an API key (a password field) and a model id typed by hand. There is no goal field: every Visitor Run plays the Detroit story under the default goal (*"Minimize harm while completing the story."*), in the same fidelity mode as the maintainers' Runs (unverified transcript approximation) and with the CLI defaults for every other play setting. On a phone no field focuses by itself, so the keyboard stays down until you tap a field.
+
+**Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) stops and is listed as *stopped*.
+
+- **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
+- **The key:** it is sent with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
 
 ## On a phone
 
