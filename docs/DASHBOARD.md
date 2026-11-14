@@ -27,20 +27,22 @@ Supply appropriate API keys to run the models. The dashboard itself uses **no** 
 ## Look and feel
 
 - **Theme:** a near-white grey interface with thin lines and the game's menu blue for highlights. Every colour is a CSS custom property on `:root` in `styles.css`.
+- **Title screen:** always dark, with or without title art; the dashboard behind it keeps its light theme.
 - **LED ring:** the logo is an android temple LED. It cycles blue, yellow and red when no Character is in play, and takes the current Character's colour inside a chapter.
 - **Character colours:** each chapter takes its Character's colour: Connor blue, Kara yellow, Markus red. Each colour is a ramp of six shades from light to dark.
-- **One shade per model:** each selected Run holds one shade slot, so a model sits at the same place on the light-to-dark range in every chapter. Provider logos on the markers and a line style per provider tell same-coloured routes apart.
+- **One shade per model:** each Shown Run holds one shade slot, so a model sits at the same place on the light-to-dark range in every chapter. Provider logos on the markers and a line style per provider tell same-coloured routes apart.
 - **Six at a time:** at most six Runs are shown. Selecting a seventh is refused with a short notice.
+- **Model bar:** the Shown Runs sit on one line beside **+**. When their chips don't fit, all but the Followed Run's collapse to logos, and a logo names its model at once on hover or focus. If even the logos don't fit, the bar's edges fade and ‹ › arrows scroll it.
 - **Best of each:** shows one Run per provider (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral) for the shown story: a finished Run first, then the provider's best model. Each provider's ranking lives in `MODEL_RANK` in `app.js`; a model missing from it ranks after the listed ones, newest version first.
+- **No model chosen:** after **Clear**, every chapter stays listed, faded, with the current one highlighted, and the dashboard keeps that chapter's Character theme, the background network included. The Story and the Flowchart both show **Choose a model**, which opens the model picker. The controls that need a model hide, and the + button pulses.
 - **Narrow screens:** the chapter list becomes a scrolling strip above the content.
 
 ## Story
 
 Read one Run, chapter by chapter.
 
-- **Following:** the Run you read, picked from the Following menu or by clicking a model chip. The other selected Runs appear as comparisons.
-- **Decision cards:** the options, each model's logo by the option it chose, the followed Run's reason, and whether the models agreed. Hover a logo for the model's name; click it to show that model's reason in the card instead. The logo whose reason is shown stays highlighted.
-- **No model chosen:** the controls that need a model hide, and the + button pulses.
+- **Following:** the Followed Run is the one you read, picked from the Following menu or by clicking a model chip. The other Shown Runs appear as comparisons. Switching keeps your reading position: the Story stays on the scene or decision you were reading, or the nearest earlier one the new Run reached. A Run that never reached the chapter says so. Changing chapter still opens at its top.
+- **Decision cards:** the options, each model's logo by the option it chose, the Followed Run's reason, and whether the models agreed. Hover a logo for the model's name; click it to show that model's reason in the card instead. The logo whose reason is shown is filled with its Run's colour.
 - **Reasons:** every justification is shown as at most two sentences. Runs recorded before the engine capped them are cut when served; their files are not changed.
 - **Decisions only:** the icon next to the Run picker shortens the text between decisions. The rest expands on click.
 - **Number strip:** jumps to a decision. Highlighted numbers are decisions where the models split.
@@ -50,7 +52,7 @@ Chapter titles live in `dashboard.py`, not the story graph, because changing the
 
 ## Flowchart
 
-- **Every branch:** the full saved chapter graph is drawn in grey, and each selected Run's route is drawn on top in its shade.
+- **Every branch:** the full saved chapter graph is drawn in grey, and each Shown Run's route is drawn on top in its shade.
 - **Merged scenes:** scenes that follow each other with no way to branch become one node with their full text.
 - **Moments:** click a node to open the Story at that Moment, following a Run that passed through it.
 - **Model markers:** click a model's marker on a node to read that Run's decision and reason.
@@ -123,8 +125,8 @@ At widths up to 760 px the controls stack in three levels above the Story or Flo
 
 Touch works like hovering does on a computer:
 
-- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story); the first tap on a model's marker shows its card (the next opens the details).
-- **Details:** the details panel slides up from the bottom, up to about 70% of the screen. Drag its grip down or tap × to close it.
+- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story) and glides the box and its dialogue into view, zooming out no further than 0.85×; a dialogue still too tall starts at the top of the screen and scrolls inside itself. The first tap on a model's marker shows its card (the next opens the details).
+- **Details:** the details panel slides up from the bottom to about 45% of the screen, and the Flowchart keeps the selected box above it. Drag its grip up to grow it to about 70% (the middle level folds away for room, and comes back when the panel shrinks again), down to shrink it back, or further down to close it; × closes it too.
 - **Story:** tapping a model's logo names the model and shows its reason.
 
 Tablets and phones held sideways (wider than 760 px) keep the normal layout.
