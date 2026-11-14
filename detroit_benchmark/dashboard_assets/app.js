@@ -784,7 +784,7 @@ function drawGraph(graph, paths) {
     }
     n.addEventListener('click',e=>{
       e.stopPropagation();
-      if(window.touchPeek?.(n))return;  // touch: the first tap shows the dialogue
+      if(window.touchPeek?.(n)){fitPeekedNode(node);return;}  // touch: the first tap shows the dialogue
       if(node.type==='portal'&&node.destinationChapter&&chapters().includes(node.destinationChapter))changeChapter(node.destinationChapter);
       else showMomentInStory(node,users.map(view=>view.run.id));
     });
@@ -907,16 +907,63 @@ function centerSelectedNode({glide=false}={}) {
   const node=state.rendered.graph.nodes.get(state.selected.id);
   if(!node)return;
   state.viewTouched=true;
+  // Phones: the node, and its dialogue if showing, fit in the chart above the sheet.
+  if(window.isPhoneLayout?.()){fitWorldRects(nodeWorldRects(node),{glide});return;}
   const box=$('viewport').getBoundingClientRect();
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
-  state.panY=box.height*(window.isPhoneLayout?.()?.22:.50)-(node.y+node.height/2)*state.scale;
-  const world=$('graphWorld');
-  if(glide&&!reducedMotion()){
-    world.classList.add('is-gliding');clearTimeout(state.glideTimer);
-    state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
-  }
+  state.panY=box.height*.50-(node.y+node.height/2)*state.scale;
+  if(glide)glideWorld();
   applyTransform();
+}
+/* The next transform change glides, unless the viewer prefers reduced motion. */
+function glideWorld(){
+  if(reducedMotion())return;
+  const world=$('graphWorld');
+  world.classList.add('is-gliding');clearTimeout(state.glideTimer);
+  state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
+}
+/* The part of the chart nothing covers, in viewport coordinates: on phones the reasoning
+ * sheet overlays the bottom of the chart. */
+function visibleChartArea(){
+  const vp=$('viewport').getBoundingClientRect(), sheet=$('reasoningDrawer');
+  let bottom=vp.height;
+  if(window.isPhoneLayout?.()&&!sheet.classList.contains('is-hidden'))
+    bottom=Math.min(bottom,document.documentElement.clientHeight-sheet.offsetHeight-vp.top);
+  return {left:0,top:0,right:vp.width,bottom:Math.max(0,bottom)};
+}
+/* Fits world rectangles into the visible chart area: zooms out as needed, but not below
+ * minScale (and up to it, if the chart is further out). What still does not fit keeps the
+ * first rectangle's top left corner at the area's top left. */
+const FIT_PAD=12, READABLE_SCALE=.85;
+function fitWorldRects(rects,{minScale=READABLE_SCALE,glide=false}={}){
+  if(!rects.length)return;
+  const area=visibleChartArea();
+  const w=area.right-area.left-2*FIT_PAD, h=area.bottom-area.top-2*FIT_PAD;
+  const x0=Math.min(...rects.map(r=>r.x)),x1=Math.max(...rects.map(r=>r.x+r.width));
+  const y0=Math.min(...rects.map(r=>r.y)),y1=Math.max(...rects.map(r=>r.y+r.height));
+  const fit=Math.min(w/(x1-x0),h/(y1-y0));
+  const scale=Math.max(minScale,Math.min(state.scale,fit));
+  const place=(lo,hi,start,room,anchor)=>(hi-lo)*scale<=room?start+(room-(hi-lo)*scale)/2-lo*scale:start-anchor*scale;
+  state.scale=scale;
+  state.panX=place(x0,x1,area.left+FIT_PAD,w,rects[0].x);
+  state.panY=place(y0,y1,area.top+FIT_PAD,h,rects[0].y);
+  if(glide)glideWorld();
+  applyTransform();
+}
+/* A node, with its dialogue when it is showing, as world rectangles. */
+function nodeWorldRects(node){
+  const rects=[{x:node.x,y:node.y,width:node.width,height:node.height}];
+  const el=document.querySelector(`.flow-node[data-node-id="${CSS.escape(node.id)}"]`);
+  const dialogue=el?.classList.contains('is-peeked')&&el.querySelector('.node-dialogue');
+  if(dialogue)rects.push({x:node.x-1,y:node.y+node.height-1,width:node.width+2,height:dialogue.offsetHeight});
+  return rects;
+}
+/* Phones: a tapped node's dialogue glides into view. */
+function fitPeekedNode(node){
+  if(!window.isPhoneLayout?.())return;
+  state.viewTouched=true;
+  fitWorldRects(nodeWorldRects(node),{glide:true});
 }
 function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();
@@ -928,7 +975,7 @@ function zoom(factor,clientX,clientY){
   state.panY=y-(y-state.panY)/old*next;
   state.scale=next;applyTransform();
 }
-function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
+function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');$('reasoningDrawer').classList.remove('is-tall');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
 function renderInspectorShell(node,view){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
@@ -1063,6 +1110,8 @@ function setupInteractions(){
   if(state.selected)centerSelectedNode();
   else if(!state.viewTouched)openChapterView();
  },130);}).observe(vp);
+ // Phones: whenever the sheet's height changes, the selected node stays in view above it.
+ new ResizeObserver(()=>{if(state.selected&&window.isPhoneLayout?.())centerSelectedNode();}).observe($('reasoningDrawer'));
 }
 async function init(){
  setupInteractions();setupStoryInteractions();setupModelBar();
