@@ -315,8 +315,10 @@ function displayNoRuns(){
  if(state.chapter){renderChapterHeading(state.chapter);emitScene();}
  else setCharacterTheme(null);
 }
+/* Focuses a text field the reader did not tap, except after a touch: the phone keyboard never opens unasked. */
+function autoFocus(el){if(el&&!window.lastPointerWasTouch?.())el.focus();}
 function openPicker(){
- setFollowingMenu(false);state.pickerOpen=true;updateSelectors();$('searchRuns').focus();
+ setFollowingMenu(false);state.pickerOpen=true;updateSelectors();autoFocus($('searchRuns'));
 }
 async function refreshRuns({reselect=false}={}){
  if(state.busyRefresh)return;
@@ -1073,7 +1075,7 @@ function setupInteractions(){
  // The background follows the hovered node, else the selected one.
  $('graphNodes').addEventListener('mouseover',e=>{const n=e.target.closest('.flow-node');if(n)emitFlowScene(n.dataset.nodeId);});
  $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));
- $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
+ $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)autoFocus($('searchRuns'));});
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
  // "Choose a model" in the Story and the Flowchart opens the picker.
  for(const host of [$('storyContent'),$('graphEmpty')])host.addEventListener('click',e=>{
