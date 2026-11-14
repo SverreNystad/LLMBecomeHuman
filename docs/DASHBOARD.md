@@ -116,6 +116,7 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 | `GET /api/visitor-runs/config`         | With `--allow-own-runs`: the providers a Visitor Run can use (404 without the flag)                              |
 | `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag) |
+| `GET /api/visitor-runs/public?provider=P&model=M` | With `--allow-own-runs`: `{public_run_exists}`, whether a complete public Run of that exact provider and model id exists (404 without the flag) |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
@@ -131,7 +132,8 @@ Without the flag there is no form and every Visitor Run endpoint answers 404. Wi
 
 **Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) stops and is listed as *stopped*.
 
-- **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
+- **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Unless it becomes public (below), only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
+- **Public:** when a Visitor Run *completes*, it becomes public, listed for everyone like any other Run, if no complete public Run of the same exact provider and model id exists yet. The Runs baked into the runs folder count, and so do Visitor Runs already made public; a dated variant or the OpenRouter route of a model counts as its own model. "First" means first to complete, not first to start. Partial and playing Runs are never public and don't count. The decision is made once, under a lock, so two Runs of the same model finishing together can't both become public, and it is kept as `publication.json` in the Run's folder, so it survives restarts. Before Start the form warns when a public Run of the chosen model already exists: *"A public Run of this model already exists. Yours will be saved but only you will see it."*
 - **The key:** it is sent with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
 
 ## On a phone

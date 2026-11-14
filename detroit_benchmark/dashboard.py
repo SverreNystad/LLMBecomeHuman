@@ -32,6 +32,7 @@ from .visitor_runs import (
     scrub,
     start_visitor_run,
 )
+from .visitor_runs import is_public, public_run_exists, settle_publications
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
@@ -141,8 +142,10 @@ def _discovered_runs(root: Path) -> list[Path]:
 
 
 def _is_private(root: Path, directory: Path) -> bool:
-    """Visitor Runs are private: only a request naming their id lists them."""
-    return directory.relative_to(root).parts[0] == VISITOR_FOLDER
+    """Visitor Runs are private, unless made public: only a request naming their id lists them."""
+    return directory.relative_to(root).parts[0] == VISITOR_FOLDER and not is_public(
+        directory
+    )
 
 
 class VisitorRunStart(BaseModel):
@@ -737,7 +740,9 @@ def create_app(
     def list_runs(visitor_runs: list[str] = Query([])):
         """Every Run except private Visitor Runs, which are listed only when named."""
         named = set(visitor_runs)
-        runs = (_metadata(root, path) for path in _discovered_runs(root))
+        if allow_own_runs:
+            settle_publications(root)  # Complete Runs a restart left undecided.
+        runs =(_metadata(root, path) for path in _discovered_runs(root))
         return {
             "runs": sorted(
                 (
@@ -774,6 +779,15 @@ def create_app(
                 detail = scrub(f"Could not start the Run: {exc}", key)
                 raise HTTPException(status_code=500, detail=detail) from None
             return {"id": _run_id(root, directory)}
+
+    if allow_own_runs:
+        # Publication (#76): the form warns before Start when a public Run of the model exists.
+
+        @app.get("/api/visitor-runs/public")
+        def visitor_run_public(provider: str, model: str):
+            return {
+                "public_run_exists": public_run_exists(root, provider, model.strip())
+            }
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):

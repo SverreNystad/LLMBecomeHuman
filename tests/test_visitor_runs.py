@@ -56,7 +56,7 @@ def test_with_the_flag_off_every_visitor_run_endpoint_is_absent(tmp_path):
     assert list(tmp_path.iterdir()) == []
 
 
-def test_a_started_visitor_run_plays_to_completion_and_only_its_visitor_lists_it(
+def test_a_started_visitor_run_plays_to_completion_and_is_listed(
     tmp_path,
 ):
     client = visitor_client(tmp_path)
@@ -72,8 +72,8 @@ def test_a_started_visitor_run_plays_to_completion_and_only_its_visitor_lists_it
     assert run["fidelity"] == "unverified_transcript_approximation"
     assert run["unverified"] is True
 
-    assert listing(client) == []
-    assert listing(client, "someone-elses-id") == []
+    # The first complete Run of its model is public (#76; tests/test_visitor_publication.py).
+    assert [r["id"] for r in listing(client)] == [run_id]
     assert client.get(f"/api/runs/{run_id}").json()["run"]["status"] == "complete"
 
 

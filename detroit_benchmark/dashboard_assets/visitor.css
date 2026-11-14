@@ -35,3 +35,7 @@
 @media (min-width: 761px) {
   .own-run-form select, .own-run-form input { font-size: 13px; }
 }
+
+/* Publication (#76): a public Run of the chosen model already exists. */
+.own-run-warning { margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: var(--highlight); }
+.own-run-warning[hidden] { display: none; }
