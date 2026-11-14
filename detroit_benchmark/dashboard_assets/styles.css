@@ -31,6 +31,9 @@
   --highlight: #2f8ce6;
   --highlight-soft: rgba(47, 140, 230, .12);
 
+  /* A form's error message (the Visitor Run form). */
+  --danger: #b4282e;
+
   /* Character LED ramps, light → dark. */
   --connor-1: #8ccaff; --connor-2: #52a9f2; --connor-3: #2087e0; --connor-4: #1567b6; --connor-5: #0e4b88; --connor-6: #08305a;
   --kara-1: #f3d167;   --kara-2: #ebb928;   --kara-3: #d19a00;   --kara-4: #a87b00;   --kara-5: #7c5b00;   --kara-6: #523c00;

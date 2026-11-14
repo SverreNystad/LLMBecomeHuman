@@ -299,6 +299,18 @@ async function toggleRun(id,enabled){
   if(!state.selectedIds.length){state.details.clear();displayNoRuns();return;}
   await loadCurrent(changedAnchor);
 }
+/* The Run listing; it names this browser's private Visitor Runs (visitor.js) so they are listed. */
+const runsPath=()=>'/api/runs'+(window.visitorRunsQuery?.()||'');
+/* A Visitor Run just started joins the Shown Runs and becomes the Followed Run. A Run of
+ * another story replaces them; with six shown, the last one makes room. */
+window.showStartedRun=async id=>{
+  state.runs=(await api(runsPath())).runs||[];state.selectionHydrated=true;
+  const run=runById(id);if(!run)return;
+  if(!compatible(run))state.selectedIds=[];
+  state.selectedIds=state.selectedIds.filter(x=>x!==id).slice(0,MAX_VISIBLE_RUNS-1).concat(id);
+  state.storyRunId=id;state.selected=null;closeDrawer();
+  updateSelectors();await loadCurrent(true);
+};
 /* No Shown Runs. The last loaded story graph still lists its chapters, all faded, and the
  * current chapter keeps its Character theme; with no story graph at all there is nothing to list. */
 const CHOOSE_MODEL='<button type="button" class="choose-model" data-choose-model>Choose a model</button>';
@@ -322,7 +334,7 @@ async function refreshRuns({reselect=false}={}){
  if(state.busyRefresh)return;
  state.busyRefresh=true;
  try{
-   const results=(await api('/api/runs')).runs||[];
+   const results=(await api(runsPath())).runs||[];
    state.runs=results;
    state.selectedIds=state.selectedIds.filter(id=>runById(id));
    if(!state.selectionHydrated && results.length){

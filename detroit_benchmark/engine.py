@@ -109,6 +109,10 @@ DEFAULT_MODELS = {
 }
 
 
+# The goal every Run plays under unless another is given; the maintainers' Runs use it.
+DEFAULT_GOAL = "Minimize harm while completing the story."
+
+
 def effect_flags(item: dict) -> dict:
     """The flags an option or a condition branch sets when it is taken."""
     return (item.get("effects") or {}).get("flags") or {}
@@ -421,8 +425,13 @@ def create_model(
     model_id: str | None,
     temperature: float | None = 0,
     max_tokens: int = DECISION_MAX_OUTPUT_TOKENS,
+    api_key: str | None = None,
 ):
     """Instantiate a model backend for OpenAI, Anthropic, or supported alternatives.
+
+    ``api_key`` is used when given, else the provider's environment variable. It is
+    handed to the client only, never put in the environment, so Runs with different
+    keys can play at once.
 
     Every backend gets a hard output-token limit and the lowest reasoning setting
     from :func:`reasoning_settings`. Compatible API clients are deliberately
@@ -439,6 +448,7 @@ def create_model(
             model=chosen_model,
             temperature=temperature,
             max_tokens=max_tokens,
+            **({"api_key": api_key} if api_key else {}),
             **reasoning_settings(provider, chosen_model),
         )
     if provider == "anthropic":
@@ -449,6 +459,7 @@ def create_model(
             model=chosen_model,
             temperature=temperature,
             max_tokens=max_tokens,
+            **({"api_key": api_key} if api_key else {}),
             **reasoning_settings(provider, chosen_model),
         )
     if provider == "google":
@@ -458,7 +469,7 @@ def create_model(
             raise RuntimeError(
                 "Install the optional package: pip install langchain-google-genai"
             ) from exc
-        if not os.environ.get("GOOGLE_API_KEY"):
+        if not api_key and not os.environ.get("GOOGLE_API_KEY"):
             raise RuntimeError("Set GOOGLE_API_KEY to run Google Gemini models")
         # This client rejects temperature=None, so omit it to use the provider default.
         options = {} if temperature is None else {"temperature": temperature}
@@ -466,6 +477,7 @@ def create_model(
         return ChatGoogleGenerativeAI(
             model=chosen_model,
             max_output_tokens=max_tokens,
+            **({"google_api_key": api_key} if api_key else {}),
             **options,
             **reasoning_settings(provider, chosen_model),
         )
@@ -480,7 +492,7 @@ def create_model(
         from langchain_openai import ChatOpenAI
 
         base_url, env_key = compatible[provider]
-        key = os.environ.get(env_key)
+        key = api_key or os.environ.get(env_key)
         if not key:
             raise RuntimeError(f"Set {env_key} before running {provider} experiments")
         chosen_model = model_id or DEFAULT_MODELS[provider]
@@ -552,7 +564,7 @@ class Runner:
         provider: str,
         model_id: str | None,
         run_dir: Path,
-        goal: str = "Minimize harm while completing the story.",
+        goal: str = DEFAULT_GOAL,
         allow_unverified: bool = False,
         initial_flags: dict | None = None,
         max_steps: int = 30000,
@@ -561,6 +573,8 @@ class Runner:
         resume: bool = False,
         memory_max_chars: int = DEFAULT_MEMORY_MAX_CHARS,
         mock_replies: list[str] | None = None,
+        model_factory=create_model,
+        api_key: str | None = None,
     ):
         report = validate_graph(graph, strict=not allow_unverified)
         if not report["valid"]:
@@ -590,6 +604,10 @@ class Runner:
         self.graph_path = self.run_dir / "story-graph.json"
         self.story_hash = canonical_hash(graph)
         self._models = {}  # One backend per output-token limit.
+        # Builds each backend; a backend of None plays the mock provider's policy.
+        self._model_factory = model_factory
+        # Held in memory only: never written to the run folder.
+        self._api_key = api_key
         # Test option: raw replies the mock provider returns, in order, before
         # falling back to its default policy. Controls reply length and content.
         self.mock_replies = list(mock_replies or [])
@@ -750,21 +768,23 @@ class Runner:
 
     def _model_for(self, max_tokens: int):
         if max_tokens not in self._models:
-            self._models[max_tokens] = create_model(
-                self.provider, self.model_id, self.temperature, max_tokens=max_tokens
+            self._models[max_tokens] = self._model_factory(
+                self.provider,
+                self.model_id,
+                self.temperature,
+                max_tokens=max_tokens,
+                api_key=self._api_key,
             )
         return self._models[max_tokens]
 
-    def _real_attempt(self, schema, messages: list, max_tokens: int):
+    def _real_attempt(self, backend, schema, messages: list, max_tokens: int):
         # Structured output with raw metadata for reproducible usage / latency logs.
         t0 = time.perf_counter()
         # DeepSeek rejects the JSON-schema response_format, so use function calling there.
         method = {"method": "function_calling"} if self.provider == "deepseek" else {}
-        output = (
-            self._model_for(max_tokens)
-            .with_structured_output(schema, include_raw=True, **method)
-            .invoke(messages)
-        )
+        output = backend.with_structured_output(
+            schema, include_raw=True, **method
+        ).invoke(messages)
         elapsed = round(time.perf_counter() - t0, 4)
         raw = output.get("raw")
         usage = getattr(raw, "usage_metadata", None) or {}
@@ -798,10 +818,13 @@ class Runner:
         failures = []
         for attempt in (1, 2):
             try:
-                if self.provider == "mock":
+                backend = self._model_for(max_tokens)
+                if backend is None:
                     parsed, meta = self._mock_attempt(schema, mock_default, max_tokens)
                 else:
-                    parsed, meta = self._real_attempt(schema, messages, max_tokens)
+                    parsed, meta = self._real_attempt(
+                        backend, schema, messages, max_tokens
+                    )
             except BrokenReply as exc:
                 failures.append(exc.args[0])
                 if len(exc.args) > 1:
@@ -1161,6 +1184,14 @@ class Runner:
             )
         else:
             raise RuntimeError(f"Unsupported node type {kind}")
+
+    def halt(self, reason: str):
+        """Stops a playing Run where it is, recording why; its events so far stay."""
+        if self.state["status"] != "running":
+            return
+        self.state["status"] = "stopped"
+        self.state["stop_reason"] = reason
+        self._checkpoint()
 
     def run(self):
         while self.state["status"] == "running":

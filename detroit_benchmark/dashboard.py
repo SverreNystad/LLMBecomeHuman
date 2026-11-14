@@ -1,7 +1,8 @@
 """Read-only dashboard for saved LLM benchmark experiments.
 
 The dashboard is intentionally limited to local, previously recorded run directories.
-It does not invoke LLMs or alter the benchmark's state.
+It does not invoke LLMs or alter the benchmark's state, except that with ``allow_own_runs``
+visitors can play Visitor Runs with their own key (see visitor_runs.py).
 """
 
 from __future__ import annotations
@@ -14,12 +15,29 @@ import time
 from collections import Counter
 from functools import lru_cache
 
-from .engine import canonical_hash, chapter_briefing, iter_events, limit_sentences
+from .engine import (
+    canonical_hash,
+    chapter_briefing,
+    create_model,
+    iter_events,
+    limit_sentences,
+)
+from .visitor_runs import (
+    PROVIDERS,
+    VISITOR_FOLDER,
+    VISITOR_STORY,
+    ModelFactory,
+    ModelLister,
+    list_models,
+    scrub,
+    start_visitor_run,
+)
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
@@ -120,6 +138,17 @@ def _discovered_runs(root: Path) -> list[Path]:
         if resolved.is_relative_to(root) and (resolved / "events.jsonl").is_file():
             paths.append(resolved)
     return sorted(set(paths), key=lambda p: p.as_posix().lower())
+
+
+def _is_private(root: Path, directory: Path) -> bool:
+    """Visitor Runs are private: only a request naming their id lists them."""
+    return directory.relative_to(root).parts[0] == VISITOR_FOLDER
+
+
+class VisitorRunStart(BaseModel):
+    provider: str
+    model: str
+    key: str
 
 
 def _seconds_since_write(directory: Path) -> float:
@@ -672,14 +701,25 @@ def create_app(
     graphs_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
     art_manifest: str | Path | None = None,
+    *,
+    allow_own_runs: bool = False,
+    model_lister: ModelLister | None = None,
+    model_factory: ModelFactory = create_model,
+    visitor_story: str | Path = VISITOR_STORY,
 ) -> FastAPI:
+    """The dashboard app. With ``allow_own_runs``, visitors can play Visitor Runs with their
+    own key: ``model_lister`` (provider, key) -> model ids and ``model_factory`` (the shape of
+    :func:`engine.create_model`) are the real ones unless a test injects fakes."""
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
+    story_path = Path(visitor_story).expanduser().resolve()
     app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
+    # Lists a provider's models for the Visitor Run form.
+    app.state.model_lister = model_lister or list_models
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -694,14 +734,46 @@ def create_app(
         return {"ok": True, "runs_dir": str(root)}
 
     @app.get("/api/runs")
-    def list_runs():
+    def list_runs(visitor_runs: list[str] = Query([])):
+        """Every Run except private Visitor Runs, which are listed only when named."""
+        named = set(visitor_runs)
+        runs = (_metadata(root, path) for path in _discovered_runs(root))
         return {
             "runs": sorted(
-                (_metadata(root, path) for path in _discovered_runs(root)),
+                (
+                    run
+                    for run in runs
+                    if not _is_private(root, Path(root, run["name"]))
+                    or run["id"] in named
+                ),
                 key=lambda run: run.get("started_at") or "",
                 reverse=True,
             )
         }
+
+    if allow_own_runs:
+
+        @app.get("/api/visitor-runs/config")
+        def visitor_run_config():
+            return {"providers": list(PROVIDERS)}
+
+        @app.post("/api/visitor-runs")
+        def start_run(body: VisitorRunStart):
+            if body.provider not in PROVIDERS:
+                raise HTTPException(status_code=422, detail="Unknown provider")
+            model, key = body.model.strip(), body.key.strip()
+            if not model or not key:
+                raise HTTPException(
+                    status_code=422, detail="Enter a key and a model id"
+                )
+            try:
+                directory = start_visitor_run(
+                    root, story_path, body.provider, model, key, model_factory
+                )
+            except Exception as exc:
+                detail = scrub(f"Could not start the Run: {exc}", key)
+                raise HTTPException(status_code=500, detail=detail) from None
+            return {"id": _run_id(root, directory)}
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):

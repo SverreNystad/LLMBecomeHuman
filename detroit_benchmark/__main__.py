@@ -88,6 +88,11 @@ def main():
         type=Path,
         help="Folder with local game art (default: the repository's images/ folder)",
     )
+    dashboard.add_argument(
+        "--allow-own-runs",
+        action="store_true",
+        help="Let visitors play Visitor Runs with their own API key (off by default)",
+    )
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8000)
     args = p.parse_args()
@@ -97,7 +102,12 @@ def main():
 
         print(f"Open http://{args.host}:{args.port} to view the benchmark dashboard")
         uvicorn.run(
-            create_app(args.runs_dir, args.graphs_dir, args.images_dir),
+            create_app(
+                args.runs_dir,
+                args.graphs_dir,
+                args.images_dir,
+                allow_own_runs=args.allow_own_runs,
+            ),
             host=args.host,
             port=args.port,
         )
