@@ -1,0 +1,63 @@
+{{- if .Values.cloudflared.enabled }}
+# Cloudflare Tunnel connector: dials out to Cloudflare, which forwards public
+# hostname traffic (configured in the Zero Trust dashboard) to this chart's Service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "llm-become-human.fullname" . }}-cloudflared
+  labels:
+    {{- include "llm-become-human.labels" . | nindent 4 }}
+    app.kubernetes.io/component: cloudflared
+spec:
+  replicas: {{ .Values.cloudflared.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "llm-become-human.name" . }}-cloudflared
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "llm-become-human.name" . }}-cloudflared
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: cloudflared
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: cloudflared
+          image: "{{ .Values.cloudflared.image.repository }}:{{ .Values.cloudflared.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          args:
+            - tunnel
+            - --no-autoupdate
+            - --metrics
+            - 0.0.0.0:2000
+            - run
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.cloudflared.tokenSecret.name }}
+                  key: {{ .Values.cloudflared.tokenSecret.key }}
+          ports:
+            - name: metrics
+              containerPort: 2000
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          {{- with .Values.cloudflared.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
