@@ -193,12 +193,18 @@ def open_moment(page):
         }"""
     )
     assert index >= 0, "no model marker on screen"
-    box = page.locator(".flow-node.visited .node-model-button").nth(index).bounding_box()
+    marker = page.locator(".flow-node.visited .node-model-button").nth(index)
+
+    def centre():
+        box = marker.bounding_box()
+        return box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
+
     # Raw taps: a locator's tap may scroll the chart's own box to reach the marker.
-    x, y = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
-    page.touchscreen.tap(x, y)
+    page.touchscreen.tap(*centre())
     page.locator("#unfoldCard.is-open").wait_for()
-    page.touchscreen.tap(x, y)
+    # The chart glides the node and its card into view (#81); tap the marker where it ends up.
+    page.wait_for_function("!document.getElementById('graphWorld').classList.contains('is-gliding')")
+    page.touchscreen.tap(*centre())
     page.locator("#reasoningDrawer").wait_for()
     page.wait_for_timeout(GLIDE_MS)
     return page.evaluate("state.selected.id")

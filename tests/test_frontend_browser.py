@@ -16,6 +16,13 @@ PROJECT = Path(__file__).resolve().parents[1]
 ASSETS = PROJECT / "detroit_benchmark" / "dashboard_assets"
 
 
+def _remove_chip(chip):
+    """Remove a Shown Run from the model bar as a reader would: a collapsed logo shows its ×
+    only once hovered."""
+    chip.hover()
+    chip.locator(".run-chip-remove").click()
+
+
 def test_chapter_flowchart_browser_interactions(new_page):
     c = TestClient(create_app(PROJECT / "demo_runs" / "aurora"))
     runs = c.get("/api/runs").json()["runs"]
@@ -141,10 +148,10 @@ def test_chapter_flowchart_browser_interactions(new_page):
     kept_shade = page.locator(".run-chip").first.evaluate(
         "e => e.style.getPropertyValue('--run-color')"
     )
-    page.locator(".run-chip-remove").last.click()
-    page.locator(".run-chip-remove").last.click()
-    page.locator(".run-chip-remove").last.click()
-    page.locator(".run-chip-remove").last.click()
+    _remove_chip(page.locator(".run-chip").last)
+    _remove_chip(page.locator(".run-chip").last)
+    _remove_chip(page.locator(".run-chip").last)
+    _remove_chip(page.locator(".run-chip").last)
     page.wait_for_function(
         "document.querySelectorAll('.run-chip').length === 2"
     )
@@ -252,7 +259,7 @@ def test_chapter_flowchart_browser_interactions(new_page):
         "document.querySelectorAll('.run-chip').length === 6"
     )
     page.locator("#pickerToggle").click()
-    page.locator(".run-chip-remove").last.click()
+    _remove_chip(page.locator(".run-chip").last)
     page.wait_for_function(
         "document.querySelectorAll('.run-chip').length === 5"
     )
@@ -295,7 +302,7 @@ def test_chapter_flowchart_browser_interactions(new_page):
     assert "Grok preview" in page.locator("#drawerContent").inner_text()
     page.locator("#closeDrawer").click()
     # Removing only one run doesn't change complete graph.
-    page.locator(".run-chip-remove").first.click()
+    _remove_chip(page.locator(".run-chip").first)
     page.wait_for_function(
         "document.querySelectorAll('.run-chip').length === 5"
     )

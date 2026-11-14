@@ -34,7 +34,7 @@ The dashboard shows every Run found anywhere under `--runs-dir`. In the Docker i
 - **Character colours:** each chapter takes its Character's colour: Connor blue, Kara yellow, Markus red. Each colour is a ramp of six shades from light to dark.
 - **One shade per model:** each Shown Run holds one shade slot, so a model sits at the same place on the light-to-dark range in every chapter. Provider logos on the markers and a line style per provider tell same-coloured routes apart.
 - **Six at a time:** at most six Runs are shown. Selecting a seventh is refused with a short notice.
-- **Model bar:** the Shown Runs sit on one line beside **+**. When their chips don't fit, all but the Followed Run's collapse to logos, and a logo names its model at once on hover or focus. If even the logos don't fit, the bar's edges fade and ‹ › arrows scroll it.
+- **Model bar:** the Shown Runs sit on one line beside **+**. When their chips don't fit, all but the Followed Run's collapse to logos. Hovering or focusing a logo grows it back into its full chip, name and × included, pushing its neighbours aside; it shrinks again when the pointer or focus leaves. Clicking a logo grows the new Followed Run's chip while the old one shrinks, both at once, and the bar glides to show the new chip whole if it would be cut off. Hovering never scrolls the bar. The growing and shrinking are animated, with the usual glitch on hover; under reduced motion the sizes change at once. If even the logos don't fit, or a grown chip pushes others past the edge, the bar's edges fade and ‹ › arrows scroll it.
 - **Best of each:** shows one Run per provider (Anthropic, OpenAI, Google, xAI, DeepSeek, Mistral) for the shown story: a finished Run first, then the provider's best model. Each provider's ranking lives in `MODEL_RANK` in `app.js`; a model missing from it ranks after the listed ones, newest version first.
 - **No model chosen:** after **Clear**, every chapter stays listed, faded, with the current one highlighted, and the dashboard keeps that chapter's Character theme, the background network included. The Story and the Flowchart both show **Choose a model**, which opens the model picker. The controls that need a model hide, and the + button pulses.
 - **Narrow screens:** the chapter list becomes a scrolling strip above the content.
@@ -49,8 +49,13 @@ Read one Run, chapter by chapter.
 - **Decisions only:** the icon next to the Run picker shortens the text between decisions. The rest expands on click.
 - **Number strip:** jumps to a decision. Highlighted numbers are decisions where the models split.
 - **Moments:** click any line, scene or decision to open that Moment on the Flowchart, centred and highlighted.
+- **Ending:** the Final Routes chapter opens with the Ending Summary, one column per Shown Run in their order and colours (a phone shows the Followed Run only). Each column says, in plain sentences, whether Connor became deviant or stayed a machine, how many times he died and whether his story ended; whether Kara ended free, captured or dead and whether Alice is with her; whether Markus's revolution was peaceful or violent and whether he lived. Below that are the Fates of Hank, Alice, Luther, Simon, North and Josh (alive, dead or unknown) and, under Detroit, how the revolution ended with the last three Public News headlines. A Run still playing shows "Story not finished". Anything the Run never recorded, or a final route the engine had to assume, is shown as unknown, never guessed. The card notes that outcomes come from the Run's recorded route, which is not verified game data.
+
+![Ending Summary on a wide screen](images/ending_summary_desktop.png)
 
 Chapter titles live in `dashboard.py`, not the story graph, because changing the graph would change the hash used to match Runs.
+
+The Ending Summary is written on the server in `ending.py`. Every sentence, and the question each outcome answers (such as "Was Kara captured?"), comes from its one table, `OUTCOMES`, so the wording is corrected in one place.
 
 ## Flowchart
 
@@ -106,7 +111,7 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | Route                                  | Purpose                                                                                                          |
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `GET /api/runs?visitor_runs=ID…`       | Discover available recorded experiments; private Visitor Runs are listed only when their ids are named            |
-| `GET /api/runs/{id}`                   | Events, timeline, and compact decision records                                                                   |
+| `GET /api/runs/{id}`                   | Events, timeline, compact decision records, and the Run's `ending_summary`                                       |
 | `GET /api/runs/{id}/story?chapter=X`   | One chapter's dialogue, inspected details, decisions and assumed outcomes, in order, each with its `moment` id    |
 | `GET /api/runs/{id}/flowchart`         | Full chapter graph, scene script, branch labels, and fidelity/completeness status; each node has a `moment` id   |
 | `GET /api/runs/{id}/events/{index}`    | Full stored model input, output, justification, and state transition                                             |
@@ -115,8 +120,9 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/art/scene/{key}`             | One installed scene image (WebP) by manifest key, else 404                                                       |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 | `GET /api/visitor-runs/config`         | With `--allow-own-runs`: the providers a Visitor Run can use (404 without the flag)                              |
-| `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag) |
+| `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag); 503 when the site is busy, 409 when this visitor already has one playing |
 | `GET /api/visitor-runs/public?provider=P&model=M` | With `--allow-own-runs`: `{public_run_exists}`, whether a complete public Run of that exact provider and model id exists (404 without the flag) |
+| `POST /api/visitor-runs/{id}/stop`     | With `--allow-own-runs`: stops that playing Visitor Run after its current model call (202); 404 if no such Run is playing |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
@@ -130,10 +136,13 @@ uv run python -m detroit_benchmark dashboard --runs-dir runs --allow-own-runs
 
 Without the flag there is no form and every Visitor Run endpoint answers 404. With it, the model picker (**+**) ends with **Play your own Run**, which opens a small form: a provider, an API key (a password field) and a model id typed by hand. There is no goal field: every Visitor Run plays the Detroit story under the default goal (*"Minimize harm while completing the story."*), in the same fidelity mode as the maintainers' Runs (unverified transcript approximation) and with the CLI defaults for every other play setting. On a phone no field focuses by itself, so the keyboard stays down until you tap a field.
 
-**Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) stops and is listed as *stopped*.
+**Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) ends and is listed as *partial*; the Run listing's `stop_reason` says why, scrubbed of the key.
 
 - **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Unless it becomes public (below), only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
 - **Public:** when a Visitor Run *completes*, it becomes public, listed for everyone like any other Run, if no complete public Run of the same exact provider and model id exists yet. The Runs baked into the runs folder count, and so do Visitor Runs already made public; a dated variant or the OpenRouter route of a model counts as its own model. "First" means first to complete, not first to start. Partial and playing Runs are never public and don't count. The decision is made once, under a lock, so two Runs of the same model finishing together can't both become public, and it is kept as `publication.json` in the Run's folder, so it survives restarts. Before Start the form warns when a public Run of the chosen model already exists: *"A public Run of this model already exists. Yours will be saved but only you will see it."*
+- **Stop:** while one of your Visitor Runs plays, the model picker (**+**) lists it above **Play your own Run** with a **Stop** button. Stop ends the Run after the model call under way and keeps it as a *partial* Run, with every choice made so far. Only the browser that started a Run knows its id, so nobody else sees its Stop button. A partial Run can't be resumed, because its key is gone.
+- **Restarts:** when the dashboard starts with `--allow-own-runs`, any Visitor Run still marked in progress (cut off by a redeploy, say) is marked *partial*, so none is left in progress forever.
+- **Play limits:** at most two Visitor Runs play at once across the site, and one per visitor, where a visitor is a client IP: Cloudflare's `CF-Connecting-IP` header when present, else the connecting address. Over the site limit, Start is refused with *"The site is busy … Try again later."*; a visitor with a Run already playing is told *"You already have a Run playing."* Both show in the form as a notice. A slot frees when its Run completes, is stopped or fails. The limits are `create_app(max_playing=2, max_playing_per_visitor=1)`.
 - **The key:** it is sent with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
 
 ## On a phone
@@ -146,7 +155,7 @@ At widths up to 760 px the controls stack in three levels above the Story or Flo
 
 Touch works like hovering does on a computer:
 
-- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story) and glides the box and its dialogue into view, zooming out no further than 0.85×; a dialogue still too tall starts at the top of the screen and scrolls inside itself. The first tap on a model's marker shows its card (the next opens the details).
+- **Flowchart:** it opens fitted around the current Moment and its neighbours. Drag to pan, pinch to zoom. The first tap on a box shows its dialogue (the next opens it in the Story) and glides the box and its dialogue into view, zooming out no further than 0.85×; a dialogue still too tall starts at the top of the screen and scrolls inside itself. The first tap on a model's marker unfolds its decision card below the box and glides the box and the whole card into view by the same rules; a card still too tall sits right under the box at the top of the screen and scrolls inside itself. The next tap opens the details.
 - **Details:** the details panel slides up from the bottom to about 45% of the screen, and the Flowchart keeps the selected box above it. Drag its grip up to grow it to about 70% (the middle level folds away for room, and comes back when the panel shrinks again), down to shrink it back, or further down to close it; × closes it too.
 - **Story:** tapping a model's logo names the model and shows its reason.
 - **Keyboard:** nothing focuses a text field by itself, so the keyboard opens only when you tap one. **+** opens the model picker with Search unfocused; on a computer, Search is focused at once so you can start typing.

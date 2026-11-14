@@ -186,6 +186,10 @@ function chapterNavigation(run, chapter) {
 function briefingOpener(briefing) {
   return briefing ? `<p class="story-briefing">${esc(briefing)}</p>` : '';
 }
+/* The Ending Summary that opens Final Routes (ending.js), when that script is loaded. */
+function endingCard(chapter) {
+  return typeof endingSummaryCard === 'function' ? endingSummaryCard(chapter) : '';
+}
 function caveatBanner(run) {
   return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
@@ -200,8 +204,14 @@ function renderStoryToolbar(run) {
   if (!run) setFollowingMenu(false);
   $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
-  document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
+  let newlyFollowed = null;
+  document.querySelectorAll('.run-chip').forEach(chip => {
+    const followed = state.view === 'story' && chip.dataset.focusId === run?.id;
+    if (followed && !chip.classList.contains('is-followed')) newlyFollowed = chip;
+    chip.classList.toggle('is-followed', followed);
+  });
   fitModelBar();
+  revealModelBarChip(newlyFollowed);
 }
 function renderDecisionStrip(decisions) {
   $('decisionStrip').innerHTML = decisions.length
@@ -214,7 +224,7 @@ function renderChapterSubtitle(chapter) {
 function renderUnvisitedChapter(run, chapter) {
   const visitors = activeRuns().filter(item => (item.chapters_visited || []).includes(chapter));
   const message = visitors.length ? `Reached by ${visitors.map(item => esc(item.model)).join(', ')}` : '';
-  $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
+  $('storyContent').innerHTML = `${endingCard(chapter)}<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
   renderDecisionStrip([]);
   renderChapterSubtitle(chapter);
 }
@@ -262,7 +272,7 @@ async function renderStory({keepScroll = false, position = null} = {}) {
   }
   const context = {character: chapterCharacter(chapter), numbers, keys, tables, run, total: summaries.length};
   const body = state.storyMode === 'key' ? renderCondensed(items, context) : items.map(item => renderItem(item, context)).join('');
-  $('storyContent').innerHTML = caveatBanner(run) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
+  $('storyContent').innerHTML = caveatBanner(run) + endingCard(chapter) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
   renderChapterSubtitle(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);

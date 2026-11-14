@@ -119,11 +119,11 @@ def test_the_key_never_reaches_the_runs_folder_or_the_logs_even_on_errors(
         return mock_factory(provider, model_id, temperature, max_tokens)
 
     caplog.set_level("DEBUG")
-    client = visitor_client(tmp_path, model_factory=factory)
+    client = visitor_client(tmp_path, model_factory=factory, max_playing_per_visitor=2)
     played = start(client, model="good-model").json()["id"]
     broken = start(client, model="broken-model").json()["id"]
     assert wait_until_finished(client, played)["status"] == "complete"
-    assert wait_until_finished(client, broken)["status"] == "stopped"
+    assert wait_until_finished(client, broken)["status"] == "partial"
     assert keys_used and set(keys_used) == {KEY}
 
     files = [p for p in tmp_path.rglob("*") if p.is_file()]

@@ -5,6 +5,10 @@
  * and sends them with the Run listing (window.visitorRunsQuery), so they stay listed after a
  * reload. Start hands the new Run to app.js (window.showStartedRun) to join the Shown Runs.
  * The key is sent with Start only; it is never kept in the page.
+ *
+ * This browser's playing Visitor Runs are listed above the entry, each with a Stop button; it
+ * knows their ids, so the button shows on no one else's Run. A refused Start (the site is busy,
+ * or a Run of this visitor's is already playing) is shown in the form as a notice.
  */
 (() => {
   'use strict';
@@ -36,6 +40,7 @@
     entry.innerHTML = '<button type="button" id="ownRunOpen">Play your own Run</button>';
     document.getElementById('pickerPanel').append(entry);
     entry.querySelector('button').addEventListener('click', open);
+    buildPlaying(entry);
 
     panel = document.createElement('div');
     panel.className = 'own-run-panel is-hidden';
@@ -82,14 +87,20 @@
     const body = { provider: field('#ownRunProvider').value, key: field('#ownRunKey').value.trim(), model: field('#ownRunModel').value.trim() };
     if (!body.key || !body.model) { error.textContent = 'Enter your API key and a model id.'; return; }
     error.textContent = '';
+    error.classList.remove('is-notice');
     button.disabled = true;
     try {
       const res = await fetch('/api/visitor-runs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
       let reply = {};
       try { reply = await res.json(); } catch (_) { /* not JSON */ }
-      if (!res.ok) throw new Error(typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`);
+      if (!res.ok) {
+        // Busy and already playing are refusals to read, not failures.
+        error.classList.toggle('is-notice', res.status === 409 || res.status === 503);
+        throw new Error(typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`);
+      }
       remember(reply.id);
       close();
+      refreshPlaying();
       await window.showStartedRun?.(reply.id);
     } catch (err) {
       error.textContent = err.message;
@@ -124,6 +135,56 @@
     form.addEventListener('input', e => { if (e.target.id !== 'ownRunKey') soon(); });
     form.addEventListener('change', e => { if (e.target.id !== 'ownRunKey') soon(); });
     document.getElementById('ownRunOpen').addEventListener('click', soon);
+  }
+
+  /* Stop (#74): this browser's playing Visitor Runs, above the entry. */
+  const POLL_MS = 4000;
+  let playingList = null;
+
+  function buildPlaying(entry) {
+    playingList = document.createElement('div');
+    playingList.className = 'own-run-playing';
+    playingList.setAttribute('aria-live', 'polite');
+    entry.prepend(playingList);
+    playingList.addEventListener('click', e => {
+      const button = e.target.closest('[data-stop-run]');
+      if (button) stopRun(button);
+    });
+    document.getElementById('pickerToggle').addEventListener('click', refreshPlaying);
+    refreshPlaying();
+    setInterval(() => { if (storedIds().length && !document.hidden) refreshPlaying(); }, POLL_MS);
+  }
+
+  async function refreshPlaying() {
+    if (!playingList) return;
+    const ids = new Set(storedIds());
+    let runs = [];
+    if (ids.size) {
+      try {
+        const res = await fetch('/api/runs' + window.visitorRunsQuery(), { cache: 'no-store' });
+        if (!res.ok) return;
+        runs = ((await res.json()).runs || []).filter(r => ids.has(r.id) && r.status === 'running');
+      } catch (_) { return; }
+    }
+    renderPlaying(runs);
+  }
+
+  const escapeHtml = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  function renderPlaying(runs) {
+    const stopping = new Set([...playingList.querySelectorAll('[data-stop-run]:disabled')].map(b => b.dataset.stopRun));
+    playingList.innerHTML = runs.map(run => `<div class="own-run-playing-run">
+      <span><strong>${escapeHtml(run.model)}</strong> <small>your Run, playing</small></span>
+      <button type="button" data-stop-run="${escapeHtml(run.id)}" ${stopping.has(run.id) ? 'disabled' : ''}
+        title="Stop after the current model call; the Run is kept as partial">${stopping.has(run.id) ? 'Stopping…' : 'Stop'}</button></div>`).join('');
+  }
+
+  async function stopRun(button) {
+    button.disabled = true;
+    button.textContent = 'Stopping…';
+    try {
+      await fetch(`/api/visitor-runs/${encodeURIComponent(button.dataset.stopRun)}/stop`, { method: 'POST' });
+    } catch (_) { /* the next refresh shows where it stands */ }
+    refreshPlaying();
   }
 
   fetch('/api/visitor-runs/config', { cache: 'no-store' })

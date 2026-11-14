@@ -90,7 +90,7 @@ const providerFamily = run => PROVIDERS[providerOf(run)]?.family || null;
 const markSrc = provider => {const mark=PROVIDERS[String(provider||'').toLowerCase()]?.mark; return mark?`/assets/${mark}-mark.svg`:null;};
 const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'run'}`;
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
-const runStatusLabel = run => ({running: 'playing', stopped: 'stopped'})[run?.status] || '';
+const runStatusLabel = run => ({running: 'playing', stopped: 'stopped', partial: 'partial'})[run?.status] || '';
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
 const providerStyle = run => providerFamily(run) || 'other';
 const runSortKey = run => `${providerOf(run)}\u0000${run?.model || ''}\u0000${run?.name || ''}`;
@@ -213,6 +213,7 @@ async function api(path){
  if(!res.ok){let reason=`${res.status} ${res.statusText}`;try{reason=(await res.json()).detail||reason;}catch(_){}throw new Error(reason);}
  return res.json();
 }
+let modelBarHtml='';
 function updateSelectors() {
   assignShadeSlots();
   // With no model chosen, controls that need one hide and the + button pulses.
@@ -223,21 +224,36 @@ function updateSelectors() {
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" aria-label="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
-  chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
+  const chipsHtml=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" aria-label="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-more"><span class="run-chip-more-inner"><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span></span></span>`).join('') : '';
+  // Redrawn only when the chips change, so a refresh doesn't cut short a chip's hover or grow.
+  if(chipsHtml!==modelBarHtml){
+    modelBarHtml=chips.innerHTML=chipsHtml;
+    chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
+  }
   $('searchRuns').value=state.search;
   renderPickerList();
   fitModelBar();
 }
-/* Keeps the model bar on one line: collapse to logos when the chips overflow, then show
-   arrows and fades for whatever is still out of view. */
+/* Keeps the model bar on one line: collapse to logos when the full chips would overflow, then
+   show arrows and fades for whatever is still out of view. Worked out from each chip's grown
+   width, so a fit never flips the bar's classes back and forth (which would cut a chip's grow
+   animation short). */
 function fitModelBar(){
-  const chips=$('selectedRunChips');
-  hideModelBarName();
-  chips.classList.remove('is-compact');
-  if(chips.scrollWidth>chips.clientWidth+1)chips.classList.add('is-compact');
+  const chips=$('selectedRunChips'),all=[...chips.querySelectorAll('.run-chip')],style=getComputedStyle(chips);
+  const full=all.reduce((sum,chip)=>sum+grownChipWidth(chip),0)+(parseFloat(style.columnGap)||0)*Math.max(0,all.length-1)
+    +(parseFloat(style.paddingLeft)||0)+(parseFloat(style.paddingRight)||0);
+  chips.classList.toggle('is-compact',full>chips.clientWidth+1);
+  modelBarChipSizes.disconnect();all.forEach(chip=>modelBarChipSizes.observe(chip));
   updateModelBarArrows();
 }
+/* A chip's width with its name showing, whether it is collapsed, grown or in between. */
+function grownChipWidth(chip){
+  const more=chip.querySelector('.run-chip-more'),label=chip.querySelector('.run-chip-label');
+  const grown=more.firstElementChild.scrollWidth-label.clientWidth+label.scrollWidth;
+  return Math.min(chip.getBoundingClientRect().width-more.getBoundingClientRect().width+grown,parseFloat(getComputedStyle(chip).maxWidth)||Infinity);
+}
+/* A grown chip pushes the rest along, so the arrows follow every chip's size as it animates. */
+const modelBarChipSizes=new ResizeObserver(()=>updateModelBarArrows());
 function updateModelBarArrows(){
   const chips=$('selectedRunChips'),bar=$('modelBar');
   const before=chips.scrollLeft>1,after=chips.scrollLeft+chips.clientWidth<chips.scrollWidth-1;
@@ -245,29 +261,51 @@ function updateModelBarArrows(){
   bar.querySelector('[data-scroll="-1"]').classList.toggle('is-hidden',!before);
   bar.querySelector('[data-scroll="1"]').classList.toggle('is-hidden',!after);
 }
-/* A collapsed logo's model name, shown at once on hover or focus. It lives outside the bar,
-   whose scrolling would clip it. */
-function showModelBarName(chip){
-  const label=$('modelBarName'),chips=$('selectedRunChips');
-  if(!chip||!chips.classList.contains('is-compact')||chip.classList.contains('is-followed')){hideModelBarName();return;}
-  label.textContent=chip.getAttribute('aria-label');
-  label.style.setProperty('--run-color',chip.style.getPropertyValue('--run-color'));
-  const box=chip.getBoundingClientRect(),width=label.offsetWidth;
-  const left=clamp(box.left+box.width/2-width/2,8,document.documentElement.clientWidth-width-8);
-  label.style.transform=`translate(${Math.round(left)}px,${Math.round(box.bottom+8)}px)`;
-  label.classList.add('is-shown');
+/* In the compact bar the hovered logo grows into its chip (.is-grown). Only a real pointer move
+   changes which one: a growing chip shifts its neighbours, and the chip that slides under a
+   still pointer must not take over. The gaps between chips keep the current one, so crossing
+   them doesn't flicker. Hover never scrolls the bar. */
+function growModelBarChip(chip){
+  $('selectedRunChips').querySelectorAll('.run-chip.is-grown').forEach(c=>{if(c!==chip)c.classList.remove('is-grown');});
+  chip?.classList.add('is-grown');
 }
-function hideModelBarName(){$('modelBarName')?.classList.remove('is-shown');}
+/* Glides the bar so a chip that is growing (a new Followed Run's) ends fully in view, clear of
+   the fades. It aims at where the chips will be once their sizes settle, so the scroll runs
+   with the grow, and checks again when the grow ends. */
+function revealModelBarChip(chip){
+  const chips=$('selectedRunChips');
+  if(!chip||!chips.contains(chip))return;
+  const style=getComputedStyle(chips),gap=parseFloat(style.columnGap)||0,compact=chips.classList.contains('is-compact');
+  const margin=parseFloat(getComputedStyle($('modelBar')).getPropertyValue('--model-bar-fade'))||0;
+  let left=parseFloat(style.paddingLeft)||0,start=0,end=0;
+  for(const c of chips.querySelectorAll('.run-chip')){
+    const open=!compact||c.matches('.is-followed, .is-grown, :focus-visible, :has(:focus-visible)');
+    const width=open?grownChipWidth(c):c.getBoundingClientRect().width-c.querySelector('.run-chip-more').getBoundingClientRect().width;
+    if(c===chip){start=left;end=left+width;}
+    left+=width+gap;
+  }
+  const view=chips.scrollLeft,room=chips.clientWidth,last=left-gap+(parseFloat(style.paddingRight)||0);
+  const edge=s=>s>0.5?margin:0;  // no fade at either end of the row
+  let target=null;
+  if(start-edge(start)<view)target=start-edge(start);
+  else if(end+edge(last-end)>view+room)target=end+edge(last-end)-room;
+  if(target!==null)chips.scrollTo({left:Math.max(0,target),behavior:reducedMotion()?'auto':'smooth'});
+  const more=chip.querySelector('.run-chip-more');
+  if(more.getAnimations().length)more.addEventListener('transitionend',()=>{
+    const box=chip.getBoundingClientRect(),bar=chips.getBoundingClientRect();
+    if(box.left<bar.left-0.5||box.right>bar.right+0.5)revealModelBarChip(chip);
+  },{once:true});
+}
 function setupModelBar(){
   const chips=$('selectedRunChips');
-  const label=document.createElement('span');
-  label.id='modelBarName';label.className='model-bar-name';label.setAttribute('aria-hidden','true');
-  document.body.append(label);
-  chips.addEventListener('pointerover',e=>showModelBarName(e.target.closest('.run-chip')));
-  chips.addEventListener('pointerleave',hideModelBarName);
-  chips.addEventListener('focusin',e=>showModelBarName(e.target.closest('.run-chip')));
-  chips.addEventListener('focusout',hideModelBarName);
-  chips.addEventListener('scroll',hideModelBarName,{passive:true});
+  let pointer=null;
+  chips.addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch'||(pointer&&pointer.x===e.clientX&&pointer.y===e.clientY))return;
+    pointer={x:e.clientX,y:e.clientY};
+    const chip=e.target.closest('.run-chip');
+    if(chip)growModelBarChip(chip);
+  });
+  chips.addEventListener('pointerleave',()=>{pointer=null;growModelBarChip(null);});
   chips.addEventListener('scroll',updateModelBarArrows,{passive:true});
   $('modelBar').querySelectorAll('[data-scroll]').forEach(btn=>btn.addEventListener('click',()=>
     chips.scrollBy({left:Number(btn.dataset.scroll)*Math.max(60,chips.clientWidth*.7),behavior:reducedMotion()?'auto':'smooth'})));
@@ -727,7 +765,7 @@ function createLogo(node, view) {
   btn.addEventListener('click',e=>{
     e.stopPropagation();
     // On a touch screen the first tap opens the marker's card, the second the details.
-    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);return;}
+    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);fitDecisionCard(node);return;}
     inspect(node.id,run.id);
   });
   return btn;
@@ -1004,6 +1042,21 @@ function fitNodeInView(node,{glide=false}={}){
 /* Phones: a tapped node's dialogue glides into view. */
 function fitPeekedNode(node){
   if(window.isPhoneLayout?.())fitNodeInView(node,{glide:true});
+}
+/* Phones: a model's decision card unfolds below its node (unfold.js); the node and the
+ * whole card glide into view as a dialogue does. The card keeps its screen size, so its
+ * world size depends on the scale: a few passes settle it. A card still too tall is
+ * capped to the room below the node and scrolls inside. */
+function fitDecisionCard(node){
+  const card=window.isPhoneLayout?.()&&document.querySelector('#unfoldCard.is-open');
+  if(!card)return;
+  state.viewTouched=true;
+  const rects=nodeWorldRects(node), bottom=Math.max(...rects.map(r=>r.y+r.height)), gap=window.unfoldCard.gap;
+  const withCard=()=>[...rects,{x:node.x,y:bottom+gap/state.scale,width:card.offsetWidth/state.scale,height:card.offsetHeight/state.scale}];
+  for(let pass=0;pass<3;pass++)fitWorldRects(withCard(),{glide:true});
+  const room=visibleChartArea().bottom-FIT_PAD-(state.panY+bottom*state.scale+gap);
+  if(card.offsetHeight>room)card.style.setProperty('--card-room',`${Math.max(60,room)}px`);
+  window.unfoldCard.follow(()=>$('graphWorld').classList.contains('is-gliding'));
 }
 function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();

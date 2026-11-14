@@ -51,11 +51,16 @@ def publishing_dashboard(tmp_path):
 
 
 def play_to_completion(url, model):
-    run_id = httpx.post(
-        url + "api/visitor-runs",
-        json={"provider": "openai", "model": model, "key": "sk-other-visitor"},
-    ).json()["id"]
     deadline = time.time() + 30
+    # A visitor plays one Run at a time; the last one frees its slot just after it ends.
+    while (
+        response := httpx.post(
+            url + "api/visitor-runs",
+            json={"provider": "openai", "model": model, "key": "sk-other-visitor"},
+        )
+    ).status_code == 409 and time.time() < deadline:
+        time.sleep(0.05)
+    run_id = response.json()["id"]
     while time.time() < deadline:
         runs = httpx.get(url + "api/runs", params={"visitor_runs": [run_id]}).json()
         run = next(r for r in runs["runs"] if r["id"] == run_id)

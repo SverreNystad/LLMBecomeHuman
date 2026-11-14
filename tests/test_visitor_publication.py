@@ -9,6 +9,7 @@ from __future__ import annotations
 import json
 import shutil
 import threading
+import time
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -37,9 +38,18 @@ def public_run_exists(client, provider, model):
     return response.json()["public_run_exists"]
 
 
+def start_when_free(client, provider="openai", model="gpt-test-1"):
+    """Starts a Run once this visitor's last one has freed its slot (just after it ends)."""
+    deadline = time.time() + 10
+    while (response := start(client, provider=provider, model=model)).status_code == 409:
+        assert time.time() < deadline, "the last Run never freed its slot"
+        time.sleep(0.05)
+    assert response.status_code == 200, response.text
+    return response.json()["id"]
+
+
 def play(client, provider="openai", model="gpt-test-1"):
-    run_id = start(client, provider=provider, model=model).json()["id"]
-    return wait_until_finished(client, run_id)
+    return wait_until_finished(client, start_when_free(client, provider, model))
 
 
 def bake_in(root: Path, provider: str, model: str, status: str = "complete"):
@@ -100,7 +110,7 @@ def test_a_model_with_a_baked_in_run_is_never_made_public(tmp_path):
 
 
 def test_a_partial_baked_in_run_does_not_count(tmp_path):
-    bake_in(tmp_path, "anthropic", "claude-test-9", status="stopped")
+    bake_in(tmp_path, "anthropic", "claude-test-9", status="partial")
     client = visitor_client(tmp_path)
     assert public_run_exists(client, "anthropic", "claude-test-9") is False
 
@@ -115,7 +125,24 @@ def test_a_partial_visitor_run_stays_private_and_does_not_count(tmp_path):
     client = visitor_client(tmp_path, model_factory=failing)
     run = play(client)
 
-    assert run["status"] == "stopped"
+    assert run["status"] == "partial"
+    assert public_ids(client) == []
+    assert public_run_exists(client, "openai", "gpt-test-1") is False
+
+
+def test_a_stopped_visitor_run_stays_private_and_does_not_count(tmp_path):
+    gate = threading.Event()
+
+    def held(provider, model_id, temperature=0, max_tokens=400, api_key=None):
+        gate.wait(timeout=30)
+        return mock_factory(provider, model_id, temperature, max_tokens)
+
+    client = visitor_client(tmp_path, model_factory=held)
+    run_id = start_when_free(client)
+    assert client.post(f"/api/visitor-runs/{run_id}/stop").status_code == 202
+    gate.set()
+
+    assert wait_until_finished(client, run_id)["status"] == "partial"
     assert public_ids(client) == []
     assert public_run_exists(client, "openai", "gpt-test-1") is False
 
