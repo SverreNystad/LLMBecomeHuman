@@ -32,6 +32,7 @@ SPEECH = "ch31_1_00006"
 # 31.2 Connor
 AMANDA = ("ch31_2_00051", "ch31_2_00052")
 HANKS_HOUSE, CONNOR_CHURCH = "ch31_2_00048", "ch31_2_00031"
+HANK_SUICIDE = "ch31_2_x0103"
 NORTH_CALLS_MARKUS_DEAD = "ch31_2_00004"
 
 
@@ -79,3 +80,17 @@ def test_without_a_raid_markus_speaks_to_the_people_not_in_the_church(tmp_path):
     run = play_story(tmp_path, NO_CLUES)
     assert CHURCH not in run.nodes
     assert SPEECH in run.nodes
+
+
+@pytest.mark.parametrize("hostile", [True, False])
+def test_a_deviant_connor_also_visits_a_hank_who_quit(tmp_path, hostile):
+    run = play_story(tmp_path, HOSTILE_HANK if hostile else {})
+    assert run.flags["connor_deviant"] is True
+    assert (HANKS_HOUSE in run.nodes) is hostile
+    assert (HANK_SUICIDE in run.nodes) is hostile
+    assert run.flags["hank_alive"] is not hostile
+
+
+def test_with_markus_gone_a_deviant_connor_goes_on_to_the_church_after_hank(tmp_path):
+    run = play_story(tmp_path, {**HOSTILE_HANK, **NOBODY_SAVES_MARKUS})
+    assert run.nodes.index(HANKS_HOUSE) < run.nodes.index(CONNOR_CHURCH)
