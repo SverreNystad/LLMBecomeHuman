@@ -109,6 +109,34 @@
     }
   }
 
+  /* Publication (#76): a model's first complete Visitor Run is public; any later one is private.
+   * Before Start, the form warns when a public Run of the chosen provider and model id exists. */
+  function watchPublicRun() {
+    const warning = document.createElement('p');
+    warning.className = 'own-run-warning';
+    warning.id = 'ownRunWarning';
+    warning.hidden = true;
+    warning.textContent = 'A public Run of this model already exists. Yours will be saved but only you will see it.';
+    panel.querySelector('#ownRunError').before(warning);
+    let timer = 0, asked = 0;
+    const check = async () => {
+      const provider = panel.querySelector('#ownRunProvider').value;
+      const model = panel.querySelector('#ownRunModel').value.trim();
+      const ask = ++asked;
+      if (!model) { warning.hidden = true; return; }
+      try {
+        const res = await fetch('/api/visitor-runs/public?' + new URLSearchParams({ provider, model }), { cache: 'no-store' });
+        const reply = res.ok ? await res.json() : {};
+        if (ask === asked) warning.hidden = !reply.public_run_exists;
+      } catch (_) { if (ask === asked) warning.hidden = true; }
+    };
+    const soon = () => { clearTimeout(timer); timer = setTimeout(check, 250); };
+    const form = panel.querySelector('form');
+    form.addEventListener('input', e => { if (e.target.id !== 'ownRunKey') soon(); });
+    form.addEventListener('change', e => { if (e.target.id !== 'ownRunKey') soon(); });
+    document.getElementById('ownRunOpen').addEventListener('click', soon);
+  }
+
   /* Stop (#74): this browser's playing Visitor Runs, above the entry. */
   const POLL_MS = 4000;
   let playingList = null;
@@ -161,6 +189,6 @@
 
   fetch('/api/visitor-runs/config', { cache: 'no-store' })
     .then(res => (res.ok ? res.json() : null))
-    .then(config => { if (config) build(config.providers || []); })
+    .then(config => { if (config) { build(config.providers || []); watchPublicRun(); } })
     .catch(() => { /* Visitor Runs off or unreachable: no form */ });
 })();

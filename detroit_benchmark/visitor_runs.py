@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import secrets
 import threading
 from collections.abc import Callable
@@ -121,6 +122,7 @@ def start_visitor_run(
                     runner.halt(STOPPED_BY_VISITOR)
                     break
                 runner.step()
+            settle_publications(root)  # Public if the first complete Run of its model.
         except Exception as exc:  # The Run ends partial; the visitor sees why.
             reason = scrub(f"The Run failed: {type(exc).__name__}: {exc}", key)
             logger.warning("Visitor Run %s stopped: %s", directory.name, reason)
@@ -133,6 +135,98 @@ def start_visitor_run(
         target=play, name=f"visitor-run-{directory.name}", daemon=True
     ).start()
     return directory
+
+
+# --- Publication (#76) -------------------------------------------------------------------
+# A Visitor Run that completes becomes public (listed for everyone) if no complete public
+# Run of the same exact provider and model id exists yet, counting the Runs baked into the
+# runs root. The decision is made once, under a lock, and kept in the Run's folder in a
+# file written atomically, so it survives restarts. Partial and playing Runs are never
+# public and stay undecided. A complete Run whose decision a restart cut off is decided by
+# the next listing, in order of completion.
+
+PUBLICATION_FILE = "publication.json"
+_publication_lock = threading.Lock()
+
+
+def _read_json(path: Path) -> dict:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _model_of(directory: Path) -> tuple[str, str]:
+    experiment = _read_json(directory / "experiment.json")
+    return experiment.get("provider", ""), experiment.get("model_id", "")
+
+
+def _is_complete(directory: Path) -> bool:
+    return _read_json(directory / "summary.json").get("status") == "complete"
+
+
+def is_public(directory: Path) -> bool:
+    """Whether this Visitor Run was made public."""
+    return _read_json(directory / PUBLICATION_FILE).get("public") is True
+
+
+def _visitor_runs(root: Path) -> list[Path]:
+    folder = root / VISITOR_FOLDER
+    if not folder.is_dir():
+        return []
+    return [p for p in folder.iterdir() if (p / "experiment.json").is_file()]
+
+
+def _baked_in_runs(root: Path) -> list[Path]:
+    visitors = root / VISITOR_FOLDER
+    return [
+        file.parent
+        for file in root.rglob("experiment.json")
+        if not file.parent.is_relative_to(visitors)
+    ]
+
+
+def _public_models(root: Path) -> set[tuple[str, str]]:
+    baked = [d for d in _baked_in_runs(root) if _is_complete(d)]
+    visitors = [d for d in _visitor_runs(root) if is_public(d)]
+    return {_model_of(d) for d in baked + visitors}
+
+
+def public_run_exists(root: Path, provider: str, model_id: str) -> bool:
+    """Whether a complete public Run of this exact provider and model id exists: one baked
+    into the runs root or a Visitor Run made public."""
+    settle_publications(root)
+    return (provider, model_id) in _public_models(root)
+
+
+def _write_atomically(path: Path, value: dict) -> None:
+    temporary = path.with_name(f".{path.name}.{secrets.token_hex(4)}.tmp")
+    temporary.write_text(json.dumps(value), encoding="utf-8")
+    os.replace(temporary, path)
+
+
+def settle_publications(root: Path) -> None:
+    """Decides, once and for good, whether each complete Visitor Run not yet decided is
+    public: the first of its model to complete is, unless a public Run of it exists."""
+    with _publication_lock:
+        undecided = [
+            d
+            for d in _visitor_runs(root)
+            if not (d / PUBLICATION_FILE).exists() and _is_complete(d)
+        ]
+        if not undecided:
+            return
+        undecided.sort(
+            key=lambda d: _read_json(d / "summary.json").get("completed_at") or ""
+        )
+        public = _public_models(root)
+        for directory in undecided:
+            model = _model_of(directory)
+            _write_atomically(
+                directory / PUBLICATION_FILE, {"public": model not in public}
+            )
+            public.add(model)
 
 
 # Stop and play limits (#74, #75)
