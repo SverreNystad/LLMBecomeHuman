@@ -1,0 +1,23 @@
+# Production: the CI-published image, exposed at llmbecomehuman.com via Cloudflare Tunnel.
+# Layered on top of values.yaml:
+#   helm upgrade --install llmbecomehuman ./k8s -f k8s/production_values.yaml
+# Requires the cloudflared-token Secret (see docs/developer_setup.md#kubernetes-helm).
+
+image:
+  # Published by the push-image job in .github/workflows/ci.yml on every push to main.
+  repository: ghcr.io/sverrenystad/llmbecomehuman
+  # "latest" tracks main. For a reproducible rollout pin a commit: --set image.tag=sha-abc1234
+  tag: "latest"
+  pullPolicy: Always
+
+cloudflared:
+  enabled: true
+  replicaCount: 2
+  tokenSecret:
+    name: cloudflared-token
+    key: token
+
+# Redeploy automatically when CI pushes a new "latest" (requires the Keel controller).
+keel:
+  enabled: true
+  pollSchedule: "@every 5m"

@@ -1,0 +1,16 @@
+# Local development on minikube (or any local cluster).
+# Layered on top of values.yaml:
+#   minikube image build -t llm-become-human:local .
+#   helm upgrade --install llmbecomehuman ./k8s -f k8s/local_values.yaml
+# See docs/developer_setup.md#kubernetes-helm.
+
+image:
+  # Image built straight into minikube's container runtime, so no registry is involved.
+  repository: llm-become-human
+  tag: "local"
+  # Never pull: the image only exists inside the cluster. Rebuild + restart to pick up changes.
+  pullPolicy: Never
+
+# No public exposure locally; reach the app with kubectl port-forward instead.
+cloudflared:
+  enabled: false
