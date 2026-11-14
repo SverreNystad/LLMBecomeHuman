@@ -42,6 +42,10 @@ _Avoid_: world state, flags, broadcast
 One model's complete playthrough of the story under one goal.
 _Avoid_: playthrough, experiment, session
 
+**Visitor Run**:
+A Run started from the dashboard by a visitor with their own API key, always under the default goal. It becomes public only if it is the first complete Run of its model; otherwise only the visitor who started it sees it.
+_Avoid_: own run, community run, user run
+
 **Character Memory**:
 A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's.
 _Avoid_: history, context, summary
@@ -67,6 +71,10 @@ _Avoid_: selected models, chips, overlays
 **Followed Run**:
 The one Shown Run whose text the Story is showing. Other Shown Runs appear in the Story only as their choices and reasons at each decision.
 _Avoid_: anchor run, story run, active model
+
+**Ending Summary**:
+A short, readable account of where a Run left the story: each Character's situation, the side characters' Fates, and the state of the world. It is drawn from the Run's recorded outcomes, so it is only as verified as the Run's route.
+_Avoid_: final flags, final routes, results
 
 **Moment**:
 A single point in a Run that both the Story and the Flowchart can show; clicking it in one view opens it in the other.
