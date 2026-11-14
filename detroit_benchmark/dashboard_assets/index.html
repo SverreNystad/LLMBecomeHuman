@@ -66,7 +66,11 @@
               <div class="picker-actions"><button id="bestOfEach" type="button" title="The best model of each provider">Best of each</button><button id="clearRuns" type="button">Clear</button></div>
             </div>
           </div>
-          <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>
+          <div class="model-bar" id="modelBar">
+            <button type="button" class="model-bar-arrow is-hidden" data-scroll="-1" aria-label="Scroll models left" title="More models">&lsaquo;</button>
+            <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>
+            <button type="button" class="model-bar-arrow is-hidden" data-scroll="1" aria-label="Scroll models right" title="More models">&rsaquo;</button>
+          </div>
         </section>
 
         <section class="story-view" id="storyView" aria-label="Story">

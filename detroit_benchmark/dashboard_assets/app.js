@@ -223,10 +223,33 @@ function updateSelectors() {
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
+  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
   chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
   $('searchRuns').value=state.search;
   renderPickerList();
+  fitModelBar();
+}
+/* Keeps the model bar on one line: collapse to logos when the chips overflow, then show
+   arrows and fades for whatever is still out of view. */
+function fitModelBar(){
+  const chips=$('selectedRunChips');
+  chips.classList.remove('is-compact');
+  if(chips.scrollWidth>chips.clientWidth+1)chips.classList.add('is-compact');
+  updateModelBarArrows();
+}
+function updateModelBarArrows(){
+  const chips=$('selectedRunChips'),bar=$('modelBar');
+  const before=chips.scrollLeft>1,after=chips.scrollLeft+chips.clientWidth<chips.scrollWidth-1;
+  bar.classList.toggle('fade-start',before);bar.classList.toggle('fade-end',after);
+  bar.querySelector('[data-scroll="-1"]').classList.toggle('is-hidden',!before);
+  bar.querySelector('[data-scroll="1"]').classList.toggle('is-hidden',!after);
+}
+function setupModelBar(){
+  const chips=$('selectedRunChips');
+  chips.addEventListener('scroll',updateModelBarArrows,{passive:true});
+  $('modelBar').querySelectorAll('[data-scroll]').forEach(btn=>btn.addEventListener('click',()=>
+    chips.scrollBy({left:Number(btn.dataset.scroll)*Math.max(60,chips.clientWidth*.7),behavior:reducedMotion()?'auto':'smooth'})));
+  new ResizeObserver(fitModelBar).observe($('modelBar'));
 }
 function renderPickerList(){
   const list=$('pickerList');
@@ -1018,7 +1041,7 @@ function setupInteractions(){
  },130);}).observe(vp);
 }
 async function init(){
- setupInteractions();setupStoryInteractions();
+ setupInteractions();setupStoryInteractions();setupModelBar();
  if(new URLSearchParams(location.hash.replace(/^#/,'')).get('view')==='flow'){
   state.view='flow';$('storyView').classList.add('is-hidden');$('viewerWrap').classList.remove('is-hidden');
   $('viewStory').setAttribute('aria-pressed','false');$('viewFlow').setAttribute('aria-pressed','true');
