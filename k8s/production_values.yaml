@@ -16,3 +16,8 @@ cloudflared:
   tokenSecret:
     name: cloudflared-token
     key: token
+
+# Redeploy automatically when CI pushes a new "latest" (requires the Keel controller).
+keel:
+  enabled: true
+  pollSchedule: "@every 5m"

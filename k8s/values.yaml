@@ -187,3 +187,9 @@ cloudflared:
     name: cloudflared-token
     key: token
   resources: {}
+
+# Keel auto-deploy: requires the Keel controller in the cluster (see docs/developer_setup.md).
+# Needs image.pullPolicy: Always so restarted pods actually fetch the new image.
+keel:
+  enabled: false
+  pollSchedule: "@every 5m"

@@ -4,6 +4,15 @@ metadata:
   name: {{ include "llm-become-human.fullname" . }}
   labels:
     {{- include "llm-become-human.labels" . | nindent 4 }}
+  {{- if .Values.keel.enabled }}
+  annotations:
+    # Keel (https://keel.sh) polls the registry and rolls this Deployment out when the
+    # image behind the current tag changes (e.g. a new "latest" pushed by CI).
+    keel.sh/policy: force
+    keel.sh/match-tag: "true"
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: {{ .Values.keel.pollSchedule | quote }}
+  {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
