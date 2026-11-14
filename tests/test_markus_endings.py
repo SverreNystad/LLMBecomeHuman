@@ -107,35 +107,32 @@ def test_kissing_north_at_the_barricade_needs_her_alive_and_his_lover():
 
 
 def test_a_successful_revolution_never_plays_the_failure(tmp_path):
-    run = play_story(tmp_path, {**REVOLUTION, HEART: "SACRIFICE NORTH"})
+    run = play_story(tmp_path, REVOLUTION)
     assert ASSAULT_SUCCESSFUL in run.nodes
     assert ASSAULT_FAILED not in run.nodes
     assert NORTH_LEADS not in run.nodes
     assert run.flags["markus_alive"] is True
-    assert run.flags["north_alive"] is False
     assert KAMSKI_WITH_MARKUS in run.nodes
 
 
-def test_refusing_north_s_heart_kills_markus_and_north_leads(tmp_path):
-    run = play_story(tmp_path, {**REVOLUTION, HEART: "SACRIFICE SELF"})
-    assert NORTH_LEADS in run.nodes
-    assert ASSAULT_SUCCESSFUL not in run.nodes
-    assert run.flags["markus_alive"] is False
-    assert KAMSKI_ALONE in run.nodes
+SIMON_LEFT_ON_THE_ROOF = {"ch23_00077": "SPARE", "ch23_00043": "Help", "ch23_00033": "LEAVE"}
 
 
-def test_with_north_and_simon_dead_nobody_saves_markus(tmp_path):
-    simon_left_on_the_roof = {
-        "ch23_00077": "SPARE",
-        "ch23_00043": "Help",
-        "ch23_00033": "LEAVE",
-    }
-    run = play_story(
-        tmp_path, {**REVOLUTION, **LEAVE_NORTH, **simon_left_on_the_roof}
-    )
-    assert NOBODY_TO_SAVE_MARKUS in run.nodes
-    assert NORTH_LEADS not in run.nodes
-    assert run.flags["markus_alive"] is False
+@pytest.mark.parametrize(
+    "picks", [REVOLUTION, {**REVOLUTION, **LEAVE_NORTH, **SIMON_LEFT_ON_THE_ROOF}]
+)
+def test_quick_time_events_succeed_so_markus_is_never_badly_wounded(tmp_path, picks):
+    # Wiki: "Markus Badly Wounded" follows failed Quick-Time Events in the assault.
+    run = play_story(tmp_path, picks)
+    assert HEART not in run.nodes
+    assert NOBODY_TO_SAVE_MARKUS not in run.nodes
+    assert run.flags["markus_alive"] is True
+
+
+def test_the_heart_choice_and_nobody_to_save_markus_stay_as_failure_branches():
+    wounded = load_dataset()["nodes"]["ch32_6_00093"]
+    assert wounded["resolution"] == "qte"
+    assert wounded["default_branch"] is None  # success: the fall-through next
 
 
 ENGINE_LABELS = ("TIME OUT", "TIMEOUT", "DEFAULT", "CommonTranslationKey", "OUT OF TIME")

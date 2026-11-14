@@ -69,3 +69,59 @@ def test_voted_out_without_a_raid_markus_simply_leaves(tmp_path):
 def test_reaching_the_gun_stays_a_quick_time_event():
     # The player controls Markus in this struggle: a test of reflexes, not a decision.
     assert load_dataset()["nodes"]["ch30_2_00010"]["resolution"] == "qte"
+
+
+# 30.2 Connor: one path per Run (the wiki's Crossroads flowchart).
+MARKUS_CABIN_30_2, NORTH_CABIN_30_2 = "ch30_2_00149", "ch30_2_00117"
+CARGO_HALL, DEVIANT_CORRIDOR = "ch30_2_00033", "ch30_2_00090"
+CONNOR_ESCAPED = "ch30_2_x0103"
+MACHINE_WITH_MARKUS = {"ch30_2_00124": "REMAIN A MACHINE"}
+MARKUS_DIES_IN_THE_MARCH = {
+    "ch19_00081": "REFUSE",
+    "ch23_00077": "SPARE",
+    "ch23_00043": "Help",
+    "ch23_00033": "LEAVE",
+    "ch28_00044": "STAND GROUND",
+    "ch28_00035": "STAND GROUND",
+    "ch28_00030": "SACRIFICE",
+}
+
+
+def test_a_deviant_connor_who_finds_markus_warns_him_and_lives(tmp_path):
+    run = play_story(tmp_path, {})
+    assert MARKUS_CABIN_30_2 in run.nodes
+    assert not {NORTH_CABIN_30_2, CARGO_HALL, DEVIANT_CORRIDOR} & set(run.nodes)
+    assert run.flags["connor_deviant"] is True
+    assert run.flags["connor_died_in_crossroads"] is False
+
+
+def test_with_markus_gone_a_deviant_connor_blows_up_jericho_and_escapes(tmp_path):
+    run = play_story(tmp_path, MARKUS_DIES_IN_THE_MARCH)
+    assert NORTH_CABIN_30_2 in run.nodes and DEVIANT_CORRIDOR in run.nodes
+    assert not {MARKUS_CABIN_30_2, CARGO_HALL} & set(run.nodes)
+    assert CONNOR_ESCAPED in run.nodes
+    assert run.flags["connor_deviant"] is True
+    assert run.flags["connor_died_in_crossroads"] is False
+
+
+THIN_ICE = "ch31_2_00051"
+
+
+@pytest.mark.parametrize("markus_here", [True, False])
+def test_a_machine_connor_is_destroyed_in_the_hold(tmp_path, markus_here):
+    picks = MACHINE_WITH_MARKUS if markus_here else {
+        **MARKUS_DIES_IN_THE_MARCH,
+        "ch30_2_00097": "REMAIN A MACHINE",
+    }
+    run = play_story(tmp_path / "machine", picks)
+    deviant = play_story(tmp_path / "deviant", {} if markus_here else MARKUS_DIES_IN_THE_MARCH)
+    assert CARGO_HALL in run.nodes and DEVIANT_CORRIDOR not in run.nodes
+    assert run.flags["connor_died_in_crossroads"] is True
+    assert run.flags["connor_deaths"] == deviant.flags["connor_deaths"] + 1
+    assert THIN_ICE in run.nodes
+
+
+def test_running_from_the_soldier_gets_connor_shot(tmp_path):
+    run = play_story(tmp_path, {**MACHINE_WITH_MARKUS, "ch30_2_00029": "RUN"})
+    assert run.flags["connor_died_in_crossroads"] is True
+    assert "ch30_2_00019" not in run.nodes  # never reaches the hold
