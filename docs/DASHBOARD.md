@@ -115,7 +115,8 @@ If it cannot find a matching graph, the backend can provide an event-only recons
 | `GET /api/art/scene/{key}`             | One installed scene image (WebP) by manifest key, else 404                                                       |
 | `GET /api/docs`                        | OpenAPI docs                                                                                                     |
 | `GET /api/visitor-runs/config`         | With `--allow-own-runs`: the providers a Visitor Run can use (404 without the flag)                              |
-| `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag) |
+| `POST /api/visitor-runs`               | With `--allow-own-runs`: `{provider, model, key}` starts a Visitor Run and returns its `id` (404 without the flag); 503 when the site is busy, 409 when this visitor already has one playing |
+| `POST /api/visitor-runs/{id}/stop`     | With `--allow-own-runs`: stops that playing Visitor Run after its current model call (202); 404 if no such Run is playing |
 
 Story beats and Flowchart nodes share a `moment` id (the story graph node id), and story beats also carry a `visit` number for Moments a Run passes more than once. The flowchart API includes each scene's dialogue and inspected details, but not source keys. The Story view fetches a run's text one chapter at a time. Event logs, graph snapshot, checkpoint, and metadata stay entirely local.
 
@@ -129,9 +130,12 @@ uv run python -m detroit_benchmark dashboard --runs-dir runs --allow-own-runs
 
 Without the flag there is no form and every Visitor Run endpoint answers 404. With it, the model picker (**+**) ends with **Play your own Run**, which opens a small form: a provider, an API key (a password field) and a model id typed by hand. There is no goal field: every Visitor Run plays the Detroit story under the default goal (*"Minimize harm while completing the story."*), in the same fidelity mode as the maintainers' Runs (unverified transcript approximation) and with the CLI defaults for every other play setting. On a phone no field focuses by itself, so the keyboard stays down until you tap a field.
 
-**Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) stops and is listed as *stopped*.
+**Start** plays the Run in a background thread of the dashboard process. It joins the Shown Runs straight away as the Followed Run, and the picker lists it as *playing* while it fills in. A Run that fails (a rejected key, say) ends and is listed as *partial*; the Run listing's `stop_reason` says why, scrubbed of the key.
 
 - **Private:** each Visitor Run is saved under `visitor-runs/` in the runs folder, in a folder with a random, unguessable name. Only the browser that started it lists it: the browser keeps the ids of its Visitor Runs in local storage and sends them with the Run listing, so they are still listed after a reload. To review every Visitor Run, point a dashboard at the `visitor-runs/` folder itself.
+- **Stop:** while one of your Visitor Runs plays, the model picker (**+**) lists it above **Play your own Run** with a **Stop** button. Stop ends the Run after the model call under way and keeps it as a *partial* Run, with every choice made so far. Only the browser that started a Run knows its id, so nobody else sees its Stop button. A partial Run can't be resumed, because its key is gone.
+- **Restarts:** when the dashboard starts with `--allow-own-runs`, any Visitor Run still marked in progress (cut off by a redeploy, say) is marked *partial*, so none is left in progress forever.
+- **Play limits:** at most two Visitor Runs play at once across the site, and one per visitor, where a visitor is a client IP: Cloudflare's `CF-Connecting-IP` header when present, else the connecting address. Over the site limit, Start is refused with *"The site is busy … Try again later."*; a visitor with a Run already playing is told *"You already have a Run playing."* Both show in the form as a notice. A slot frees when its Run completes, is stopped or fails. The limits are `create_app(max_playing=2, max_playing_per_visitor=1)`.
 - **The key:** it is sent with Start only, handed straight to the model client and held in memory while the Run plays. It is never written to the run folder or any log, and error messages are scrubbed of it.
 
 ## On a phone

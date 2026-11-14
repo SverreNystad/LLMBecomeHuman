@@ -18,7 +18,7 @@ from pathlib import Path
 
 import httpx
 
-from .engine import DEFAULT_GOAL, Runner
+from .engine import DEFAULT_GOAL, Runner, _write_json_atomic
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,8 @@ logger = logging.getLogger(__name__)
 VISITOR_FOLDER = "visitor-runs"
 # The story every Visitor Run plays, in the maintainers' Runs' fidelity mode (allow-unverified).
 VISITOR_STORY = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
+STOPPED_BY_VISITOR = "Stopped by the visitor"
+CUT_OFF = "Cut off by a dashboard restart; it cannot be resumed, because its key is gone"
 PROVIDERS = (
     "openai",
     "anthropic",
@@ -90,9 +92,15 @@ def start_visitor_run(
     model_id: str,
     key: str,
     model_factory: ModelFactory,
+    *,
+    stop: threading.Event | None = None,
+    on_end: Callable[[], None] | None = None,
 ) -> Path:
     """Starts a Visitor Run under the default goal and returns its folder. Its first files
-    are written before this returns, so the Run is listed (as playing) straight away."""
+    are written before this returns, so the Run is listed (as playing) straight away.
+
+    Setting ``stop`` ends the Run after the model call under way; it is kept as a partial
+    Run. A Run that fails is kept as partial too. ``on_end`` is called once it ends, however."""
     graph = json.loads(story.read_text(encoding="utf-8"))
     directory = root / VISITOR_FOLDER / secrets.token_urlsafe(18)
     runner = Runner(
@@ -108,13 +116,101 @@ def start_visitor_run(
 
     def play():
         try:
-            runner.run()
-        except Exception as exc:  # The Run stops; the visitor sees it as stopped.
-            reason = scrub(f"{type(exc).__name__}: {exc}", key)
+            while runner.state["status"] == "running":
+                if stop is not None and stop.is_set():
+                    runner.halt(STOPPED_BY_VISITOR)
+                    break
+                runner.step()
+        except Exception as exc:  # The Run ends partial; the visitor sees why.
+            reason = scrub(f"The Run failed: {type(exc).__name__}: {exc}", key)
             logger.warning("Visitor Run %s stopped: %s", directory.name, reason)
             runner.halt(reason)
+        finally:
+            if on_end is not None:
+                on_end()
 
     threading.Thread(
         target=play, name=f"visitor-run-{directory.name}", daemon=True
     ).start()
     return directory
+
+
+# Stop and play limits (#74, #75)
+
+
+class Busy(Exception):
+    """The site already plays as many Visitor Runs as it allows."""
+
+
+class AlreadyPlaying(Exception):
+    """This visitor already has a Visitor Run playing."""
+
+
+class Slot:
+    """One playing Visitor Run's place in the limits, and the switch that stops it."""
+
+    def __init__(self, visitor: str):
+        self.visitor = visitor
+        self.stop = threading.Event()
+        self.run_id: str | None = None
+
+
+class PlayingRuns:
+    """The Visitor Runs playing in this process: at most ``max_playing`` across the site and
+    ``max_per_visitor`` per visitor (a client IP). A slot frees when its Run ends, however."""
+
+    def __init__(self, max_playing: int = 2, max_per_visitor: int = 1):
+        self.max_playing = max_playing
+        self.max_per_visitor = max_per_visitor
+        self._slots: list[Slot] = []
+        self._lock = threading.Lock()
+
+    def reserve(self, visitor: str) -> Slot:
+        """A slot for a Run about to start; raises AlreadyPlaying or Busy when there is none."""
+        with self._lock:
+            mine = sum(slot.visitor == visitor for slot in self._slots)
+            if mine >= self.max_per_visitor:
+                raise AlreadyPlaying(
+                    "You already have a Run playing. Stop it or let it finish before"
+                    " starting another."
+                )
+            if len(self._slots) >= self.max_playing:
+                raise Busy(
+                    "The site is busy: it is already playing as many Visitor Runs as it"
+                    " allows. Try again later."
+                )
+            slot = Slot(visitor)
+            self._slots.append(slot)
+            return slot
+
+    def release(self, slot: Slot) -> None:
+        with self._lock:
+            if slot in self._slots:
+                self._slots.remove(slot)
+
+    def stop(self, run_id: str) -> bool:
+        """Asks the playing Run with this id to stop; False if no such Run is playing."""
+        with self._lock:
+            slot = next((s for s in self._slots if s.run_id == run_id), None)
+        if slot is None:
+            return False
+        slot.stop.set()
+        return True
+
+
+def mark_cut_off_runs(root: Path) -> None:
+    """At start-up, a Visitor Run still marked in progress was cut off (by a redeploy, say)
+    and can never resume, its key being gone: it is marked partial."""
+    for checkpoint in (root / VISITOR_FOLDER).glob("*/checkpoint.json"):
+        if (checkpoint.parent / "summary.json").exists():
+            continue
+        try:
+            saved = json.loads(checkpoint.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        state = saved.get("state") or {}
+        if state.get("status") != "running":
+            continue
+        state["status"] = "partial"
+        state["stop_reason"] = CUT_OFF
+        _write_json_atomic(checkpoint, saved)
