@@ -218,7 +218,8 @@ function renderUnvisitedChapter(run, chapter) {
   renderDecisionStrip([]);
   renderChapterSubtitle(chapter);
 }
-async function renderStory({keepScroll = false} = {}) {
+/* `position` is a reading position to return to once the chapter is drawn (see readingPosition). */
+async function renderStory({keepScroll = false, position = null} = {}) {
   const run = storyRun(), chapter = state.chapter;
   renderStoryToolbar(run);
   if (!run || !chapter || state.view !== 'story') return;
@@ -227,7 +228,7 @@ async function renderStory({keepScroll = false} = {}) {
   const cacheKey = `${run.id}\u0000${chapter}`, events = detail?.events?.length || 0;
   let response = storyCache.get(cacheKey)?.events === events ? storyCache.get(cacheKey).response : null;
   if (!response) {
-    if (!keepScroll) $('storyContent').innerHTML = '';
+    if (!keepScroll && !position) $('storyContent').innerHTML = '';
     try {
       response = await api(`/api/runs/${encodeURIComponent(run.id)}/story?chapter=${encodeURIComponent(chapter)}`);
     } catch (error) {
@@ -265,6 +266,7 @@ async function renderStory({keepScroll = false} = {}) {
   renderDecisionStrip(summaries);
   renderChapterSubtitle(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);
+  else if (position) returnToReadingPosition(position);
   else if (!keepScroll) scrollStoryToTop();
   trackStoryScene();
 }
@@ -273,11 +275,62 @@ function scrollStoryToTop() {
   $('storyScroll').scrollTop = 0;
   document.querySelector('.main-panel').scrollTop = 0;
 }
+/* Moves the Story by `delta` pixels. Phones scroll the whole panel rather than the story pane,
+ * so whatever the story pane cannot take is passed on to the panel. */
+function scrollStoryBy(delta) {
+  for (const scroller of [$('storyScroll'), document.querySelector('.main-panel')]) {
+    if (Math.abs(delta) < 1) return;
+    const before = scroller.scrollTop;
+    scroller.scrollTop = before + delta;
+    delta -= scroller.scrollTop - before;
+  }
+}
+/* What is being read is judged at the upper third of the pane. */
+function readingLine() {
+  const box = $('storyScroll').getBoundingClientRect();
+  return Math.max(box.top, 0) + Math.min(box.height, innerHeight) / 3;
+}
+/* Scene headings and decisions, each named so the same one can be found in another Run's
+ * text: headings by their text, decisions by their node, counting repeats within the chapter. */
+function storyAnchors() {
+  const seen = new Map();
+  return [...document.querySelectorAll('#storyContent .story-section, #storyContent .story-decision')].map(el => {
+    const name = el.classList.contains('story-decision') ? `decision ${el.dataset.moment}` : `heading ${el.textContent}`;
+    const repeat = (seen.get(name) || 0) + 1;
+    seen.set(name, repeat);
+    return {el, key: `${name}#${repeat}`};
+  });
+}
+/* The reading position: the heading or decision being read, the ones before it (newest first,
+ * to fall back on), and where it sits on screen. Null when the chapter has none. */
+function readingPosition() {
+  const line = readingLine(), anchors = storyAnchors();
+  let current = -1;
+  for (const [at, {el}] of anchors.entries()) {
+    if (!el.getClientRects().length) continue;  // inside a collapsed gap
+    if (current >= 0 && el.getBoundingClientRect().top > line) break;
+    current = at;
+  }
+  if (current < 0) return null;
+  return {
+    keys: anchors.slice(0, current + 1).map(anchor => anchor.key).reverse(),
+    top: anchors[current].el.getBoundingClientRect().top,
+  };
+}
+/* Puts the same heading or decision back where it was, or else the nearest earlier one this
+ * Run reached; the chapter's top when it reached none of them. */
+function returnToReadingPosition(position) {
+  const found = new Map(storyAnchors().map(anchor => [anchor.key, anchor.el]));
+  const target = position.keys.map(key => found.get(key)).find(Boolean);
+  if (!target) return scrollStoryToTop();
+  const collapsed = target.closest('details');
+  if (collapsed) collapsed.open = true;
+  scrollStoryBy(target.getBoundingClientRect().top - position.top);
+}
 /* The scene being read: the last section heading above the upper third of the pane. */
 function emitStoryScene() {
   if (state.view !== 'story') return;
-  const box = $('storyScroll').getBoundingClientRect();
-  const line = Math.max(box.top, 0) + Math.min(box.height, innerHeight) / 3;
+  const line = readingLine();
   let heading = null, art = null;
   for (const el of document.querySelectorAll('#storyContent .story-section')) {
     if (!el.getClientRects().length) continue;  // inside a collapsed gap
@@ -311,10 +364,13 @@ function showMomentOnFlowchart(moment) {
   const run = storyRun();
   setView('flow').then(() => inspect(moment, run?.id, {glide: true}));
 }
+/* Following another Run keeps the reader where they were in the chapter. */
 function setStoryRun(id) {
+  if (id === storyRun()?.id) return;
+  const position = readingPosition();
   state.storyRunId = id;
   renderChapterList();
-  renderStory();
+  renderStory({position});
 }
 /* Shows one model's justification in a decision card. Says what it chose when that differs
  * from the followed model's choice. Only this card changes; the Story keeps its model. */
