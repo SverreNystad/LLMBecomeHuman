@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 30,
+    "condition_nodes_unverified": 29,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -89198,14 +89198,19 @@
       "heading": "In the hold",
       "branches": [
         {
-          "condition_text": "Reach the gun",
+          "condition_text": "Markus reaches the gun first: Markus shoots Connor",
           "when": null,
           "next": "ch30_2_x0101"
         },
         {
-          "condition_text": "Fail to reach the gun",
+          "condition_text": "Connor reaches the gun first: Connor shoots Markus",
           "when": null,
-          "next": "ch30_2_00009"
+          "next": "ch30_2_00009",
+          "effects": {
+            "flags": {
+              "markus_alive": false
+            }
+          }
         }
       ],
       "unverified": true,
@@ -89268,7 +89273,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00001"
+      "next": "ch30_2_x0104"
     },
     "ch30_2_00014": {
       "id": "ch30_2_00014",
@@ -89306,7 +89311,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00001"
+      "next": "ch30_2_x0104"
     },
     "ch30_2_00016": {
       "id": "ch30_2_00016",
@@ -89548,7 +89553,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00019"
+      "next": "ch30_2_x0105"
     },
     "ch30_2_00027": {
       "id": "ch30_2_00027",
@@ -89585,7 +89590,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00019"
+      "next": "ch30_2_x0105"
     },
     "ch30_2_00029": {
       "id": "ch30_2_00029",
@@ -89741,7 +89746,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00034"
+      "next": "ch30_2_x0107"
     },
     "ch30_2_00036": {
       "id": "ch30_2_00036",
@@ -89809,7 +89814,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00038"
+      "next": "ch30_2_x0106"
     },
     "ch30_2_00040": {
       "id": "ch30_2_00040",
@@ -90485,7 +90490,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00075"
+      "next": "ch30_2_x0106"
     },
     "ch30_2_00077": {
       "id": "ch30_2_00077",
@@ -90837,7 +90842,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00090"
+      "next": "ch30_2_00034"
     },
     "ch30_2_00096": {
       "id": "ch30_2_00096",
@@ -91408,7 +91413,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00117"
+      "next": "ch30_2_00001"
     },
     "ch30_2_00119": {
       "id": "ch30_2_00119",
@@ -91484,7 +91489,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_2_00117"
+      "next": "ch30_2_00034"
     },
     "ch30_2_00123": {
       "id": "ch30_2_00123",
@@ -92212,7 +92217,7 @@
       "description": "Captain's Cabin",
       "dialogue": [],
       "observations": [],
-      "next": "ch30_2_00149"
+      "next": "ch30_2_x0102"
     },
     "ch30_2_00151": {
       "id": "ch30_2_00151",
@@ -126030,16 +126035,16 @@
       "heading": "Hart Plaza",
       "branches": [
         {
-          "condition_text": "Markus badly wounded",
+          "condition_text": "Markus badly wounded (failed Quick-Time Events in the assault)",
           "when": null,
           "next": "ch32_6_00092"
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch32_6_x0116",
-      "resolution": "unknown",
-      "unknown_reason": "Markus is only badly wounded after failed Quick-Time Events in the assault, which never happen here."
+      "resolution": "qte",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
     },
     "ch32_6_00094": {
       "id": "ch32_6_00094",
@@ -132747,7 +132752,7 @@
         {
           "id": "option_1",
           "label": "GO BACK TO JERICHO",
-          "next": "ch30_3_00138",
+          "next": "ch30_3_x0112",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -133200,6 +133205,477 @@
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Flowchart",
       "note": "The wiki's objective 'Find Lt Hank Anderson (if Hank quit the force)' has no machine-only condition, so a deviant Connor visits Hank before Connor on Sacred Ground; a machine Connor ends the night after Hank's. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0102": {
+      "id": "ch30_2_x0102",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Captain's Cabin",
+      "branches": [
+        {
+          "condition_text": "Markus leads Jericho: Connor confronts Markus",
+          "next": "ch30_2_00149",
+          "when": {
+            "all": [
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": false
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus died or was voted out: Connor confronts North",
+          "next": "ch30_2_00117",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_march_fled",
+                "equals": true
+              }
+            ]
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+    },
+    "ch30_2_x0103": {
+      "id": "ch30_2_x0103",
+      "type": "scene",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Connor escaped with Jericho's people",
+      "description": "The charges go off and Jericho starts to sink. Connor runs for the side with North and jumps into the river with the last of the survivors. Connor escaped with Jericho's people.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0104": {
+      "id": "ch30_2_x0104",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Soldier kills Connor",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_died_in_crossroads": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Per the wiki, in the corridor confrontation a soldier kills the machine Connor whether or not North gets away. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0105": {
+      "id": "ch30_2_x0105",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Soldiers shoot Connor",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_died_in_crossroads": true
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_died_in_crossroads": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Per the wiki, a machine Connor who runs from the soldier, or loses the fight, is destroyed. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0106": {
+      "id": "ch30_2_x0106",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Connor is destroyed on the ship",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch30_2_00001",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7,
+              "connor_died_in_crossroads": true,
+              "connor_deviant": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Per the wiki, a deviant Connor shot on the ship is destroyed and CyberLife sends a new one; Thin Ice in Night of the Soul shows the replacement is a machine. Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch30_2_x0107": {
+      "id": "ch30_2_x0107",
+      "type": "condition",
+      "chapter": "30.2",
+      "character": "Connor",
+      "heading": "Explosive armed",
+      "branches": [
+        {
+          "condition_text": "Connor armed the explosives in the hold",
+          "next": "ch30_2_x0103",
+          "when": {
+            "flag": "connor_deviant",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "markus_jericho_blown_up": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Only a deviant Connor reaches the hold. The flag also tells a voted-out Markus who goes back that the ship is already sinking."
+    },
+    "ch30_3_x0112": {
+      "id": "ch30_3_x0112",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Back to Jericho",
+      "branches": [
+        {
+          "condition_text": "Connor already blew up Jericho",
+          "next": "ch30_3_x0113",
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Jericho is still afloat",
+          "next": "ch30_3_00138",
+          "when": {
+            "flag": "markus_jericho_blown_up",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 1,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Approximation: here Connor's Crossroads (30.2) plays before Markus's rooftop choice, so Connor may already have set off the charges with North."
+    },
+    "ch30_3_x0113": {
+      "id": "ch30_3_x0113",
+      "type": "scene",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Surviving characters jump",
+      "description": "Markus gets back as the charges in the hold go off. Jericho lists and starts to sink, and he jumps into the river with the last of his people.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_3_00014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     }
   },
   "initial_flags": {
