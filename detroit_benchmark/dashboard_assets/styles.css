@@ -249,10 +249,20 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .is-chosen .story-option-tick { background: var(--run-color); border-color: var(--run-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 20%, transparent); }
 .story-option-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .story-option-models { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 48%; }
-.story-mark { position: relative; display: grid; place-items: center; width: 24px; height: 24px; background: #fff; border: 1.5px solid var(--run-color); border-radius: 50%; transition: transform .2s var(--ease), box-shadow .2s; }
-.story-mark img, .story-mark .mock-icon { width: 12px; height: 12px; font-size: 10px; line-height: 12px; }
-.story-mark:hover, .story-mark:focus-visible, .story-mark[aria-pressed="true"] { transform: scale(1.12); box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 25%, transparent); }
-.story-mark[aria-pressed="true"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 40%, transparent), 0 0 10px -2px var(--run-color); }
+/* Shadows keep three layers in every state (outer ring, inner glow, inset fill) so a click
+ * interpolates them: the outer ring collapses as the inset fill grows inward over the disc. */
+.story-mark { position: relative; display: grid; place-items: center; width: 24px; height: 24px; background: #fff; border: 1.5px solid var(--run-color); border-radius: 50%;
+  box-shadow: 0 0 0 0 transparent, inset 0 0 0 0 transparent, inset 0 0 0 0 transparent;
+  transition: transform .2s var(--ease), box-shadow .25s var(--ease), background-color 0s; }
+.story-mark img, .story-mark .mock-icon { width: 12px; height: 12px; font-size: 10px; line-height: 12px; transition: filter .25s var(--ease), color .25s var(--ease); }
+.story-mark:hover, .story-mark:focus-visible, .story-mark[aria-pressed="true"] { transform: scale(1.12); }
+.story-mark:is(:hover, :focus-visible):not([aria-pressed="true"]) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 25%, transparent), inset 0 0 0 0 transparent, inset 0 0 0 0 transparent; }
+/* The shown logo: filled with its Run's colour, a white icon, a faint inner glow, no outer ring. */
+.story-mark[aria-pressed="true"] { background-color: var(--run-color); box-shadow: 0 0 0 0 transparent, inset 0 0 5px 1px rgba(255, 255, 255, .45), inset 0 0 0 12px var(--run-color);
+  transition: transform .2s var(--ease), box-shadow .25s var(--ease), background-color 0s .25s; }
+.story-mark[aria-pressed="true"] img { filter: brightness(0) invert(1); }
+.story-mark[aria-pressed="true"] .mock-icon { color: #fff; }
+@media (prefers-reduced-motion: reduce) { .story-mark[aria-pressed="true"] { transition-delay: 0s; } }
 /* The model's name, shown quickly above its logo in dark glass. */
 .story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; padding: 3px 8px; white-space: nowrap; pointer-events: none;
   font-size: 11px; font-weight: 400; letter-spacing: .04em; color: #e8eef5; background: linear-gradient(160deg, rgba(24, 32, 44, .94), rgba(10, 14, 20, .96));
