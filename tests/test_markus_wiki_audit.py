@@ -54,9 +54,9 @@ ALIVE = {
     [
         ({"markus_peaceful": False}, REVOLT),
         ({"markus_peaceful": True, "markus_demonstration_outcome": "won"}, END),
-        # Connor's sniper shot during the demonstration: North takes over.
-        ({"markus_peaceful": True, "markus_demonstration_outcome": "won",
-          "markus_alive": False, "connor_shot_deviant_leader": True}, NORTH_LEADS),
+        # Markus died at the demonstration: there is no revolution for North to lead.
+        ({"markus_peaceful": True, "markus_demonstration_outcome": "died_with_his_people",
+          "markus_alive": False}, END),
         # Markus died before the battle, or left Jericho.
         ({"markus_peaceful": False, "markus_alive": False}, NORTH_LEADS),
         ({"markus_peaceful": False, "markus_left_jericho": True}, NORTH_LEADS),

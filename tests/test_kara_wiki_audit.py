@@ -36,7 +36,7 @@ def test_kara_waiting_in_the_camp_is_settled_after_markus_s_revolution(tmp_path)
     run = play_story(tmp_path, {**CAPTURED, **REVOLUTION, FENCE: "WAIT"})
     chapters = list(dict.fromkeys(run.chapters))
     assert chapters.index("32.2") < chapters.index("32.6") < chapters.index("32.9")
-    assert "ch32_9_00007" in run.nodes  # "They're coming! They're coming!"
+    assert "ch32_2_00007" in run.nodes  # "They're coming! They're coming!"
     assert run.flags["kara_awaiting_markus"] == "together"
     assert run.flags["kara_alive"] is True and run.flags["alice_alive"] is True
     assert run.flags["kara_freed_by_markus"] is True
@@ -97,7 +97,7 @@ def test_32_9_plays_after_markus_and_before_connor_s_last_segments():
     assert NODES["final_x0903"]["branches"][1]["next"] == "final_x0920"
     assert gate["next"] == "final_x0902"
     assert branch_taken("final_x0920", kara_awaiting_markus="together")["next"] == CAMP_OUTCOME
-    assert NODES["ch32_9_00001"]["next"] == "final_x0902"
+    assert NODES["ch32_9_x0009"]["next"] == "final_x0902"
     assert GRAPH["chapter_entries"]["32.9"] == CAMP_OUTCOME
     assert "32.9" in DETROIT_CHAPTER_TITLES
     assert all(n["character"] == "Kara" for n in NODES.values() if n["chapter"] == "32.9")

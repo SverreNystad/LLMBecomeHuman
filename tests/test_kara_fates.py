@@ -63,7 +63,7 @@ PANIC = "ch32_2_00053"
 TALK_TO_LUTHER = "ch32_2_00039"
 LANDFILL_HUG = "ch32_2_00004"
 # Freed by Markus plays in 32.9, after his revolution (32.6).
-FREED_BY_MARKUS, RECYCLED = "ch32_9_00007", "ch32_2_00009"
+FREED_BY_MARKUS, RECYCLED = "ch32_2_00007", "ch32_2_00009"
 REVOLUTION = {"ch31_1_00006": "REVOLUTION"}
 
 

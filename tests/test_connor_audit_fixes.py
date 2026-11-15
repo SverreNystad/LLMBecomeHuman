@@ -51,7 +51,7 @@ MARKUS_SPEAKS = {
 }
 # The rooftop deaths: a choice's option, or a Quick-Time Event's failure branch.
 ROOFTOP_DEATHS = [
-    ("ch32_3_00013", "DON'T DODGE"), ("ch32_3_00019", "LET HANK WIN"), ("ch32_3_00050", 1),
+    ("ch32_3_00013", "DON'T DODGE"), ("ch32_3_00019", "LET HANK WIN"), ("ch32_3_00050", "LET THEM WIN"),
 ]
 # Daniel jumps with Emma and Connor does not leap after them.
 STAY_BACK = {"ch1_00005": "STAY BACK"}

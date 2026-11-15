@@ -88,9 +88,10 @@ def test_saving_hank_and_not_dodging_hank_pushes_connor_off(tmp_path):
     assert run.flags["connor_deaths"] == base.flags["connor_deaths"] + 1
 
 
-def test_allens_fight_stays_a_quick_time_event_because_fleeing_spares_him():
+def test_connor_can_let_allen_s_men_win():
     node = load_dataset()["nodes"][ALLEN_FIGHT]
-    assert node["resolution"] == "qte"
+    assert node["type"] == "choice"
+    assert {o["label"] for o in node["options"]} == {"WIN THE FIGHT", "LET THEM WIN"}
 
 
 # The crowd at Markus's speech is its own segment, after Markus's demonstration.

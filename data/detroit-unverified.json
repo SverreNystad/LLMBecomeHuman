@@ -115551,7 +115551,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00001"
     },
     "ch32_3_00013": {
       "id": "ch32_3_00013",
@@ -115676,7 +115676,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00001"
     },
     "ch32_3_00018": {
       "id": "ch32_3_00018",
@@ -116475,30 +116475,38 @@
         }
       ],
       "observations": [],
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00001"
     },
     "ch32_3_00050": {
       "id": "ch32_3_00050",
-      "type": "condition",
+      "type": "choice",
       "chapter": "32.3",
       "character": "Connor",
       "heading": "On the rooftop",
-      "branches": [
+      "description": "Captain Allen and his men close in on the rooftop. You can fight them, or let them win.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission",
+      "options": [
         {
-          "condition_text": "Win the fight",
-          "when": null,
-          "next": "ch32_3_00048"
+          "id": "option_0",
+          "label": "WIN THE FIGHT",
+          "next": "ch32_3_00048",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
         },
         {
-          "condition_text": "Lose the fight",
-          "when": null,
-          "next": "ch32_3_x0106"
+          "id": "option_1",
+          "label": "LET THEM WIN",
+          "next": "ch32_3_x0106",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch32_3_00010",
-      "resolution": "qte"
+      ]
     },
     "ch32_3_00051": {
       "id": "ch32_3_00051",
@@ -116517,7 +116525,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_3_00010"
+      "next": "ch32_3_00001"
     },
     "ch32_3_00052": {
       "id": "ch32_3_00052",
@@ -126372,7 +126380,7 @@
         {
           "id": "option_0",
           "label": "CONTROL MARKUS",
-          "next": "ch32_6_00045",
+          "next": "ch32_6_x0127",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -135675,16 +135683,8 @@
                 ]
               },
               {
-                "any": [
-                  {
-                    "flag": "markus_demonstration_outcome",
-                    "equals": "none"
-                  },
-                  {
-                    "flag": "connor_shot_deviant_leader",
-                    "equals": true
-                  }
-                ]
+                "flag": "markus_demonstration_outcome",
+                "equals": "none"
               }
             ]
           }
@@ -135947,7 +135947,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
+      "note": "The android Kara carried out is in the camp only if she volunteered and saved it."
     },
     "ch32_2_x0231": {
       "id": "ch32_2_x0231",
@@ -135976,7 +135977,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "The android ahead of Kara talks only if Kara didn't volunteer."
     },
     "ch32_2_x0214": {
       "id": "ch32_2_x0214",
@@ -136148,7 +136150,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Luther says goodbye at the recycling machine only if he is ahead of Kara in the line."
     },
     "ch32_2_x0223": {
       "id": "ch32_2_x0223",
@@ -136213,7 +136216,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Who climbs the fence with Alice depends on whether the drone wounded Kara and whether Luther is with them."
     },
     "ch32_2_x0224": {
       "id": "ch32_2_x0224",
@@ -136293,8 +136297,8 @@
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
-    "ch32_9_00007": {
-      "id": "ch32_9_00007",
+    "ch32_2_00007": {
+      "id": "ch32_2_00007",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136310,10 +136314,11 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_x0002"
+      "next": "ch32_9_x0002",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
-    "ch32_9_00020": {
-      "id": "ch32_9_00020",
+    "ch32_2_00020": {
+      "id": "ch32_2_00020",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136329,10 +136334,11 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_00019"
+      "next": "ch32_2_00019",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
-    "ch32_9_00019": {
-      "id": "ch32_9_00019",
+    "ch32_2_00019": {
+      "id": "ch32_2_00019",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136348,10 +136354,11 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_00018"
+      "next": "ch32_2_00018",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
-    "ch32_9_00018": {
-      "id": "ch32_9_00018",
+    "ch32_2_00018": {
+      "id": "ch32_2_00018",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136367,10 +136374,11 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_00017"
+      "next": "ch32_2_00017",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
-    "ch32_9_00017": {
-      "id": "ch32_9_00017",
+    "ch32_2_00017": {
+      "id": "ch32_2_00017",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136386,10 +136394,11 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_x0006"
+      "next": "ch32_9_x0006",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
-    "ch32_9_x0106": {
-      "id": "ch32_9_x0106",
+    "ch32_2_x0106": {
+      "id": "ch32_2_x0106",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136397,12 +136406,12 @@
       "description": "Markus's androids storm the camp and free the androids still in the lines. Alice is among them.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
-    "ch32_9_x0103": {
-      "id": "ch32_9_x0103",
+    "ch32_2_x0103": {
+      "id": "ch32_2_x0103",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136410,12 +136419,12 @@
       "description": "Markus's androids storm the camp, and Kara walks out free, alone.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
-    "ch32_9_x0212": {
-      "id": "ch32_9_x0212",
+    "ch32_2_x0212": {
+      "id": "ch32_2_x0212",
       "type": "scene",
       "chapter": "32.9",
       "character": "Kara",
@@ -136423,12 +136432,12 @@
       "description": "Markus's androids storm the camp, and Alice walks out free.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
-    "ch32_9_00001": {
-      "id": "ch32_9_00001",
+    "ch32_9_x0009": {
+      "id": "ch32_9_x0009",
       "type": "chapter_exit",
       "chapter": "32.9",
       "character": "Kara",
@@ -136444,7 +136453,7 @@
       "branches": [
         {
           "condition_text": "Together at the machine: Markus's revolution reaches the camp",
-          "next": "ch32_9_00007",
+          "next": "ch32_2_00007",
           "when": {
             "all": [
               {
@@ -136501,7 +136510,7 @@
         },
         {
           "condition_text": "Kara left Alice: Markus frees the camp",
-          "next": "ch32_9_x0212",
+          "next": "ch32_2_x0212",
           "when": {
             "all": [
               {
@@ -136521,7 +136530,7 @@
         },
         {
           "condition_text": "Kara left Alice: nobody frees the camp",
-          "next": "ch32_9_00020",
+          "next": "ch32_2_00020",
           "when": {
             "all": [
               {
@@ -136550,7 +136559,7 @@
         },
         {
           "condition_text": "Kara died in the line: Markus frees Alice",
-          "next": "ch32_9_x0106",
+          "next": "ch32_2_x0106",
           "when": {
             "all": [
               {
@@ -136599,7 +136608,7 @@
         },
         {
           "condition_text": "Alice is gone: Markus frees Kara",
-          "next": "ch32_9_x0103",
+          "next": "ch32_2_x0103",
           "when": {
             "all": [
               {
@@ -136669,7 +136678,7 @@
       "description": "Markus's androids break into the camp. The soldiers flee, and Kara and Alice walk out of the line free.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136690,7 +136699,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_x0004"
+      "next": "ch32_9_x0004",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_9_x0004": {
       "id": "ch32_9_x0004",
@@ -136709,7 +136719,8 @@
         }
       ],
       "observations": [],
-      "next": "ch32_9_x0005"
+      "next": "ch32_9_x0005",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
     },
     "ch32_9_x0005": {
       "id": "ch32_9_x0005",
@@ -136720,7 +136731,7 @@
       "description": "Nobody comes to free the camp. Kara and Alice die in the recycling machine.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136733,7 +136744,7 @@
       "description": "Nobody comes to free the camp. Alice dies in the recycling machine, and Kara wakes up alone in the landfill.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136746,7 +136757,7 @@
       "description": "Nobody comes to free the camp. Alice dies alone in the recycling machine.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136759,7 +136770,7 @@
       "description": "Nobody comes to free the camp. Kara reaches the recycling machine alone.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_00001",
+      "next": "ch32_9_x0009",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -137200,7 +137211,8 @@
       "default_branch": 0,
       "next": "ch32_3_00066",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission",
+      "note": "After DON'T TRUST in Night of the Soul, a new machine Connor starts in the Zen Garden."
     },
     "ch32_3_x0109": {
       "id": "ch32_3_x0109",
@@ -137545,6 +137557,40 @@
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Connor#Possible_Deaths",
       "note": "Markus kills Connor in the final fight; CyberLife sends another."
+    },
+    "ch32_6_x0127": {
+      "id": "ch32_6_x0127",
+      "type": "choice",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault successful - Approaching Recall Center N°5",
+      "description": "Markus and Connor fight in the middle of the assault.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Approaching_Recall_Center_N.C2.BA5",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "WIN THE FIGHT",
+          "next": "ch32_6_00045",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "LOSE THE FIGHT",
+          "next": "ch32_6_x0120",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_alive": false,
+              "connor_stopped_the_revolution": true
+            }
+          }
+        }
+      ]
     }
   },
   "initial_flags": {
