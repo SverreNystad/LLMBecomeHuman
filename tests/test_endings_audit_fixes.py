@@ -44,7 +44,11 @@ def test_with_markus_dead_a_machine_connor_faces_north(tmp_path):
     ],
 )
 def test_north_leads_whenever_markus_is_gone_and_she_lives(flags):
-    assert _next(MARKUS_GONE, {**flags, "north_alive": True}) == NORTH_LEADS
+    # 32.6 opens on its own entry rule, which sends North to lead the revolution.
+    assert _next(MARKUS_GONE, {**flags, "north_alive": True}) == "ch32_6_x0118"
+    entry = {**flags, "north_alive": True, "markus_peaceful": False,
+             "markus_demonstration_outcome": "none", "connor_shot_deviant_leader": False}
+    assert _next("ch32_6_x0118", entry) == NORTH_LEADS
     assert _next(MARKUS_GONE, {**flags, "north_alive": False}) == "final_x0902"
 
 

@@ -98,7 +98,7 @@ def test_the_second_volley_makes_the_news_its_choice_made(tmp_path, label, headl
         ("ch30_3_00034", 0, {"north_alive": False}),  # North dies, Connor rescues Markus
         ("ch30_3_00034", 1, {"markus_alive": False}),  # Markus dies, North escapes
         ("ch30_3_00023", 1, {"markus_alive": False}),  # "Save our people…"
-        ("ch32_5_x0103", 1, {"north_alive": False}),  # North takes the bullet
+        ("ch32_5_x0107", 0, {"north_alive": False}),  # North takes the bullet
     ],
 )
 def test_a_deadly_quick_time_event_failure_ends_the_fate(nid, branch, fates):
@@ -117,8 +117,7 @@ def test_a_failed_demonstration_never_plays_the_suspension_speech(response):
     seen = set(
         _reachable(
             load_dataset()["nodes"], MEDIA_REACTS,
-            {"markus_barricade_response": response, "markus_march_violent": True,
-             "markus_capitol_park_violent": False},
+            {"markus_barricade_response": response, "markus_public_opinion": "negative"},
         )
     )
     assert not SUSPENSION_SPEECHES & seen
