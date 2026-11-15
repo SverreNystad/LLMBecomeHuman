@@ -50,7 +50,9 @@ def test_a_machine_connor_is_never_offered_trust(tmp_path):
 def test_with_markus_dead_north_calls_the_androids_to_arms(tmp_path):
     run = play_story(tmp_path, NOBODY_SAVES_MARKUS)
     assert "31.1" not in run.chapters
-    assert not {"32.5", "32.6"} & set(run.chapters)
+    # Markus's demonstration never plays; 32.6 plays only North's charge.
+    assert "32.5" not in run.chapters
+    assert "ch32_6_00125" not in run.nodes and "ch32_6_00011" in run.nodes
     assert CONNOR_CHURCH in run.nodes
     assert NORTH_CALLS_MARKUS_DEAD in run.nodes
 

@@ -49,6 +49,12 @@ OUTCOMES: dict[str, dict[Any, str]] = {
         False: "Kara got away.",
         None: "How Kara's story ended is unknown.",
     },
+    "kara_escaped_camp": {
+        "question": "Did Kara get out of the camp?",
+        True: "Kara was captured but escaped the camp.",
+        False: "",
+        None: "",
+    },
     "kara_alive": {
         "question": "Is Kara alive?",
         True: "Kara reached freedom.",
@@ -202,6 +208,8 @@ def ending_summary(
         kara_outcome, kara_line = "dead", _say("kara_alive", False)
     elif left is True:
         kara_outcome, kara_line = "left", _say("kara_left_alone", True)
+    elif captured is True and value("kara_escaped_camp") is True and kara_alive is True:
+        kara_outcome, kara_line = "escaped", _say("kara_escaped_camp", True)
     elif captured is True:
         kara_outcome, kara_line = "captured", _say("kara_captured", True)
     elif value("kara_story_ended") is True:
@@ -210,7 +218,7 @@ def ending_summary(
         kara_outcome, kara_line = "free", _say("kara_alive", True)
     else:
         kara_outcome, kara_line = "unknown", _say("kara_alive", None)
-    if kara_outcome == "free":
+    if kara_outcome in ("free", "escaped"):
         alice_with_her, alice_line = alice, _say("alice_alive", alice)
     else:
         # A captured or dead Kara, or one who left Alice behind, is not with her.

@@ -98372,7 +98372,7 @@
         {
           "id": "option_1",
           "label": "DON'T TRUST",
-          "next": "ch31_1_00040",
+          "next": "ch31_1_x0107",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -110324,7 +110324,12 @@
               }
             ]
           },
-          "next": "ch32_2_00007"
+          "next": "ch32_2_00007",
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true
+            }
+          }
         },
         {
           "condition_text": "Kara and Alice are not saved",
@@ -121370,7 +121375,8 @@
             "flags": {
               "markus_dirty_bomb_threat": true,
               "markus_barricade_response": "dirty_bomb",
-              "markus_barricade_kiss": false
+              "markus_barricade_kiss": false,
+              "markus_dirty_bomb_detonated": true
             },
             "news": [
               {
@@ -125409,7 +125415,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_dirty_bomb_detonated": true
+            }
           }
         },
         {
@@ -125895,7 +125903,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "markus_dirty_bomb_detonated": true
+            }
           },
           "requires": [
             {
@@ -126632,7 +126642,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00011"
+      "next": "ch32_6_x0113"
     },
     "ch32_6_00066": {
       "id": "ch32_6_00066",
@@ -126660,7 +126670,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00011",
+      "next": "ch32_6_x0113",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: the game keeps a relationship score with North; here she is Markus's lover if he kissed her in Crossroads or at the barricade."
@@ -129889,7 +129899,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -129911,7 +129921,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -129933,7 +129943,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -129955,7 +129965,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -129977,7 +129987,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -129999,7 +130009,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -130021,7 +130031,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -130043,7 +130053,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -130065,7 +130075,7 @@
       "heading": "Kara's story has ended",
       "branches": [
         {
-          "condition_text": "Todd killed Alice in Stormy Night",
+          "condition_text": "Kara's story has ended",
           "when": {
             "flag": "kara_story_ended",
             "equals": true
@@ -130990,7 +131000,7 @@
             "flag": "connor_story_ended",
             "equals": true
           },
-          "next": "final_x0903"
+          "next": "final_x0905"
         }
       ],
       "unverified": false,
@@ -133359,7 +133369,8 @@
           },
           "effects": {
             "flags": {
-              "alice_alive": false
+              "alice_alive": false,
+              "kara_escaped_camp": true
             }
           }
         },
@@ -133554,7 +133565,12 @@
         {
           "condition_text": "Kara beats the soldier",
           "next": "ch32_2_x0112",
-          "when": null
+          "when": null,
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true
+            }
+          }
         },
         {
           "condition_text": "The soldier beats Kara",
@@ -134388,17 +134404,49 @@
       "heading": "Markus's story has ended",
       "branches": [
         {
-          "condition_text": "Markus is dead or left Jericho",
-          "next": "final_x0902",
+          "condition_text": "Markus is dead or left Jericho, and North leads the revolution",
+          "next": "ch32_6_00011",
           "when": {
-            "any": [
+            "all": [
               {
-                "flag": "markus_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_left_jericho",
+                    "equals": true
+                  }
+                ]
               },
               {
-                "flag": "markus_left_jericho",
+                "flag": "north_alive",
                 "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus is dead or left Jericho, and North is dead",
+          "next": "final_x0902",
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_left_jericho",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "flag": "north_alive",
+                "equals": false
               }
             ]
           }
@@ -134954,6 +135002,157 @@
       "next": "ch30_3_00014",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch31_1_x0107": {
+      "id": "ch31_1_x0107",
+      "type": "condition",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Markus kills Connor",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch31_1_00040",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor"
+    },
+    "final_x0905": {
+      "id": "final_x0905",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "Hank alone at the end",
+      "branches": [
+        {
+          "condition_text": "Connor was decommissioned, Kara died and Markus is gone: Hank takes his own life",
+          "next": "final_x0903",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_knows_jericho",
+                "equals": false
+              },
+              {
+                "flag": "kara_alive",
+                "equals": false
+              },
+              {
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_left_jericho",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "hank_alive": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "final_x0903",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Hank_Anderson"
     }
   },
   "initial_flags": {
@@ -135004,6 +135203,7 @@
     "markus_left_jericho": false,
     "hank_alive": true,
     "connor_died_in_crossroads": false,
-    "connor_androids_woke": false
+    "connor_androids_woke": false,
+    "kara_escaped_camp": false
   }
 }
