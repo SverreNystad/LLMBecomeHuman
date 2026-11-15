@@ -14,6 +14,10 @@ def _show_best_of_each(page):
     page.wait_for_function("document.querySelectorAll('.run-chip').length === 6")
     page.keyboard.press("Escape")
     page.locator(".story-decision").first.wait_for()
+    # Chips collapse to logos with an animation; measure once it has finished.
+    page.wait_for_function(
+        "document.getAnimations().filter(a => a.effect?.target?.closest?.('#selectedRunChips')).length === 0"
+    )
 
 
 BAR_LAYOUT = """() => {
