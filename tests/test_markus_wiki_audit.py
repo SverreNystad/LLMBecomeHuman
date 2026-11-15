@@ -212,13 +212,15 @@ def test_every_detonation_is_public_news(nid, label):
     assert _option(nid, label)["effects"]["news"]
 
 
-# Quick-Time Event rule: the final fight is a decision; others stay reflexes.
+# Quick-Time Event rule: the final fight and coordinating the attack (failing it on
+# purpose sends North to her death or fails the assault) are decisions; others stay
+# reflexes.
 def test_only_the_decision_quick_time_events_became_choices():
     nodes = load_dataset()["nodes"]
     assert nodes[FIGHT]["type"] == "choice"
+    assert nodes["ch32_6_x0101"]["type"] == "choice"
     for nid in ("ch19_00119", "ch23_00041", "ch26_00156", "ch28_00012",
-                "ch30_3_00035", "ch30_3_00076", "ch30_3_00095", "ch32_5_x0103",
-                "ch32_6_x0101"):
+                "ch30_3_00035", "ch30_3_00076", "ch30_3_00095", "ch32_5_x0103"):
         assert nodes[nid]["resolution"] == "qte", nid
 
 

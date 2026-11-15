@@ -126687,7 +126687,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_x0101"
+      "next": "ch32_6_00049"
     },
     "ch32_6_00051": {
       "id": "ch32_6_00051",
@@ -126747,7 +126747,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00053"
+      "next": "ch32_6_x0101"
     },
     "ch32_6_00055": {
       "id": "ch32_6_00055",
@@ -131455,26 +131455,53 @@
     },
     "ch32_6_x0101": {
       "id": "ch32_6_x0101",
-      "type": "condition",
+      "type": "choice",
       "chapter": "32.6",
       "character": "Markus",
       "heading": "Coordinate attack",
-      "branches": [
+      "description": "Markus reaches the machine gun. The androids are pinned down, and North's group waits for his signal to charge the soldiers' position.",
+      "options": [
         {
-          "condition_text": "Attack successful",
-          "next": "ch32_6_00049",
-          "when": null
+          "id": "option_0",
+          "label": "COVER FIRE",
+          "next": "ch32_6_00053",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
         },
         {
-          "condition_text": "Attack unsuccessful",
-          "next": "ch32_6_00038",
-          "when": null
+          "id": "option_1",
+          "label": "SEND NORTH'S GROUP",
+          "next": "ch32_6_x0147",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "north_alive": false
+            }
+          },
+          "requires": [
+            {
+              "flag": "north_alive",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "FALL BACK",
+          "next": "ch32_6_x0148",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "resolution": "qte",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Revolution"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Revolution_at_Hart_Plaza",
+      "note": "Was a Quick-Time Event that always succeeded. In the game Markus times the cover fire and the charges; failing on purpose is a decision (GLOSSARY, Quick-Time Event), so the three outcomes of the wiki flowchart are offered as a choice."
     },
     "ch32_6_x0112": {
       "id": "ch32_6_x0112",
@@ -139028,6 +139055,121 @@
       "next": "ch32_6_00001",
       "source": "https://detroit-become-human.fandom.com/wiki/Markus#Trivia",
       "note": "Wiki (Markus): \"if Connor spares Markus he will walk away\". The game leaves whether Markus survives open; his Fate stays alive."
+    },
+    "ch32_6_x0147": {
+      "id": "ch32_6_x0147",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "North sent to her death",
+      "description": "North's group charges without enough cover fire. North is shot down.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00051",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Wiki (Markus): \"If Markus commands North's group to charge without enough cover fire, he sends her to her death.\" Approximation: the attack then goes on."
+    },
+    "ch32_6_x0148": {
+      "id": "ch32_6_x0148",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Androids have to fall back",
+      "branches": [
+        {
+          "condition_text": "North is his companion or lover: she shelters with him",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": true
+              },
+              {
+                "any": [
+                  {
+                    "flag": "markus_kissed_north",
+                    "equals": true
+                  },
+                  {
+                    "flag": "markus_barricade_kiss",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          },
+          "next": "ch32_6_x0149",
+          "effects": {
+            "flags": {
+              "simon_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "North is alive, below companion: she is shot",
+          "when": {
+            "all": [
+              {
+                "flag": "north_alive",
+                "equals": true
+              },
+              {
+                "not": {
+                  "any": [
+                    {
+                      "flag": "markus_kissed_north",
+                      "equals": true
+                    },
+                    {
+                      "flag": "markus_barricade_kiss",
+                      "equals": true
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "next": "ch32_6_x0149",
+          "effects": {
+            "flags": {
+              "north_alive": false,
+              "simon_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "North is dead",
+          "when": {
+            "flag": "north_alive",
+            "equals": false
+          },
+          "next": "ch32_6_x0149",
+          "effects": {
+            "flags": {
+              "simon_alive": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_x0149",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Wiki (Markus): \"An unsuccessful attack will result in the androids being forced to retreat and Simon and North (if her relationship is below companion) being shot and killed.\" Approximation: companion or higher means lover here, as elsewhere in 32.6."
+    },
+    "ch32_6_x0149": {
+      "id": "ch32_6_x0149",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Androids have to fall back",
+      "description": "The attack stalls under fire, and the androids have to fall back.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00038",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Revolution_at_Hart_Plaza",
+      "note": "Paraphrased from the wiki flowchart: \"Attack Unsuccessful → Androids Have to Fall Back\"."
     }
   },
   "initial_flags": {

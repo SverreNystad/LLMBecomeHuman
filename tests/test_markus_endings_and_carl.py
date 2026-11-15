@@ -223,3 +223,60 @@ def test_the_ending_summary_says_connor_s_mission_failed():
     assert connor["sentence"] == (
         "Connor stayed a machine. He never died. His mission failed and his story ended."
     )
+
+
+# --- Coordinating the attack (32.6) ---
+# Wiki flowchart, Markus Revolution: "Reach Machine Gun → Coordinate Attack: Send North to
+# her Death / Attack Successful / Attack Unsuccessful → Androids Have to Fall Back".
+# Wiki, Markus: "If Markus commands North's group to charge without enough cover fire,
+# he sends her to her death"; an unsuccessful attack gets Simon and North (below
+# companion) shot, and Markus takes shelter in a CyberLife store.
+
+REVOLUTION = {"ch31_1_00006": "REVOLUTION"}
+COORDINATE = "ch32_6_x0101"
+MACHINE_GUN = "ch32_6_00054"
+ASSAULT_FAILED = "ch32_6_00038"
+
+
+def test_coordinating_the_attack_is_a_choice_at_the_machine_gun():
+    assert _nodes()[COORDINATE]["type"] == "choice"
+    assert _nodes()[MACHINE_GUN]["next"] == COORDINATE
+    assert _labels(COORDINATE) == ["COVER FIRE", "SEND NORTH'S GROUP", "FALL BACK"]
+    send = _option(COORDINATE, "SEND NORTH'S GROUP")
+    assert {"flag": "north_alive", "equals": True} in send["requires"]
+    assert effect_flags(send)["north_alive"] is False
+
+
+def test_covering_the_charge_wins_the_assault(tmp_path):
+    run = play_story(tmp_path, REVOLUTION)
+    assert run.labels[COORDINATE] == "COVER FIRE"
+    assert ASSAULT_FAILED not in run.nodes
+    assert run.flags["markus_revolution_won"] is True
+
+
+def test_sending_north_in_without_cover_kills_her(tmp_path):
+    run = play_story(tmp_path, {**REVOLUTION, COORDINATE: "SEND NORTH'S GROUP"})
+    assert run.flags["north_alive"] is False
+    assert run.flags["markus_revolution_won"] is True
+
+
+def test_falling_back_fails_the_assault_and_reaches_the_store(tmp_path):
+    run = play_story(tmp_path, {**REVOLUTION, COORDINATE: "FALL BACK"})
+    assert ASSAULT_FAILED in run.nodes
+    assert run.flags["markus_revolution_won"] is False
+    assert STORE_WHO_IS_THERE in run.nodes
+    assert run.flags["simon_alive"] is False
+    assert run.flags["markus_alive"] is False  # the first store option is deadly
+    routes = [e for e in run.events if e["type"] == "route"]
+    summary = ending_summary(run.flags, routes, [], finished=True)
+    assert summary["characters"][2]["sentence"] == (
+        "Markus led a violent revolution. He died before it was over."
+    )
+    assert summary["world"]["sentence"].startswith("The revolution turned violent.")
+
+
+def test_with_a_machine_connor_the_failed_assault_brings_him_to_the_store(tmp_path):
+    run = play_story(tmp_path, {**MACHINE, **REVOLUTION, COORDINATE: "FALL BACK"})
+    assert run.flags["north_alive"] is False  # not his lover: shot falling back
+    assert CONNOR_SHOOT_OR_SPARE in run.nodes
+    assert run.flags["markus_revolution_won"] is False
