@@ -158,3 +158,28 @@ def test_the_checkpoint_shooting_sets_no_unused_flag():
         shoot = next(o for o in NODES[nid]["options"] if o["label"] == "SHOOT")
         assert "kara_checkpoint_shooting" not in effect_flags(shoot)
         assert shoot["effects"]["news"]
+
+
+# Wiki, Luther: in the Recall Center he either "Died protecting Kara and Alice" or
+# "Escaped recalling center"; he never survives a camp nobody frees ("Luther Reaches
+# the Recycling Machine", Battle for Detroit, In Line With Alice).
+NOT_FREED = ["ch32_9_x0005", "ch32_9_x0006", "ch32_9_x0007", "ch32_9_x0008"]
+
+
+@pytest.mark.parametrize("nid", NOT_FREED)
+def test_a_camp_nobody_frees_kills_luther(nid):
+    rule = NODES[nid]["next"]
+    branch = taken(rule, luther_alive=True)
+    assert effect_flags(branch)["luther_alive"] is False
+    assert "Luther" in NODES[branch["next"]]["description"]
+    assert taken(rule, luther_alive=False)["next"] == "ch32_9_x0009"
+
+
+def test_luther_dies_when_the_demonstration_is_lost(tmp_path):
+    run = play_story(tmp_path, {**CAPTURED, **LEFT_ALICE, **LOSE})
+    assert run.flags["kara_awaiting_markus"] == "left_alice"
+    assert run.flags["luther_alive"] is False
+
+
+def test_luther_freed_does_not_say_with_them():
+    assert "with them" not in NODES[LUTHER_FREED]["description"]

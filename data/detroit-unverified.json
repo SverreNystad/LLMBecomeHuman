@@ -125713,9 +125713,7 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "markus_store_put_down_gun": true
-            }
+            "flags": {}
           },
           "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
         }
@@ -125955,7 +125953,9 @@
           "effects": {
             "flags": {
               "markus_dirty_bomb_detonated": true,
-              "markus_alive": false
+              "markus_alive": false,
+              "connor_story_ended": true,
+              "connor_mission_failed": true
             },
             "news": [
               {
@@ -137087,7 +137087,7 @@
       "description": "Nobody comes to free the camp. Kara and Alice die in the recycling machine.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0016",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -137100,7 +137100,7 @@
       "description": "Nobody comes to free the camp. Alice dies in the recycling machine, and Kara wakes up alone in the landfill.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0016",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -137113,7 +137113,7 @@
       "description": "Nobody comes to free the camp. Alice dies alone in the recycling machine.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0016",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -137126,7 +137126,7 @@
       "description": "Nobody comes to free the camp. Kara reaches the recycling machine alone.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0016",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -138436,7 +138436,8 @@
       "default_branch": 0,
       "next": "ch32_5_x0119",
       "resolution": "rule",
-      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html",
+      "note": "The game text plays this line only when Connor freed the CyberLife androids (press-dirty-bomb component)."
     },
     "ch32_5_x0118": {
       "id": "ch32_5_x0118",
@@ -138532,7 +138533,8 @@
       "default_branch": 0,
       "next": "ch32_5_x0124",
       "resolution": "rule",
-      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html",
+      "note": "The game text plays this line only when Connor freed the CyberLife androids (press-dirty-bomb component)."
     },
     "ch32_5_x0122": {
       "id": "ch32_5_x0122",
@@ -138742,7 +138744,8 @@
       "default_branch": 0,
       "next": "ch32_6_x0132",
       "resolution": "rule",
-      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html",
+      "note": "The game text plays this line only when Connor freed the CyberLife androids (press-dirty-bomb component)."
     },
     "ch32_6_x0131": {
       "id": "ch32_6_x0131",
@@ -138838,7 +138841,8 @@
       "default_branch": 0,
       "next": "ch32_6_x0136",
       "resolution": "rule",
-      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html",
+      "note": "The game text plays this line only when Connor freed the CyberLife androids (press-dirty-bomb component)."
     },
     "ch32_6_x0135": {
       "id": "ch32_6_x0135",
@@ -138888,7 +138892,8 @@
       "default_branch": 0,
       "next": "ch32_6_x0138",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Wiki (Markus): alone, Markus finds the flag he planted; with North, the two watch Detroit burn. The shout that follows is the same."
     },
     "ch32_6_x0137": {
       "id": "ch32_6_x0137",
@@ -139077,7 +139082,7 @@
       "chapter": "32.6",
       "character": "Markus",
       "heading": "Assault failed",
-      "description": "Assault failed",
+      "description": "Markus holds the detonator. North waits for his decision; the soldiers are still outside.",
       "options": [
         {
           "id": "option_0",
@@ -139210,12 +139215,7 @@
               }
             ]
           },
-          "next": "ch32_6_x0149",
-          "effects": {
-            "flags": {
-              "simon_alive": false
-            }
-          }
+          "next": "ch32_6_x0149"
         },
         {
           "condition_text": "North is alive, below companion: she is shot",
@@ -139244,8 +139244,7 @@
           "next": "ch32_6_x0149",
           "effects": {
             "flags": {
-              "north_alive": false,
-              "simon_alive": false
+              "north_alive": false
             }
           }
         },
@@ -139267,8 +139266,8 @@
       "default_branch": 0,
       "next": "ch32_6_x0149",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
-      "note": "Wiki (Markus): \"An unsuccessful attack will result in the androids being forced to retreat and Simon and North (if her relationship is below companion) being shot and killed.\" Approximation: companion or higher means lover here, as elsewhere in 32.6."
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Revolution_at_Hart_Plaza",
+      "note": "Wiki flowchart: \"Simon Gets Shot (if North died in Crossroads, Simon is still alive…)\" and \"North Gets Shot (if North is still alive and status is below COMPANION)\". Approximation: companion or higher means lover here, as elsewhere in 32.6."
     },
     "ch32_6_x0149": {
       "id": "ch32_6_x0149",
@@ -139371,7 +139370,7 @@
       "chapter": "32.9",
       "character": "Kara",
       "heading": "Luther freed",
-      "description": "Luther walks out of the camp free with them.",
+      "description": "Luther walks out of the camp free.",
       "dialogue": [],
       "observations": [],
       "next": "ch32_9_x0009",
@@ -139468,6 +139467,54 @@
       "next": "ch32_2_x0101",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
       "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_9_x0016": {
+      "id": "ch32_9_x0016",
+      "type": "condition",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Luther in the camp",
+      "branches": [
+        {
+          "condition_text": "Luther is in the camp: nobody frees him",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "next": "ch32_9_x0017",
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Luther is dead",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          },
+          "next": "ch32_9_x0009"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 1,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Luther#Battle_for_Detroit",
+      "note": "Wiki (Luther): sent to the Recall Center, he either \"Died protecting Kara and Alice\" or \"Escaped recalling center\"; he never survives a camp nobody frees. In line with Alice, \"Luther Reaches the Recycling Machine\" first (Battle for Detroit)."
+    },
+    "ch32_9_x0017": {
+      "id": "ch32_9_x0017",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Luther died in the camp",
+      "description": "Luther reaches the recycling machine, and nobody comes to free him.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0009",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the wiki flowchart: \"Luther Reaches the Recycling Machine\"."
     }
   },
   "initial_flags": {
@@ -139546,8 +139593,7 @@
     "connor_pressured_four_times": false,
     "connor_convince_failed": false,
     "carl_alive": true,
-    "connor_mission_failed": false,
-    "markus_store_put_down_gun": false
+    "connor_mission_failed": false
   },
   "scores": {
     "connor_hostage_probability": {

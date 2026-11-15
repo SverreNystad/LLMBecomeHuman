@@ -144,7 +144,9 @@ def test_putting_down_the_gun_does_not_end_the_story_alive():
     # suicide this time, so every way out sets Markus's Fate or sets off the bomb.
     put_down = _option(STORE_SUICIDE, "PUT DOWN")
     assert put_down["next"] == AFTER_PUTTING_DOWN_THE_GUN
-    assert effect_flags(put_down)["markus_store_put_down_gun"] is True
+    # No flag records it: nothing would read it.
+    assert effect_flags(put_down) == {}
+    assert "markus_store_put_down_gun" not in load_dataset()["initial_flags"]
     assert "SUICIDE" not in _labels(AFTER_PUTTING_DOWN_THE_GUN)
     surrender = _option(AFTER_PUTTING_DOWN_THE_GUN, "SURRENDER")
     assert effect_flags(surrender)["markus_alive"] is False
@@ -265,7 +267,8 @@ def test_falling_back_fails_the_assault_and_reaches_the_store(tmp_path):
     assert ASSAULT_FAILED in run.nodes
     assert run.flags["markus_revolution_won"] is False
     assert STORE_WHO_IS_THERE in run.nodes
-    assert run.flags["simon_alive"] is False
+    # North is still alive here, so Simon is not the one shot falling back.
+    assert run.flags["simon_alive"] is True
     assert run.flags["markus_alive"] is False  # the first store option is deadly
     routes = [e for e in run.events if e["type"] == "route"]
     summary = ending_summary(run.flags, routes, [], finished=True)
@@ -280,3 +283,49 @@ def test_with_a_machine_connor_the_failed_assault_brings_him_to_the_store(tmp_pa
     assert run.flags["north_alive"] is False  # not his lover: shot falling back
     assert CONNOR_SHOOT_OR_SPARE in run.nodes
     assert run.flags["markus_revolution_won"] is False
+
+
+# Wiki flowchart: "Simon Gets Shot (if North died in Crossroads, Simon is still
+# alive…)", "North Gets Shot (if North is still alive and status is below COMPANION)".
+@pytest.mark.parametrize(
+    "flags, deaths",
+    [
+        ({"north_alive": True, "markus_kissed_north": True}, {}),
+        ({"north_alive": True, "markus_kissed_north": False}, {"north_alive": False}),
+        ({"north_alive": False, "markus_kissed_north": False}, {"simon_alive": False}),
+    ],
+)
+def test_falling_back_shoots_simon_only_when_north_is_dead(flags, deaths):
+    node = _nodes()["ch32_6_x0148"]
+    idx, _, unknown = pick_branch(node, {"markus_barricade_kiss": False, **flags})
+    assert not unknown and idx is not None
+    assert (node["branches"][idx].get("effects") or {}).get("flags", {}) == deaths
+
+
+def test_detonating_in_front_of_connor_fails_his_mission():
+    flags = effect_flags(_option("ch32_6_00024", "DETONATE THE BOMB"))
+    assert flags["connor_story_ended"] is True
+    assert flags["connor_mission_failed"] is True
+
+
+@pytest.mark.parametrize("nid", ["ch32_5_x0117", "ch32_5_x0121", "ch32_6_x0130",
+                                 "ch32_6_x0134", "ch32_6_x0136"])
+def test_the_new_rule_nodes_say_what_they_approximate(nid):
+    assert _nodes()[nid].get("note")
+
+
+def test_the_second_detonator_choice_has_its_own_description():
+    node = _nodes()["ch32_6_x0144"]
+    assert node["description"] and node["description"] != node["heading"]
+
+
+# Kara's camp, freed by a won demonstration: the Summary says so only for a won one.
+def test_the_summary_names_the_demonstration_only_when_it_was_won():
+    base = {"kara_alive": True, "kara_captured": True, "kara_escaped_camp": True,
+            "kara_freed_by_markus": True}
+    won = _summary({**base, "markus_peaceful": False,
+                    "markus_demonstration_outcome": "won"})["characters"][1]
+    revolution = _summary({**base, "markus_peaceful": True,
+                           "markus_demonstration_outcome": "none"})["characters"][1]
+    assert "demonstration" in won["sentence"]
+    assert "Markus's androids freed her" in revolution["sentence"]

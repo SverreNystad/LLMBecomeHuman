@@ -225,7 +225,7 @@ def ending_summary(
         freed = value("kara_freed_by_markus") is True
         kara_outcome = "escaped"
         # A won demonstration frees the camp as a won revolution does.
-        how = "demonstration" if value("markus_peaceful") is True else True
+        how = "demonstration" if value("markus_demonstration_outcome") == "won" else True
         kara_line = _say("kara_freed_by_markus", how) if freed else _say("kara_escaped_camp", True)
     elif captured is True:
         kara_outcome, kara_line = "captured", _say("kara_captured", True)
