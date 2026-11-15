@@ -27,8 +27,12 @@ BRIDGE_TOPICS, PASSWORD = "ch22_00080", "ch32_4_00042"
 RUSHED_RUSSIAN_ROULETTE = {"ch18_x0001": "WAIT FOR HANK"}
 # The Nest: asking Hank about the highway needs a chase that morning (On the Run).
 HIGHWAY_TOPIC = "ch15_00132"
-KARA_UNSEEN = {"ch13_x0301": "FOLLOW HANK"}
-CHASE_THEN_STOPPED = {"ch13_x0301": "CHECK THE DOOR", "ch13_00009": "GIVE UP"}
+KARA_UNSEEN: dict[str, str] = {}  # from the motel Kara reaches the train unseen
+# Kara threatened Ralph in the squat, so he gives her away and Connor chases her.
+CHASE_THEN_STOPPED = {
+    "ch10_00109": "DON'T STEAL", "ch10_00039": "STAY", "ch13_00136": "THREATEN",
+    "ch13_00009": "GIVE UP",
+}
 # Night of the Soul
 HANKS_HOUSE_SUICIDE = "ch31_2_00048"
 # Connor's Last Mission (32.3)
@@ -168,11 +172,11 @@ def test_a_hostile_hank_cannot_talk_connor_off_the_rooftop(tmp_path):
     assert "LEAVE" not in run.offered(LEAVE_OR_ATTACK)
 
 
-@pytest.mark.parametrize("pick", ["KILL HANK", "SAVE HANK"])
-def test_hank_dies_on_the_rooftop_either_way_after_the_fight(tmp_path, pick):
-    # Sparing him, Hank rushes Connor, who dodges; Hank falls to his death.
+@pytest.mark.parametrize("pick, hank_lives", [("KILL HANK", False), ("SAVE HANK", True)])
+def test_hank_lives_on_the_rooftop_only_if_connor_spares_him(tmp_path, pick, hank_lives):
+    # "spare_hank: Hank lives, Connor leaves. kill_hank: Hank dies, Connor leaves."
     run = play_story(tmp_path, {**MACHINE, LEAVE_OR_ATTACK: "ATTACK", SPARE_OR_KILL: pick})
-    assert run.flags["hank_alive"] is False
+    assert run.flags["hank_alive"] is hank_lives
 
 
 def test_jumping_off_the_roof_from_allen_adds_a_death(tmp_path):
@@ -219,3 +223,18 @@ def test_giving_up_in_the_zen_garden_amanda_shoots_markus(tmp_path):
     run = play_story(tmp_path, {**MACHINE, CROWD: "DON'T SHOOT", ZEN_GARDEN: "GIVE UP"})
     assert run.flags["markus_alive"] is False
     assert "32.5" not in run.chapters
+
+
+# Public News: the Jericho raid is news once the army storms the freighter (30), not
+# when Connor gives its location to Amanda in private (29).
+RAID_NEWS = "Army and police storm deviant hideout aboard freighter in Detroit harbour"
+
+
+def test_the_jericho_raid_is_news_only_once_it_happens(tmp_path):
+    run = play_story(tmp_path, {**KAMSKI_GAVE_JERICHO, "ch29_00270": "JERICHO"})
+    assert run.labels["ch29_00270"] == "JERICHO"
+    first = next(
+        e for e in run.events
+        if e["type"] == "decision" and RAID_NEWS in e["input"].get("news", [])
+    )
+    assert str(first["chapter"]).startswith("30.")

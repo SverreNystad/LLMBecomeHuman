@@ -30662,35 +30662,25 @@
     },
     "ch13_x0301": {
       "id": "ch13_x0301",
-      "type": "choice",
+      "type": "condition",
       "chapter": "13",
       "character": "Kara",
       "heading": "Police is at the motel",
-      "description": "Hank heads for room 28. In the corner to the right of the stairs, another door stands closed.",
-      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Eastern_Motel",
-      "options": [
+      "branches": [
         {
-          "id": "option_0",
-          "label": "CHECK THE DOOR",
-          "next": "ch13_00023",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        },
-        {
-          "id": "option_1",
-          "label": "FOLLOW HANK",
-          "next": "ch13_00031",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
+          "condition_text": "Kara and Alice already left room 28: Connor follows Hank to an empty room",
+          "when": {
+            "flag": "kara_ch10_shelter",
+            "equals": "motel"
+          },
+          "next": "ch13_00031"
         }
       ],
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+      "next": "ch13_00031",
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Eastern_Motel"
     },
     "ch13_00033": {
       "id": "ch13_00033",
@@ -85030,13 +85020,7 @@
             "flags": {
               "connor_revealed_jericho": true,
               "connor_knows_jericho": true
-            },
-            "news": [
-              {
-                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
-                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
-              }
-            ]
+            }
           },
           "requires": [
             {
@@ -89922,7 +89906,13 @@
           "effects": {
             "flags": {
               "connor_cargo_hall_response": "lie"
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -89934,7 +89924,13 @@
           "effects": {
             "flags": {
               "connor_cargo_hall_response": "perkins_excuse"
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -89946,7 +89942,13 @@
           "effects": {
             "flags": {
               "connor_cargo_hall_response": "attack"
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -89958,7 +89960,13 @@
           "effects": {
             "flags": {
               "connor_cargo_hall_response": "run"
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         }
       ]
@@ -95354,7 +95362,13 @@
           "effects": {
             "flags": {
               "markus_jericho_blown_up": false
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -95368,7 +95382,13 @@
           "effects": {
             "flags": {
               "markus_jericho_blown_up": false
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -95382,7 +95402,13 @@
           "effects": {
             "flags": {
               "markus_jericho_blown_up": false
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -95394,7 +95420,13 @@
           "effects": {
             "flags": {
               "markus_jericho_blown_up": false
-            }
+            },
+            "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              }
+            ]
           }
         },
         {
@@ -95408,6 +95440,10 @@
               "markus_jericho_blown_up": true
             },
             "news": [
+              {
+                "headline": "Army and police storm deviant hideout aboard freighter in Detroit harbour",
+                "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
+              },
               {
                 "headline": "Deviant freighter Jericho explodes and sinks during army raid",
                 "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
@@ -97584,13 +97620,7 @@
             "flags": {
               "markus_chose_demonstration": true,
               "markus_peaceful": true
-            },
-            "news": [
-              {
-                "headline": "Androids gather in downtown Detroit for a mass demonstration",
-                "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Markus"
-              }
-            ]
+            }
           }
         },
         {
@@ -97616,13 +97646,7 @@
             "flags": {
               "markus_chose_revolution": true,
               "markus_peaceful": false
-            },
-            "news": [
-              {
-                "headline": "Armed androids prepare to attack android recall camps in Detroit",
-                "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Markus"
-              }
-            ]
+            }
           }
         }
       ]
@@ -107683,7 +107707,7 @@
           ],
           "effects": {
             "flags": {
-              "luther_checkpoint_shooting": true
+              "kara_checkpoint_shooting": true
             },
             "news": [
               {
@@ -115590,14 +115614,9 @@
       "heading": "On the rooftop",
       "branches": [
         {
-          "condition_text": "Dodge Hank: Hank falls to his death",
+          "condition_text": "Dodge Hank: Connor leaves him alive on the rooftop",
           "when": null,
-          "next": "ch32_3_00010",
-          "effects": {
-            "flags": {
-              "hank_alive": false
-            }
-          }
+          "next": "ch32_3_00010"
         },
         {
           "condition_text": "Get pushed from the edge",
@@ -120866,7 +120885,7 @@
         },
         {
           "condition_text": "The demonstration failed - Markus and the androids died",
-          "next": "ch32_5_00021",
+          "next": "ch32_5_00020",
           "when": {
             "all": [
               {

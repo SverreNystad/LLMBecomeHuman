@@ -18,25 +18,33 @@ def option(nid: str, label: str) -> dict:
 
 # On the Run (13)
 TRAIN_REACHED, SPOTTED, PURSUIT = "ch13_x0303", "ch13_00028", "ch13_00023"
-MOTEL_DOOR = "ch13_x0301"
+MOTEL_SEARCH = "ch13_x0301"
 # Fugitives choices that send Kara to each shelter (see test_condition_resolution).
 SHELTER_PICKS = {
     "motel": {},
     "car": {"ch10_00109": "DON'T STEAL", "ch10_00039": "LEAVE", "ch10_00013": "STAY HERE"},
 }
+SQUAT = {"ch10_00109": "DON'T STEAL", "ch10_00039": "STAY"}
 
 
 @pytest.mark.parametrize("shelter", sorted(SHELTER_PICKS))
 def test_sneaking_past_the_police_kara_reaches_the_train_unseen(tmp_path, shelter):
-    picks = {**SHELTER_PICKS[shelter], MOTEL_DOOR: "FOLLOW HANK"}
-    run = play_story(tmp_path, picks)
+    run = play_story(tmp_path, SHELTER_PICKS[shelter])
     assert TRAIN_REACHED in run.nodes
     assert SPOTTED not in run.nodes and PURSUIT not in run.nodes
     assert run.flags["kara_chased_by_connor"] is False
 
 
-def test_connor_checking_the_motel_door_finds_kara_and_pursues_her(tmp_path):
-    run = play_story(tmp_path, {MOTEL_DOOR: "CHECK THE DOOR"})
+def test_the_kara_model_never_decides_connor_s_motel_search():
+    # Kara has already left room 28 when Hank and Connor reach it ("It's gone…").
+    search = NODES[MOTEL_SEARCH]
+    assert search["type"] == "condition" and search["resolution"] == "rule"
+    assert PURSUIT not in {b["next"] for b in search["branches"]} | {search["next"]}
+    assert TRAIN_REACHED in reach(MOTEL_SEARCH, kara_ch10_shelter="motel")
+
+
+def test_kara_who_threatened_ralph_is_found_and_chased(tmp_path):
+    run = play_story(tmp_path, {**SQUAT, "ch13_00136": "THREATEN"})
     assert PURSUIT in run.nodes and TRAIN_REACHED not in run.nodes
     assert run.flags["kara_chased_by_connor"] is True
 
@@ -161,6 +169,13 @@ def test_kara_can_cast_luther_overboard_only_if_his_body_is_aboard():
 def test_luther_shooting_at_the_checkpoint_is_public_news():
     news = option("ch32_1_00311", "SHOOT")["effects"]["news"]
     assert news == option("ch32_1_00308", "SHOOT")["effects"]["news"]
+
+
+def test_luther_shooting_at_the_checkpoint_records_the_same_shooting_as_kara_s():
+    # Nothing later in the transcript tells the two shootings apart.
+    luther = effect_flags(option("ch32_1_00311", "SHOOT"))
+    assert luther == effect_flags(option("ch32_1_00308", "SHOOT"))
+    assert "luther_checkpoint_shooting" not in luther
 
 
 # Kara Captured (32.2)

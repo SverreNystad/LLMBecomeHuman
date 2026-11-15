@@ -84,8 +84,9 @@ function renderClue(item) {
 function renderRule(item) {
   const record = item.record;
   if (record.type === 'route') {
-    if (!record.assumed) return '';
-    return `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text || 'The story assumed an outcome this Run never decided.')}</p>`;
+    // The server words the assumption (ending.assumed_route_text).
+    if (!record.assumed || !record.text) return '';
+    return `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text)}</p>`;
   }
   const branches = state.graph?.nodes?.[record.node_id]?.branches || [];
   const taken = branches[record.branch_index]?.condition_text;

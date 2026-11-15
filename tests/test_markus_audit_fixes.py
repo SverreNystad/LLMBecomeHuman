@@ -2,6 +2,7 @@
 
 import pytest
 
+from detroit_benchmark.engine import _reachable
 from tests.dataset import flags_in, load_dataset, play_story
 from tests.test_markus_endings import PEACEFUL
 
@@ -103,3 +104,36 @@ def test_the_second_volley_makes_the_news_its_choice_made(tmp_path, label, headl
 def test_a_deadly_quick_time_event_failure_ends_the_fate(nid, branch, fates):
     taken = load_dataset()["nodes"][nid]["branches"][branch]
     assert taken["effects"]["flags"] == fates
+
+
+# 32.5: when the barricade falls, "a world that watched and did nothing": no suspension.
+MEDIA_REACTS = "ch32_5_00022"
+DESTRUCTION_SPEECH = "ch32_5_00020"
+SUSPENSION_SPEECHES = {"ch32_5_00004", "ch32_5_00009", "ch32_5_00014"}
+
+
+@pytest.mark.parametrize("response", ["kiss", "sing"])
+def test_a_failed_demonstration_never_plays_the_suspension_speech(response):
+    seen = set(
+        _reachable(
+            load_dataset()["nodes"], MEDIA_REACTS,
+            {"markus_barricade_response": response, "markus_march_violent": True,
+             "markus_capitol_park_violent": False},
+        )
+    )
+    assert not SUSPENSION_SPEECHES & seen
+    assert DESTRUCTION_SPEECH in seen
+
+
+# Public News: what Markus decides in the church is private. The public learns of
+# the demonstration from the Hart Plaza march itself (32.5).
+def test_markus_s_plan_in_the_church_is_not_public_news(tmp_path):
+    church = load_dataset()["nodes"]["ch31_1_00006"]
+    assert not any(o["effects"].get("news") for o in church["options"])
+    run = play_story(tmp_path, {})
+    first = next(
+        str(e["chapter"]) for e in run.events
+        if e["type"] == "decision"
+        and any("Hart Plaza" in h for h in e["input"].get("news", []))
+    )
+    assert first == "32.5"

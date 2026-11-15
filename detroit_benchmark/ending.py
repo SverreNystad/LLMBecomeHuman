@@ -52,8 +52,6 @@ OUTCOMES: dict[str, dict[Any, str]] = {
     "kara_escaped_camp": {
         "question": "Did Kara get out of the camp?",
         True: "Kara was captured but escaped the camp.",
-        False: "",
-        None: "",
     },
     "kara_alive": {
         "question": "Is Kara alive?",
@@ -208,7 +206,7 @@ def ending_summary(
         kara_outcome, kara_line = "dead", _say("kara_alive", False)
     elif left is True:
         kara_outcome, kara_line = "left", _say("kara_left_alone", True)
-    elif captured is True and value("kara_escaped_camp") is True and kara_alive is True:
+    elif value("kara_escaped_camp") is True and kara_alive is True:
         kara_outcome, kara_line = "escaped", _say("kara_escaped_camp", True)
     elif captured is True:
         kara_outcome, kara_line = "captured", _say("kara_captured", True)
