@@ -21,7 +21,7 @@ A choice at the start of an investigation about how thoroughly to search: thorou
 _Avoid_: investigation strategy, sandbox
 
 **Quick-Time Event**:
-An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless it is really a decision (e.g. whether to shoot).
+An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices.
 _Avoid_: QTE choice, willingness choice
 
 **Fate**:
