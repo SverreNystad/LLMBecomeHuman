@@ -109,6 +109,7 @@ DETROIT_CHAPTER_TITLES = {
     "32.5": "Battle for Detroit: Markus Demonstration",
     "32.6": "Battle for Detroit: Markus Revolution",
     "32.7": "Battle for Detroit: Connor in the Zen Garden",
+    "32.8": "Battle for Detroit: Connor in the Crowd",
     "32.9": "Battle for Detroit: Kara After the Assault",
     "final": "Final Routes",
 }
@@ -515,6 +516,19 @@ def _chapter_info(
     }
 
 
+def _chapter_order(graph: dict, nodes: dict) -> list[str]:
+    """Chapters in story order: as the graph lists its Chapter Segments, so a segment
+    played late (32.7, 32.8) follows the ones before it; others keep first-seen order."""
+    seen = list(
+        dict.fromkeys(
+            str(node["chapter"]) for node in nodes.values() if node.get("chapter")
+        )
+    )
+    listed = [str(c) for c in graph.get("chapter_entries", {})]
+    rank = {chapter: i for i, chapter in enumerate(listed)}
+    return sorted(seen, key=lambda c: (rank.get(c, len(listed)), seen.index(c)))
+
+
 def _flowchart_projection(
     graph: dict, *, complete: bool, source: str
 ) -> dict[str, Any]:
@@ -567,11 +581,7 @@ def _flowchart_projection(
                 {k: b[k] for k in ("next", "condition_text") if k in b}
                 for b in node.get("branches", [])
             ]
-    chapters = list(
-        dict.fromkeys(
-            str(node["chapter"]) for node in nodes.values() if node.get("chapter")
-        )
-    )
+    chapters = _chapter_order(graph, nodes)
     return {
         "metadata": graph.get("metadata", {}),
         "start": graph.get("start"),

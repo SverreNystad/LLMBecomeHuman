@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 19,
+    "condition_nodes_unverified": 17,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -384,7 +384,8 @@
     "32.5": "ch32_5_00207",
     "32.6": "ch32_6_00125",
     "32.7": "ch32_7_00026",
-    "32.9": "ch32_9_x0001"
+    "32.9": "ch32_9_x0001",
+    "32.8": "ch32_8_x0101"
   },
   "chapter_briefings": {
     "1": "A high-rise apartment in Detroit, August 2038, at dusk. A household android, Daniel, has shot the father and holds the family's young daughter, Emma, at the edge of the rooftop terrace. Police and SWAT fill the apartment; the commander, Captain Allen, is tense and short on patience, a mother pleads in tears, a police helicopter circles. A wounded officer lies on the terrace. Daniel is agitated and screaming. Stakes: the child's life, the officers' lives and whether the deviant is stopped.",
@@ -423,12 +424,13 @@
     "31.2": "Night, after the assault on Jericho. Connor stands in the Zen Garden before Amanda, who expects a report. Later he goes to Hank's house; Hank is drinking, gun on the table, and both are uneasy. Stakes: Hank's well-being and the next step in Connor's mission.",
     "32.1": "Detroit under curfew, night, snowing. Kara and Alice, with Luther if he is still with them, try to reach the bus terminal and the Canadian border. Army checkpoints stop civilians; soldiers are on edge and androids are being rounded up. Alice is frightened and quiet. Stakes: crossing the city undetected and getting Alice to safety.",
     "32.2": "Detroit, night, in the back of an army truck. Kara and Alice have been captured with other androids and are taken to a recycling camp where soldiers process and destroy androids. Soldiers are brutal and nervous; captives are terrified. Stakes: survival for Kara and Alice.",
-    "32.3": "A rooftop overlooking downtown Detroit, night. Connor is on a mission to neutralize the deviant leader. Below, crowds of androids gather and soldiers and helicopters move in. Stakes: Connor's mission and the lives of the demonstrators.",
+    "32.3": "A rooftop overlooking Hart Plaza, night. Connor, still a machine loyal to CyberLife, sets up a sniper rifle to neutralize the deviant leader. Below, crowds of androids gather and soldiers and helicopters move in. Stakes: Connor's mission and anyone who tries to stop him.",
     "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, thousands of new androids wait in storage. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
     "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
     "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city.",
     "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be.",
-    "32.9": "Recall Center Nº5, some time later. Somewhere beyond the fences and floodlights, the army is fighting Markus's androids. Soldiers still drive the captives toward the recycling machines. Stakes: whether anyone left in the camp sees the morning."
+    "32.9": "Recall Center Nº5, some time later. Somewhere beyond the fences and floodlights, the army is fighting Markus's androids. Soldiers still drive the captives toward the recycling machines. Stakes: whether anyone left in the camp sees the morning.",
+    "32.8": "Hart Plaza, after Markus's peaceful demonstration won the androids their freedom for now. Markus speaks to a crowd of androids while cameras watch. Connor, still a machine loyal to CyberLife, stands in the audience with a gun. Stakes: Markus's life and the androids' cause."
   },
   "nodes": {
     "ch1_00001": {
@@ -494,42 +496,44 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00001"
+      "next": "ch1_00005"
     },
     "ch1_00005": {
       "id": "ch1_00005",
-      "type": "condition",
+      "type": "choice",
       "chapter": "1",
       "character": "Connor",
       "heading": "Speak with Daniel",
-      "branches": [
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "description": "Daniel steps back onto the ledge with Emma in his arms and throws himself off the roof.",
+      "options": [
         {
-          "condition_text": "Connor dies: he reaches Emma in time, pulls her free and falls with Daniel",
-          "when": null,
-          "next": "ch1_00004",
+          "id": "option_0",
+          "label": "LEAP FOR EMMA",
+          "next": "ch1_x0105",
+          "requirements_unverified": [],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_deaths": 1,
-              "connor_died_in_hostage": true
+              "connor_died_in_hostage": true,
+              "emma_saved": true
             }
           }
         },
         {
-          "condition_text": "Connor survives: he fails to reach Daniel in time",
-          "when": null,
-          "next": "ch1_00004",
+          "id": "option_1",
+          "label": "STAY BACK",
+          "next": "ch1_x0104",
+          "requirements_unverified": [],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "emma_saved": false
             }
           }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch1_00004",
-      "resolution": "qte",
-      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
+      ]
     },
     "ch1_00006": {
       "id": "ch1_00006",
@@ -539,23 +543,23 @@
       "heading": "Speak with Daniel",
       "branches": [
         {
-          "condition_text": "Probability of success at 100%",
+          "condition_text": "REASSURE with the Probability of Success at 80% or more: Daniel trusts Connor",
           "when": {
-            "any": [
+            "all": [
               {
                 "flag": "connor_daniel_final_plea",
                 "equals": "reassure"
               },
               {
-                "flag": "connor_daniel_final_plea",
-                "equals": "use_gun"
+                "flag": "connor_daniel_probability_high",
+                "equals": true
               }
             ]
           },
           "next": "ch1_00003"
         },
         {
-          "condition_text": "Probability of success too low",
+          "condition_text": "Probability of success too low: Daniel jumps with Emma",
           "when": {
             "any": [
               {
@@ -565,17 +569,29 @@
               {
                 "flag": "connor_daniel_final_plea",
                 "equals": "sacrifice"
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_daniel_final_plea",
+                    "equals": "reassure"
+                  },
+                  {
+                    "flag": "connor_daniel_probability_high",
+                    "equals": false
+                  }
+                ]
               }
             ]
           },
-          "next": "ch1_00005"
+          "next": "ch1_00004"
         }
       ],
       "unverified": false,
       "default_branch": 0,
       "next": "ch1_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success"
     },
     "ch1_00007": {
       "id": "ch1_00007",
@@ -594,7 +610,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00006"
+      "next": "ch1_x0106"
     },
     "ch1_00008": {
       "id": "ch1_00008",
@@ -928,7 +944,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_x0104"
+      "next": "ch1_00004"
     },
     "ch1_00019": {
       "id": "ch1_00019",
@@ -995,9 +1011,7 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "emma_saved": false
-            }
+            "flags": {}
           }
         },
         {
@@ -1109,13 +1123,11 @@
         {
           "id": "option_0",
           "label": "MOVE CLOSER",
-          "next": "ch1_x0104",
+          "next": "ch1_00004",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "emma_saved": false
-            }
+            "flags": {}
           }
         },
         {
@@ -1202,7 +1214,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_asked_daniel_to_trust": false
+            }
           }
         },
         {
@@ -1212,7 +1226,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_asked_daniel_to_trust": true
+            }
           }
         },
         {
@@ -1224,7 +1240,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_asked_daniel_to_trust": false
+            }
           }
         },
         {
@@ -1234,7 +1252,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_asked_daniel_to_trust": false
+            }
           }
         }
       ]
@@ -1311,7 +1331,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_dismissed_helicopter": true
+            }
           }
         },
         {
@@ -1321,7 +1343,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_dismissed_helicopter": false
+            }
           }
         }
       ]
@@ -1664,7 +1688,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": true
+            }
           },
           "requires": [
             {
@@ -1683,7 +1709,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": true
+            }
           },
           "requires": [
             {
@@ -1702,7 +1730,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": false
+            }
           }
         },
         {
@@ -1712,7 +1742,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": false
+            }
           }
         },
         {
@@ -1722,7 +1754,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": true
+            }
           }
         },
         {
@@ -1732,7 +1766,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": false
+            }
           }
         },
         {
@@ -1744,7 +1780,9 @@
           ],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_daniel_topic_warm": false
+            }
           }
         }
       ]
@@ -10790,7 +10828,7 @@
       "description": "Talk to Hank",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00053"
+      "next": "ch6_x0103"
     },
     "ch6_00071": {
       "id": "ch6_00071",
@@ -17250,20 +17288,18 @@
       "heading": "Deviant confesses",
       "branches": [
         {
-          "condition_text": "Deviant self-destructs",
+          "condition_text": "Its stress is too high: the deviant self-destructs",
           "when": {
-            "not": {
-              "flag": "connor_interrogation_approach",
-              "equals": "convince"
-            }
+            "flag": "connor_deviant_stress_high",
+            "equals": true
           },
           "next": "ch9_00012"
         },
         {
-          "condition_text": "Deviant is taken back to its cell",
+          "condition_text": "Its stress is below 70%: Chris takes it back to its cell",
           "when": {
-            "flag": "connor_interrogation_approach",
-            "equals": "convince"
+            "flag": "connor_deviant_stress_high",
+            "equals": false
           },
           "next": "ch9_00040"
         }
@@ -17272,8 +17308,8 @@
       "default_branch": 0,
       "next": "ch9_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
-      "note": "Approximation: the game keeps a running stress score for the HK400 and it self-destructs above 70%; here convincing it keeps the stress in range, while probing or pressuring it does not."
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "note": "Approximation of the stress score (https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress): probing forces it to 100% and maintaining pressure pushes it over 70%; convincing keeps it in range and backing off after pressure lowers it."
     },
     "ch9_00042": {
       "id": "ch9_00042",
@@ -17714,10 +17750,26 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "connor_deviant_stress_high": false
+            }
           }
+        },
+        {
+          "id": "option_1",
+          "label": "MAINTAIN PRESSURE",
+          "next": "ch9_x0104",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_deviant_stress_high": true
+            }
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
         }
-      ]
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch9_00062": {
       "id": "ch9_00062",
@@ -18458,7 +18510,8 @@
           ],
           "effects": {
             "flags": {
-              "connor_interrogation_approach": "probe"
+              "connor_interrogation_approach": "probe",
+              "connor_deviant_stress_high": true
             }
           }
         },
@@ -18470,7 +18523,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_interrogation_approach": "convince"
+              "connor_interrogation_approach": "convince",
+              "connor_deviant_stress_high": false
             }
           }
         },
@@ -26112,13 +26166,22 @@
           "id": "option_1",
           "label": "LAST NIGHT",
           "next": "ch12_00062",
-          "requirements_unverified": [
-            "Spilled Hank's drink in Partners"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_hank_bar_choice",
+              "equals": "spill"
+            },
+            {
+              "flag": "connor_partners_found_deviant",
+              "equals": false
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Notes"
         },
         {
           "id": "option_2",
@@ -115287,7 +115350,7 @@
     "ch32_3_00002": {
       "id": "ch32_3_00002",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115306,7 +115369,7 @@
     "ch32_3_00003": {
       "id": "ch32_3_00003",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115326,7 +115389,7 @@
     "ch32_3_00004": {
       "id": "ch32_3_00004",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115345,7 +115408,7 @@
     "ch32_3_00005": {
       "id": "ch32_3_00005",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115364,7 +115427,7 @@
     "ch32_3_00006": {
       "id": "ch32_3_00006",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115383,7 +115446,7 @@
     "ch32_3_00007": {
       "id": "ch32_3_00007",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
       "description": "",
@@ -115402,10 +115465,10 @@
     "ch32_3_00008": {
       "id": "ch32_3_00008",
       "type": "choice",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Going after the deviant leader",
-      "description": "Going after the deviant leader",
+      "description": "Markus is speaking to the crowd. Connor has the deviant leader in his sights.",
       "options": [
         {
           "id": "option_0",
@@ -115420,7 +115483,7 @@
         {
           "id": "option_1",
           "label": "SHOOT",
-          "next": "ch32_3_00001",
+          "next": "ch32_8_x0102",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -115430,68 +115493,14 @@
             },
             "news": [
               {
-                "headline": "Deviant leader shot dead by a sniper during downtown demonstration",
-                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
+                "headline": "Deviant leader Markus shot dead in front of the crowd during his Hart Plaza speech",
+                "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit"
               }
             ]
-          }
-        }
-      ]
-    },
-    "ch32_3_00009": {
-      "id": "ch32_3_00009",
-      "type": "condition",
-      "chapter": "32.3",
-      "character": "Connor",
-      "heading": "Going after the deviant leader",
-      "branches": [
-        {
-          "condition_text": "In the crowd [Markus led a successful demonstration]",
-          "next": "ch32_3_00008",
-          "when": {
-            "all": [
-              {
-                "flag": "markus_alive",
-                "equals": true
-              },
-              {
-                "flag": "markus_peaceful",
-                "equals": true
-              }
-            ]
-          }
-        },
-        {
-          "condition_text": "Connor finds Markus",
-          "next": "ch32_3_00001",
-          "when": {
-            "all": [
-              {
-                "flag": "markus_alive",
-                "equals": true
-              },
-              {
-                "flag": "markus_peaceful",
-                "equals": false
-              }
-            ]
-          }
-        },
-        {
-          "condition_text": "Connor arrives in the store",
-          "next": "ch32_3_00001",
-          "when": {
-            "flag": "markus_alive",
-            "equals": false
           }
         }
       ],
-      "unverified": false,
-      "default_branch": 0,
-      "next": "ch32_3_00001",
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
-      "note": "Approximation: Connor finds Markus in the crowd when Markus marches peacefully."
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit"
     },
     "ch32_3_00010": {
       "id": "ch32_3_00010",
@@ -115499,10 +115508,12 @@
       "chapter": "32.3",
       "character": "Connor",
       "heading": "Going after the deviant leader",
-      "description": "Going after the deviant leader",
+      "description": "The chance to shoot from the rooftop is gone. Connor heads down toward Hart Plaza, where the deviant leader is.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_3_00009"
+      "next": "ch32_3_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission",
+      "note": "Missed Opportunity: on the wiki every rooftop outcome ends without the shot (the rifle is damaged). Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch32_3_00011": {
       "id": "ch32_3_00011",
@@ -115544,26 +115555,39 @@
     },
     "ch32_3_00013": {
       "id": "ch32_3_00013",
-      "type": "condition",
+      "type": "choice",
       "chapter": "32.3",
       "character": "Connor",
       "heading": "On the rooftop",
-      "branches": [
+      "description": "Connor turns away from Hank. Hank rushes at him from behind, toward the edge of the roof.",
+      "options": [
         {
-          "condition_text": "Dodge Hank: Connor leaves him alive on the rooftop",
-          "when": null,
-          "next": "ch32_3_00010"
+          "id": "option_0",
+          "label": "DODGE",
+          "next": "ch32_3_x0108",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_dodged_hank": true,
+              "hank_alive": false
+            }
+          }
         },
         {
-          "condition_text": "Get pushed from the edge",
-          "when": null,
-          "next": "ch32_3_x0104"
+          "id": "option_1",
+          "label": "DON'T DODGE",
+          "next": "ch32_3_x0104",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_dodged_hank": false
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch32_3_00010",
-      "resolution": "qte"
+      "source": "https://detroit-become-human.fandom.com/wiki/Hank_Anderson#Connor's_Last_Mission"
     },
     "ch32_3_00014": {
       "id": "ch32_3_00014",
@@ -115675,26 +115699,38 @@
     },
     "ch32_3_00019": {
       "id": "ch32_3_00019",
-      "type": "condition",
+      "type": "choice",
       "chapter": "32.3",
       "character": "Connor",
       "heading": "On the rooftop",
-      "branches": [
+      "description": "Hank attacks Connor at the edge of the roof, and they fight.",
+      "options": [
         {
-          "condition_text": "Win the fight",
-          "when": null,
-          "next": "ch32_3_00016"
+          "id": "option_0",
+          "label": "WIN THE FIGHT",
+          "next": "ch32_3_00016",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_rooftop_fight": "won"
+            }
+          }
         },
         {
-          "condition_text": "Lose the fight",
-          "when": null,
-          "next": "ch32_3_x0105"
+          "id": "option_1",
+          "label": "LET HANK WIN",
+          "next": "ch32_3_x0105",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_rooftop_fight": "hank_won"
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch32_3_00010",
-      "resolution": "qte"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
     },
     "ch32_3_00020": {
       "id": "ch32_3_00020",
@@ -116831,7 +116867,7 @@
       "description": "On the rooftop",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_3_00066"
+      "next": "ch32_3_x0110"
     },
     "ch32_3_x0104": {
       "id": "ch32_3_x0104",
@@ -117252,7 +117288,7 @@
     "ch32_3_x0101": {
       "id": "ch32_3_x0101",
       "type": "choice",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "In the Zen Garden",
       "description": "Amanda leaves Connor in the Zen Garden while his body, under her control, raises the gun at Markus. Kamski once said he always leaves an emergency exit in his programs.",
@@ -117280,8 +117316,8 @@
             },
             "news": [
               {
-                "headline": "Deviant leader shot dead by a sniper during downtown demonstration",
-                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
+                "headline": "Deviant leader Markus shot dead in front of the crowd during his Hart Plaza speech",
+                "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit"
               }
             ]
           }
@@ -117292,26 +117328,26 @@
     "ch32_3_x0102": {
       "id": "ch32_3_x0102",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Escaped the Zen Garden",
       "description": "Connor searches the Zen Garden until he finds a glowing hand print on a stone at its edge. He presses his palm to it and is back in his own body, the gun aimed at Markus. He lowers it and lets the speech go on.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_3_00001",
+      "next": "ch32_8_x0102",
       "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch32_3_x0103": {
       "id": "ch32_3_x0103",
       "type": "scene",
-      "chapter": "32.3",
+      "chapter": "32.8",
       "character": "Connor",
       "heading": "Shot Markus",
       "description": "Connor stops searching. Outside, his body raises the gun and fires. Markus falls in front of the crowd.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_3_00001",
+      "next": "ch32_8_x0102",
       "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -119862,7 +119898,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00108"
+      "next": "ch32_4_00001"
     },
     "ch32_4_00110": {
       "id": "ch32_4_00110",
@@ -119874,7 +119910,12 @@
         {
           "condition_text": "Connor dies",
           "when": null,
-          "next": "ch32_4_00109"
+          "next": "ch32_4_00109",
+          "effects": {
+            "flags": {
+              "connor_story_ended": true
+            }
+          }
         }
       ],
       "unverified": true,
@@ -119928,16 +119969,20 @@
       "heading": "Floor -49",
       "branches": [
         {
-          "condition_text": "Didn't hack the camera",
-          "when": null,
+          "condition_text": "Didn't hack the camera: guards wait on Floor -49",
+          "when": {
+            "flag": "connor_hacked_elevator_camera",
+            "equals": false
+          },
           "next": "ch32_4_00112"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch32_4_00108",
-      "resolution": "unknown",
-      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice."
+      "resolution": "rule",
+      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Floor_-49"
     },
     "ch32_4_00114": {
       "id": "ch32_4_00114",
@@ -119967,7 +120012,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00114"
+      "next": "ch32_4_x0102"
     },
     "ch32_4_00116": {
       "id": "ch32_4_00116",
@@ -120024,7 +120069,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_4_00114"
+      "next": "ch32_4_00117"
     },
     "ch32_4_00119": {
       "id": "ch32_4_00119",
@@ -120096,27 +120141,51 @@
     },
     "ch32_4_00122": {
       "id": "ch32_4_00122",
-      "type": "condition",
+      "type": "choice",
       "chapter": "32.4",
       "character": "Connor",
       "heading": "At the CyberLife tower",
-      "branches": [
+      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice.",
+      "description": "The elevator is taking Connor and two guards up to level 31. A security camera watches from the corner. Connor has to find a way out before the doors open.",
+      "options": [
         {
-          "condition_text": "Reaching level 31",
-          "when": null,
-          "next": "ch32_4_00115"
+          "id": "option_0",
+          "label": "HACK CAMERA",
+          "next": "ch32_4_x0101",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_hacked_elevator_camera": true
+            }
+          }
         },
         {
-          "condition_text": "Attacking the guards and using the elevator",
-          "when": null,
-          "next": "ch32_4_00121"
+          "id": "option_1",
+          "label": "ATTACK GUARDS",
+          "next": "ch32_4_00121",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_hacked_elevator_camera": false
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "DO NOTHING",
+          "next": "ch32_4_00115",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_story_ended": true
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch32_4_00114",
-      "resolution": "unknown",
-      "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice."
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
     },
     "ch32_4_00123": {
       "id": "ch32_4_00123",
@@ -131391,7 +131460,7 @@
       "chapter": "1",
       "character": "Connor",
       "heading": "Daniel jumped with Emma",
-      "description": "Daniel backs onto the ledge with Emma in his arms and throws himself off the roof with her. Connor runs to the edge, too late to reach them. Emma and Daniel fall to their deaths. The negotiation has failed.",
+      "description": "Daniel throws himself off the roof with Emma in his arms. Connor does not leap after them. Emma and Daniel fall to their deaths. The negotiation has failed.",
       "dialogue": [],
       "observations": [],
       "next": "ch1_00001",
@@ -134575,7 +134644,7 @@
         },
         {
           "condition_text": "The androids stayed dormant",
-          "next": "game_complete",
+          "next": "final_x0910",
           "when": {
             "flag": "connor_androids_woke",
             "equals": false
@@ -135745,7 +135814,7 @@
         {
           "id": "option_1",
           "label": "LET MARKUS WIN",
-          "next": "ch32_6_00045",
+          "next": "ch32_6_x0126",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -136810,6 +136879,672 @@
       "next": "ch30_1_00001",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Kara",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch1_x0106": {
+      "id": "ch1_x0106",
+      "type": "condition",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Speak with Daniel",
+      "branches": [
+        {
+          "condition_text": "Probability of Success at 80% or more",
+          "when": {
+            "any": [
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_took_cop_gun",
+                        "equals": true
+                      },
+                      {
+                        "flag": "connor_lied_about_gun",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_took_cop_gun",
+                        "equals": true
+                      },
+                      {
+                        "flag": "connor_lied_about_gun",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_took_cop_gun",
+                        "equals": true
+                      },
+                      {
+                        "flag": "connor_lied_about_gun",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_took_cop_gun",
+                        "equals": true
+                      },
+                      {
+                        "flag": "connor_lied_about_gun",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "key_only"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "key_only"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "key_only"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "key_only"
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  }
+                ]
+              }
+            ]
+          },
+          "next": "ch1_00006",
+          "effects": {
+            "flags": {
+              "connor_daniel_probability_high": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch1_00006",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success",
+      "note": "Approximation of the Probability of Success: investigating thoroughly, Connor needs two of dismissing the helicopter, a warm topic (POSSIBLE CAUSE, EMMA AND YOU, SYMPATHETIC), TRUST, leaving the cop as Daniel ordered, and being honest about the cop's gun; checking key areas only, three of the first four; rushing, REASSURE always falls short."
+    },
+    "ch32_3_x0110": {
+      "id": "ch32_3_x0110",
+      "type": "condition",
+      "chapter": "32.3",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "branches": [
+        {
+          "condition_text": "Markus killed the deviant Connor in Night of the Soul",
+          "when": {
+            "flag": "connor_killed_by_markus",
+            "equals": true
+          },
+          "next": "ch32_3_x0109"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_3_00066",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Connor's_Last_Mission"
+    },
+    "ch32_3_x0109": {
+      "id": "ch32_3_x0109",
+      "type": "scene",
+      "chapter": "32.3",
+      "character": "Connor",
+      "heading": "In the Zen Garden",
+      "description": "A new Connor wakes in the Zen Garden. Amanda tells him that the Connor before him became deviant, failed his mission and was destroyed. His mission now is to neutralize the deviant leader.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_3_00066",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_3_x0108": {
+      "id": "ch32_3_x0108",
+      "type": "scene",
+      "chapter": "32.3",
+      "character": "Connor",
+      "heading": "Hank falls to his death",
+      "description": "Connor sidesteps. Hank's rush carries him past Connor and over the edge of the roof. He falls to his death.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_3_00010",
+      "source": "https://detroit-become-human.fandom.com/wiki/Hank_Anderson#Connor's_Last_Mission",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_8_x0101": {
+      "id": "ch32_8_x0101",
+      "type": "scene",
+      "chapter": "32.8",
+      "character": "Connor",
+      "heading": "In the crowd",
+      "description": "Hart Plaza, after the demonstration. Markus stands before the crowd of androids and begins to speak. Connor is in the audience, armed. His mission is still to neutralize the deviant leader.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_3_00008",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_8_x0102": {
+      "id": "ch32_8_x0102",
+      "type": "chapter_exit",
+      "chapter": "32.8",
+      "character": "Connor",
+      "description": "End of chapter 32.8",
+      "next": "game_complete"
+    },
+    "ch32_4_x0101": {
+      "id": "ch32_4_x0101",
+      "type": "choice",
+      "chapter": "32.4",
+      "character": "Connor",
+      "heading": "In the elevator",
+      "description": "The camera is hacked; nobody is watching the elevator now. The guards still stand beside Connor.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ATTACK GUARDS",
+          "next": "ch32_4_00121",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_attacked_elevator_guards": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "DO NOTHING",
+          "next": "ch32_4_00115",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_story_ended": true
+            }
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
+    },
+    "ch32_4_x0102": {
+      "id": "ch32_4_x0102",
+      "type": "scene",
+      "chapter": "32.4",
+      "character": "Connor",
+      "heading": "Ambushed on level 31",
+      "description": "The elevator doors open on level 31. CyberLife security is waiting, and opens fire. Connor is shot down; the androids on Floor -49 stay dormant.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_4_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch1_x0105": {
+      "id": "ch1_x0105",
+      "type": "scene",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Connor leapt for Emma and fell",
+      "description": "Connor leaps after them, catches Emma and pushes her back onto the terrace as he falls with Daniel. Emma is safe. Connor is destroyed.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch9_x0104": {
+      "id": "ch9_x0104",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Connor keeps pushing, and doesn't let up. The deviant's stress climbs past breaking point, and it starts to talk.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch9_00058",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch6_x0103": {
+      "id": "ch6_x0103",
+      "type": "condition",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank wants to go",
+      "branches": [
+        {
+          "condition_text": "Connor searched the whole house: Hank wants to go",
+          "when": {
+            "flag": "connor_ch6_exploration",
+            "equals": "thorough"
+          },
+          "next": "ch6_x0104"
+        },
+        {
+          "condition_text": "Connor checked the key evidence only: he is done in time",
+          "when": {
+            "not": {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          },
+          "next": "ch6_00053"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch6_00053",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Approximation: the game's timer runs out on a full search, so Hank wants to leave and Connor asks for more time."
+    },
+    "ch6_x0104": {
+      "id": "ch6_x0104",
+      "type": "condition",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank wants to go",
+      "branches": [
+        {
+          "condition_text": "Connor spilled his drink: Hank refuses more time",
+          "when": {
+            "flag": "connor_hank_bar_choice",
+            "equals": "spill"
+          },
+          "next": "ch6_x0105",
+          "effects": {
+            "flags": {
+              "connor_partners_found_deviant": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch6_00053",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Hank refuses if Connor spilled his drink at Jimmy's Bar, and accepts otherwise."
+    },
+    "ch6_x0105": {
+      "id": "ch6_x0105",
+      "type": "scene",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank wants to go",
+      "description": "Hank has had enough and wants to leave. Connor asks for more time, but Hank, still sore about his spilled drink, refuses and ends the investigation.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch6_x0101",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "final_x0910": {
+      "id": "final_x0910",
+      "type": "condition",
+      "chapter": "final",
+      "character": "multiple",
+      "heading": "Connor in the crowd at Markus's speech",
+      "branches": [
+        {
+          "condition_text": "Markus won his demonstration and gives his speech, with a machine Connor in the crowd",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              },
+              {
+                "flag": "markus_demonstration_outcome",
+                "equals": "won"
+              }
+            ]
+          },
+          "next": "ch32_8_x0101"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "game_complete",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Per the wiki, a machine Connor is in the audience only if Markus gives his speech after a successful Demonstration (docs/adr/0004)."
+    },
+    "ch32_6_x0126": {
+      "id": "ch32_6_x0126",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Markus defeats Connor",
+      "branches": [
+        {
+          "condition_text": "Connor had died 0 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 0
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 1
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 1 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 1
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 2
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 2 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 2
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 3
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 3 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 3
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 4
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 4 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 4
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 5
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 5 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 5
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 6
+            }
+          }
+        },
+        {
+          "condition_text": "Connor had died 6 times",
+          "next": "ch32_6_00045",
+          "when": {
+            "flag": "connor_deaths",
+            "equals": 6
+          },
+          "effects": {
+            "flags": {
+              "connor_deaths": 7
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_00045",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Possible_Deaths",
+      "note": "Markus kills Connor in the final fight; CyberLife sends another."
     }
   },
   "initial_flags": {
@@ -136872,6 +137607,17 @@
     "kara_awaiting_markus": "none",
     "kara_wounded_in_camp": false,
     "kara_ch32_ralph_killed": false,
-    "markus_revolution_won": false
+    "markus_revolution_won": false,
+    "connor_deviant_stress_high": false,
+    "connor_hacked_elevator_camera": false,
+    "connor_took_cop_gun": false,
+    "connor_lied_about_gun": false,
+    "connor_dismissed_helicopter": false,
+    "connor_daniel_topic_warm": false,
+    "connor_asked_daniel_to_trust": false,
+    "connor_daniel_probability_high": false,
+    "connor_interrogation_approach": "none",
+    "connor_interrogation_ending": "none",
+    "connor_pressured_deviant": false
   }
 }

@@ -12,6 +12,8 @@ FINAL_PLEA = "ch1_00009"
 EXECUTE = {"ch1_00016": "EXECUTE"}
 # The Interrogation: leaving the deviant to self-destruct (no death).
 LET_IT_SELF_DESTRUCT = {"ch9_00008": "GIVE UP"}
+# Connor finds the deviant in Partners: after a spilled drink Hank refuses him the time.
+FOUND = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
 # The Bridge
 HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}
 HANK_SHOT_CONNOR = "ch22_x0101"
@@ -58,7 +60,13 @@ def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_pa
     machine = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
     run = play_story(
         tmp_path,
-        {"ch1_00016": "INTIMIDATE", "ch1_00013": "CONVINCE", **machine, **HOSTILE_HANK},
+        {
+            "ch1_00016": "INTIMIDATE",
+            "ch1_00013": "CONVINCE",
+            **FOUND,
+            **machine,
+            **HOSTILE_HANK,
+        },
     )
     assert {PREVIOUS_CONNOR, YOU_WOULD_COME_BACK, YOU_MUST_BE_MISTAKEN} <= set(
         run.nodes
@@ -69,7 +77,7 @@ def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_pa
 def test_each_way_connor_dies_adds_one(tmp_path):
     never = play_story(tmp_path / "a", {**EXECUTE, **LET_IT_SELF_DESTRUCT})
     hostage = play_story(tmp_path / "b", {**LET_IT_SELF_DESTRUCT})
-    both = play_story(tmp_path / "c", {})
+    both = play_story(tmp_path / "c", FOUND)
     saving_hank = play_story(
         tmp_path / "d",
         {**EXECUTE, **LET_IT_SELF_DESTRUCT, "ch24_00031": "SAVE HANK"},
