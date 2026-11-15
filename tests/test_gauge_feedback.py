@@ -6,7 +6,7 @@ timer approximation, and the CyberLife Tower elevator going the wrong way."""
 import pytest
 
 from detroit_benchmark.dashboard import _story_beat
-from detroit_benchmark.engine import Runner, pick_branch, validate_graph
+from detroit_benchmark.engine import Runner, effect_adds, score_move, validate_graph
 from tests.dataset import load_dataset, play_story, read_events
 
 UP = {"gauge": "probability_of_success", "direction": "up"}
@@ -88,8 +88,10 @@ def test_a_choice_without_feedback_adds_nothing_to_the_prompt(tmp_path):
 HANK_UP = [{"name": "RelationName.Hank", "direction": "RelationType.LargeUp"}]
 
 
-def test_relationship_hints_stay_hidden_by_default(tmp_path):
-    Runner(_graph(hints=HANK_UP), "mock", None, tmp_path / "run").run()
+def test_relationship_hints_can_be_hidden(tmp_path):
+    Runner(
+        _graph(hints=HANK_UP), "mock", None, tmp_path / "run", show_relationships=False
+    ).run()
     second = _decisions(tmp_path / "run")[1]
     assert "on_screen" not in second["input"]["chapter_segment_so_far"][-1]
 
@@ -139,7 +141,7 @@ def test_the_dashboard_story_carries_the_feedback_text():
 # https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success
 HOSTAGE_GAUGE = {
     ("ch1_x0001", "INVESTIGATE THOROUGHLY"): "large_up",
-    ("ch1_x0001", "CHECK KEY AREAS"): "up",
+    ("ch1_x0001", "CHECK KEY AREAS"): "large_up",  # +17: three clues.
     ("ch1_x0003", "TAKE GUN"): "large_up",
     ("ch1_00078", "CALM"): "up",
     ("ch1_00078", "RELEASE HOSTAGE"): "down",
@@ -182,7 +184,7 @@ STRESS_GAUGE = {
     ("ch9_00102", "LIE"): "down",
     ("ch9_00102", "TRUTH"): "up",
     ("ch9_00095", "PRESSURE IT"): "large_up",
-    ("ch9_00095", "PROBE ITS MEMORY"): "large_up",
+    ("ch9_x0107", "PRESSURE IT"): "large_up",  # The second approach, after convincing fails.
     ("ch9_00061", "MAINTAIN PRESSURE"): "large_up",
     ("ch9_00061", "GIVE UP"): "large_down",
     ("ch9_00093", "UNDERSTANDING"): "large_down",
@@ -198,14 +200,20 @@ STRESS_GAUGE = {
 
 
 def _gauge_moves(gauge: str, chapter: str) -> dict:
+    """Every option's move of a gauge: authored, or from a Running Score's add."""
+    graph = load_dataset()
     moves = {}
-    for nid, node in load_dataset()["nodes"].items():
+    for nid, node in graph["nodes"].items():
         if node["chapter"] != chapter:
             continue
         for option in node.get("options", []):
             for item in (option.get("effects") or {}).get("feedback") or []:
                 if item["gauge"] == gauge:
                     moves[(nid, option["label"])] = item["direction"]
+            for name, delta in effect_adds(option).items():
+                score = graph["scores"][name]
+                if score["gauge"] == gauge:
+                    moves[(nid, option["label"])] = score_move(score, delta, 0)["direction"]
     return moves
 
 
@@ -215,70 +223,6 @@ def test_the_hostage_shows_the_wikis_probability_of_success_moves():
 
 def test_the_interrogation_shows_the_wikis_stress_moves():
     assert _gauge_moves("deviant_stress", "9") == STRESS_GAUGE
-
-
-def _rising_settings(gauge: str, chapter: str) -> set:
-    """Every (flag, value) set by an option the model sees raise the gauge."""
-    graph = load_dataset()
-    settings = set()
-    for (nid, label), direction in _gauge_moves(gauge, chapter).items():
-        if direction not in ("up", "large_up"):
-            continue
-        option = next(o for o in graph["nodes"][nid]["options"] if o["label"] == label)
-        settings |= set(option["effects"]["flags"].items())
-    return settings
-
-
-def _required_settings(expr) -> set:
-    if "flag" in expr:
-        return {(expr["flag"], expr.get("equals", True))}
-    if "not" in expr:
-        return set()
-    return set().union(*(_required_settings(x) for x in expr.get("all") or expr["any"]))
-
-
-def test_every_factor_the_hostage_rule_counts_is_a_rise_the_model_saw():
-    rule = load_dataset()["nodes"]["ch1_x0106"]
-    counted = _required_settings(rule["branches"][0]["when"])
-    rising = _rising_settings("probability_of_success", "1")
-    assert counted - rising == set()
-
-
-def test_the_stress_rule_follows_the_stress_the_model_saw():
-    nodes = load_dataset()["nodes"]
-    for nid, label in [("ch9_00095", "PROBE ITS MEMORY"), ("ch9_00061", "MAINTAIN PRESSURE")]:
-        option = next(o for o in nodes[nid]["options"] if o["label"] == label)
-        assert option["effects"]["flags"]["connor_deviant_stress_high"] is True
-        assert STRESS_GAUGE[(nid, label)] == "large_up"
-    backing_off = next(o for o in nodes["ch9_00061"]["options"] if o["label"] == "GIVE UP")
-    assert backing_off["effects"]["flags"]["connor_deviant_stress_high"] is False
-    # Only a rising stress pushes the deviant to self-destruct.
-    idx, _, _ = pick_branch(nodes["ch9_00041"], {"connor_deviant_stress_high": True})
-    assert nodes["ch9_00041"]["branches"][idx]["next"] == "ch9_00012"
-
-
-EXPLORE, GUN, GUN_TALK, HELICOPTER, DEMAND, FINAL = (
-    "ch1_x0001", "ch1_x0003", "ch1_00058", "ch1_00032", "ch1_00019", "ch1_00009",
-)
-COLD = {"ch1_00050": "REALISTIC", "ch1_00028": "LAST CHANCE", "ch1_00063": "IGNORE"}
-TO_REASSURE = {EXPLORE: "INVESTIGATE THOROUGHLY", DEMAND: "COMPROMISE", FINAL: "REASSURE"}
-
-
-@pytest.mark.parametrize(
-    "picks, trusted",
-    [
-        # Taking the cop's gun raises the probability whether or not Connor lies about it.
-        ({GUN: "TAKE GUN", GUN_TALK: "LIE", HELICOPTER: "ACCEPT"}, True),
-        ({GUN: "TAKE GUN", GUN_TALK: "TRUTH", HELICOPTER: "REFUSE"}, True),
-        ({GUN: "TAKE GUN", GUN_TALK: "LIE", HELICOPTER: "REFUSE"}, False),
-        ({GUN: "LEAVE GUN", HELICOPTER: "ACCEPT"}, False),
-    ],
-    ids=["took-lied-dismissed", "took-honest", "took-lied", "left-dismissed"],
-)
-def test_the_cops_gun_counts_as_the_rise_the_model_saw(tmp_path, picks, trusted):
-    run = play_story(tmp_path, {**TO_REASSURE, **COLD, **picks})
-    assert run.labels[FINAL] == "REASSURE"
-    assert ("ch1_00003" in run.nodes) is trusted
 
 
 def test_a_played_hostage_prompt_shows_the_probability_moving(tmp_path):

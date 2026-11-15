@@ -117,7 +117,12 @@ function agreementLabel(byChoice) {
 }
 function renderDecision(item, number, total, key, tables, run) {
   const record = item.record, {byChoice} = compareDecision(key, tables);
-  const who = record.character && record.character !== 'multiple' ? record.character : null;
+  // A Joint Decision names every Character whose memory it was made with.
+  const deciders = Array.isArray(record.deciders) && record.deciders.length > 1 ? record.deciders : null;
+  const who = deciders
+    ? deciders.slice(0, -1).join(', ') + ' and ' + deciders[deciders.length - 1]
+    : record.character && record.character !== 'multiple' ? record.character : null;
+  const joint = deciders && record.joint ? `<p class="story-joint">${esc(record.joint)}</p>` : '';
   const exploration = Boolean(graphNode(record.node_id)?.exploration);
   const options = (record.available_choices || []).map(option => {
     const chosen = option.id === record.choice_id, group = byChoice.get(option.id) || [];
@@ -130,8 +135,8 @@ function renderDecision(item, number, total, key, tables, run) {
     : `<span class="story-decision-count">Decision ${number} of ${total}</span>`;
   return `<article class="story-decision ${exploration ? 'is-exploration' : ''}" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
     <header>${count}${agreementLabel(byChoice)}</header>
-    <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
-    <ul class="story-options">${options}</ul>
+    <h3>${who ? `What ${deciders ? 'do' : 'does'} ${esc(who)} do?` : 'What happens next?'}</h3>
+    ${joint}<ul class="story-options">${options}</ul>
     ${renderFeedback(record)}
     <div class="story-why" aria-live="polite"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
   </article>`;

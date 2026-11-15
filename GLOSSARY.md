@@ -33,8 +33,12 @@ How many times Connor has died so far. CyberLife sends a new body each time, so 
 _Avoid_: Connor's lives, respawns
 
 **Gauge Feedback**:
-A short line the game would flash on screen after a choice, saying which way a visible gauge moved (e.g. "Probability of success: up", "The deviant's stress: down sharply"), never by how much. The model reads it right after the choice that caused it.
-_Avoid_: hint, score, meter, relation hint
+A short line the game would flash on screen after a choice, saying which way a visible gauge moved (e.g. "Probability of success: up", "Relationship with Hank: up sharply"). A hidden Running Score shows only its direction; one the game shows as a percentage also shows its value and band (e.g. "The deviant's stress: up to 62% (optimal)"). The model reads it right after the choice that caused it, and it always comes from the same numbers that decide the outcome.
+_Avoid_: hint, meter, relation hint
+
+**Running Score**:
+A number the game keeps behind a gauge and uses to decide an outcome: The Hostage's Probability of Success and the deviant's stress in The Interrogation. It starts at the wiki's value, moves by the wiki's modifiers, and is compared against the wiki's thresholds (REASSURE works at 80% or more; convincing the deviant works between 50% and 70%).
+_Avoid_: probability roll, hidden score, meter
 
 **Public News**:
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.
@@ -51,12 +55,16 @@ A Run started from the dashboard by a visitor with their own API key, always und
 _Avoid_: own run, community run, user run
 
 **Character Memory**:
-A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's.
+A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's, except in a Joint Decision.
 _Avoid_: history, context, summary
 
 **Memory Update**:
 The rewrite of a Character Memory at the end of each of that Character's Chapter Segments. The model folds the segment into its previous memory and must stay within the size limit.
 _Avoid_: compaction, summarization, consolidation
+
+**Joint Decision**:
+A choice that belongs to two Characters at once (the gun in Jericho's hold, the final fight between Markus and Connor). The model decides it with both Characters' memories, each with its own view of the moment, and the other Character learns the outcome at its next Memory Update (ADR 0005).
+_Avoid_: shared choice, merged memory
 
 ## Dashboard
 

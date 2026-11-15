@@ -35,7 +35,7 @@ def flags_in(expr: dict) -> set[str]:
     """Every flag name a rule's ``when`` expression reads."""
     if "flag" in expr:
         return {expr["flag"]}
-    inner = expr.get("all") or expr.get("any") or [expr["not"]]
+    inner = expr["all"] if "all" in expr else expr.get("any") or [expr["not"]]
     return set().union(*(flags_in(x) for x in inner))
 
 

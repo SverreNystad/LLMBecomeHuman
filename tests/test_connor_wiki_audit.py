@@ -241,7 +241,9 @@ COLD = {TOPIC: "REALISTIC", HELICOPTER: "REFUSE", PLEA: "LAST CHANCE", COP: "IGN
         ({EXPLORE: "INVESTIGATE THOROUGHLY", **COLD, **WARM}, True),
         ({EXPLORE: "INVESTIGATE THOROUGHLY", **COLD, HELICOPTER: "ACCEPT"}, False),
         ({EXPLORE: "CHECK KEY AREAS", **COLD, **WARM}, False),
-        ({EXPLORE: "CHECK KEY AREAS", **COLD, **WARM, COP: "OBEY"}, True),
+        # Probability of Success: 48+17+3+6+6-15+10+6+6+6 = 93 (LAST CHANCE instead of
+        # TRUST would leave 79%, short of the 80% REASSURE needs).
+        ({EXPLORE: "CHECK KEY AREAS", **COLD, **WARM, COP: "OBEY", PLEA: "TRUST"}, True),
         ({EXPLORE: "RUSH TO THE BALCONY", **WARM, COP: "OBEY", PLEA: "TRUST"}, False),
     ],
     ids=["thorough-two", "thorough-one", "key-two", "key-three", "rush"],

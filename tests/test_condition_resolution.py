@@ -592,7 +592,19 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
 }
-TRUTH_IS_INSIDE = {"ch9_00095": "CONVINCE IT", "ch9_00040": "INTERVENE"}
+# Convincing works only with the stress in the optimal band (The Interrogation#Influencing
+# Carlos' android's stress): 35+4+4+4+4+4 = 55, then -7+7+7 = 62%.
+TRUTH_IS_INSIDE = {
+    "ch9_00123": "SHOW PHOTOS",
+    "ch9_00118": "THREATEN",
+    "ch9_00113": "THREATEN",
+    "ch9_00106": "TRUTH",
+    "ch9_00102": "TRUTH",
+    "ch9_00095": "CONVINCE IT",
+    "ch9_00089": "INDIFFERENT",
+    "ch9_00085": "TERRIFY",
+    "ch9_00040": "INTERVENE",
+}
 
 
 def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):

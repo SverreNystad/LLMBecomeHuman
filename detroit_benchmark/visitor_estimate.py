@@ -28,7 +28,9 @@ from .engine import (
     SYSTEM_PROMPT,
     _edges,
     chapter_briefing,
+    effect_adds,
     gauge_text,
+    score_move,
 )
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -166,6 +168,8 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                     ],
                 }
             )
+            # A Joint Decision also carries the other deciders' memories.
+            prompt += len(remembered) * (len(node.get("deciders") or [None]) - 1)
             for option in node["options"]:
                 # The choice joins the segment every later prompt in it carries,
                 # with any Gauge Feedback it caused.
@@ -174,7 +178,13 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                     "your_choice": option["label"],
                     "rationale": "x" * rationale,
                 }
-                feedback = (option.get("effects") or {}).get("feedback") or []
+                feedback = list((option.get("effects") or {}).get("feedback") or [])
+                scores = graph.get("scores") or {}
+                feedback += [
+                    score_move(scores[name], delta, scores[name]["max"])
+                    for name, delta in effect_adds(option).items()
+                    if delta
+                ]
                 if feedback:
                     moment["on_screen"] = [gauge_text(item) for item in feedback]
                 chosen = 1 + _size(moment)

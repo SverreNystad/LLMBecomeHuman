@@ -649,12 +649,9 @@
             "flags": {
               "connor_daniel_final_plea": "reassure"
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         },
         {
@@ -667,12 +664,9 @@
             "flags": {
               "connor_daniel_final_plea": "truth"
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -20
+            }
           }
         },
         {
@@ -1014,12 +1008,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         },
         {
@@ -1030,12 +1021,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -20
+            }
           }
         },
         {
@@ -1241,12 +1229,9 @@
             "flags": {
               "connor_asked_daniel_to_trust": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -8
+            }
           }
         },
         {
@@ -1259,12 +1244,9 @@
             "flags": {
               "connor_asked_daniel_to_trust": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         },
         {
@@ -1291,12 +1273,9 @@
             "flags": {
               "connor_asked_daniel_to_trust": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -8
+            }
           }
         }
       ]
@@ -1376,12 +1355,9 @@
             "flags": {
               "connor_dismissed_helicopter": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 10
+            }
           }
         },
         {
@@ -1415,7 +1391,7 @@
         }
       ],
       "observations": [],
-      "next": "ch1_00032"
+      "next": "ch1_x0107"
     },
     "ch1_00034": {
       "id": "ch1_00034",
@@ -1739,12 +1715,9 @@
             "flags": {
               "connor_daniel_topic_warm": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 10
+            }
           },
           "requires": [
             {
@@ -1766,12 +1739,9 @@
             "flags": {
               "connor_daniel_topic_warm": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 10
+            }
           },
           "requires": [
             {
@@ -1793,12 +1763,9 @@
             "flags": {
               "connor_daniel_topic_warm": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -2
+            }
           }
         },
         {
@@ -1811,12 +1778,9 @@
             "flags": {
               "connor_daniel_topic_warm": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -5
+            }
           }
         },
         {
@@ -1829,12 +1793,9 @@
             "flags": {
               "connor_daniel_topic_warm": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         },
         {
@@ -1847,12 +1808,9 @@
             "flags": {
               "connor_daniel_topic_warm": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -5
+            }
           }
         },
         {
@@ -2026,12 +1984,9 @@
             "flags": {
               "connor_lied_about_gun": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         }
       ]
@@ -2164,12 +2119,9 @@
             "flags": {
               "connor_saved_terrace_cop": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -5
+            }
           }
         },
         {
@@ -2182,12 +2134,9 @@
             "flags": {
               "connor_saved_terrace_cop": false
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 6
+            }
           }
         }
       ]
@@ -2466,12 +2415,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 3
+            }
           }
         },
         {
@@ -2482,12 +2428,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -2
+            }
           }
         },
         {
@@ -2498,12 +2441,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 3
+            }
           }
         },
         {
@@ -2514,12 +2454,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": -2
+            }
           }
         }
       ]
@@ -3258,12 +3195,9 @@
             "flags": {
               "connor_took_cop_gun": true
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 7
+            }
           }
         },
         {
@@ -3555,12 +3489,9 @@
             "flags": {
               "connor_ch1_exploration": "thorough"
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 32
+            }
           }
         },
         {
@@ -3573,12 +3504,9 @@
             "flags": {
               "connor_ch1_exploration": "key_only"
             },
-            "feedback": [
-              {
-                "gauge": "probability_of_success",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_hostage_probability": 17
+            }
           }
         },
         {
@@ -17432,18 +17360,34 @@
       "heading": "Deviant confesses",
       "branches": [
         {
-          "condition_text": "Its stress is too high: the deviant self-destructs",
+          "condition_text": "Its stress is 70% or more, or it was pressured to the end: the deviant self-destructs",
           "when": {
-            "flag": "connor_deviant_stress_high",
-            "equals": true
+            "any": [
+              {
+                "flag": "connor_deviant_stress",
+                "gte": 70
+              },
+              {
+                "flag": "connor_pressured_four_times",
+                "equals": true
+              }
+            ]
           },
           "next": "ch9_00012"
         },
         {
           "condition_text": "Its stress is below 70%: Chris takes it back to its cell",
           "when": {
-            "flag": "connor_deviant_stress_high",
-            "equals": false
+            "all": [
+              {
+                "flag": "connor_deviant_stress",
+                "lt": 70
+              },
+              {
+                "flag": "connor_pressured_four_times",
+                "equals": false
+              }
+            ]
           },
           "next": "ch9_00040"
         }
@@ -17452,8 +17396,8 @@
       "default_branch": 0,
       "next": "ch9_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
-      "note": "Approximation of the stress score (https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress): probing forces it to 100% and maintaining pressure pushes it over 70%; convincing keeps it in range and backing off after pressure lowers it."
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
+      "note": "The stress is a Running Score (connor_deviant_stress): 35% at the start, moved by the wiki's modifiers. Below 70% Chris steps in; otherwise the deviant self-destructs. Maintaining pressure counts as pressing all four times, which makes it self-destruct even in the optimal range; the text version's two pressure choices carry the wiki's +50% total (+10, then +40)."
     },
     "ch9_00042": {
       "id": "ch9_00042",
@@ -17894,15 +17838,10 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {
-              "connor_deviant_stress_high": false
-            },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_down"
-              }
-            ]
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": -20
+            }
           }
         },
         {
@@ -17913,14 +17852,11 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_deviant_stress_high": true
+              "connor_pressured_four_times": true
             },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 40
+            }
           },
           "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
         }
@@ -18271,7 +18207,13 @@
         {
           "condition_text": "Probe succeeded",
           "when": null,
-          "next": "ch9_00076"
+          "next": "ch9_00076",
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 100
+            }
+          }
         },
         {
           "condition_text": "Probe failed",
@@ -18339,7 +18281,7 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00058"
+      "next": "ch9_x0105"
     },
     "ch9_00083": {
       "id": "ch9_00083",
@@ -18358,7 +18300,7 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00058"
+      "next": "ch9_x0105"
     },
     "ch9_00084": {
       "id": "ch9_00084",
@@ -18377,7 +18319,7 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00058"
+      "next": "ch9_x0105"
     },
     "ch9_00085": {
       "id": "ch9_00085",
@@ -18395,12 +18337,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -7
+            }
           }
         },
         {
@@ -18411,12 +18350,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 7
+            }
           }
         },
         {
@@ -18427,12 +18363,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 7
+            }
           }
         }
       ]
@@ -18510,12 +18443,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -7
+            }
           }
         },
         {
@@ -18526,12 +18456,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 7
+            }
           }
         },
         {
@@ -18542,12 +18469,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -7
+            }
           }
         }
       ]
@@ -18625,12 +18549,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -7
+            }
           }
         },
         {
@@ -18641,12 +18562,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 7
+            }
           }
         },
         {
@@ -18657,12 +18575,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 7
+            }
           }
         }
       ]
@@ -18705,12 +18620,9 @@
               "connor_interrogation_approach": "pressure",
               "connor_pressured_deviant": true
             },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 10
+            }
           }
         },
         {
@@ -18726,15 +18638,8 @@
           ],
           "effects": {
             "flags": {
-              "connor_interrogation_approach": "probe",
-              "connor_deviant_stress_high": true
-            },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+              "connor_interrogation_approach": "probe"
+            }
           }
         },
         {
@@ -18745,8 +18650,7 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_interrogation_approach": "convince",
-              "connor_deviant_stress_high": false
+              "connor_interrogation_approach": "convince"
             }
           }
         },
@@ -18889,12 +18793,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         },
         {
@@ -18905,12 +18806,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         }
       ]
@@ -18988,12 +18886,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         },
         {
@@ -19004,12 +18899,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         }
       ]
@@ -19144,12 +19036,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         },
         {
@@ -19160,12 +19049,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         },
         {
@@ -19176,12 +19062,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "large_up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 8
+            }
           }
         },
         {
@@ -19192,12 +19075,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         }
       ]
@@ -19294,12 +19174,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         },
         {
@@ -19310,12 +19187,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         },
         {
@@ -19326,12 +19200,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         },
         {
@@ -19342,12 +19213,9 @@
           "relation_hints": [],
           "effects": {
             "flags": {},
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         }
       ]
@@ -19470,12 +19338,9 @@
             "flags": {
               "connor_pressured_deviant": false
             },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           }
         },
         {
@@ -19488,12 +19353,9 @@
             "flags": {
               "connor_pressured_deviant": false
             },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "up"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": 4
+            }
           },
           "requires": [
             {
@@ -19515,12 +19377,9 @@
             "flags": {
               "connor_pressured_deviant": false
             },
-            "feedback": [
-              {
-                "gauge": "deviant_stress",
-                "direction": "down"
-              }
-            ]
+            "add": {
+              "connor_deviant_stress": -4
+            }
           }
         }
       ]
@@ -89891,31 +89750,44 @@
     },
     "ch30_2_00010": {
       "id": "ch30_2_00010",
-      "type": "condition",
+      "type": "choice",
       "chapter": "30.2",
       "character": "Connor",
       "heading": "In the hold",
-      "branches": [
+      "unverified": true,
+      "description": "Markus pushes Connor aside and the gun falls between them. As in the game, you control Markus: reach the gun first, or let Connor reach it.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+      "deciders": [
+        "Markus",
+        "Connor"
+      ],
+      "decider_context": {
+        "Markus": "Soldiers are storming Jericho. In the hold, Markus is trying to get his people out when Connor, the deviant hunter, finds him and draws on him. Markus pushes him aside and both lunge for the gun."
+      },
+      "options": [
         {
-          "condition_text": "Markus reaches the gun first: Markus shoots Connor",
-          "when": null,
-          "next": "ch30_2_x0101"
+          "id": "option_0",
+          "label": "REACH THE GUN FIRST",
+          "next": "ch30_2_x0101",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
         },
         {
-          "condition_text": "Connor reaches the gun first: Connor shoots Markus",
-          "when": null,
+          "id": "option_1",
+          "label": "LET CONNOR REACH IT",
           "next": "ch30_2_00009",
+          "requirements_unverified": [],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "markus_alive": false
             }
           }
         }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_2_00001",
-      "resolution": "qte"
+      ]
     },
     "ch30_2_00011": {
       "id": "ch30_2_00011",
@@ -126709,7 +126581,14 @@
             "flags": {}
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Markus",
+        "Connor"
+      ],
+      "decider_context": {
+        "Connor": "Connor, still a machine, has tracked the deviant leader through the assault on the Recall Center. His mission is to stop Markus, and now they face each other and fight."
+      }
     },
     "ch32_6_00047": {
       "id": "ch32_6_00047",
@@ -136133,7 +136012,14 @@
             "flags": {}
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Markus",
+        "Connor"
+      ],
+      "decider_context": {
+        "Connor": "Connor, still a machine, has tracked the deviant leader through the assault on the Recall Center. His mission is to stop Markus, and now they face each other and fight."
+      }
     },
     "ch32_6_x0120": {
       "id": "ch32_6_x0120",
@@ -137211,370 +137097,10 @@
       "heading": "Speak with Daniel",
       "branches": [
         {
-          "condition_text": "Probability of Success at 80% or more",
+          "condition_text": "Probability of Success at 80% or more after REASSURE",
           "when": {
-            "any": [
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_took_cop_gun",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "all": [
-                      {
-                        "flag": "connor_took_cop_gun",
-                        "equals": true
-                      },
-                      {
-                        "flag": "connor_lied_about_gun",
-                        "equals": false
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_took_cop_gun",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "all": [
-                      {
-                        "flag": "connor_took_cop_gun",
-                        "equals": true
-                      },
-                      {
-                        "flag": "connor_lied_about_gun",
-                        "equals": false
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_took_cop_gun",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  },
-                  {
-                    "all": [
-                      {
-                        "flag": "connor_took_cop_gun",
-                        "equals": true
-                      },
-                      {
-                        "flag": "connor_lied_about_gun",
-                        "equals": false
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  },
-                  {
-                    "flag": "connor_took_cop_gun",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  },
-                  {
-                    "all": [
-                      {
-                        "flag": "connor_took_cop_gun",
-                        "equals": true
-                      },
-                      {
-                        "flag": "connor_lied_about_gun",
-                        "equals": false
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "thorough"
-                  },
-                  {
-                    "flag": "connor_took_cop_gun",
-                    "equals": true
-                  },
-                  {
-                    "all": [
-                      {
-                        "flag": "connor_took_cop_gun",
-                        "equals": true
-                      },
-                      {
-                        "flag": "connor_lied_about_gun",
-                        "equals": false
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "key_only"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "key_only"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "key_only"
-                  },
-                  {
-                    "flag": "connor_dismissed_helicopter",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              },
-              {
-                "all": [
-                  {
-                    "flag": "connor_ch1_exploration",
-                    "equals": "key_only"
-                  },
-                  {
-                    "flag": "connor_daniel_topic_warm",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_asked_daniel_to_trust",
-                    "equals": true
-                  },
-                  {
-                    "flag": "connor_saved_terrace_cop",
-                    "equals": false
-                  }
-                ]
-              }
-            ]
+            "flag": "connor_hostage_probability",
+            "gte": 80
           },
           "next": "ch1_00006",
           "effects": {
@@ -137589,7 +137115,7 @@
       "next": "ch1_00006",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success",
-      "note": "Approximation of the Probability of Success, counting the large rises the model is shown (Gauge Feedback): investigating thoroughly, Connor needs two of dismissing the helicopter, a warm topic (POSSIBLE CAUSE, EMMA AND YOU, SYMPATHETIC), TRUST, leaving the cop as Daniel ordered, taking the cop's gun and being honest about it; checking key areas only, three of the first four; rushing, REASSURE always falls short. Small moves (+3/-2) and the falls are shown but not counted."
+      "note": "The Probability of Success is a Running Score (connor_hostage_probability): it starts at 48% after talking to Captain Allen, moves by the wiki's modifiers and is capped at 99% until REASSURE, which succeeds at 80% or more. The investigation's clues are counted on the Exploration Choice; the waiting penalty (-1% per 20 s) is left out because the text version has no timer."
     },
     "ch32_3_x0110": {
       "id": "ch32_3_x0110",
@@ -137916,6 +137442,149 @@
             }
           }
         }
+      ],
+      "deciders": [
+        "Markus",
+        "Connor"
+      ],
+      "decider_context": {
+        "Connor": "Connor, still a machine, has tracked the deviant leader through the assault on the Recall Center. His mission is to stop Markus, and now they face each other and fight."
+      }
+    },
+    "ch1_x0107": {
+      "id": "ch1_x0107",
+      "type": "condition",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Speak with Daniel",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success",
+      "note": "The wiki's unavoidable -15% when the helicopter approaches.",
+      "branches": [
+        {
+          "condition_text": "The helicopter approaches",
+          "when": {
+            "all": []
+          },
+          "next": "ch1_00032",
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_hostage_probability": -15
+            }
+          }
+        }
+      ],
+      "next": "ch1_00032",
+      "default_branch": 0
+    },
+    "ch9_x0105": {
+      "id": "ch9_x0105",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
+      "note": "Convincing works only with the stress in the optimal range, 50-70%.",
+      "branches": [
+        {
+          "condition_text": "Its stress is in the optimal range: the deviant confesses",
+          "when": {
+            "flag": "connor_deviant_stress",
+            "gte": 50,
+            "lte": 70
+          },
+          "next": "ch9_00058"
+        },
+        {
+          "condition_text": "Its stress is too low or too high: convincing fails",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_deviant_stress",
+                "lt": 50
+              },
+              {
+                "flag": "connor_deviant_stress",
+                "gt": 70
+              }
+            ]
+          },
+          "next": "ch9_x0106"
+        }
+      ],
+      "next": "ch9_00058",
+      "default_branch": 0
+    },
+    "ch9_x0106": {
+      "id": "ch9_x0106",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "The deviant doesn't answer. Connor's words haven't reached it, and the interrogation goes on.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch9_x0107"
+    },
+    "ch9_x0107": {
+      "id": "ch9_x0107",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Choose another approach",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "PRESSURE IT",
+          "next": "ch9_00068",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "pressure",
+              "connor_pressured_deviant": true
+            },
+            "add": {
+              "connor_deviant_stress": 10
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "PROBE ITS MEMORY",
+          "next": "ch9_00081",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "probe"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GIVE UP",
+          "next": "ch9_00094",
+          "requirements_unverified": [
+            "Will also automatically happen if the chosen approach failed twice"
+          ],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "give_up",
+              "connor_interrogation_ending": "sent_to_cell"
+            }
+          }
+        }
       ]
     }
   },
@@ -137980,7 +137649,6 @@
     "kara_wounded_in_camp": false,
     "kara_ch32_ralph_killed": false,
     "markus_revolution_won": false,
-    "connor_deviant_stress_high": false,
     "connor_hacked_elevator_camera": false,
     "connor_took_cop_gun": false,
     "connor_lied_about_gun": false,
@@ -137990,6 +137658,38 @@
     "connor_daniel_probability_high": false,
     "connor_interrogation_approach": "none",
     "connor_interrogation_ending": "none",
-    "connor_pressured_deviant": false
+    "connor_pressured_deviant": false,
+    "connor_hostage_probability": 48,
+    "connor_deviant_stress": 35,
+    "connor_pressured_four_times": false
+  },
+  "scores": {
+    "connor_hostage_probability": {
+      "gauge": "probability_of_success",
+      "min": 0,
+      "max": 99,
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success"
+    },
+    "connor_deviant_stress": {
+      "gauge": "deviant_stress",
+      "min": 0,
+      "max": 100,
+      "shown": "percent",
+      "bands": [
+        {
+          "name": "too low",
+          "max": 49
+        },
+        {
+          "name": "optimal",
+          "max": 70
+        },
+        {
+          "name": "too high",
+          "max": 100
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress"
+    }
   }
 }

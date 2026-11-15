@@ -71,6 +71,11 @@ def main():
     play.add_argument(
         "--initial-flags", type=Path, help="Optional JSON dict of game-state flags"
     )
+    play.add_argument(
+        "--hide-relationships",
+        action="store_true",
+        help="Don't show the game's relationship arrows as Gauge Feedback (shown by default)",
+    )
     compare = sub.add_parser("compare", help="Compare saved playthroughs")
     compare.add_argument("run_dirs", type=Path, nargs="+")
     compare.add_argument("--out", type=Path)
@@ -148,6 +153,7 @@ def main():
             memory_max_chars=args.memory_max_chars,
             temperature=args.temperature,
             resume=args.resume,
+            show_relationships=not args.hide_relationships,
         )
         print(json.dumps(run.run(), indent=2, ensure_ascii=False))
     elif args.command == "compare":
