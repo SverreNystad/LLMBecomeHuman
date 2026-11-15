@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 23,
+    "condition_nodes_unverified": 22,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -383,7 +383,8 @@
     "32.4": "ch32_4_00135",
     "32.5": "ch32_5_00207",
     "32.6": "ch32_6_00125",
-    "32.7": "ch32_7_00026"
+    "32.7": "ch32_7_00026",
+    "32.9": "ch32_9_x0001"
   },
   "chapter_briefings": {
     "1": "A high-rise apartment in Detroit, August 2038, at dusk. A household android, Daniel, has shot the father and holds the family's young daughter, Emma, at the edge of the rooftop terrace. Police and SWAT fill the apartment; the commander, Captain Allen, is tense and short on patience, a mother pleads in tears, a police helicopter circles. A wounded officer lies on the terrace. Daniel is agitated and screaming. Stakes: the child's life, the officers' lives and whether the deviant is stopped.",
@@ -426,7 +427,8 @@
     "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, thousands of new androids wait in storage. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
     "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
     "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city.",
-    "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be."
+    "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be.",
+    "32.9": "Recall Center Nº5, some time later. Somewhere beyond the fences and floodlights, the army is fighting Markus's androids. Soldiers still drive the captives toward the recycling machines. Stakes: whether anyone left in the camp sees the morning."
   },
   "nodes": {
     "ch1_00001": {
@@ -86458,26 +86460,39 @@
     },
     "ch30_1_00062": {
       "id": "ch30_1_00062",
-      "type": "condition",
+      "type": "choice",
       "chapter": "30.1",
       "character": "Kara",
       "heading": "Hide in cabin",
-      "branches": [
+      "description": "The android Kara let in is shot in the doorway, and a soldier comes into the cabin after it. Kara can fight him or give up.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Kara",
+      "options": [
         {
-          "condition_text": "Kill soldier",
-          "when": null,
-          "next": "ch30_1_00061"
+          "id": "option_0",
+          "label": "FIGHT BACK",
+          "next": "ch30_1_00061",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_captured": false
+            }
+          }
         },
         {
-          "condition_text": "Lose fight",
-          "when": null,
-          "next": "ch30_1_00058"
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch30_1_x0113",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_captured": true
+            }
+          }
         }
       ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch30_1_00058",
-      "resolution": "qte"
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch30_1_00063": {
       "id": "ch30_1_00063",
@@ -108299,7 +108314,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00336"
+      "next": "ch32_1_x0111"
     },
     "ch32_1_00338": {
       "id": "ch32_1_00338",
@@ -108375,7 +108390,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00336"
+      "next": "ch32_1_x0111"
     },
     "ch32_1_00342": {
       "id": "ch32_1_00342",
@@ -108708,7 +108723,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_stopped_to_save": true
+            }
           }
         },
         {
@@ -108723,7 +108740,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_stopped_to_save": false
+            }
           }
         }
       ]
@@ -109170,7 +109189,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_stopped_to_save": true
+            }
           }
         },
         {
@@ -109185,7 +109206,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_stopped_to_save": false
+            }
           }
         }
       ]
@@ -109651,7 +109674,9 @@
             }
           ],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_stopped_to_save": true
+            }
           }
         },
         {
@@ -109667,7 +109692,8 @@
           ],
           "effects": {
             "flags": {
-              "luther_alive": false
+              "luther_alive": false,
+              "kara_ch32_stopped_to_save": false
             }
           }
         }
@@ -110270,25 +110296,6 @@
       "observations": [],
       "next": "ch32_2_00005"
     },
-    "ch32_2_00007": {
-      "id": "ch32_2_00007",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Soldier",
-          "text": "They're coming! They're coming!",
-          "source_keys": [
-            "X0913K.ENDLINE.NOWAYOUT.VO.X09KSWATM04.REVOLUTION"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch32_2_00001"
-    },
     "ch32_2_00008": {
       "id": "ch32_2_00008",
       "type": "scene",
@@ -110335,7 +110342,8 @@
       "heading": "Fail to escape - Reach Recycling Machine",
       "branches": [
         {
-          "condition_text": "Markus' revolution succeeded : Kara and Alice are saved",
+          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "next": "ch32_2_x0216",
           "when": {
             "all": [
               {
@@ -110345,18 +110353,22 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
               }
             ]
           },
-          "next": "ch32_2_00007",
           "effects": {
             "flags": {
-              "kara_escaped_camp": true
+              "kara_awaiting_markus": "together"
             }
           }
         },
         {
-          "condition_text": "Kara and Alice are not saved",
+          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
+          "next": "ch32_2_00009",
           "when": {
             "any": [
               {
@@ -110366,10 +110378,13 @@
               {
                 "flag": "markus_alive",
                 "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
               }
             ]
           },
-          "next": "ch32_2_00009",
           "effects": {
             "flags": {
               "kara_alive": false,
@@ -110381,9 +110396,9 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_2_00006",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured"
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
     },
     "ch32_2_00011": {
       "id": "ch32_2_00011",
@@ -110530,106 +110545,6 @@
         }
       ]
     },
-    "ch32_2_00017": {
-      "id": "ch32_2_00017",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Kara",
-          "text": "Alice…",
-          "source_keys": [
-            "X0913K.DEATHCONTAINER.END.PC.X09KKARA.KARADEATHK"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch32_2_00006"
-    },
-    "ch32_2_00018": {
-      "id": "ch32_2_00018",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Soldier",
-          "text": "Go on, get in! Move it!",
-          "source_keys": [
-            "X0913K.DEATHCONTAINER.END.VO.X09KSWATM03.ALICEDEATH"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch32_2_00017"
-    },
-    "ch32_2_00019": {
-      "id": "ch32_2_00019",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Alice",
-          "text": "Kara… Please come and save me, Kara…",
-          "source_keys": [
-            "X0913K.DEATHCONTAINER.END.FA.X09KALICE.ALICEDEATH"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch32_2_00018"
-    },
-    "ch32_2_00020": {
-      "id": "ch32_2_00020",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "description": "",
-      "dialogue": [
-        {
-          "speaker": "Soldier",
-          "text": "Go on, get in! Move it!",
-          "source_keys": [
-            "X0913K.DEATHCONTAINER.END.VO.X09KSWATM03.ALICEDEATH"
-          ]
-        }
-      ],
-      "observations": [],
-      "next": "ch32_2_00019"
-    },
-    "ch32_2_00021": {
-      "id": "ch32_2_00021",
-      "type": "condition",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Fail to escape - Reach Recycling Machine",
-      "branches": [
-        {
-          "condition_text": "Kara and Alice are together",
-          "when": null,
-          "next": "ch32_2_00016"
-        },
-        {
-          "condition_text": "Kara and Alice are separated",
-          "when": null,
-          "next": "ch32_2_00020"
-        }
-      ],
-      "unverified": true,
-      "default_branch": 0,
-      "next": "ch32_2_00006",
-      "resolution": "unknown",
-      "unknown_reason": "Whether Kara and Alice are separated at the camp is not decided by any recorded choice."
-    },
     "ch32_2_00022": {
       "id": "ch32_2_00022",
       "type": "scene",
@@ -110639,7 +110554,7 @@
       "description": "Fail to escape - Reach Recycling Machine",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_2_00021"
+      "next": "ch32_2_00016"
     },
     "ch32_2_00023": {
       "id": "ch32_2_00023",
@@ -110734,7 +110649,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0110"
+      "next": "ch32_2_x0223"
     },
     "ch32_2_00028": {
       "id": "ch32_2_00028",
@@ -110810,7 +110725,7 @@
         {
           "id": "option_2",
           "label": "WAIT",
-          "next": "ch32_2_00029",
+          "next": "ch32_2_x0228",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -110866,7 +110781,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00032"
+      "next": "ch32_2_00029"
     },
     "ch32_2_00034": {
       "id": "ch32_2_00034",
@@ -110915,7 +110830,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00035"
+      "next": "ch32_2_00032"
     },
     "ch32_2_00037": {
       "id": "ch32_2_00037",
@@ -111247,7 +111162,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0101"
+      "next": "ch32_2_00043"
     },
     "ch32_2_00055": {
       "id": "ch32_2_00055",
@@ -111296,38 +111211,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0207"
-    },
-    "ch32_2_x0207": {
-      "id": "ch32_2_x0207",
-      "type": "condition",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Ask scarred android",
-      "branches": [
-        {
-          "condition_text": "The scarred android is in the camp (Kara freed him in Zlatko)",
-          "next": "ch32_2_00056",
-          "when": {
-            "flag": "kara_freed_zlatkos_androids",
-            "equals": true
-          }
-        },
-        {
-          "condition_text": "Not the scarred android is in the camp (Kara freed him in Zlatko)",
-          "next": "ch32_2_x0101",
-          "when": {
-            "not": {
-              "flag": "kara_freed_zlatkos_androids",
-              "equals": true
-            }
-          }
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+      "next": "ch32_2_00043"
     },
     "ch32_2_00058": {
       "id": "ch32_2_00058",
@@ -111346,7 +111230,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00057"
+      "next": "ch32_2_00043"
     },
     "ch32_2_00059": {
       "id": "ch32_2_00059",
@@ -111377,38 +111261,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0206"
-    },
-    "ch32_2_x0206": {
-      "id": "ch32_2_x0206",
-      "type": "condition",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Send Ralph",
-      "branches": [
-        {
-          "condition_text": "Ralph is in the camp (he attacked Connor in On the Run)",
-          "next": "ch32_2_00059",
-          "when": {
-            "flag": "ralph_attacked_connor",
-            "equals": true
-          }
-        },
-        {
-          "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
-          "next": "ch32_2_x0207",
-          "when": {
-            "not": {
-              "flag": "ralph_attacked_connor",
-              "equals": true
-            }
-          }
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+      "next": "ch32_2_00043"
     },
     "ch32_2_00061": {
       "id": "ch32_2_00061",
@@ -111438,7 +111291,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00061"
+      "next": "ch32_2_x0101"
     },
     "ch32_2_00063": {
       "id": "ch32_2_00063",
@@ -111457,7 +111310,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00061"
+      "next": "ch32_2_x0101"
     },
     "ch32_2_00064": {
       "id": "ch32_2_00064",
@@ -111476,7 +111329,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00061"
+      "next": "ch32_2_x0101"
     },
     "ch32_2_00065": {
       "id": "ch32_2_00065",
@@ -111493,7 +111346,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_powerless_with_alice": false
+            }
           }
         },
         {
@@ -111503,7 +111358,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_powerless_with_alice": true
+            }
           }
         },
         {
@@ -111513,7 +111370,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_powerless_with_alice": false
+            }
           }
         }
       ]
@@ -111590,7 +111449,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_forbade_alice": true
+            }
           }
         },
         {
@@ -111600,7 +111461,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_forbade_alice": false
+            }
           }
         }
       ]
@@ -111715,7 +111578,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_told_alice_truth": false
+            }
           }
         },
         {
@@ -111725,7 +111590,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_told_alice_truth": true
+            }
           }
         }
       ]
@@ -111796,7 +111663,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00078"
+      "next": "ch32_2_x0231"
     },
     "ch32_2_00080": {
       "id": "ch32_2_00080",
@@ -111845,7 +111712,7 @@
         },
         {
           "condition_text": "Not the scarred android is in the camp (Kara freed him in Zlatko)",
-          "next": "ch32_2_00078",
+          "next": "ch32_2_x0231",
           "when": {
             "not": {
               "flag": "kara_freed_zlatkos_androids",
@@ -111954,28 +111821,42 @@
       "heading": "Talk to Ralph",
       "branches": [
         {
-          "condition_text": "Ralph is in the camp (he attacked Connor in On the Run)",
+          "condition_text": "Ralph is in the line (he attacked Connor in On the Run and is still alive)",
           "next": "ch32_2_00085",
           "when": {
-            "flag": "ralph_attacked_connor",
-            "equals": true
+            "all": [
+              {
+                "flag": "ralph_attacked_connor",
+                "equals": true
+              },
+              {
+                "flag": "kara_ch32_ralph_killed",
+                "equals": false
+              }
+            ]
           }
         },
         {
-          "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
+          "condition_text": "Ralph is not in the line",
           "next": "ch32_2_x0205",
           "when": {
-            "not": {
-              "flag": "ralph_attacked_connor",
-              "equals": true
-            }
+            "any": [
+              {
+                "flag": "ralph_attacked_connor",
+                "equals": false
+              },
+              {
+                "flag": "kara_ch32_ralph_killed",
+                "equals": true
+              }
+            ]
           }
         }
       ],
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+      "source": "https://detroit-become-human.fandom.com/wiki/Ralph#Battle_for_Detroit_-_Kara_Captured"
     },
     "ch32_2_00087": {
       "id": "ch32_2_00087",
@@ -112339,7 +112220,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00103"
+      "next": "ch32_2_x0214"
     },
     "ch32_2_00105": {
       "id": "ch32_2_00105",
@@ -112447,12 +112328,44 @@
       "heading": "Join line",
       "branches": [
         {
-          "condition_text": "Markus is leading a revolution",
+          "condition_text": "Markus is alive and attacking the camp",
+          "next": "ch32_2_00110",
           "when": {
-            "flag": "markus_peaceful",
-            "equals": false
-          },
-          "next": "ch32_2_00110"
+            "all": [
+              {
+                "flag": "markus_peaceful",
+                "equals": false
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Markus is not attacking the camp",
+          "next": "ch32_2_00106",
+          "when": {
+            "any": [
+              {
+                "flag": "markus_peaceful",
+                "equals": true
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
+              }
+            ]
+          }
         }
       ],
       "unverified": false,
@@ -113078,7 +112991,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00139"
+      "next": "ch32_2_x0230"
     },
     "ch32_2_00141": {
       "id": "ch32_2_00141",
@@ -113116,7 +113029,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00139"
+      "next": "ch32_2_x0230"
     },
     "ch32_2_00143": {
       "id": "ch32_2_00143",
@@ -113171,7 +113084,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_ralph_killed": true
+            }
           }
         },
         {
@@ -113187,7 +113102,7 @@
         {
           "id": "option_2",
           "label": "GIVE UP",
-          "next": "ch32_2_00139",
+          "next": "ch32_2_x0230",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -114084,8 +113999,8 @@
       "heading": "Kara leaves the camp without Alice",
       "branches": [
         {
-          "condition_text": "Markus frees the camp",
-          "next": "ch32_2_x0212",
+          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "next": "ch32_2_x0220",
           "when": {
             "all": [
               {
@@ -114095,12 +114010,21 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
               }
             ]
+          },
+          "effects": {
+            "flags": {
+              "kara_awaiting_markus": "left_alice"
+            }
           }
         },
         {
-          "condition_text": "Nobody frees the camp",
+          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
           "next": "ch32_2_x0213",
           "when": {
             "any": [
@@ -114111,6 +114035,10 @@
               {
                 "flag": "markus_alive",
                 "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
               }
             ]
           },
@@ -114124,20 +114052,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center"
-    },
-    "ch32_2_x0212": {
-      "id": "ch32_2_x0212",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Kara leaves the camp without Alice",
-      "description": "Kara hides in the truck and leaves the camp alone. Hours later Markus's androids storm the camp, and Alice walks out free.",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch32_2_00001",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
     },
     "ch32_2_x0213": {
       "id": "ch32_2_x0213",
@@ -114377,7 +114293,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_volunteered": true
+            }
           }
         },
         {
@@ -114387,7 +114305,9 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {
+              "kara_ch32_volunteered": false
+            }
           }
         }
       ]
@@ -125171,7 +125091,7 @@
       "chapter": "32.6",
       "character": "Markus",
       "description": "End of chapter 32.6",
-      "next": "final_x0902"
+      "next": "final_x0920"
     },
     "ch32_6_00002": {
       "id": "ch32_6_00002",
@@ -129664,7 +129584,7 @@
         },
         {
           "condition_text": "Not ralph is in the camp (he attacked Connor in On the Run)",
-          "next": "ch32_2_00139",
+          "next": "ch32_2_x0230",
           "when": {
             "not": {
               "flag": "ralph_attacked_connor",
@@ -133350,19 +133270,100 @@
       "branches": [
         {
           "condition_text": "Alice stays calm",
-          "next": "ch32_2_00043",
-          "when": null
+          "next": "ch32_2_x0226",
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "all": [
+                    {
+                      "flag": "kara_ch32_told_alice_truth",
+                      "equals": true
+                    },
+                    {
+                      "flag": "kara_ch32_forbade_alice",
+                      "equals": true
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "flag": "kara_ch32_told_alice_truth",
+                      "equals": true
+                    },
+                    {
+                      "flag": "kara_ch32_powerless_with_alice",
+                      "equals": true
+                    }
+                  ]
+                },
+                {
+                  "all": [
+                    {
+                      "flag": "kara_ch32_forbade_alice",
+                      "equals": true
+                    },
+                    {
+                      "flag": "kara_ch32_powerless_with_alice",
+                      "equals": true
+                    }
+                  ]
+                }
+              ]
+            }
+          }
         },
         {
-          "condition_text": "Alice's stress reaches 100%",
+          "condition_text": "Alice's stress reaches 100%: Kara failed to reassure her",
           "next": "ch32_2_00053",
-          "when": null
+          "when": {
+            "any": [
+              {
+                "all": [
+                  {
+                    "flag": "kara_ch32_told_alice_truth",
+                    "equals": true
+                  },
+                  {
+                    "flag": "kara_ch32_forbade_alice",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "kara_ch32_told_alice_truth",
+                    "equals": true
+                  },
+                  {
+                    "flag": "kara_ch32_powerless_with_alice",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "kara_ch32_forbade_alice",
+                    "equals": true
+                  },
+                  {
+                    "flag": "kara_ch32_powerless_with_alice",
+                    "equals": true
+                  }
+                ]
+              }
+            ]
+          }
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
-      "resolution": "qte",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Alice#Possible_deaths",
+      "note": "Alice's stress is a hidden gauge in the game. Approximated: it reaches 100% when Kara fails to reassure her at two of the three moments in the line (tells her the truth, forbids her to move, says there is nothing they can do)."
     },
     "ch32_2_x0102": {
       "id": "ch32_2_x0102",
@@ -133372,8 +133373,8 @@
       "heading": "Alice stress at 100%",
       "branches": [
         {
-          "condition_text": "Markus frees the camp",
-          "next": "ch32_2_x0103",
+          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "next": "ch32_2_x0222",
           "when": {
             "all": [
               {
@@ -133383,18 +133384,22 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
               }
             ]
           },
           "effects": {
             "flags": {
-              "alice_alive": false,
-              "kara_escaped_camp": true
+              "kara_awaiting_markus": "alice_died",
+              "alice_alive": false
             }
           }
         },
         {
-          "condition_text": "Nobody frees the camp",
+          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
           "next": "ch32_2_x0104",
           "when": {
             "any": [
@@ -133405,6 +133410,10 @@
               {
                 "flag": "markus_alive",
                 "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
               }
             ]
           },
@@ -133420,20 +133429,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured"
-    },
-    "ch32_2_x0103": {
-      "id": "ch32_2_x0103",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Kara freed by Markus",
-      "description": "Alice is gone. Hours later Markus's androids storm the camp, and Kara walks out free, alone.",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch32_2_00001",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
     },
     "ch32_2_x0104": {
       "id": "ch32_2_x0104",
@@ -133456,8 +133453,8 @@
       "heading": "Alice stress at 100%",
       "branches": [
         {
-          "condition_text": "Markus frees the camp",
-          "next": "ch32_2_x0106",
+          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "next": "ch32_2_x0221",
           "when": {
             "all": [
               {
@@ -133467,18 +133464,23 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": false
               }
             ]
           },
           "effects": {
             "flags": {
+              "kara_awaiting_markus": "kara_died",
               "kara_alive": false,
               "kara_story_ended": true
             }
           }
         },
         {
-          "condition_text": "Nobody frees the camp",
+          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
           "next": "ch32_2_x0107",
           "when": {
             "any": [
@@ -133489,6 +133491,10 @@
               {
                 "flag": "markus_alive",
                 "equals": false
+              },
+              {
+                "flag": "markus_left_jericho",
+                "equals": true
               }
             ]
           },
@@ -133504,20 +133510,8 @@
       "unverified": false,
       "default_branch": 0,
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured"
-    },
-    "ch32_2_x0106": {
-      "id": "ch32_2_x0106",
-      "type": "scene",
-      "chapter": "32.2",
-      "character": "Kara",
-      "heading": "Kara died in the lines",
-      "description": "Kara dies in the line. Later, Markus's androids storm the camp and Alice is freed.",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch32_2_00001",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
     },
     "ch32_2_x0107": {
       "id": "ch32_2_x0107",
@@ -134448,7 +134442,7 @@
         },
         {
           "condition_text": "Markus is dead or left Jericho, and North is dead",
-          "next": "final_x0902",
+          "next": "final_x0920",
           "when": {
             "all": [
               {
@@ -135172,6 +135166,918 @@
       "next": "final_x0903",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Hank_Anderson"
+    },
+    "ch32_2_x0230": {
+      "id": "ch32_2_x0230",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to android",
+      "branches": [
+        {
+          "condition_text": "Kara carried the body: the android she saved is here",
+          "next": "ch32_2_00139",
+          "when": {
+            "flag": "kara_ch32_volunteered",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Kara said nothing: that android was shot",
+          "next": "ch32_2_x0202",
+          "when": {
+            "flag": "kara_ch32_volunteered",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure"
+    },
+    "ch32_2_x0231": {
+      "id": "ch32_2_x0231",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Talk to android ahead of Kara",
+      "branches": [
+        {
+          "condition_text": "Kara said nothing earlier: the android ahead of her talks",
+          "next": "ch32_2_00078",
+          "when": {
+            "flag": "kara_ch32_volunteered",
+            "equals": false
+          }
+        },
+        {
+          "condition_text": "Kara volunteered",
+          "next": "ch32_2_00076",
+          "when": {
+            "flag": "kara_ch32_volunteered",
+            "equals": true
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice"
+    },
+    "ch32_2_x0214": {
+      "id": "ch32_2_x0214",
+      "type": "choice",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Seen by drone",
+      "description": "A drone hovers in front of Kara, its gun trained on her. It orders her back to her line.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "REMAIN STILL",
+          "next": "ch32_2_00103",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE",
+          "next": "ch32_2_x0215",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_wounded_in_camp": true
+            }
+          }
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0215": {
+      "id": "ch32_2_x0215",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Drone wounds Kara",
+      "description": "The drone fires. Kara is hit in the abdomen; she is badly damaged but still standing.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00103",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0226": {
+      "id": "ch32_2_x0226",
+      "type": "choice",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Ask for a diversion",
+      "description": "Alice is in the next line. To reach her, Kara needs someone to draw the soldiers' attention.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "ASK JERRY",
+          "next": "ch32_2_00061",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "ASK LUTHER",
+          "next": "ch32_2_x0227",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "ASK RALPH",
+          "next": "ch32_2_00059",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_ralph_killed": true
+            }
+          },
+          "requires": [
+            {
+              "flag": "ralph_attacked_connor",
+              "equals": true
+            },
+            {
+              "flag": "kara_ch32_ralph_killed",
+              "equals": false
+            }
+          ]
+        },
+        {
+          "id": "option_3",
+          "label": "ASK THE SCARRED ANDROID",
+          "next": "ch32_2_00056",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "kara_freed_zlatkos_androids",
+              "equals": true
+            }
+          ]
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0227": {
+      "id": "ch32_2_x0227",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Luther creates a diversion",
+      "description": "Luther steps out of his line and charges the soldiers. They shoot him down.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00057",
+      "source": "https://detroit-become-human.fandom.com/wiki/Luther#Possible_Deaths",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0228": {
+      "id": "ch32_2_x0228",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Luther reaches Recycling Machine",
+      "branches": [
+        {
+          "condition_text": "Luther is ahead in the line and reaches the machine first",
+          "next": "ch32_2_00035",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "luther_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Luther is not here",
+          "next": "ch32_2_00029",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice"
+    },
+    "ch32_2_x0223": {
+      "id": "ch32_2_x0223",
+      "type": "condition",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Escape through the fence",
+      "branches": [
+        {
+          "condition_text": "Kara was wounded by the drone, Luther is here",
+          "next": "ch32_2_x0224",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_wounded_in_camp",
+                "equals": true
+              },
+              {
+                "flag": "luther_alive",
+                "equals": true
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "kara_story_ended": true
+            }
+          }
+        },
+        {
+          "condition_text": "Kara was wounded by the drone",
+          "next": "ch32_2_x0225",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_wounded_in_camp",
+                "equals": true
+              },
+              {
+                "flag": "luther_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "kara_story_ended": true
+            }
+          }
+        },
+        {
+          "condition_text": "Kara is not wounded",
+          "next": "ch32_2_x0110",
+          "when": {
+            "flag": "kara_wounded_in_camp",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice"
+    },
+    "ch32_2_x0224": {
+      "id": "ch32_2_x0224",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Luther and Alice escaped on truck",
+      "description": "Alice and Luther get through the barbed wire. Kara is too damaged to follow, and a soldier shoots her. Luther carries Alice onto a truck leaving the camp.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0225": {
+      "id": "ch32_2_x0225",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Alice escaped on truck",
+      "description": "Alice gets through the barbed wire. Kara is too damaged to follow, and a soldier shoots her. Alice hides on a truck leaving the camp.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0216": {
+      "id": "ch32_2_x0216",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "At the recycling machine",
+      "description": "Kara and Alice stand at the door of the recycling machine, holding hands, as the line moves forward.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0221": {
+      "id": "ch32_2_x0221",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Kara died in the lines",
+      "description": "Kara dies in the line. Alice is left alone in the camp.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0222": {
+      "id": "ch32_2_x0222",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Alice is gone",
+      "description": "Alice is gone. Kara is left alone in the line.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0220": {
+      "id": "ch32_2_x0220",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Kara leaves the camp without Alice",
+      "description": "Kara hides in the truck and leaves the camp alone. Alice is still inside.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_00007": {
+      "id": "ch32_9_00007",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Soldier",
+          "text": "They're coming! They're coming!",
+          "source_keys": [
+            "X0913K.ENDLINE.NOWAYOUT.VO.X09KSWATM04.REVOLUTION"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_x0002"
+    },
+    "ch32_9_00020": {
+      "id": "ch32_9_00020",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Soldier",
+          "text": "Go on, get in! Move it!",
+          "source_keys": [
+            "X0913K.DEATHCONTAINER.END.VO.X09KSWATM03.ALICEDEATH"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_00019"
+    },
+    "ch32_9_00019": {
+      "id": "ch32_9_00019",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Alice",
+          "text": "Kara… Please come and save me, Kara…",
+          "source_keys": [
+            "X0913K.DEATHCONTAINER.END.FA.X09KALICE.ALICEDEATH"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_00018"
+    },
+    "ch32_9_00018": {
+      "id": "ch32_9_00018",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Soldier",
+          "text": "Go on, get in! Move it!",
+          "source_keys": [
+            "X0913K.DEATHCONTAINER.END.VO.X09KSWATM03.ALICEDEATH"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_00017"
+    },
+    "ch32_9_00017": {
+      "id": "ch32_9_00017",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Kara",
+          "text": "Alice…",
+          "source_keys": [
+            "X0913K.DEATHCONTAINER.END.PC.X09KKARA.KARADEATHK"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_x0006"
+    },
+    "ch32_9_x0106": {
+      "id": "ch32_9_x0106",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice freed by Markus",
+      "description": "Markus's androids storm the camp and free the androids still in the lines. Alice is among them.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0103": {
+      "id": "ch32_9_x0103",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Kara freed by Markus",
+      "description": "Markus's androids storm the camp, and Kara walks out free, alone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0212": {
+      "id": "ch32_9_x0212",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Kara leaves the camp without Alice",
+      "description": "Markus's androids storm the camp, and Alice walks out free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_00001": {
+      "id": "ch32_9_00001",
+      "type": "chapter_exit",
+      "chapter": "32.9",
+      "character": "Kara",
+      "description": "End of chapter 32.9",
+      "next": "final_x0902"
+    },
+    "ch32_9_x0001": {
+      "id": "ch32_9_x0001",
+      "type": "condition",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "After the assault",
+      "branches": [
+        {
+          "condition_text": "Together at the machine: Markus's revolution reaches the camp",
+          "next": "ch32_9_00007",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "together"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true,
+              "kara_freed_by_markus": true
+            }
+          }
+        },
+        {
+          "condition_text": "Together at the machine: nobody frees the camp",
+          "next": "ch32_9_x0003",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "together"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "alice_alive": false,
+              "kara_story_ended": true
+            }
+          }
+        },
+        {
+          "condition_text": "Kara left Alice: Markus frees the camp",
+          "next": "ch32_9_x0212",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "left_alice"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Kara left Alice: nobody frees the camp",
+          "next": "ch32_9_00020",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "left_alice"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "alice_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Kara died in the line: Markus frees Alice",
+          "next": "ch32_9_x0106",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "kara_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              }
+            ]
+          }
+        },
+        {
+          "condition_text": "Kara died in the line: nobody frees Alice",
+          "next": "ch32_9_x0007",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "kara_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "alice_alive": false
+            }
+          }
+        },
+        {
+          "condition_text": "Alice is gone: Markus frees Kara",
+          "next": "ch32_9_x0103",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "alice_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true,
+              "kara_freed_by_markus": true
+            }
+          }
+        },
+        {
+          "condition_text": "Alice is gone: nobody frees Kara",
+          "next": "ch32_9_x0008",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "alice_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": false
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_alive": false,
+              "kara_story_ended": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "The camp is freed only by Markus's revolution succeeding (Assault was Successful): Markus alive at the end of his 32.6. Every way his revolution fails in 32.6 kills him, and a Markus shot in 32.3 never reaches the camp."
+    },
+    "ch32_9_x0002": {
+      "id": "ch32_9_x0002",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Markus liberates androids",
+      "description": "Markus's androids break into the camp. The soldiers flee, and Kara and Alice walk out of the line free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0003": {
+      "id": "ch32_9_x0003",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Alice",
+          "text": "I love you, Kara…",
+          "source_keys": [
+            "X0913K.ENDLINE.NOWAYOUT.FA.X09KALICE.LASTHUGALICE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_x0004"
+    },
+    "ch32_9_x0004": {
+      "id": "ch32_9_x0004",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Fail to escape - Reach Recycling Machine",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Kara",
+          "text": "I love you too…",
+          "source_keys": [
+            "X0913K.ENDLINE.NOWAYOUT.PC.X09KKARA.LASTHUG"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_9_x0005"
+    },
+    "ch32_9_x0005": {
+      "id": "ch32_9_x0005",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice & Kara died in Recycling Machine",
+      "description": "Nobody comes to free the camp. Kara and Alice die in the recycling machine.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0006": {
+      "id": "ch32_9_x0006",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice died in Recycling Machine",
+      "description": "Nobody comes to free the camp. Alice dies in the recycling machine, and Kara wakes up alone in the landfill.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0007": {
+      "id": "ch32_9_x0007",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice died in Recycling Machine",
+      "description": "Nobody comes to free the camp. Alice dies alone in the recycling machine.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Inside_the_Enclosure",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_9_x0008": {
+      "id": "ch32_9_x0008",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Kara is dead",
+      "description": "Nobody comes to free the camp. Kara reaches the recycling machine alone.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "final_x0920": {
+      "id": "final_x0920",
+      "type": "condition",
+      "chapter": "final",
+      "character": "Kara",
+      "heading": "Kara is waiting for Markus",
+      "branches": [
+        {
+          "condition_text": "Kara's fate in the camp waits for Markus's revolution",
+          "next": "ch32_9_x0001",
+          "when": {
+            "not": {
+              "flag": "kara_awaiting_markus",
+              "equals": "none"
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
+      "next": "final_x0902",
+      "note": "Kara's 32.9 settles the camp from Markus's final Fate, the pattern of Connor's 32.7 (ADR 0002)."
+    },
+    "ch32_1_x0111": {
+      "id": "ch32_1_x0111",
+      "type": "choice",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "At the checkpoint",
+      "description": "Soldiers are checking papers at a checkpoint on the way to the bus terminal. A detour avoids them but takes longer, and the last bus leaves soon.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#West_Side_Industrial",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "APPROACH THE CHECKPOINT",
+          "next": "ch32_1_00336",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_took_detour": false
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TAKE THE DETOUR",
+          "next": "ch32_1_x0112",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch32_took_detour": true
+            }
+          }
+        }
+      ],
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0112": {
+      "id": "ch32_1_x0112",
+      "type": "scene",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Take detour",
+      "description": "Kara leads the way around the checkpoint, through back streets.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_1_x0113",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#West_Side_Industrial",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_1_x0113": {
+      "id": "ch32_1_x0113",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Delayed",
+      "branches": [
+        {
+          "condition_text": "Kara stopped to save someone on the way: late for the bus",
+          "next": "ch32_1_00297",
+          "when": {
+            "flag": "kara_ch32_stopped_to_save",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Enough time left: on time for the bus",
+          "next": "ch32_1_00298",
+          "when": {
+            "flag": "kara_ch32_stopped_to_save",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#West_Side_Industrial",
+      "note": "The game times the walk (the detour is on time with 11 minutes or more left). Approximated: stopping to save the Jerrys or Luther costs the time the detour needs."
+    },
+    "ch30_1_x0113": {
+      "id": "ch30_1_x0113",
+      "type": "scene",
+      "chapter": "30.1",
+      "character": "Kara",
+      "heading": "Kara & Alice captured",
+      "description": "Kara raises her hands. The soldiers take Kara and Alice away with the other captured androids.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch30_1_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Kara",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     }
   },
   "initial_flags": {
@@ -135223,6 +136129,9 @@
     "hank_alive": true,
     "connor_died_in_crossroads": false,
     "connor_androids_woke": false,
-    "kara_escaped_camp": false
+    "kara_escaped_camp": false,
+    "kara_awaiting_markus": "none",
+    "kara_wounded_in_camp": false,
+    "kara_ch32_ralph_killed": false
   }
 }

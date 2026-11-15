@@ -45,7 +45,9 @@ def test_with_markus_dead_a_machine_connor_faces_north(tmp_path):
 )
 def test_north_leads_whenever_markus_is_gone_and_she_lives(flags):
     assert _next(MARKUS_GONE, {**flags, "north_alive": True}) == NORTH_LEADS
-    assert _next(MARKUS_GONE, {**flags, "north_alive": False}) == "final_x0902"
+    # Kara's 32.9 gate comes first: her camp outcome may still wait for Markus.
+    assert _next(MARKUS_GONE, {**flags, "north_alive": False}) == "final_x0920"
+    assert load_dataset()["nodes"]["final_x0920"]["next"] == "final_x0902"
 
 
 def test_markus_at_hart_plaza_plays_his_own_segment():
