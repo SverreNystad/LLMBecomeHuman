@@ -6,6 +6,7 @@ from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES
 from detroit_benchmark.ending import ending_summary
 from detroit_benchmark.engine import _reachable, effect_flags, pick_branch
 from tests.dataset import load_dataset, play_story
+from tests.test_night_of_the_soul import NOBODY_SAVES_MARKUS
 
 NODES = load_dataset()["nodes"]
 GRAPH = load_dataset()
@@ -42,8 +43,10 @@ def test_kara_waiting_in_the_camp_is_settled_after_markus_s_revolution(tmp_path)
     assert run.flags["kara_freed_by_markus"] is True
 
 
-def test_without_a_revolution_kara_s_camp_story_ends_in_32_2(tmp_path):
-    run = play_story(tmp_path, {**CAPTURED, FENCE: "WAIT"})
+def test_with_markus_dead_kara_s_camp_story_ends_in_32_2(tmp_path):
+    # A peaceful Markus now settles the camp in 32.9 too (tests/test_kara_camp_peaceful.py).
+    run = play_story(tmp_path, {**CAPTURED, **NOBODY_SAVES_MARKUS, FENCE: "WAIT"})
+    assert run.flags["markus_alive"] is False
     assert "32.9" not in run.chapters
     assert run.flags["kara_alive"] is False and run.flags["alice_alive"] is False
 
@@ -56,13 +59,15 @@ WAITING = ["ch32_2_00010", "ch32_2_x0105", "ch32_2_x0102", "ch32_2_x0211"]
     "markus, pending",
     [
         ({"markus_peaceful": False, "markus_alive": True, "markus_left_jericho": False}, True),
-        ({"markus_peaceful": True, "markus_alive": True, "markus_left_jericho": False}, False),
+        # A peaceful Markus can free the camp too, by winning his demonstration
+        # (maintainers' decision, tests/test_kara_camp_peaceful.py).
+        ({"markus_peaceful": True, "markus_alive": True, "markus_left_jericho": False}, True),
         ({"markus_alive": False, "markus_left_jericho": False}, False),
         # Banished from Jericho: North leads the attack, and it fails.
         ({"markus_alive": True, "markus_left_jericho": True}, False),
     ],
 )
-def test_32_2_waits_only_while_markus_still_leads_his_revolution(nid, markus, pending):
+def test_32_2_waits_only_while_markus_still_leads_jericho(nid, markus, pending):
     taken = branch_taken(nid, **markus)
     assert ("kara_awaiting_markus" in effect_flags(taken)) is pending
     assert not str(NODES[nid].get("next") or "").startswith("ch32_9")
@@ -85,7 +90,8 @@ def test_32_9_settles_kara_and_alice_from_markus_s_final_fate(waiting, freed, ka
     before = {"together": (True, True), "left_alice": (True, True),
               "kara_died": (False, True), "alice_died": (True, False)}[waiting]
     flags = {"kara_awaiting_markus": waiting, "markus_alive": freed,
-             "markus_revolution_won": freed, "kara_alive": before[0], "alice_alive": before[1]}
+             "markus_revolution_won": freed, "markus_demonstration_outcome": "none",
+             "kara_alive": before[0], "alice_alive": before[1]}
     flags |= effect_flags(branch_taken(CAMP_OUTCOME, **flags))
     assert (flags["kara_alive"], flags["alice_alive"]) == (kara, alice)
     assert flags.get("kara_freed_by_markus", False) is (freed and kara and waiting != "left_alice")

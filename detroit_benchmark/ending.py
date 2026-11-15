@@ -54,8 +54,10 @@ OUTCOMES: dict[str, dict[Any, str]] = {
         True: "Kara was captured but escaped the camp.",
     },
     "kara_freed_by_markus": {
-        "question": "Did Markus's revolution free Kara from the camp?",
+        "question": "Did Markus free Kara from the camp?",
         True: "Kara was captured, and Markus's androids freed her from the camp.",
+        "demonstration": "Kara was captured, and she walked out of the camp free when "
+        "Markus's demonstration was won.",
     },
     "kara_alive": {
         "question": "Is Kara alive?",
@@ -213,7 +215,9 @@ def ending_summary(
     elif value("kara_escaped_camp") is True and kara_alive is True:
         freed = value("kara_freed_by_markus") is True
         kara_outcome = "escaped"
-        kara_line = _say("kara_freed_by_markus" if freed else "kara_escaped_camp", True)
+        # A won demonstration frees the camp as a won revolution does.
+        how = "demonstration" if value("markus_peaceful") is True else True
+        kara_line = _say("kara_freed_by_markus", how) if freed else _say("kara_escaped_camp", True)
     elif captured is True:
         kara_outcome, kara_line = "captured", _say("kara_captured", True)
     elif value("kara_story_ended") is True:
