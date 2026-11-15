@@ -20,7 +20,7 @@ The gun in the hold used to be a Quick-Time Event that Markus always won. It is 
 
 ## Consequences
 
-- A Cross-Segment Decision's prompt names the decider as `current_scene.character` and has `character_memory` and `this_moment` (plus `since_last_memory`, see below) in place of `chapter_segment_so_far`. A Joint Decision's prompt has `joint_decision` and `points_of_view` in place of `character_memory` and `chapter_segment_so_far`. Only the deciders' memories appear, never a third Character's.
+- A Cross-Segment Decision's prompt names the decider as `current_scene.character` and has `character_memory` and `this_moment` (plus `since_last_memory`, see below) in place of `chapter_segment_so_far` and the segment's Chapter Briefing, which tells the segment Character's side. A Joint Decision's prompt has `joint_decision` and `points_of_view` in place of `character_memory` and `chapter_segment_so_far`. Only the deciders' memories appear, never a third Character's.
 - An outside decider's view also carries its own earlier such choices not yet in its memory (`since_last_memory`), so the fight as Connor knows he chose with Markus whom to control.
 - The decision event records `deciders`; the Story shows "Decided as Markus" or "Decided with Markus's and Connor's memories" in the card.
 - An outside decider's pending entry (chapter, moment, choice, rationale) stays until that Character's next Memory Update. If that Character has no later segment, it is never folded in.

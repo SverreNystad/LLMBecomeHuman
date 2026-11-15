@@ -1286,15 +1286,18 @@ class Runner:
                 "description": node.get("description"),
             }
         }
+        deciders = node.get("deciders")
+        # A Cross-Segment Decision's decider sees its own this_moment, not the
+        # segment's Chapter Briefing, which is the segment Character's side.
+        cross_segment = bool(deciders) and len(deciders) == 1
         briefing = chapter_briefing(self.graph, node.get("chapter"))
-        if briefing:
+        if briefing and not cross_segment:
             payload["chapter_briefing"] = briefing
         news = self._public_news()
         if news:
             payload["news"] = news
-        deciders = node.get("deciders")
         context = node.get("decider_context") or {}
-        if deciders and len(deciders) == 1:
+        if cross_segment:
             # A Cross-Segment Decision (ADR 0005): the decider's memory and its own view
             # of the moment; nothing of the segment's Character is shown.
             (decider,) = deciders

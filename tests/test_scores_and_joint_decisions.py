@@ -7,6 +7,7 @@ moves. Joint Decisions: the gun in Jericho's hold and the final fight in 32.6 ar
 with both Markus's and Connor's memories (ADR 0005). Relationship arrows are shown.
 """
 
+import json
 from copy import deepcopy
 
 import pytest
@@ -484,6 +485,11 @@ def test_the_gun_in_the_hold_is_markus_decision(tmp_path, pick):
     assert payload["current_scene"]["character"] == "Markus"
     assert payload["character_memory"] == _memory_before(run.events, gun, "Markus")
     assert "chapter_segment_so_far" not in payload and "points_of_view" not in payload
+    # 30.2's Chapter Briefing is Connor's side; Markus has his own view of the moment.
+    briefing = load_dataset()["chapter_briefings"]["30.2"]
+    assert "chapter_briefing" not in payload
+    assert briefing not in json.dumps(payload, ensure_ascii=False)
+    assert payload["this_moment"]
     connor = next(e for e in run.events[run.events.index(gun):] if e["type"] == "memory_update")
     assert connor["character"] == "Connor"
     assert {"at": "In the hold", "decided_by": "Markus", "outcome": pick} in connor["input"]["chapter_segment"]
