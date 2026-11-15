@@ -85,7 +85,7 @@ def test_32_9_settles_kara_and_alice_from_markus_s_final_fate(waiting, freed, ka
     before = {"together": (True, True), "left_alice": (True, True),
               "kara_died": (False, True), "alice_died": (True, False)}[waiting]
     flags = {"kara_awaiting_markus": waiting, "markus_alive": freed,
-             "kara_alive": before[0], "alice_alive": before[1]}
+             "markus_revolution_won": freed, "kara_alive": before[0], "alice_alive": before[1]}
     flags |= effect_flags(branch_taken(CAMP_OUTCOME, **flags))
     assert (flags["kara_alive"], flags["alice_alive"]) == (kara, alice)
     assert flags.get("kara_freed_by_markus", False) is (freed and kara and waiting != "left_alice")

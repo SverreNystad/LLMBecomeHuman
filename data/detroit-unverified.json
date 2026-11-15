@@ -126178,7 +126178,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00040"
+      "next": "ch32_6_x0125"
     },
     "ch32_6_00042": {
       "id": "ch32_6_00042",
@@ -126197,7 +126197,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00040"
+      "next": "ch32_6_x0125"
     },
     "ch32_6_00043": {
       "id": "ch32_6_00043",
@@ -126216,7 +126216,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00040"
+      "next": "ch32_6_x0125"
     },
     "ch32_6_00044": {
       "id": "ch32_6_00044",
@@ -126268,7 +126268,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00040",
+      "next": "ch32_6_x0125",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
@@ -135694,16 +135694,31 @@
     },
     "ch32_6_x0125": {
       "id": "ch32_6_x0125",
-      "type": "scene",
+      "type": "condition",
       "chapter": "32.6",
       "character": "Markus",
-      "heading": "At the pillar",
-      "description": "Markus leaves Simon behind and pushes on. Simon dies where he fell.",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch32_6_00057",
-      "source": "https://detroit-become-human.fandom.com/wiki/Simon#Markus_Revolution",
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+      "heading": "Assault successful - Approaching Recall Center N°5",
+      "branches": [
+        {
+          "condition_text": "The assault on the camp succeeded: the revolution won",
+          "next": "ch32_6_00040",
+          "when": {
+            "flag": "markus_alive",
+            "equals": true
+          },
+          "effects": {
+            "flags": {
+              "markus_revolution_won": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_00040",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
+      "note": "Only a revolution that wins frees the Recall Center camp; Kara's 32.9 reads this."
     },
     "ch32_6_x0119": {
       "id": "ch32_6_x0119",
@@ -136370,6 +136385,10 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": true
               }
             ]
           },
@@ -136390,8 +136409,16 @@
                 "equals": "together"
               },
               {
-                "flag": "markus_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_revolution_won",
+                    "equals": false
+                  }
+                ]
               }
             ]
           },
@@ -136415,6 +136442,10 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": true
               }
             ]
           }
@@ -136429,8 +136460,16 @@
                 "equals": "left_alice"
               },
               {
-                "flag": "markus_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_revolution_won",
+                    "equals": false
+                  }
+                ]
               }
             ]
           },
@@ -136452,6 +136491,10 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": true
               }
             ]
           }
@@ -136466,8 +136509,16 @@
                 "equals": "kara_died"
               },
               {
-                "flag": "markus_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_revolution_won",
+                    "equals": false
+                  }
+                ]
               }
             ]
           },
@@ -136489,6 +136540,10 @@
               {
                 "flag": "markus_alive",
                 "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": true
               }
             ]
           },
@@ -136509,8 +136564,16 @@
                 "equals": "alice_died"
               },
               {
-                "flag": "markus_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "markus_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "markus_revolution_won",
+                    "equals": false
+                  }
+                ]
               }
             ]
           },
@@ -136808,6 +136871,7 @@
     "markus_harassed_by_protesters": false,
     "kara_awaiting_markus": "none",
     "kara_wounded_in_camp": false,
-    "kara_ch32_ralph_killed": false
+    "kara_ch32_ralph_killed": false,
+    "markus_revolution_won": false
   }
 }
