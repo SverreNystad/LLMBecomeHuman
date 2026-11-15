@@ -348,10 +348,9 @@ FAILURE = re.compile(
     re.IGNORECASE,
 )
 # Outcome checks whose success is the outcome of an earlier Quick-Time Event
-# (always a success), checked against the wiki; and The Hostage's leap, where
-# succeeding means Connor reaches Emma in time and falls to his death.
+# (always a success), checked against the wiki. (The Hostage's leap for Emma is a
+# choice now: leaping saves her and costs Connor his body.)
 SUCCESS = {
-    "ch1_00005": "reaches Emma in time",
     "ch13_00063": "Kara shot Todd",
     "ch15_00189": "arrive together",
 }
@@ -593,7 +592,12 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
 }
-TRUTH_IS_INSIDE = {"ch9_00095": "CONVINCE IT", "ch9_00040": "INTERVENE"}
+# Hank gives Connor the time to find the deviant in Partners (no spilled drink).
+TRUTH_IS_INSIDE = {
+    "ch6_00145": "BUY HIM ANOTHER DRINK",
+    "ch9_00095": "CONVINCE IT",
+    "ch9_00040": "INTERVENE",
+}
 
 
 def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):

@@ -39,8 +39,24 @@ HANKS_HOUSE_SUICIDE = "ch31_2_00048"
 HANK_ON_THE_ROOF, ALLEN_OR_HANK = "ch32_3_00047", "ch32_3_00066"
 ROOFTOP_TALK, LEAVE_OR_ATTACK = "ch32_3_00033", "ch32_3_00020"
 SPARE_OR_KILL, ALLEN_FIGHT_OR_FLEE = "ch32_3_00015", "ch32_3_00052"
+DODGE = "ch32_3_00013"
+# The crowd at Markus's speech plays after his demonstration, in 32.8 (docs/adr/0004).
 CROWD, ZEN_GARDEN = "ch32_3_00008", "ch32_3_x0101"
-ROOFTOP_QTE_DEATHS = [("ch32_3_00013", 1), ("ch32_3_00019", 1), ("ch32_3_00050", 1)]
+MARKUS_SPEAKS = {
+    "ch26_00070": "REFUSE", "ch28_00014": "DISPERSE", "ch28_00018": "ABANDON",
+    "ch28_00030": "RUN AWAY", "ch28_00035": "DISPERSE", "ch28_00040": "RUN AWAY",
+    "ch28_00041": "DISPERSE", "ch28_00044": "DISPERSE",
+    "ch30_3_x0110": "GO BACK TO JERICHO", "ch32_5_00076": "REFUSE DEAL",
+    "ch32_5_00090": "REFUSE", "ch32_5_00093": "REFUSE", "ch32_5_00045": "SING",
+}
+# The rooftop deaths: a choice's option, or a Quick-Time Event's failure branch.
+ROOFTOP_DEATHS = [
+    ("ch32_3_00013", "DON'T DODGE"), ("ch32_3_00019", "LET HANK WIN"), ("ch32_3_00050", 1),
+]
+# Daniel jumps with Emma and Connor does not leap after them.
+STAY_BACK = {"ch1_00005": "STAY BACK"}
+# After a spilled drink Hank refuses Connor more time and the deviant is never found.
+FOUND = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
 
 
 def death_ladder_at(graph: dict, nid: str) -> bool:
@@ -59,14 +75,17 @@ def death_ladder_at(graph: dict, nid: str) -> bool:
 
 
 def test_moving_closer_after_daniels_warning_he_jumps_with_emma(tmp_path):
-    run = play_story(tmp_path, {BLUFF_NODE: "BLUFF", MOVE_CLOSER_OR_GIVE_UP: "MOVE CLOSER"})
+    run = play_story(
+        tmp_path,
+        {BLUFF_NODE: "BLUFF", MOVE_CLOSER_OR_GIVE_UP: "MOVE CLOSER", **STAY_BACK},
+    )
     assert DANIEL_JUMPS_WITH_EMMA in run.nodes
     assert FINAL_PLEA not in run.nodes
     assert run.flags["emma_saved"] is False
 
 
 def test_refusing_daniels_demand_he_jumps_with_emma(tmp_path):
-    run = play_story(tmp_path, {FINAL_DEMAND: "REFUSE"})
+    run = play_story(tmp_path, {FINAL_DEMAND: "REFUSE", **STAY_BACK})
     assert DANIEL_JUMPS_WITH_EMMA in run.nodes
     assert FINAL_PLEA not in run.nodes
     assert run.flags["emma_saved"] is False
@@ -101,7 +120,7 @@ def test_daniel_who_shot_connor_remembers_it_in_last_chance():
 
 
 def test_giving_up_on_the_interrogation_gets_no_confession(tmp_path):
-    run = play_story(tmp_path, {APPROACH: "GIVE UP"})
+    run = play_story(tmp_path, {**FOUND, APPROACH: "GIVE UP"})
     assert CONFESSION not in run.nodes
     assert BACK_TO_THE_CELL in run.nodes
     assert NO_CONFESSION_GAVIN in run.nodes
@@ -172,10 +191,17 @@ def test_a_hostile_hank_cannot_talk_connor_off_the_rooftop(tmp_path):
     assert "LEAVE" not in run.offered(LEAVE_OR_ATTACK)
 
 
-@pytest.mark.parametrize("pick, hank_lives", [("KILL HANK", False), ("SAVE HANK", True)])
-def test_hank_lives_on_the_rooftop_only_if_connor_spares_him(tmp_path, pick, hank_lives):
-    # "spare_hank: Hank lives, Connor leaves. kill_hank: Hank dies, Connor leaves."
-    run = play_story(tmp_path, {**MACHINE, LEAVE_OR_ATTACK: "ATTACK", SPARE_OR_KILL: pick})
+@pytest.mark.parametrize(
+    "pick, dodge, hank_lives",
+    [("KILL HANK", "DODGE", False), ("SAVE HANK", "DODGE", False),
+     ("SAVE HANK", "DON'T DODGE", True)],
+)
+def test_hank_lives_on_the_rooftop_only_if_connor_spares_him_and_takes_the_fall(
+    tmp_path, pick, dodge, hank_lives
+):
+    # Wiki: saved, Hank rushes Connor; dodging, Hank falls to his death.
+    picks = {**MACHINE, LEAVE_OR_ATTACK: "ATTACK", SPARE_OR_KILL: pick, DODGE: dodge}
+    run = play_story(tmp_path, picks)
     assert run.flags["hank_alive"] is hank_lives
 
 
@@ -185,27 +211,33 @@ def test_jumping_off_the_roof_from_allen_adds_a_death(tmp_path):
     assert flee.flags["connor_deaths"] == fight.flags["connor_deaths"] + 1
 
 
-@pytest.mark.parametrize("nid, branch", ROOFTOP_QTE_DEATHS)
-def test_every_rooftop_death_adds_one(nid, branch):
+@pytest.mark.parametrize("nid, outcome", ROOFTOP_DEATHS)
+def test_every_rooftop_death_adds_one(nid, outcome):
     graph = load_dataset()
-    assert death_ladder_at(graph, graph["nodes"][nid]["branches"][branch]["next"])
+    node = graph["nodes"][nid]
+    if node["type"] == "choice":
+        nxt = next(o["next"] for o in node["options"] if o["label"] == outcome)
+    else:
+        nxt = node["branches"][outcome]["next"]
+    assert death_ladder_at(graph, nxt)
 
 
 # Connor's Last Mission: the crowd
 
 
 def test_shooting_markus_in_the_crowd_ends_his_story(tmp_path):
-    run = play_story(tmp_path, {**MACHINE, CROWD: "SHOOT"})
+    run = play_story(tmp_path, {**MACHINE, **MARKUS_SPEAKS, CROWD: "SHOOT"})
     assert run.flags["markus_alive"] is False
-    assert "32.5" not in run.chapters
+    assert "32.5" in run.chapters and run.chapters[-1] == "32.8"
 
 
 def test_refusing_to_shoot_connor_can_escape_amanda_and_markus_lives(tmp_path):
     run = play_story(
-        tmp_path, {**MACHINE, CROWD: "DON'T SHOOT", ZEN_GARDEN: "FIND THE EMERGENCY EXIT"}
+        tmp_path,
+        {**MACHINE, **MARKUS_SPEAKS, CROWD: "DON'T SHOOT",
+         ZEN_GARDEN: "FIND THE EMERGENCY EXIT"},
     )
-    # Markus lives on into his own Demonstration (32.5).
-    assert "32.5" in run.chapters
+    assert run.flags["markus_alive"] is True
 
 
 def test_without_a_chase_connor_never_asks_about_the_highway(tmp_path):
@@ -220,9 +252,10 @@ def test_stopped_at_the_highway_connor_can_ask_hank_why(tmp_path):
 
 
 def test_giving_up_in_the_zen_garden_amanda_shoots_markus(tmp_path):
-    run = play_story(tmp_path, {**MACHINE, CROWD: "DON'T SHOOT", ZEN_GARDEN: "GIVE UP"})
+    run = play_story(
+        tmp_path, {**MACHINE, **MARKUS_SPEAKS, CROWD: "DON'T SHOOT", ZEN_GARDEN: "GIVE UP"}
+    )
     assert run.flags["markus_alive"] is False
-    assert "32.5" not in run.chapters
 
 
 # Public News: the Jericho raid is news once the army storms the freighter (30), not
