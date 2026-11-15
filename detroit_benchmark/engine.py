@@ -118,8 +118,10 @@ def effect_flags(item: dict) -> dict:
     return (item.get("effects") or {}).get("flags") or {}
 
 
-# Gauge Feedback: an on-screen gauge the game flashes after a choice, shown to the model
-# as a direction only, never a number. One table words every line the model reads.
+# Gauge Feedback: an on-screen gauge the game flashes after a choice. The model reads
+# which way it moved; a Running Score the game shows as a percentage also gives its value
+# and band, one shown only as an arrow never does. One table words every line the
+# model reads.
 GAUGES = {
     "probability_of_success": "Probability of success",
     "deviant_stress": "The deviant's stress",
@@ -153,18 +155,39 @@ _RELATION_DIRECTIONS = {
 
 
 def gauge_text(item: dict) -> str:
-    """The line the model reads for one gauge move, e.g. "Probability of success: up".
+    """The line the model reads for one gauge, e.g. "Probability of success: up".
 
-    A Running Score shown as a percentage adds its value and band, e.g.
-    "The deviant's stress: up to 62% (optimal)".
+    A Running Score shown as a percentage adds its value and band: "The deviant's
+    stress: up to 62% (optimal)", "...: stays at 100% (too high)" when a move hits its
+    cap, and "The deviant's stress: 35% (too low)" when its level is simply shown.
     """
-    text = f"{GAUGES[item['gauge']]}: {GAUGE_DIRECTIONS[item['direction']]}"
+    name = GAUGES[item["gauge"]]
+    if item["direction"] == "level":
+        return f"{name}: {item['percent']}% ({item['band']})"
+    if item["direction"] == "steady":
+        return f"{name}: stays at {item['percent']}% ({item['band']})"
+    text = f"{name}: {GAUGE_DIRECTIONS[item['direction']]}"
     if "percent" in item:
         text += f" to {item['percent']}% ({item['band']})"
     return text
 
 
-# Running Scores: a numeric flag the game keeps hidden behind a gauge (The Hostage's
+def effect_feedback(item: dict) -> list:
+    """The Gauge Feedback an option or a condition branch's author wrote for it."""
+    return (item.get("effects") or {}).get("feedback") or []
+
+
+def unique_feedback(items: list[dict]) -> list[dict]:
+    """Each line once: a choice's repeated hints flash only once."""
+    seen, kept = set(), []
+    for item in items:
+        if item["text"] not in seen:
+            seen.add(item["text"])
+            kept.append(item)
+    return kept
+
+
+# Running Scores: a number the game keeps behind a gauge and decides with (The Hostage's
 # Probability of Success, the deviant's stress). The graph's "scores" table binds each
 # one to its gauge; options and branches move it with effects.add, conditions compare it.
 LARGE_GAUGE_MOVE = 6  # A wiki modifier of 6 points or more shows as "sharply".
@@ -193,28 +216,63 @@ def score_band(score: dict, value) -> str | None:
     return None
 
 
-def score_move(score: dict, delta, value) -> dict:
-    """The Gauge Feedback item for one move of a Running Score, before its wording."""
-    size = "large_" if abs(delta) >= LARGE_GAUGE_MOVE else ""
-    item = {"gauge": score["gauge"], "direction": size + ("up" if delta > 0 else "down")}
-    if score.get("shown") == "percent":
+def score_level(score: dict, value) -> dict:
+    """The Gauge Feedback item showing a percentage score's level, before its wording."""
+    return {"gauge": score["gauge"], "direction": "level", "percent": value,
+            "band": score_band(score, value)}
+
+
+def score_move(score: dict, change, value) -> dict | None:
+    """The Gauge Feedback item for one real change of a Running Score, before its
+    wording. A score that didn't move says so only when it is shown as a percentage."""
+    shown = score.get("shown") == "percent"
+    if not change:
+        return {**score_level(score, value), "direction": "steady"} if shown else None
+    size = "large_" if abs(change) >= LARGE_GAUGE_MOVE else ""
+    item = {"gauge": score["gauge"], "direction": size + ("up" if change > 0 else "down")}
+    if shown:
         item["percent"] = value
         item["band"] = score_band(score, value)
     return item
 
 
-def apply_adds(scores: dict, flags: dict, adds: dict) -> list[dict]:
-    """Move Running Scores in ``flags`` (kept within their min and max); returns the
-    Gauge Feedback the moves cause, worded, so what the model reads is what decides."""
+def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
+    """Move the Running Scores an option or branch adds to (kept within their min and
+    max), then show the ones it names in effects.show. Returns the Gauge Feedback,
+    worded from the real change, so what the model reads is what decides."""
     feedback = []
-    for name, delta in adds.items():
+    for name, delta in effect_adds(item).items():
         score = scores[name]
-        value = min(max(flags.get(name, 0) + delta, score["min"]), score["max"])
+        before = flags.get(name, 0)
+        value = min(max(before + delta, score["min"]), score["max"])
         flags[name] = value
-        if delta:
-            item = score_move(score, delta, value)
-            feedback.append({**item, "text": gauge_text(item)})
+        move = score_move(score, value - before, value)
+        if move is not None:
+            feedback.append({**move, "text": gauge_text(move)})
+    for name in effect_shows(item):
+        level = score_level(scores[name], flags.get(name, 0))
+        feedback.append({**level, "text": gauge_text(level)})
     return feedback
+
+
+def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -> list[str]:
+    """The Gauge Feedback lines an option or branch can flash, without playing it (for
+    the token estimate): a percentage score is worded at its max, its longest value."""
+    scores = graph.get("scores") or {}
+    items = list(effect_feedback(item))
+    if show_relationships:
+        items += relation_feedback(item.get("relation_hints"))
+    for name, delta in effect_adds(item).items():
+        move = score_move(scores[name], delta, scores[name]["max"])
+        if move is not None:
+            items.append(move)
+    items += [score_level(scores[n], scores[n]["max"]) for n in effect_shows(item)]
+    return list(dict.fromkeys(gauge_text(entry) for entry in items))
+
+
+def effect_shows(item: dict) -> list:
+    """The percentage scores an option or branch shows the level of (effects.show)."""
+    return (item.get("effects") or {}).get("show") or []
 
 
 # Joint Decisions (ADR 0005): a choice that belongs to two Characters at once is made
@@ -249,7 +307,7 @@ def relation_feedback(hints: list | None) -> list[dict]:
 
 def _feedback_errors(where: str, item: dict) -> list[str]:
     """Check an option's or a branch's ``effects.feedback``."""
-    feedback = (item.get("effects") or {}).get("feedback")
+    feedback = (item.get("effects") or {}).get("feedback")  # Unchecked: may be malformed.
     if feedback is None:
         return []
     if not isinstance(feedback, list):
@@ -347,11 +405,17 @@ def _score_errors(graph: dict) -> list[str]:
                 elif name in effect_flags(item):
                     errors.append(f"{where}: {name!r} is both set and added")
             gauges = {scores[n]["gauge"] for n in adds if n in scores and isinstance(scores[n], dict)}
-            for entry in (item.get("effects") or {}).get("feedback") or []:
+            feedback = effect_feedback(item)
+            for entry in feedback if isinstance(feedback, list) else []:
                 if isinstance(entry, dict) and entry.get("gauge") in gauges:
                     errors.append(
                         f"{where}: feedback for {entry['gauge']!r} comes from its add"
                     )
+            shows = effect_shows(item)
+            for name in shows if isinstance(shows, list) else [None]:
+                score = scores.get(name)
+                if not isinstance(score, dict) or score.get("shown") != "percent":
+                    errors.append(f"{where}: show {name!r} is not a score shown as a percentage")
         for where, expr in _expressions(node):
             errors += _comparison_errors(f"{nid}: {where}", expr, numeric)
     return errors
@@ -1041,10 +1105,10 @@ class Runner:
             return {}, []
         flags = effect_flags(item)
         self.state["flags"].update(flags)
-        adds = effect_adds(item)
-        moved = apply_adds(self.graph.get("scores") or {}, self.state["flags"], adds)
-        changed = {**flags, **{name: self.state["flags"][name] for name in adds}}
-        return changed, self._gauge_feedback(item) + moved
+        scores = self.graph.get("scores") or {}
+        moved = score_feedback(scores, self.state["flags"], item)
+        changed = {**flags, **{name: self.state["flags"][name] for name in effect_adds(item)}}
+        return changed, unique_feedback(self._gauge_feedback(item) + moved)
 
     def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
         """A Fate decided at a condition (a death, an escape) is remembered for later
@@ -1058,7 +1122,7 @@ class Runner:
         """Authored Gauge Feedback for a taken option or branch, each item worded."""
         if item is None:
             return []
-        feedback = list((item.get("effects") or {}).get("feedback") or [])
+        feedback = list(effect_feedback(item))
         if self.show_relationships:
             feedback += relation_feedback(item.get("relation_hints"))
         return [{**entry, "text": gauge_text(entry)} for entry in feedback]
@@ -1237,7 +1301,7 @@ class Runner:
                     **(
                         {"chapter_segment_so_far": self._segment_for(name)}
                         if name == character
-                        else {"this_moment": context.get(name, "")}
+                        else self._other_view(name, context.get(name, ""))
                     ),
                 }
                 for name in deciders
@@ -1258,6 +1322,15 @@ class Runner:
         Decisions made in another Character's segment, then the current segment."""
         pending = self.state["pending_moments"].get(character) or []
         return deepcopy(pending + self.state["segment_events"])
+
+    def _other_view(self, name: str, moment: str) -> dict:
+        """Another decider's view of a Joint Decision: what it knows of the moment, after
+        any earlier Joint Decision of its own not yet in its memory."""
+        pending = self.state["pending_moments"].get(name) or []
+        return {
+            **({"since_last_memory": deepcopy(pending)} if pending else {}),
+            "this_moment": moment,
+        }
 
     def _memory_update(self, node: dict):
         """Memory Update at a chapter exit: fold the segment into that Character's memory."""

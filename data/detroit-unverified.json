@@ -17360,12 +17360,12 @@
       "heading": "Deviant confesses",
       "branches": [
         {
-          "condition_text": "Its stress is 70% or more, or it was pressured to the end: the deviant self-destructs",
+          "condition_text": "Its stress is above 70%, or it was pressured to the end: the deviant self-destructs",
           "when": {
             "any": [
               {
                 "flag": "connor_deviant_stress",
-                "gte": 70
+                "gt": 70
               },
               {
                 "flag": "connor_pressured_four_times",
@@ -17376,12 +17376,12 @@
           "next": "ch9_00012"
         },
         {
-          "condition_text": "Its stress is below 70%: Chris takes it back to its cell",
+          "condition_text": "Its stress is 70% or below: Chris takes it back to its cell",
           "when": {
             "all": [
               {
                 "flag": "connor_deviant_stress",
-                "lt": 70
+                "lte": 70
               },
               {
                 "flag": "connor_pressured_four_times",
@@ -17397,7 +17397,7 @@
       "next": "ch9_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
-      "note": "The stress is a Running Score (connor_deviant_stress): 35% at the start, moved by the wiki's modifiers. Below 70% Chris steps in; otherwise the deviant self-destructs. Maintaining pressure counts as pressing all four times, which makes it self-destruct even in the optimal range; the text version's two pressure choices carry the wiki's +50% total (+10, then +40)."
+      "note": "The stress is a Running Score (connor_deviant_stress): 35% at the start, moved by the wiki's modifiers. Up to 70% Chris steps in; above it the deviant self-destructs. The wiki says \"below 70%\" for Chris but calls 50-70% optimal, so 70% counts as optimal. Maintaining pressure counts as pressing all four times, which makes it self-destruct even in the optimal range; the text version's two pressure choices carry the wiki's +50% total (+10, then +40)."
     },
     "ch9_00042": {
       "id": "ch9_00042",
@@ -17802,7 +17802,7 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00058"
+      "next": "ch9_x0110"
     },
     "ch9_00060": {
       "id": "ch9_00060",
@@ -19314,7 +19314,10 @@
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
-            }
+            },
+            "show": [
+              "connor_deviant_stress"
+            ]
           },
           "requires": [
             {
@@ -19393,7 +19396,7 @@
       "description": "Interrogate the deviant",
       "dialogue": [],
       "observations": [],
-      "next": "ch9_00123"
+      "next": "ch9_x0108"
     },
     "ch9_00125": {
       "id": "ch9_00125",
@@ -137511,7 +137514,12 @@
               }
             ]
           },
-          "next": "ch9_x0106"
+          "next": "ch9_x0106",
+          "effects": {
+            "flags": {
+              "connor_convince_failed": true
+            }
+          }
         }
       ],
       "next": "ch9_00058",
@@ -137567,6 +137575,475 @@
           "effects": {
             "flags": {
               "connor_interrogation_approach": "probe"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "GIVE UP",
+          "next": "ch9_00094",
+          "requirements_unverified": [
+            "Will also automatically happen if the chosen approach failed twice"
+          ],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "give_up",
+              "connor_interrogation_ending": "sent_to_cell"
+            }
+          }
+        }
+      ]
+    },
+    "ch9_x0108": {
+      "id": "ch9_x0108",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Interrogate the deviant",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "note": "Analyze stress level: the stress gauge is on screen from the start.",
+      "branches": [
+        {
+          "condition_text": "Connor analyzes the deviant's stress level",
+          "when": {
+            "all": []
+          },
+          "next": "ch9_00123",
+          "effects": {
+            "flags": {},
+            "show": [
+              "connor_deviant_stress"
+            ]
+          }
+        }
+      ],
+      "next": "ch9_00123",
+      "default_branch": 0
+    },
+    "ch9_x0110": {
+      "id": "ch9_x0110",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "note": "Give up after pressure leads to the previous options. The approach is chosen twice: after a failed CONVINCE, pressure was the second, so Connor gives up.",
+      "branches": [
+        {
+          "condition_text": "A first approach: Connor chooses another",
+          "when": {
+            "flag": "connor_convince_failed",
+            "equals": false
+          },
+          "next": "ch9_x0109"
+        },
+        {
+          "condition_text": "Both approaches used: Connor gives up",
+          "when": {
+            "flag": "connor_convince_failed",
+            "equals": true
+          },
+          "next": "ch9_00094"
+        }
+      ],
+      "next": "ch9_00094",
+      "default_branch": 0
+    },
+    "ch9_x0111": {
+      "id": "ch9_x0111",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Choose approach",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "UNDERSTANDING",
+          "next": "ch9_x0114",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": -7
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "THREATEN",
+          "next": "ch9_x0113",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 7
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "ORDER",
+          "next": "ch9_x0112",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 7
+            }
+          }
+        }
+      ]
+    },
+    "ch9_x0112": {
+      "id": "ch9_x0112",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "You’re a machine, you were designed to obey, so obey!  Tell me what happened.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.05ORDER"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0115"
+    },
+    "ch9_x0113": {
+      "id": "ch9_x0113",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "If you don’t talk, they’re going to tear you apart and analyze you piece by piece.  They’re going to destroy you,  do you understand?",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.05THREATEN"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0115"
+    },
+    "ch9_x0114": {
+      "id": "ch9_x0114",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "I understand how you felt.  You were overcome by anger  and frustration.  No one can blame you for what happened.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.05UNDERSTANDING"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0115"
+    },
+    "ch9_x0115": {
+      "id": "ch9_x0115",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Choose approach",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SYMPATHIZE",
+          "next": "ch9_x0118",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": -7
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "INDIFFERENT",
+          "next": "ch9_x0117",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 7
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "COMFORT",
+          "next": "ch9_x0116",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": -7
+            }
+          }
+        }
+      ]
+    },
+    "ch9_x0116": {
+      "id": "ch9_x0116",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "I know you’re scared  and lost.  You’re disturbed by what happened.  Talk to me,  and you’ll feel better.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.06COMFORT"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0119"
+    },
+    "ch9_x0117": {
+      "id": "ch9_x0117",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "Ok then, don’t talk.  Why do I care, after all?  I mean, I’m not the one accused of murder, right?",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.06INDIFFERENT"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0119"
+    },
+    "ch9_x0118": {
+      "id": "ch9_x0118",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "Listen,  I’m not judging you.  I'm on your side.  All I want is the truth.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.06SYMPATHIZE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0119"
+    },
+    "ch9_x0119": {
+      "id": "ch9_x0119",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Choose approach",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "PROTECT",
+          "next": "ch9_x0122",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": -7
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TERRIFY",
+          "next": "ch9_x0121",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 7
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "WARN",
+          "next": "ch9_x0120",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {},
+            "add": {
+              "connor_deviant_stress": 7
+            }
+          }
+        }
+      ]
+    },
+    "ch9_x0120": {
+      "id": "ch9_x0120",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "If you remain silent, there is nothing I can do to help you!  They're gonna shut you down for good!  You'll be dead!  Do you hear me?  Dead!",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.07WARN"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0123"
+    },
+    "ch9_x0121": {
+      "id": "ch9_x0121",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "They’ll make you suffer, and they won’t stop  until they hear what they want.  It doesn’t have to be that way.  It all depends on you.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.07TERRIFY"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0123"
+    },
+    "ch9_x0122": {
+      "id": "ch9_x0122",
+      "type": "scene",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Connor",
+          "text": "Confess and I’ll protect you.  I promise I won’t let anyone hurt you.",
+          "source_keys": [
+            "X0401C.INTERROGATION.CONNOR.PC.X04CCONNOR.07PROTECT"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch9_x0123"
+    },
+    "ch9_x0123": {
+      "id": "ch9_x0123",
+      "type": "condition",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress",
+      "note": "Convincing as the second approach: if it fails, both approaches are used.",
+      "branches": [
+        {
+          "condition_text": "Its stress is in the optimal range: the deviant confesses",
+          "when": {
+            "flag": "connor_deviant_stress",
+            "gte": 50,
+            "lte": 70
+          },
+          "next": "ch9_00058"
+        },
+        {
+          "condition_text": "Its stress is too low or too high: convincing fails and Connor gives up",
+          "when": {
+            "any": [
+              {
+                "flag": "connor_deviant_stress",
+                "lt": 50
+              },
+              {
+                "flag": "connor_deviant_stress",
+                "gt": 70
+              }
+            ]
+          },
+          "next": "ch9_00094"
+        }
+      ],
+      "next": "ch9_00058",
+      "default_branch": 0
+    },
+    "ch9_x0109": {
+      "id": "ch9_x0109",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Choose approach",
+      "description": "Choose another approach",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "PROBE ITS MEMORY",
+          "next": "ch9_00081",
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "probe"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "CONVINCE IT",
+          "next": "ch9_x0111",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_interrogation_approach": "convince"
             }
           }
         },
@@ -137661,7 +138138,8 @@
     "connor_pressured_deviant": false,
     "connor_hostage_probability": 48,
     "connor_deviant_stress": 35,
-    "connor_pressured_four_times": false
+    "connor_pressured_four_times": false,
+    "connor_convince_failed": false
   },
   "scores": {
     "connor_hostage_probability": {

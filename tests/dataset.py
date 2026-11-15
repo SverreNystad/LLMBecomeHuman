@@ -87,3 +87,17 @@ def play_story(run_dir: Path, picks: dict[str, str]) -> Playthrough:
     run.run()
     assert run.state["status"] == "complete"
     return Playthrough(read_events(run_dir), run.state["flags"])
+
+
+def story_moments(runs_root: Path, chapter: str) -> list[dict]:
+    """The Story's moments for one chapter of the only Run under ``runs_root``, as the
+    dashboard serves them."""
+    from fastapi.testclient import TestClient
+
+    from detroit_benchmark.dashboard import create_app
+
+    client = TestClient(create_app(runs_root))
+    (run,) = client.get("/api/runs").json()["runs"]
+    response = client.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter})
+    assert response.status_code == 200
+    return response.json()["moments"]

@@ -11,9 +11,9 @@ from copy import deepcopy
 
 import pytest
 
-from detroit_benchmark.dashboard import _story_beat
-from detroit_benchmark.engine import Runner, validate_graph
-from tests.dataset import load_dataset, play_story, read_events
+from detroit_benchmark.engine import Runner, pick_branch, validate_graph
+from detroit_benchmark.visitor_estimate import _extreme_route
+from tests.dataset import load_dataset, play_story, read_events, story_moments
 from tests.test_crossroads import MACHINE_WITH_MARKUS
 from tests.test_markus_wiki_audit import REVOLUTION
 from tests.test_night_of_the_soul import MACHINE
@@ -79,7 +79,7 @@ def test_an_add_moves_the_score_and_the_model_reads_the_move(tmp_path):
     assert first["flags_after"]["odds"] == 99  # Capped at the score's max.
     assert second["input"]["chapter_segment_so_far"][-1]["on_screen"] == [
         "The deviant's stress: up sharply to 62% (optimal)",
-        "Probability of success: up sharply",  # No number for a hidden score.
+        "Probability of success: up",  # The real change (+4), and no number.
     ]
     assert read_events(tmp_path / "r")[-1]["node_id"] == "confess"
 
@@ -89,6 +89,17 @@ def test_an_add_moves_the_score_and_the_model_reads_the_move(tmp_path):
 def test_a_rule_compares_the_score(tmp_path, add, ending):
     Runner(_scored_graph(add), "mock", None, tmp_path / "r").run()
     assert read_events(tmp_path / "r")[-1]["node_id"] == ending
+
+
+def test_a_score_at_its_cap_is_worded_from_the_real_change(tmp_path):
+    Runner(_scored_graph({STRESS: 65, "odds": 4}, {STRESS: 5, "odds": 10}), "mock", None,
+           tmp_path / "r").run()
+    first, second = _decisions(tmp_path / "r")
+    assert second["flags_after"][STRESS] == 100 and second["flags_after"]["odds"] == 99
+    # The hidden score didn't move, so nothing is said about it.
+    assert [f["text"] for f in second["feedback"]] == [
+        "The deviant's stress: stays at 100% (too high)"
+    ]
 
 
 def test_a_small_move_is_not_sharp_and_a_score_never_drops_below_its_min(tmp_path):
@@ -110,6 +121,8 @@ def test_a_small_move_is_not_sharp_and_a_score_never_drops_below_its_min(tmp_pat
         (lambda g: g["nodes"]["rule"]["branches"][0]["when"].update(gte="50"), "needs a number"),
         (lambda g: g["nodes"]["first"]["options"][0]["effects"].update(
             feedback=[{"gauge": "deviant_stress", "direction": "up"}]), "comes from its add"),
+        (lambda g: g["nodes"]["first"]["options"][0]["effects"].update(show=["odds"]),
+         "shown as a percentage"),
     ],
 )
 def test_the_validator_checks_scores_adds_and_comparisons(change, problem):
@@ -226,10 +239,16 @@ STRESS_ADDS = {
 }
 
 
+def _second_convince(table: dict) -> dict:
+    """Convincing as the second approach, after pressure, has its own copy of the sets."""
+    copies = {"ch9_00093": "ch9_x0111", "ch9_00089": "ch9_x0115", "ch9_00085": "ch9_x0119"}
+    return {(copies[nid], label): v for (nid, label), v in table.items() if nid in copies}
+
+
 def test_the_interrogation_counts_every_wiki_modifier():
     graph = load_dataset()
     assert graph["initial_flags"][STRESS] == 35
-    assert _adds(STRESS, "9") == STRESS_ADDS
+    assert _adds(STRESS, "9") == {**STRESS_ADDS, **_second_convince(STRESS_ADDS)}
     assert "connor_deviant_stress_high" not in graph["initial_flags"]
     probe = graph["nodes"]["ch9_00079"]["branches"][0]
     assert probe["effects"]["add"] == {STRESS: 100}
@@ -260,14 +279,14 @@ def test_a_kind_interrogation_leaves_the_stress_too_low_to_convince(tmp_path):
 
 def test_the_model_reads_the_stress_with_its_band(tmp_path):
     run = play_story(tmp_path, {**HARSH, **CONVINCE})
+    last = [e for e in run.events if e["type"] == "decision" and e["chapter"] == "9"][-1]
     lines = [
         line
-        for e in run.events
-        if e["type"] == "decision" and e["chapter"] == "9"
-        for moment in e["input"]["chapter_segment_so_far"]
+        for moment in last["input"]["chapter_segment_so_far"]
         for line in moment.get("on_screen", [])
     ]
-    assert lines[0] == "The deviant's stress: up to 39% (too low)"
+    assert lines[:2] == ["The deviant's stress: 35% (too low)",
+                         "The deviant's stress: up to 39% (too low)"]
     assert "The deviant's stress: up sharply to 62% (optimal)" in lines
 
 
@@ -275,7 +294,10 @@ def test_the_model_reads_the_stress_with_its_band(tmp_path):
     "picks, ending, stress",
     [
         ({"ch9_00095": "PRESSURE IT", "ch9_00061": "MAINTAIN PRESSURE"}, SELF_DESTRUCT, 69),
-        ({"ch9_00095": "PRESSURE IT", "ch9_00061": "GIVE UP"}, CHRIS, 9),
+        # 55+10-20 = 45, then the second approach: -7+7+7 = 52%, optimal.
+        ({**HARSH, "ch9_00095": "PRESSURE IT", "ch9_00061": "GIVE UP",
+          "ch9_x0109": "CONVINCE IT", "ch9_x0115": "INDIFFERENT", "ch9_x0119": "TERRIFY"},
+         CHRIS, 52),
         ({"ch9_00095": "PROBE ITS MEMORY"}, SELF_DESTRUCT, 100),
     ],
     ids=["pressed-to-the-end", "pressure-then-back-off", "probed"],
@@ -378,11 +400,13 @@ def test_the_validator_checks_deciders(change, problem):
     assert any(problem in e for e in report["errors"]), report["errors"]
 
 
-def test_the_story_says_whose_memories_decided():
-    beat = _story_beat({"type": "decision", "index": 1, "node_id": "n",
-                        "deciders": ["Markus", "Connor"]})
-    assert beat["joint"] == "Decided with Markus's and Connor's memories"
-    assert "joint" not in _story_beat({"type": "decision", "index": 1, "node_id": "n"})
+def test_the_story_says_whose_memories_decided(tmp_path):
+    Runner(_joint_graph(), "mock", None, tmp_path / "runs" / "r").run()
+    (gun,) = [m for m in story_moments(tmp_path / "runs", "2") if m["type"] == "decision"]
+    assert gun["joint"] == "Decided with Markus's and Connor's memories"
+    assert gun["deciders"] == ["Markus", "Connor"]
+    (alone,) = [m for m in story_moments(tmp_path / "runs", "3") if m["type"] == "decision"]
+    assert "joint" not in alone and "deciders" not in alone
 
 
 GUN, FIGHT, AS_MARKUS, AS_CONNOR = "ch30_2_00010", "ch32_6_00046", "ch32_6_x0127", "ch32_6_x0119"
@@ -439,3 +463,94 @@ def test_relationships_are_shown_by_default(tmp_path):
         for line in moment.get("on_screen", [])
     }
     assert any(line.startswith("Relationship with Hank: ") for line in lines)
+
+
+# --- Review fixes -------------------------------------------------------------------
+@pytest.mark.parametrize("stress, outcome", [(70, CHRIS), (71, SELF_DESTRUCT), (50, CHRIS)])
+def test_seventy_percent_is_optimal_and_chris_steps_in(stress, outcome):
+    graph = load_dataset()
+    rule = graph["nodes"]["ch9_00041"]
+    idx, _, _ = pick_branch(rule, {STRESS: stress, "connor_pressured_four_times": False})
+    assert rule["branches"][idx]["next"] == outcome
+    band = "optimal" if stress <= 70 else "too high"
+    assert next(b["name"] for b in graph["scores"][STRESS]["bands"] if stress <= b["max"]) == band
+
+
+def test_the_stress_is_shown_from_the_start_and_after_fear(tmp_path):
+    run = play_story(tmp_path, {})
+    first = next(e for e in run.events if e["node_id"] == "ch9_00123")
+    assert first["input"]["chapter_segment_so_far"][-1]["on_screen"] == [
+        "The deviant's stress: 35% (too low)"
+    ]
+    assert run.labels["ch9_00123"] == "FEAR"
+    after = next(e for e in run.events if e["node_id"] == "ch9_00118")
+    fear = next(m for m in after["input"]["chapter_segment_so_far"] if m.get("your_choice") == "FEAR")
+    assert fear["on_screen"] == ["The deviant's stress: 35% (too low)"]
+
+
+def test_giving_up_the_pressure_leads_back_to_the_approaches(tmp_path):
+    run = play_story(tmp_path, {"ch9_00095": "PRESSURE IT", "ch9_00061": "GIVE UP",
+                                "ch9_x0109": "GIVE UP"})
+    assert run.offered("ch9_x0109") == ["PROBE ITS MEMORY", "CONVINCE IT", "GIVE UP"]
+    assert CONFESSION not in run.nodes and CELL in run.nodes
+
+
+def test_after_a_failed_convince_and_pressure_connor_gives_up(tmp_path):
+    # Both approaches used: no third one.
+    run = play_story(tmp_path, {"ch9_00095": "CONVINCE IT", SECOND_APPROACH: "PRESSURE IT",
+                                "ch9_00061": "GIVE UP"})
+    assert "ch9_x0109" not in run.nodes
+    assert CONFESSION not in run.nodes and CELL in run.nodes
+
+
+def _two_joint_graph() -> dict:
+    """Connor's segment makes two Joint Decisions before Markus plays again."""
+    graph = _joint_graph()
+    nodes = graph["nodes"]
+    nodes["c2x"]["next"] = "c4"
+    nodes["c4"] = {"id": "c4", "type": "scene", "chapter": "4", "character": "Connor",
+                   "heading": "Connor 4", "description": "", "next": "fight"}
+    nodes["fight"] = {**nodes["gun"], "id": "fight", "chapter": "4", "heading": "The fight",
+                      "options": [{"id": "win", "label": "WIN THE FIGHT", "next": "c4x",
+                                   "effects": {"flags": {}}}]}
+    nodes["c4x"] = {"id": "c4x", "type": "chapter_exit", "chapter": "4",
+                    "character": "Connor", "next": "m3"}
+    return graph
+
+
+def test_the_other_deciders_view_carries_its_earlier_joint_decisions(tmp_path):
+    Runner(_two_joint_graph(), "mock", None, tmp_path / "r").run()
+    events = read_events(tmp_path / "r")
+    gun = next(e for e in events if e["node_id"] == "gun")
+    assert "since_last_memory" not in gun["input"]["points_of_view"]["Markus"]
+    fight = next(e for e in events if e["node_id"] == "fight")
+    markus = fight["input"]["points_of_view"]["Markus"]
+    assert [m["your_choice"] for m in markus["since_last_memory"]] == ["REACH THE GUN FIRST"]
+    assert markus["this_moment"]
+    after = next(e for e in events if e["node_id"] == "m3")
+    assert [m["your_choice"] for m in after["input"]["chapter_segment_so_far"][:2]] == [
+        "REACH THE GUN FIRST", "WIN THE FIGHT"]
+
+
+def _estimate(graph: dict) -> int:
+    return _extreme_route(graph, max, memory=0, rationale=10, news=0).prompt_chars
+
+
+def test_the_estimate_counts_relationship_and_branch_feedback():
+    plain = _estimate(_scored_graph({STRESS: 4}))
+    hinted = _scored_graph({STRESS: 4})
+    hinted["nodes"]["first"]["options"][0]["relation_hints"] = [
+        {"name": "RelationName.Hank", "direction": "RelationType.LargeUp"}]
+    assert _estimate(hinted) > plain
+    shown = _scored_graph({STRESS: 4})
+    shown["nodes"]["second"]["options"][0]["next"] = "look"
+    shown["nodes"]["look"] = {
+        "id": "look", "type": "condition", "chapter": "9", "character": "Connor",
+        "heading": "Look", "resolution": "rule", "source": "https://detroit-become-human.fandom.com/wiki/x",
+        "branches": [{"when": {"all": []}, "next": "third",
+                      "effects": {"flags": {}, "show": [STRESS]}}], "next": "third"}
+    shown["nodes"]["third"] = {**shown["nodes"]["second"], "id": "third",
+                               "options": [{**shown["nodes"]["second"]["options"][0], "next": "rule"}]}
+    unshown = deepcopy(shown)
+    del unshown["nodes"]["look"]["branches"][0]["effects"]["show"]
+    assert _estimate(shown) > _estimate(unshown)

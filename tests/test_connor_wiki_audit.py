@@ -175,9 +175,14 @@ def test_maintaining_pressure_the_deviant_confesses_then_destroys_itself(tmp_pat
 
 
 def test_backing_off_after_pressure_chris_steps_in_and_it_shoots_connor(tmp_path):
+    # Giving up the pressure leads back to the approaches (wiki flowchart): convincing
+    # it then, with the stress at 52%, gets the confession, and Chris steps in.
+    harsh = {"ch9_00123": "SHOW PHOTOS", "ch9_00118": "THREATEN", "ch9_00113": "THREATEN",
+             "ch9_00106": "TRUTH", "ch9_00102": "TRUTH"}
+    convince = {"ch9_x0109": "CONVINCE IT", "ch9_x0115": "INDIFFERENT", "ch9_x0119": "TERRIFY"}
     run = play_story(
         tmp_path,
-        {APPROACH: "PRESSURE IT", PRESSED: "GIVE UP", CHRIS: "GIVE UP"},
+        {**harsh, APPROACH: "PRESSURE IT", PRESSED: "GIVE UP", **convince, CHRIS: "GIVE UP"},
     )
     assert CHRIS in run.nodes
     assert SHOOTS_CONNOR in run.nodes

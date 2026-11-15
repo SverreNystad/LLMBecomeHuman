@@ -33,7 +33,7 @@ How many times Connor has died so far. CyberLife sends a new body each time, so 
 _Avoid_: Connor's lives, respawns
 
 **Gauge Feedback**:
-A short line the game would flash on screen after a choice, saying which way a visible gauge moved (e.g. "Probability of success: up", "Relationship with Hank: up sharply"). A hidden Running Score shows only its direction; one the game shows as a percentage also shows its value and band (e.g. "The deviant's stress: up to 62% (optimal)"). The model reads it right after the choice that caused it, and it always comes from the same numbers that decide the outcome.
+A short line the game would flash on screen after a choice, saying which way a visible gauge moved (e.g. "Probability of success: up", "Relationship with Hank: up sharply"). A Running Score the game shows only as an arrow gives only its direction; one the game shows as a percentage also gives its value and band (e.g. "The deviant's stress: up to 62% (optimal)"). The model reads it right after the choice that caused it, and it always comes from the same numbers that decide the outcome.
 _Avoid_: hint, meter, relation hint
 
 **Running Score**:

@@ -28,9 +28,7 @@ from .engine import (
     SYSTEM_PROMPT,
     _edges,
     chapter_briefing,
-    effect_adds,
-    gauge_text,
-    score_move,
+    planned_feedback,
 )
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -178,15 +176,10 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                     "your_choice": option["label"],
                     "rationale": "x" * rationale,
                 }
-                feedback = list((option.get("effects") or {}).get("feedback") or [])
-                scores = graph.get("scores") or {}
-                feedback += [
-                    score_move(scores[name], delta, scores[name]["max"])
-                    for name, delta in effect_adds(option).items()
-                    if delta
-                ]
+                # Relationship arrows are shown by default, as in CLI and Visitor Runs.
+                feedback = planned_feedback(graph, option)
                 if feedback:
-                    moment["on_screen"] = [gauge_text(item) for item in feedback]
+                    moment["on_screen"] = feedback
                 chosen = 1 + _size(moment)
                 for calls, (chars, decisions, updates) in best.get(
                     option.get("next"), {0: (0, 0, 0)}
@@ -209,11 +202,20 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                         "observations": node.get("observations", []),
                     }
                 )
+            # A condition branch's Gauge Feedback joins the segment as its own entry.
+            flashed = {}
+            if kind == "condition":
+                for branch in node.get("branches", []):
+                    lines = planned_feedback(graph, branch)
+                    if lines and branch.get("next"):
+                        entry = 1 + _size({"at": node.get("heading"), "on_screen": lines})
+                        flashed[branch["next"]] = max(flashed.get(branch["next"], 0), entry)
             for child in _edges(node) or [None]:
+                cost = scene + flashed.get(child, 0)
                 for calls, (chars, decisions, updates) in best.get(
                     child, {0: (0, 0, 0)}
                 ).items():
-                    keep(table, calls, (chars + scene * calls, decisions, updates))
+                    keep(table, calls, (chars + cost * calls, decisions, updates))
         best[node_id] = table
     return Route(*overall(best[graph["start"]]))
 

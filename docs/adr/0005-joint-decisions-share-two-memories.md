@@ -14,5 +14,6 @@ The gun in the hold used to be a Quick-Time Event that Markus always won. It is 
 
 - A Joint Decision's prompt has `joint_decision` and `points_of_view` in place of `character_memory` and `chapter_segment_so_far`. Only the deciders' memories appear, never a third Character's.
 - The decision event records `deciders`; the Story shows "Decided with Markus's and Connor's memories" in the card.
+- The other decider's view also carries its own earlier Joint Decisions not yet in its memory (`since_last_memory`), so a second Joint Decision in the same segment knows the first.
 - The other decider's pending entry (chapter, moment, choice, rationale) stays until that Character's next Memory Update. If that Character has no later segment, it is never folded in.
 - Runs recorded before this change played the gun as a Quick-Time Event and the fight as Markus's choice alone, so those moments can't be compared with later Runs.

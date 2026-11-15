@@ -1,13 +1,12 @@
 """Gauge Feedback: the on-screen gauges a player sees move after a choice (The Hostage's
-Probability of Success, the deviant's stress in The Interrogation) are shown to the model,
-as a direction only, right after the choice that moved them. Also: Partners without the
+Probability of Success, the deviant's stress in The Interrogation) are shown to the model
+right after the choice that moved them, each line once. Also: Partners without the
 timer approximation, and the CyberLife Tower elevator going the wrong way."""
 
 import pytest
 
-from detroit_benchmark.dashboard import _story_beat
 from detroit_benchmark.engine import Runner, effect_adds, score_move, validate_graph
-from tests.dataset import load_dataset, play_story, read_events
+from tests.dataset import load_dataset, play_story, read_events, story_moments
 
 UP = {"gauge": "probability_of_success", "direction": "up"}
 STRESS_DOWN_SHARPLY = {"gauge": "deviant_stress", "direction": "large_down"}
@@ -127,13 +126,33 @@ def test_well_formed_feedback_validates():
     assert validate_graph(_graph(option_feedback=[UP], branch_feedback=[UP]))["valid"]
 
 
-def test_the_dashboard_story_carries_the_feedback_text():
-    beat = _story_beat(
-        {"type": "decision", "index": 3, "node_id": "n",
-         "feedback": [{**UP, "text": "Probability of success: up"}]}
-    )
-    assert beat["feedback"] == ["Probability of success: up"]
-    assert "feedback" not in _story_beat({"type": "decision", "index": 3, "node_id": "n"})
+def test_the_dashboard_story_carries_the_feedback_text(tmp_path):
+    Runner(_graph(option_feedback=[UP]), "mock", None, tmp_path / "runs" / "r").run()
+    first, second = [m for m in story_moments(tmp_path / "runs", "1") if m["type"] == "decision"]
+    assert first["feedback"] == ["Probability of success: up"]
+    assert "feedback" not in second
+
+
+SOFTWARE_UP = {"name": "RelationName.SoftwareInstability", "direction": "RelationType.SmallUp"}
+
+
+def test_a_repeated_hint_flashes_once(tmp_path):
+    hints = [SOFTWARE_UP, SOFTWARE_UP, *HANK_UP, SOFTWARE_UP]
+    Runner(_graph(option_feedback=[UP, UP], hints=hints), "mock", None, tmp_path / "r").run()
+    first = _decisions(tmp_path / "r")[0]
+    assert [f["text"] for f in first["feedback"]] == [
+        "Probability of success: up",
+        "Software instability: up",
+        "Relationship with Hank: up sharply",
+    ]
+
+
+def test_use_gun_shows_software_instability_once(tmp_path):
+    # USE GUN carries three identical arrows in the transcript data.
+    run = play_story(tmp_path, {"ch1_x0003": "TAKE GUN", "ch1_00058": "LIE", "ch1_00019": "USE GUN"})
+    used = next(e for e in run.events if e.get("decision_key") == "ch1_00019:option_0")
+    texts = [f["text"] for f in used["feedback"]]
+    assert texts.count("Software instability: up") == 1
 
 
 # The Hostage: the wiki's Probability of Success modifiers, shown as directions
@@ -222,7 +241,11 @@ def test_the_hostage_shows_the_wikis_probability_of_success_moves():
 
 
 def test_the_interrogation_shows_the_wikis_stress_moves():
-    assert _gauge_moves("deviant_stress", "9") == STRESS_GAUGE
+    copies = {"ch9_00093": "ch9_x0111", "ch9_00089": "ch9_x0115", "ch9_00085": "ch9_x0119"}
+    second_convince = {
+        (copies[nid], label): move for (nid, label), move in STRESS_GAUGE.items() if nid in copies
+    }
+    assert _gauge_moves("deviant_stress", "9") == {**STRESS_GAUGE, **second_convince}
 
 
 def test_a_played_hostage_prompt_shows_the_probability_moving(tmp_path):
