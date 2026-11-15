@@ -181,8 +181,10 @@ def test_luther_shooting_at_the_checkpoint_records_the_same_shooting_as_kara_s()
 # Kara Captured (32.2)
 ENCLOSURE = "ch32_2_x0001"
 LUTHER_SCENES = {"ch32_2_00127", "ch32_2_00119", "ch32_2_00087", "ch32_2_00039"}
-RALPH_SCENES = {"ch32_2_00159", "ch32_2_00085", "ch32_2_00059"}
-SCARRED_SCENES = {"ch32_2_00136", "ch32_2_00080", "ch32_2_00056"}
+# Their diversion scenes sit behind the ASK RALPH / ASK THE SCARRED ANDROID options,
+# whose requirements tests/test_kara_wiki_audit.py checks.
+RALPH_SCENES = {"ch32_2_00159", "ch32_2_00085"}
+SCARRED_SCENES = {"ch32_2_00136", "ch32_2_00080"}
 
 
 @pytest.mark.parametrize(
