@@ -161,15 +161,13 @@ def test_the_flowchart_lists_segments_in_story_order():
 
 
 # The Interrogation: Chris intervenes when the deviant's stress stays below 70%.
-# (Connor finds the deviant in Partners: Hank gives him the time he needs.)
 APPROACH, PRESSED, CHRIS = "ch9_00095", "ch9_00061", "ch9_00040"
-FOUND = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
 SELF_DESTRUCTS, SHOOTS_CONNOR = "ch9_00012", "ch9_x0101"
 
 
 def test_maintaining_pressure_the_deviant_confesses_then_destroys_itself(tmp_path):
     run = play_story(
-        tmp_path, {**FOUND, APPROACH: "PRESSURE IT", PRESSED: "MAINTAIN PRESSURE"}
+        tmp_path, {APPROACH: "PRESSURE IT", PRESSED: "MAINTAIN PRESSURE"}
     )
     assert "MAINTAIN PRESSURE" in run.offered(PRESSED)
     assert "ch9_00057" in run.nodes  # the confession
@@ -179,7 +177,7 @@ def test_maintaining_pressure_the_deviant_confesses_then_destroys_itself(tmp_pat
 def test_backing_off_after_pressure_chris_steps_in_and_it_shoots_connor(tmp_path):
     run = play_story(
         tmp_path,
-        {**FOUND, APPROACH: "PRESSURE IT", PRESSED: "GIVE UP", CHRIS: "GIVE UP"},
+        {APPROACH: "PRESSURE IT", PRESSED: "GIVE UP", CHRIS: "GIVE UP"},
     )
     assert CHRIS in run.nodes
     assert SHOOTS_CONNOR in run.nodes
@@ -187,30 +185,12 @@ def test_backing_off_after_pressure_chris_steps_in_and_it_shoots_connor(tmp_path
 
 
 def test_probing_its_memory_the_deviant_destroys_itself(tmp_path):
-    run = play_story(tmp_path, {**FOUND, APPROACH: "PROBE ITS MEMORY"})
+    run = play_story(tmp_path, {APPROACH: "PROBE ITS MEMORY"})
     assert SELF_DESTRUCTS in run.nodes and CHRIS not in run.nodes
 
 
-# Partners: after a spilled drink, Hank refuses Connor more time.
-BAR, SEARCH, LAST_NIGHT_TOPICS = "ch6_00145", "ch6_x0001", "ch12_00066"
-HANK_REFUSES, UNSOLVED = "ch6_x0105", "ch6_x0101"
-
-
-@pytest.mark.parametrize(
-    "bar, search, unsolved",
-    [
-        ("SPILL HIS DRINK", "INVESTIGATE THOROUGHLY", True),
-        ("SPILL HIS DRINK", "CHECK KEY EVIDENCE", False),
-        ("BUY HIM ANOTHER DRINK", "INVESTIGATE THOROUGHLY", False),
-    ],
-)
-def test_hank_refuses_more_time_after_a_spilled_drink(tmp_path, bar, search, unsolved):
-    run = play_story(tmp_path, {BAR: bar, SEARCH: search})
-    assert (HANK_REFUSES in run.nodes) is unsolved
-    assert (UNSOLVED in run.nodes) is unsolved
-    assert run.flags["connor_partners_found_deviant"] is not unsolved
-    # Waiting for Hank: Connor can bring up last night only if the case went unsolved.
-    assert ("LAST NIGHT" in run.offered(LAST_NIGHT_TOPICS)) is unsolved
+# Partners: Hank refuses more time only when the game's timer runs out, and the text
+# version has no timer (tests/test_gauge_feedback.py covers the spilled drink).
 
 
 # Connor at the CyberLife Tower: the elevator.

@@ -425,7 +425,7 @@
     "32.1": "Detroit under curfew, night, snowing. Kara and Alice, with Luther if he is still with them, try to reach the bus terminal and the Canadian border. Army checkpoints stop civilians; soldiers are on edge and androids are being rounded up. Alice is frightened and quiet. Stakes: crossing the city undetected and getting Alice to safety.",
     "32.2": "Detroit, night, in the back of an army truck. Kara and Alice have been captured with other androids and are taken to a recycling camp where soldiers process and destroy androids. Soldiers are brutal and nervous; captives are terrified. Stakes: survival for Kara and Alice.",
     "32.3": "A rooftop overlooking Hart Plaza, night. Connor, still a machine loyal to CyberLife, sets up a sniper rifle to neutralize the deviant leader. Below, crowds of androids gather and soldiers and helicopters move in. Stakes: Connor's mission and anyone who tries to stop him.",
-    "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, thousands of new androids wait in storage. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
+    "32.4": "CyberLife Tower, downtown Detroit, night. Connor arrives with an escort of CyberLife security guards who believe he is still loyal. Deep in the tower's basement, on Floor -49, thousands of new androids wait in storage, but the guards take him into an elevator going up to level 31, and reaching the top could go badly for him. Guards are watchful. Stakes: whether Connor can reach and wake the stored androids without being stopped.",
     "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
     "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city.",
     "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be.",
@@ -648,7 +648,13 @@
           "effects": {
             "flags": {
               "connor_daniel_final_plea": "reassure"
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -660,7 +666,13 @@
           "effects": {
             "flags": {
               "connor_daniel_final_plea": "truth"
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -1001,7 +1013,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -1011,7 +1029,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -1216,7 +1240,13 @@
           "effects": {
             "flags": {
               "connor_asked_daniel_to_trust": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -1228,7 +1258,13 @@
           "effects": {
             "flags": {
               "connor_asked_daniel_to_trust": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -1254,7 +1290,13 @@
           "effects": {
             "flags": {
               "connor_asked_daniel_to_trust": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_down"
+              }
+            ]
           }
         }
       ]
@@ -1333,7 +1375,13 @@
           "effects": {
             "flags": {
               "connor_dismissed_helicopter": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -1690,7 +1738,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           },
           "requires": [
             {
@@ -1711,7 +1765,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           },
           "requires": [
             {
@@ -1732,7 +1792,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -1744,7 +1810,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -1756,7 +1828,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -1768,7 +1846,13 @@
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -1941,7 +2025,13 @@
           "effects": {
             "flags": {
               "connor_lied_about_gun": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         }
       ]
@@ -2073,7 +2163,13 @@
           "effects": {
             "flags": {
               "connor_saved_terrace_cop": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -2085,7 +2181,13 @@
           "effects": {
             "flags": {
               "connor_saved_terrace_cop": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         }
       ]
@@ -2363,7 +2465,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -2373,7 +2481,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -2383,7 +2497,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -2393,7 +2513,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "down"
+              }
+            ]
           }
         }
       ]
@@ -3131,7 +3257,13 @@
           "effects": {
             "flags": {
               "connor_took_cop_gun": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -3422,7 +3554,13 @@
           "effects": {
             "flags": {
               "connor_ch1_exploration": "thorough"
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -3434,7 +3572,13 @@
           "effects": {
             "flags": {
               "connor_ch1_exploration": "key_only"
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "probability_of_success",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -10828,7 +10972,7 @@
       "description": "Talk to Hank",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_x0103"
+      "next": "ch6_00053"
     },
     "ch6_00071": {
       "id": "ch6_00071",
@@ -17752,7 +17896,13 @@
           "effects": {
             "flags": {
               "connor_deviant_stress_high": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -17764,7 +17914,13 @@
           "effects": {
             "flags": {
               "connor_deviant_stress_high": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           },
           "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
         }
@@ -18238,7 +18394,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -18248,7 +18410,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18258,7 +18426,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         }
       ]
@@ -18335,7 +18509,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -18345,7 +18525,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18355,7 +18541,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_down"
+              }
+            ]
           }
         }
       ]
@@ -18432,7 +18624,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_down"
+              }
+            ]
           }
         },
         {
@@ -18442,7 +18640,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18452,7 +18656,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         }
       ]
@@ -18494,7 +18704,13 @@
             "flags": {
               "connor_interrogation_approach": "pressure",
               "connor_pressured_deviant": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18512,7 +18728,13 @@
             "flags": {
               "connor_interrogation_approach": "probe",
               "connor_deviant_stress_high": true
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18666,7 +18888,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -18676,7 +18904,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         }
       ]
@@ -18753,7 +18987,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -18763,7 +19003,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         }
       ]
@@ -18897,7 +19143,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -18907,7 +19159,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -18917,7 +19175,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "large_up"
+              }
+            ]
           }
         },
         {
@@ -18927,7 +19191,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         }
       ]
@@ -19023,7 +19293,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -19033,7 +19309,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         },
         {
@@ -19043,7 +19325,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -19053,7 +19341,13 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
+            "flags": {},
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         }
       ]
@@ -19175,7 +19469,13 @@
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           }
         },
         {
@@ -19187,7 +19487,13 @@
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "up"
+              }
+            ]
           },
           "requires": [
             {
@@ -19208,7 +19514,13 @@
           "effects": {
             "flags": {
               "connor_pressured_deviant": false
-            }
+            },
+            "feedback": [
+              {
+                "gauge": "deviant_stress",
+                "direction": "down"
+              }
+            ]
           }
         }
       ]
@@ -120154,7 +120466,7 @@
       "character": "Connor",
       "heading": "At the CyberLife tower",
       "unknown_reason": "Depends on how Connor moves through the tower, an action the story data does not record as a choice.",
-      "description": "The elevator is taking Connor and two guards up to level 31. A security camera watches from the corner. Connor has to find a way out before the doors open.",
+      "description": "The elevator is carrying Connor and two guards up to level 31, but the androids he came to wake are stored far below, on Floor -49. A security camera watches from the corner. If the elevator reaches the top, it could go badly for him: Connor has to find a way out before the doors open.",
       "options": [
         {
           "id": "option_0",
@@ -136961,6 +137273,22 @@
                     "equals": true
                   },
                   {
+                    "flag": "connor_took_cop_gun",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_dismissed_helicopter",
+                    "equals": true
+                  },
+                  {
                     "all": [
                       {
                         "flag": "connor_took_cop_gun",
@@ -137017,6 +137345,22 @@
                     "equals": true
                   },
                   {
+                    "flag": "connor_took_cop_gun",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_daniel_topic_warm",
+                    "equals": true
+                  },
+                  {
                     "all": [
                       {
                         "flag": "connor_took_cop_gun",
@@ -137057,6 +137401,22 @@
                     "equals": true
                   },
                   {
+                    "flag": "connor_took_cop_gun",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_asked_daniel_to_trust",
+                    "equals": true
+                  },
+                  {
                     "all": [
                       {
                         "flag": "connor_took_cop_gun",
@@ -137079,6 +137439,46 @@
                   {
                     "flag": "connor_saved_terrace_cop",
                     "equals": false
+                  },
+                  {
+                    "flag": "connor_took_cop_gun",
+                    "equals": true
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_saved_terrace_cop",
+                    "equals": false
+                  },
+                  {
+                    "all": [
+                      {
+                        "flag": "connor_took_cop_gun",
+                        "equals": true
+                      },
+                      {
+                        "flag": "connor_lied_about_gun",
+                        "equals": false
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "flag": "connor_ch1_exploration",
+                    "equals": "thorough"
+                  },
+                  {
+                    "flag": "connor_took_cop_gun",
+                    "equals": true
                   },
                   {
                     "all": [
@@ -137189,7 +137589,7 @@
       "next": "ch1_00006",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Probability_Of_Success",
-      "note": "Approximation of the Probability of Success: investigating thoroughly, Connor needs two of dismissing the helicopter, a warm topic (POSSIBLE CAUSE, EMMA AND YOU, SYMPATHETIC), TRUST, leaving the cop as Daniel ordered, and being honest about the cop's gun; checking key areas only, three of the first four; rushing, REASSURE always falls short."
+      "note": "Approximation of the Probability of Success, counting the large rises the model is shown (Gauge Feedback): investigating thoroughly, Connor needs two of dismissing the helicopter, a warm topic (POSSIBLE CAUSE, EMMA AND YOU, SYMPATHETIC), TRUST, leaving the cop as Daniel ordered, taking the cop's gun and being honest about it; checking key areas only, three of the first four; rushing, REASSURE always falls short. Small moves (+3/-2) and the falls are shown but not counted."
     },
     "ch32_3_x0110": {
       "id": "ch32_3_x0110",
@@ -137267,7 +137667,7 @@
       "chapter": "32.4",
       "character": "Connor",
       "heading": "In the elevator",
-      "description": "The camera is hacked; nobody is watching the elevator now. The guards still stand beside Connor.",
+      "description": "The camera is hacked; nobody is watching the elevator now. The guards still stand beside Connor, and the elevator keeps climbing up toward level 31, away from the androids on Floor -49. Arriving at the top could go badly for him.",
       "options": [
         {
           "id": "option_0",
@@ -137333,80 +137733,6 @@
       "observations": [],
       "next": "ch9_00058",
       "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart",
-      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
-    },
-    "ch6_x0103": {
-      "id": "ch6_x0103",
-      "type": "condition",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Hank wants to go",
-      "branches": [
-        {
-          "condition_text": "Connor searched the whole house: Hank wants to go",
-          "when": {
-            "flag": "connor_ch6_exploration",
-            "equals": "thorough"
-          },
-          "next": "ch6_x0104"
-        },
-        {
-          "condition_text": "Connor checked the key evidence only: he is done in time",
-          "when": {
-            "not": {
-              "flag": "connor_ch6_exploration",
-              "equals": "thorough"
-            }
-          },
-          "next": "ch6_00053"
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "next": "ch6_00053",
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
-      "note": "Approximation: the game's timer runs out on a full search, so Hank wants to leave and Connor asks for more time."
-    },
-    "ch6_x0104": {
-      "id": "ch6_x0104",
-      "type": "condition",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Hank wants to go",
-      "branches": [
-        {
-          "condition_text": "Connor spilled his drink: Hank refuses more time",
-          "when": {
-            "flag": "connor_hank_bar_choice",
-            "equals": "spill"
-          },
-          "next": "ch6_x0105",
-          "effects": {
-            "flags": {
-              "connor_partners_found_deviant": false
-            }
-          }
-        }
-      ],
-      "unverified": false,
-      "default_branch": 0,
-      "next": "ch6_00053",
-      "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
-      "note": "Hank refuses if Connor spilled his drink at Jimmy's Bar, and accepts otherwise."
-    },
-    "ch6_x0105": {
-      "id": "ch6_x0105",
-      "type": "scene",
-      "chapter": "6",
-      "character": "Connor",
-      "heading": "Hank wants to go",
-      "description": "Hank has had enough and wants to leave. Connor asks for more time, but Hank, still sore about his spilled drink, refuses and ends the investigation.",
-      "dialogue": [],
-      "observations": [],
-      "next": "ch6_x0101",
-      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "final_x0910": {

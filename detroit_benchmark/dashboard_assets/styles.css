@@ -312,6 +312,9 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
   opacity: 0; visibility: hidden; transition: opacity .1s, visibility 0s linear .1s; }
 .story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; }
 .story-mark:is(:hover, :focus-visible) .story-mark-name { opacity: 1; visibility: visible; transition: opacity .1s .08s, visibility 0s .08s; animation: glitch-in .22s steps(4, end) .08s both; }
+/* Gauge Feedback: what the game flashed on screen after the followed model's choice. */
+.story-feedback { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0; font-size: 12px; letter-spacing: .04em; color: var(--ink-soft); }
+.story-feedback span { padding-left: 8px; border-left: 2px solid var(--highlight); overflow-wrap: anywhere; }
 .story-why { margin-top: 14px; font-size: 14.5px; line-height: 1.55; }
 .story-why p { margin: 0; font-weight: 300; }
 /* Another model's justification, shown in place of the followed model's. */

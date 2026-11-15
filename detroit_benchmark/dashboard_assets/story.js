@@ -81,6 +81,13 @@ function renderClue(item) {
     return `<p><b>${esc(first)}</b>${rest.length ? `<span>${esc(rest.join(' · '))}</span>` : ''}</p>`;
   }).join('')}</div>`;
 }
+/* Gauge Feedback: the gauges the game flashed on screen after this moment, as the model read them. */
+function renderFeedback(record, attrs = '') {
+  const lines = (record.feedback || []).filter(Boolean);
+  return lines.length
+    ? `<p class="story-feedback" ${attrs} aria-label="On screen">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</p>`
+    : '';
+}
 function renderRule(item) {
   const record = item.record;
   if (record.type === 'route') {
@@ -90,8 +97,10 @@ function renderRule(item) {
   }
   const branches = state.graph?.nodes?.[record.node_id]?.branches || [];
   const taken = branches[record.branch_index]?.condition_text;
-  if (!record.used_unverified_default || !taken) return '';
-  return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`;
+  const assumed = record.used_unverified_default && taken
+    ? `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`
+    : '';
+  return assumed + renderFeedback(record, momentAttrs(item));
 }
 /* A model's logo beside the option it chose. Hovering names the model; clicking shows its
  * justification in the card. The logo whose justification is shown is pressed. */
@@ -123,6 +132,7 @@ function renderDecision(item, number, total, key, tables, run) {
     <header>${count}${agreementLabel(byChoice)}</header>
     <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
     <ul class="story-options">${options}</ul>
+    ${renderFeedback(record)}
     <div class="story-why" aria-live="polite"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
   </article>`;
 }

@@ -32,6 +32,10 @@ _Avoid_: alive flag, death state, survival
 How many times Connor has died so far. CyberLife sends a new body each time, so his story goes on, but people who saw it remember (Hank's lines change with the count). Connor has no Fate until his story ends.
 _Avoid_: Connor's lives, respawns
 
+**Gauge Feedback**:
+A short line the game would flash on screen after a choice, saying which way a visible gauge moved (e.g. "Probability of success: up", "The deviant's stress: down sharply"), never by how much. The model reads it right after the choice that caused it.
+_Avoid_: hint, score, meter, relation hint
+
 **Public News**:
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.
 _Avoid_: world state, flags, broadcast

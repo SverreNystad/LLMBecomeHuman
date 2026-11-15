@@ -15,8 +15,6 @@ WHERE, WEAPON, WHAT, FLED, KILLED = (
     "ch6_00025",
 )
 CORRECT = {
-    # After a spilled drink Hank refuses Connor more time (wiki Partners#Flowchart).
-    "ch6_00145": "BUY HIM ANOTHER DRINK",
     WHERE: "…IN THE KITCHEN",
     WEAPON: "…WITH THE BAT.",
     WHAT: "THE ANDROID STABBED THE VICTIM.",

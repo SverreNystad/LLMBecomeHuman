@@ -356,6 +356,13 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
         )
     else:
         return None
+    if kind in ("decision", "condition") and isinstance(event.get("feedback"), list):
+        # Gauge Feedback: what the game flashed on screen after this moment.
+        beat["feedback"] = [
+            item["text"]
+            for item in event["feedback"]
+            if isinstance(item, dict) and isinstance(item.get("text"), str)
+        ]
     return beat
 
 

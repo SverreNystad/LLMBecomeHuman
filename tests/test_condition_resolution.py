@@ -592,12 +592,7 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
 }
-# Hank gives Connor the time to find the deviant in Partners (no spilled drink).
-TRUTH_IS_INSIDE = {
-    "ch6_00145": "BUY HIM ANOTHER DRINK",
-    "ch9_00095": "CONVINCE IT",
-    "ch9_00040": "INTERVENE",
-}
+TRUTH_IS_INSIDE = {"ch9_00095": "CONVINCE IT", "ch9_00040": "INTERVENE"}
 
 
 def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):

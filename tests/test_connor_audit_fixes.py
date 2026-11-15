@@ -55,8 +55,6 @@ ROOFTOP_DEATHS = [
 ]
 # Daniel jumps with Emma and Connor does not leap after them.
 STAY_BACK = {"ch1_00005": "STAY BACK"}
-# After a spilled drink Hank refuses Connor more time and the deviant is never found.
-FOUND = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
 
 
 def death_ladder_at(graph: dict, nid: str) -> bool:
@@ -120,7 +118,7 @@ def test_daniel_who_shot_connor_remembers_it_in_last_chance():
 
 
 def test_giving_up_on_the_interrogation_gets_no_confession(tmp_path):
-    run = play_story(tmp_path, {**FOUND, APPROACH: "GIVE UP"})
+    run = play_story(tmp_path, {APPROACH: "GIVE UP"})
     assert CONFESSION not in run.nodes
     assert BACK_TO_THE_CELL in run.nodes
     assert NO_CONFESSION_GAVIN in run.nodes

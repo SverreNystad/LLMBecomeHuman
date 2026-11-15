@@ -28,6 +28,7 @@ from .engine import (
     SYSTEM_PROMPT,
     _edges,
     chapter_briefing,
+    gauge_text,
 )
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -166,14 +167,17 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                 }
             )
             for option in node["options"]:
-                # The choice joins the segment every later prompt in it carries.
-                chosen = 1 + _size(
-                    {
-                        "at": node.get("heading"),
-                        "your_choice": option["label"],
-                        "rationale": "x" * rationale,
-                    }
-                )
+                # The choice joins the segment every later prompt in it carries,
+                # with any Gauge Feedback it caused.
+                moment = {
+                    "at": node.get("heading"),
+                    "your_choice": option["label"],
+                    "rationale": "x" * rationale,
+                }
+                feedback = (option.get("effects") or {}).get("feedback") or []
+                if feedback:
+                    moment["on_screen"] = [gauge_text(item) for item in feedback]
+                chosen = 1 + _size(moment)
                 for calls, (chars, decisions, updates) in best.get(
                     option.get("next"), {0: (0, 0, 0)}
                 ).items():

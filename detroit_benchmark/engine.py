@@ -118,6 +118,78 @@ def effect_flags(item: dict) -> dict:
     return (item.get("effects") or {}).get("flags") or {}
 
 
+# Gauge Feedback: an on-screen gauge the game flashes after a choice, shown to the model
+# as a direction only, never a number. One table words every line the model reads.
+GAUGES = {
+    "probability_of_success": "Probability of success",
+    "deviant_stress": "The deviant's stress",
+    "software_instability": "Software instability",
+    "public_opinion": "Public opinion",
+    **{
+        f"relationship_{name.lower()}": f"Relationship with {name}"
+        for name in (
+            "Hank", "Amanda", "Alice", "Luther", "North", "Simon", "Josh", "Jericho"
+        )
+    },
+}
+# "large" marks a wiki modifier of 6 points or more.
+GAUGE_DIRECTIONS = {
+    "up": "up",
+    "down": "down",
+    "large_up": "up sharply",
+    "large_down": "down sharply",
+}
+# The game's relationship arrows (an option's relation_hints), as Gauge Feedback.
+_RELATION_GAUGES = {
+    "SoftwareInstability": "software_instability",
+    "PublicOpinion": "public_opinion",
+}
+_RELATION_DIRECTIONS = {
+    "SmallUp": "up",
+    "SmallDown": "down",
+    "LargeUp": "large_up",
+    "LargeDown": "large_down",
+}
+
+
+def gauge_text(item: dict) -> str:
+    """The line the model reads for one gauge move, e.g. "Probability of success: up"."""
+    return f"{GAUGES[item['gauge']]}: {GAUGE_DIRECTIONS[item['direction']]}"
+
+
+def relation_feedback(hints: list | None) -> list[dict]:
+    """An option's relation_hints as Gauge Feedback items; unknown ones are skipped."""
+    items = []
+    for hint in hints or []:
+        name = str(hint.get("name", "")).strip().removeprefix("RelationName.")
+        kind = str(hint.get("direction", "")).strip().removeprefix("RelationType.")
+        gauge = _RELATION_GAUGES.get(name, f"relationship_{name.lower()}")
+        if gauge in GAUGES and kind in _RELATION_DIRECTIONS:
+            items.append({"gauge": gauge, "direction": _RELATION_DIRECTIONS[kind]})
+    return items
+
+
+def _feedback_errors(where: str, item: dict) -> list[str]:
+    """Check an option's or a branch's ``effects.feedback``."""
+    feedback = (item.get("effects") or {}).get("feedback")
+    if feedback is None:
+        return []
+    if not isinstance(feedback, list):
+        return [f"{where}: feedback must be a list"]
+    errors = []
+    for entry in feedback:
+        gauge = entry.get("gauge") if isinstance(entry, dict) else None
+        direction = entry.get("direction") if isinstance(entry, dict) else None
+        if gauge not in GAUGES:
+            errors.append(f"{where}: feedback has an unknown gauge {gauge!r}")
+        if direction not in GAUGE_DIRECTIONS:
+            errors.append(
+                f"{where}: feedback direction {direction!r} is not one of "
+                + ", ".join(GAUGE_DIRECTIONS)
+            )
+    return errors
+
+
 def _enrichment_errors(graph: dict) -> list[str]:
     """Check Chapter Briefings and Public News; graphs without them pass."""
     errors = []
@@ -148,7 +220,10 @@ def _enrichment_errors(graph: dict) -> list[str]:
             if not FLAG_NAME.fullmatch(flag)
         ]
     for nid, node in graph.get("nodes", {}).items():
+        for i, branch in enumerate(node.get("branches", [])):
+            errors += _feedback_errors(f"{nid}: branch {i}", branch)
         for option in node.get("options", []):
+            errors += _feedback_errors(f"{nid}/{option.get('id')}", option)
             effects = option.get("effects")
             if not isinstance(effects, dict):
                 continue
@@ -584,6 +659,7 @@ class Runner:
         mock_replies: list[str] | None = None,
         model_factory=create_model,
         api_key: str | None = None,
+        show_relationships: bool = False,
     ):
         report = validate_graph(graph, strict=not allow_unverified)
         if not report["valid"]:
@@ -593,6 +669,8 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
+        # Off until decided: options' relation_hints also become Gauge Feedback.
+        self.show_relationships = show_relationships
         self.memory_max_chars = memory_max_chars
         self.provider = provider
         self.model_id = model_id or DEFAULT_MODELS[provider]
@@ -699,6 +777,7 @@ class Runner:
                         "graph_sha256": self.story_hash,
                         "fidelity": graph.get("metadata", {}).get("fidelity"),
                         "allow_unverified": allow_unverified,
+                        "show_relationships": show_relationships,
                         "initial_flags": initial_flags or {},
                         "story_title": graph.get("metadata", {}).get("title"),
                         "synthetic": bool(
@@ -741,6 +820,26 @@ class Runner:
         flags = effect_flags(node["branches"][idx]) if idx is not None else {}
         self.state["flags"].update(flags)
         return dict(flags)
+
+    def _gauge_feedback(self, item: dict | None) -> list[dict]:
+        """Gauge Feedback for a taken option or branch, each item with its wording."""
+        if item is None:
+            return []
+        feedback = list((item.get("effects") or {}).get("feedback") or [])
+        if self.show_relationships:
+            feedback += relation_feedback(item.get("relation_hints"))
+        return [{**entry, "text": gauge_text(entry)} for entry in feedback]
+
+    def _branch_feedback(self, node: dict, idx: int | None) -> dict:
+        """A branch's Gauge Feedback joins the segment the model sees next, and the event."""
+        branch = node["branches"][idx] if idx is not None else None
+        feedback = self._gauge_feedback(branch)
+        if not feedback:
+            return {}
+        self.state["segment_events"].append(
+            {"at": node.get("heading"), "on_screen": [f["text"] for f in feedback]}
+        )
+        return {"feedback": feedback}
 
     def _record(self, kind: str, node: dict, info: dict):
         i = self.state["event_idx"]
@@ -968,6 +1067,7 @@ class Runner:
         moments = [
             e.get("heading") if "scene_id" in e else f"chose '{e['your_choice']}'"
             for e in self.state["segment_events"]
+            if "scene_id" in e or "your_choice" in e
         ]
         line = f"Chapter {node.get('chapter')}: " + "; ".join(m or "" for m in moments)
         return f"{previous}\n{line}".strip()
@@ -1027,14 +1127,17 @@ class Runner:
             "relation_hints": chosen.get("relation_hints", []),
         }
         self.state["decisions"].append(decision)
-        # The model's own choice and rationale become part of the segment it remembers.
-        self.state["segment_events"].append(
-            {
-                "at": node.get("heading"),
-                "your_choice": chosen["label"],
-                "rationale": rationale,
-            }
-        )
+        # The model's own choice and rationale become part of the segment it remembers,
+        # with any gauge the game flashes on screen right after it.
+        feedback = self._gauge_feedback(chosen)
+        moment = {
+            "at": node.get("heading"),
+            "your_choice": chosen["label"],
+            "rationale": rationale,
+        }
+        if feedback:
+            moment["on_screen"] = [f["text"] for f in feedback]
+        self.state["segment_events"].append(moment)
         self.state["node"] = chosen["next"]
         self._record(
             "decision",
@@ -1056,6 +1159,7 @@ class Runner:
                 "flags_before": before,
                 "flags_after": dict(self.state["flags"]),
                 "unverified_requirements": notes,
+                **({"feedback": feedback} if feedback else {}),
             },
         )
 
@@ -1095,6 +1199,7 @@ class Runner:
                     "quick_time_event": "success",
                     "used_unverified_default": False,
                     "flags_set": self._take_branch_effects(node, idx),
+                    **self._branch_feedback(node, idx),
                 },
             )
         elif kind == "condition":
@@ -1127,6 +1232,7 @@ class Runner:
                     "flags_set": flags_set,
                     "condition_values": values,
                     "used_unverified_default": unknown,
+                    **self._branch_feedback(node, idx),
                 },
             )
         elif kind == "chapter_exit":
