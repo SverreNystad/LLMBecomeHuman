@@ -89,7 +89,7 @@ def test_refusing_north_s_heart_markus_dies_and_the_revolution_fails():
 @pytest.mark.parametrize(
     "node_id, label",
     [
-        ("ch32_5_00045", "DIRTY BOMB"),
+        ("ch32_5_x0112", "PRESS"),  # after DIRTY BOMB (wiki: Observe Detonator → Press)
         ("ch32_6_00013", "PRESS"),
         ("ch32_6_00031", "DIRTY BOMB"),
         ("ch32_6_00024", "DETONATE THE BOMB"),

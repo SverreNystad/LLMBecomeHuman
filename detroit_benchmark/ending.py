@@ -27,6 +27,12 @@ OUTCOMES: dict[str, dict[Any, str]] = {
         False: "His story went on to the end.",
         None: "Whether his story ended is unknown.",
     },
+    "connor_mission_failed": {
+        "question": "Did Connor's mission fail?",
+        True: "His mission failed and his story ended.",
+        False: "",
+        None: "",
+    },
     "connor_deaths": {
         "question": "How many times did Connor die?",
         0: "He never died.",
@@ -112,7 +118,7 @@ OUTCOMES: dict[str, dict[Any, str]] = {
             False: "Dead",
             None: "Unknown",
         }
-        for name in ("Hank", "Luther", "Simon", "North", "Josh")
+        for name in ("Hank", "Luther", "Simon", "North", "Josh", "Carl")
     },
     # The world
     "markus_dirty_bomb_detonated": {
@@ -132,7 +138,7 @@ OUTCOMES: dict[str, dict[Any, str]] = {
 
 # Fate texts for Alice, who also has a line in Kara's entry.
 FATE_TEXT = {True: "Alive", False: "Dead", None: "Unknown"}
-SIDE_CHARACTERS = ("Hank", "Alice", "Luther", "Simon", "North", "Josh")
+SIDE_CHARACTERS = ("Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl")
 HEADLINES = 3
 NOTE = "Outcomes come from this Run's recorded route, which is not verified game data."
 
@@ -198,7 +204,10 @@ def ending_summary(
                 and value("connor_story_ended") is None
                 else [
                     _deaths(value("connor_deaths")),
-                    _say("connor_story_ended", value("connor_story_ended")),
+                    # A failed mission says that his story ended, too.
+                    _say("connor_mission_failed", True)
+                    if value("connor_mission_failed") is True
+                    else _say("connor_story_ended", value("connor_story_ended")),
                 ]
             ),
         ),

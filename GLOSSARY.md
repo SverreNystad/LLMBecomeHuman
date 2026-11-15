@@ -25,7 +25,7 @@ An action sequence from the game that tests reflexes, not judgement. It always s
 _Avoid_: QTE choice, willingness choice
 
 **Fate**:
-Whether Kara, Markus or a side character (Alice, Hank, Luther, Simon, North, Josh) is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
+Whether Kara, Markus or a side character (Alice, Hank, Luther, Simon, North, Josh, Carl) is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
 _Avoid_: alive flag, death state, survival
 
 **Connor's Deaths**:

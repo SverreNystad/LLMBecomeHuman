@@ -49,7 +49,7 @@ def test_desktop_card_opens_final_routes_with_a_column_per_shown_run(
         "Kara",
         "Markus",
     ]
-    assert first_column.locator(".ending-fates li").count() == 6
+    assert first_column.locator(".ending-fates li").count() == 7
     assert first_column.locator(".ending-news li").count() == 3
     assert "recorded route" in card.locator(".ending-note").inner_text()
 

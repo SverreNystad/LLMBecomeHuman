@@ -15571,9 +15571,11 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_pushed_leo": false
+              "markus_pushed_leo": false,
+              "carl_alive": false
             }
-          }
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/Broken#Flowchart"
         }
       ]
     },
@@ -99321,8 +99323,11 @@
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
-          }
+            "flags": {
+              "carl_alive": false
+            }
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/Carl_Manfred"
         }
       ]
     },
@@ -121118,7 +121123,7 @@
         },
         {
           "condition_text": "Markus used the dirty bomb",
-          "next": "ch32_5_00001",
+          "next": "ch32_5_x0115",
           "when": {
             "flag": "markus_barricade_response",
             "equals": "dirty_bomb"
@@ -121578,15 +121583,13 @@
         {
           "id": "option_0",
           "label": "DIRTY BOMB",
-          "next": "ch32_5_00035",
+          "next": "ch32_5_x0112",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "markus_dirty_bomb_threat": true,
-              "markus_barricade_response": "dirty_bomb",
-              "markus_barricade_kiss": false,
-              "markus_dirty_bomb_detonated": true
+              "markus_barricade_kiss": false
             },
             "news": [
               {
@@ -125656,7 +125659,7 @@
         {
           "id": "option_0",
           "label": "PRESS",
-          "next": "ch32_6_00001",
+          "next": "ch32_6_x0128",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -125726,12 +125729,15 @@
         {
           "id": "option_1",
           "label": "PUT DOWN",
-          "next": "ch32_6_00001",
+          "next": "ch32_6_x0141",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
-            "flags": {}
-          }
+            "flags": {
+              "markus_store_put_down_gun": true
+            }
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
         }
       ]
     },
@@ -126012,7 +126018,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_6_00001",
+      "next": "ch32_6_x0142",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Markus"
     },
@@ -126165,7 +126171,7 @@
         {
           "id": "option_2",
           "label": "DIRTY BOMB",
-          "next": "ch32_6_00001",
+          "next": "ch32_6_x0128",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -126235,6 +126241,10 @@
               {
                 "flag": "connor_deviant",
                 "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
               }
             ]
           }
@@ -126249,8 +126259,16 @@
                 "equals": false
               },
               {
-                "flag": "connor_deviant",
-                "equals": true
+                "any": [
+                  {
+                    "flag": "connor_deviant",
+                    "equals": true
+                  },
+                  {
+                    "flag": "connor_story_ended",
+                    "equals": true
+                  }
+                ]
               }
             ]
           }
@@ -126260,7 +126278,7 @@
       "default_branch": 0,
       "next": "ch32_6_00001",
       "resolution": "rule",
-      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Alone_in_Store"
     },
     "ch32_6_00034": {
       "id": "ch32_6_00034",
@@ -138054,6 +138072,962 @@
           }
         }
       ]
+    },
+    "ch32_5_x0112": {
+      "id": "ch32_5_x0112",
+      "type": "choice",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Barricade is attacked",
+      "description": "Markus holds the detonator North gave him. The soldiers raise their weapons.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "PRESS",
+          "next": "ch32_5_x0113",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_barricade_response": "dirty_bomb",
+              "markus_dirty_bomb_detonated": true
+            },
+            "news": [
+              {
+                "headline": "Dirty bomb detonated in Detroit; city contaminated",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch32_5_x0114",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade",
+      "note": "Wiki flowchart: Observe Detonator → Give Up (loops back to the same choice) or Press."
+    },
+    "ch32_5_x0113": {
+      "id": "ch32_5_x0113",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Barricade is attacked",
+      "description": "An explosion shakes Detroit. The soldiers retreat.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_5_00023",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade",
+      "note": "Paraphrased from the wiki flowchart: \"An Explosion Shakes Detroit → Soldiers Retreat\"."
+    },
+    "ch32_5_x0114": {
+      "id": "ch32_5_x0114",
+      "type": "choice",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Barricade is attacked",
+      "description": "Markus puts the detonator away. The soldiers raise their weapons.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "KISS NORTH",
+          "next": "ch32_5_00037",
+          "requirements_unverified": [
+            "North has lover status"
+          ],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_barricade_kiss": true,
+              "markus_barricade_response": "kiss"
+            },
+            "news": [
+              {
+                "headline": "Live TV shows android couple embracing at besieged Hart Plaza barricade",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
+          },
+          "requires": [
+            {
+              "flag": "north_alive",
+              "equals": true
+            },
+            {
+              "flag": "markus_kissed_north",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_1",
+          "label": "SING",
+          "next": "ch32_5_00043",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_barricade_song": true,
+              "markus_barricade_response": "sing",
+              "markus_barricade_kiss": false
+            },
+            "news": [
+              {
+                "headline": "Besieged androids sing on live TV as soldiers close in",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "SACRIFICE",
+          "next": "ch32_5_00044",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_barricade_response": "sacrifice",
+              "markus_barricade_kiss": false
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "DO NOTHING",
+          "next": "ch32_5_x0111",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_barricade_response": "do_nothing",
+              "markus_barricade_kiss": false
+            }
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade",
+      "note": "The same choice after GIVE UP, without the detonator (wiki: \"loops back to same choice\")."
+    },
+    "ch32_5_x0115": {
+      "id": "ch32_5_x0115",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "CTN TV - Michael Brinkley",
+          "text": "…there has just been an explosion in Detroit.  We still do not know what caused it but we will…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MBRINKLEY.BOMBMEDIA01"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Joss Douglas",
+          "text": "…We have many unconfirmed reports, but with have no official news on exactly what it is at this time…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MJOSS.BOMBMEDIA02"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Michael Webb",
+          "text": "…an explosion in the south of Detroit. We still don't know if there are any victims, but these events may be linked to the android rebellion currently taking place in the city…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWEBB.BOMBMEDIA03"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0116",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0116": {
+      "id": "ch32_5_x0116",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Soldier",
+          "text": "It's… a dirty bomb, Madam President.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.VO.X11MOFFICER.WHITEHOUSE"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "Oh my god…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWARREN.WHITEHOUSE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0117",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0117": {
+      "id": "ch32_5_x0117",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "branches": [
+        {
+          "condition_text": "Connor freed the CyberLife androids",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": true
+          },
+          "next": "ch32_5_x0118"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_5_x0119",
+      "resolution": "rule",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0118": {
+      "id": "ch32_5_x0118",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Channel 16 - Joss Douglas",
+          "text": "…Androids…  Thousands of androids are taking to the streets of Detroit at this very moment.  They're absolutely everywhere!.. This…  This is incredible…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MJOSS.COPTER"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0119",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0119": {
+      "id": "ch32_5_x0119",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "KNC - Rosanna Cartland",
+          "text": "…and the authorities have ordered the immediate evacuation of the city. If it really is a dirty bomb, then the radiation levels will be lethal for miles around…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MCARTLAND.KCNNEWS"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Michael Webb",
+          "text": "…Detroit…  Detroit has just fallen into the hands of the android rebellion…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWEBB.CHANNEL23"
+          ]
+        },
+        {
+          "speaker": "CTN TV - Michael Brinkley",
+          "text": "…This is a disaster…  an unprecedented disaster…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MBRINKLEY.CTNNEWS"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0120",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0120": {
+      "id": "ch32_5_x0120",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "Today, deviant androids triggered a dirty bomb in Detroit.  This bomb released fatal levels of radioactive toxic waste.  To ensure the safety of the population, the military is evacuating all civilians within a 50 mile radius.  The city may remain uninhabitable for decades.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.NUKE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0121",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0121": {
+      "id": "ch32_5_x0121",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "branches": [
+        {
+          "condition_text": "Connor freed the CyberLife androids",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": true
+          },
+          "next": "ch32_5_x0122"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_5_x0124",
+      "resolution": "rule",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0122": {
+      "id": "ch32_5_x0122",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "Moreover, the deviants are thought to have taken control of a CyberLife plant and liberated over one million androids that were stored there.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.1"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0124",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_5_x0124": {
+      "id": "ch32_5_x0124",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Androids became free in the debris of Detroit",
+      "description": "The soldiers have fled. Smoke rises over the city as the androids come out from behind the barricade.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_5_x0123",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Defending_the_Barricade",
+      "note": "Paraphrased from the wiki flowchart: \"Soldiers Retreat → Androids Became Free in the Debris of Detroit\"."
+    },
+    "ch32_5_x0123": {
+      "id": "ch32_5_x0123",
+      "type": "scene",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "description": "As President Warren speaks, Markus pulls the synthetic skin from his face, plants the flag of the revolution in the ground and shouts to his people as they gather around him.",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "This is the first time in our history that one of our cities has fallen into enemy hands…  We are going to fight them with all our strength,  and we won’t rest until we have taken back control of Detroit and destroyed the last of them.  Humanity is about to face its most important battle:  one that will lead to our victory,  or our extinction.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE",
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "We!..",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.1"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "May God bless you all",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.13"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "Are!..",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.2"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "and may God bless the United States of America.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.14"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "Free!",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.3"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_5_x0125",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Dialogue from the game text (press-dirty-bomb); the description follows the wiki and the maintainers."
+    },
+    "ch32_5_x0125": {
+      "id": "ch32_5_x0125",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Media reacts to the outcome of the demonstration",
+      "branches": [
+        {
+          "condition_text": "A machine Connor's mission failed: his story ends",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              }
+            ]
+          },
+          "next": "ch32_5_00001",
+          "effects": {
+            "flags": {
+              "connor_story_ended": true,
+              "connor_mission_failed": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_5_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Per the maintainers' description of the game: a machine Connor does not appear; his mission status changes to mission failed and his story ends."
+    },
+    "ch32_6_x0128": {
+      "id": "ch32_6_x0128",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "CTN TV - Michael Brinkley",
+          "text": "…there has just been an explosion in Detroit.  We still do not know what caused it but we will…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MBRINKLEY.BOMBMEDIA01"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Joss Douglas",
+          "text": "…We have many unconfirmed reports, but with have no official news on exactly what it is at this time…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MJOSS.BOMBMEDIA02"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Michael Webb",
+          "text": "…an explosion in the south of Detroit. We still don't know if there are any victims, but these events may be linked to the android rebellion currently taking place in the city…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWEBB.BOMBMEDIA03"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0129",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0129": {
+      "id": "ch32_6_x0129",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Soldier",
+          "text": "It's… a dirty bomb, Madam President.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.VO.X11MOFFICER.WHITEHOUSE"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "Oh my god…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWARREN.WHITEHOUSE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0130",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0130": {
+      "id": "ch32_6_x0130",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "branches": [
+        {
+          "condition_text": "Connor freed the CyberLife androids",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": true
+          },
+          "next": "ch32_6_x0131"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_x0132",
+      "resolution": "rule",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0131": {
+      "id": "ch32_6_x0131",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Channel 16 - Joss Douglas",
+          "text": "…Androids…  Thousands of androids are taking to the streets of Detroit at this very moment.  They're absolutely everywhere!.. This…  This is incredible…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MJOSS.COPTER"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0132",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0132": {
+      "id": "ch32_6_x0132",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "KNC - Rosanna Cartland",
+          "text": "…and the authorities have ordered the immediate evacuation of the city. If it really is a dirty bomb, then the radiation levels will be lethal for miles around…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MCARTLAND.KCNNEWS"
+          ]
+        },
+        {
+          "speaker": "Channel 16 - Michael Webb",
+          "text": "…Detroit…  Detroit has just fallen into the hands of the android rebellion…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MWEBB.CHANNEL23"
+          ]
+        },
+        {
+          "speaker": "CTN TV - Michael Brinkley",
+          "text": "…This is a disaster…  an unprecedented disaster…",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.TVNEWS.PC.X11MBRINKLEY.CTNNEWS"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0133",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0133": {
+      "id": "ch32_6_x0133",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "Today, deviant androids triggered a dirty bomb in Detroit.  This bomb released fatal levels of radioactive toxic waste.  To ensure the safety of the population, the military is evacuating all civilians within a 50 mile radius.  The city may remain uninhabitable for decades.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.NUKE"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0134",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0134": {
+      "id": "ch32_6_x0134",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "branches": [
+        {
+          "condition_text": "Connor freed the CyberLife androids",
+          "when": {
+            "flag": "connor_androids_woke",
+            "equals": true
+          },
+          "next": "ch32_6_x0135"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_x0136",
+      "resolution": "rule",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0135": {
+      "id": "ch32_6_x0135",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "Moreover, the deviants are thought to have taken control of a CyberLife plant and liberated over one million androids that were stored there.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.1"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0136",
+      "source": "https://github.com/detroitbecometext/detroitbecometext.github.io/blob/HEAD/src/app/chapters/components/chapter-contents/press-dirty-bomb/press-dirty-bomb.component.html"
+    },
+    "ch32_6_x0136": {
+      "id": "ch32_6_x0136",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Markus watched Detroit burn",
+      "branches": [
+        {
+          "condition_text": "North is with him",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          },
+          "next": "ch32_6_x0137"
+        },
+        {
+          "condition_text": "Markus is alone",
+          "when": {
+            "flag": "north_alive",
+            "equals": false
+          },
+          "next": "ch32_6_x0138"
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_x0138",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
+    },
+    "ch32_6_x0137": {
+      "id": "ch32_6_x0137",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Markus and North watched Detroit burn",
+      "description": "The soldiers flee. Markus and North leave the store and watch Detroit burn.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_x0139",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Paraphrased from the wiki (Markus, Inside store with North)."
+    },
+    "ch32_6_x0138": {
+      "id": "ch32_6_x0138",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Markus watched Detroit burn",
+      "description": "The soldiers flee. Markus leaves the store and watches Detroit burn. Out in the city he finds the flag he planted at the start of the assault.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_x0139",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Paraphrased from the wiki (Markus, Alone in the store)."
+    },
+    "ch32_6_x0139": {
+      "id": "ch32_6_x0139",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "As President Warren speaks, Markus pulls the synthetic skin from his face, plants the flag of the revolution in the ground and shouts to his people as they gather around him.",
+      "dialogue": [
+        {
+          "speaker": "President Warren",
+          "text": "This is the first time in our history that one of our cities has fallen into enemy hands…  We are going to fight them with all our strength,  and we won’t rest until we have taken back control of Detroit and destroyed the last of them.  Humanity is about to face its most important battle:  one that will lead to our victory,  or our extinction.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE",
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "We!..",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.1"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "May God bless you all",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.13"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "Are!..",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.2"
+          ]
+        },
+        {
+          "speaker": "President Warren",
+          "text": "and may God bless the United States of America.",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MWARREN.CYBERLIFE.14"
+          ]
+        },
+        {
+          "speaker": "Markus",
+          "text": "Free!",
+          "source_keys": [
+            "X1107M.DIRTYBOMB.WAR.PC.X11MMARKUS.FREE.3"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0140",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Dialogue from the game text (press-dirty-bomb); the description follows the wiki and the maintainers."
+    },
+    "ch32_6_x0140": {
+      "id": "ch32_6_x0140",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "branches": [
+        {
+          "condition_text": "A machine Connor's mission failed: his story ends",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_deviant",
+                "equals": false
+              },
+              {
+                "flag": "connor_story_ended",
+                "equals": false
+              }
+            ]
+          },
+          "next": "ch32_6_00001",
+          "effects": {
+            "flags": {
+              "connor_story_ended": true,
+              "connor_mission_failed": true
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch32_6_00001",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Connor#Battle_for_Detroit",
+      "note": "Per the maintainers' description of the game: a machine Connor does not appear; his mission status changes to mission failed and his story ends."
+    },
+    "ch32_6_x0141": {
+      "id": "ch32_6_x0141",
+      "type": "choice",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "Markus lowers the gun. The soldiers are still outside.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "DIRTY BOMB",
+          "next": "ch32_6_x0143",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "markus_took_detonator",
+              "equals": true
+            }
+          ]
+        },
+        {
+          "id": "option_1",
+          "label": "SURRENDER",
+          "next": "ch32_6_00018",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_alive": false,
+              "north_alive": false
+            }
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "Approximation: neither the wiki nor the game text says what PUT DOWN leads to (the transcript shows nothing after it). Like GIVE UP, it returns to the choice; suicide is not offered again, and the story graph has no cycles, so the detonator after PUT DOWN has its own copy of the scenes."
+    },
+    "ch32_6_x0143": {
+      "id": "ch32_6_x0143",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "North",
+          "text": "It’s our last chance... You need to decide if it's a price worth paying to save our lives…",
+          "source_keys": [
+            "X1103M.FINAL.NORTHALIVE.PC.X11MMARLA.DIRTYBOMB"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0144",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
+    },
+    "ch32_6_x0144": {
+      "id": "ch32_6_x0144",
+      "type": "choice",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "Assault failed",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "PRESS",
+          "next": "ch32_6_x0128",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_dirty_bomb_detonated": true
+            },
+            "news": [
+              {
+                "headline": "Dirty bomb detonated in Detroit; city contaminated",
+                "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
+              }
+            ]
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GIVE UP",
+          "next": "ch32_6_x0145",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
+    },
+    "ch32_6_x0145": {
+      "id": "ch32_6_x0145",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "",
+      "dialogue": [
+        {
+          "speaker": "Markus",
+          "text": "No… No, I can’t do it…",
+          "source_keys": [
+            "X1103M.FINAL.NORTHALIVE.PC.X11MMARKUS.GIVEUP"
+          ]
+        }
+      ],
+      "observations": [],
+      "next": "ch32_6_x0146",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution"
+    },
+    "ch32_6_x0146": {
+      "id": "ch32_6_x0146",
+      "type": "choice",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Assault failed",
+      "description": "Markus puts the detonator away. The soldiers are still outside.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "SURRENDER",
+          "next": "ch32_6_00018",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "markus_alive": false,
+              "north_alive": false
+            }
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Markus_Revolution",
+      "note": "After putting down the gun and the detonator, only surrender is left (see ch32_6_x0141)."
+    },
+    "ch32_6_x0142": {
+      "id": "ch32_6_x0142",
+      "type": "scene",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Connor spared Markus",
+      "description": "Connor lowers his gun and walks away, leaving Markus wounded in the store.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Markus#Trivia",
+      "note": "Wiki (Markus): \"if Connor spares Markus he will walk away\". The game leaves whether Markus survives open; his Fate stays alive."
     }
   },
   "initial_flags": {
@@ -138130,7 +139104,10 @@
     "connor_hostage_probability": 48,
     "connor_deviant_stress": 35,
     "connor_pressured_four_times": false,
-    "connor_convince_failed": false
+    "connor_convince_failed": false,
+    "carl_alive": true,
+    "connor_mission_failed": false,
+    "markus_store_put_down_gun": false
   },
   "scores": {
     "connor_hostage_probability": {

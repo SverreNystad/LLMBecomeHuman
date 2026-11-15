@@ -15,7 +15,7 @@ from detroit_benchmark.dashboard import create_app
 
 PROJECT = Path(__file__).resolve().parents[1]
 DEMO = PROJECT / "demo_runs" / "detroit"
-SIDE_CHARACTERS = ["Hank", "Alice", "Luther", "Simon", "North", "Josh"]
+SIDE_CHARACTERS = ["Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl"]
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
 
@@ -91,7 +91,7 @@ def craft(tmp_path):
     return make
 
 
-def test_a_finished_demo_run_has_three_characters_six_fates_and_the_world():
+def test_a_finished_demo_run_has_three_characters_seven_fates_and_the_world():
     summary = _summary(DEMO, "detroit-mock-cautious")
     assert summary["finished"] is True
     assert [entry["name"] for entry in summary["characters"]] == [
@@ -194,6 +194,7 @@ def test_a_crafted_ending_says_who_lived_and_how(craft):
         "alive",
         "dead",
         "alive",
+        "unknown",  # Carl: this crafted Run never decided him
     ]
     assert summary["world"] == {
         "sentence": "The revolution turned violent."
