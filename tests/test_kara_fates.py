@@ -62,8 +62,9 @@ FENCE = "ch32_2_00030"
 PANIC = "ch32_2_00053"
 TALK_TO_LUTHER = "ch32_2_00039"
 LANDFILL_HUG = "ch32_2_00004"
-# Freed by Markus plays in 32.9, after his revolution (32.6).
-FREED_BY_MARKUS, RECYCLED = "ch32_2_00007", "ch32_2_00009"
+# Freed by Markus plays in 32.9, after his revolution (32.6). Waiting for a peaceful
+# Markus also ends in 32.9; by default he loses his demonstration and nobody comes.
+FREED_BY_MARKUS, RECYCLED = "ch32_2_00007", "ch32_9_x0003"
 REVOLUTION = {"ch31_1_00006": "REVOLUTION"}
 
 

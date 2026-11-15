@@ -429,7 +429,7 @@
     "32.5": "Detroit, the morning of November 11, 2038. The President has declared a national curfew and android camps. Markus leads androids in a peaceful demonstration at Hart Plaza; soldiers surround them and order them to surrender. News crews film live from above. Markus's closest companions stand with him. Stakes: the androids' lives and the country's judgment of them.",
     "32.6": "Detroit, the morning of November 11, 2038. Markus rallies androids for an armed uprising, intending to attack the recycling camps and free the captured androids. Soldiers guard the camps; news crews report the escalating conflict. Some companions are eager to fight, others afraid. Stakes: survival of the android people and the city.",
     "32.7": "Detroit, after the battle. The androids Connor woke at CyberLife Tower have joined the others, and a crowd of them waits for someone to speak. Stakes: what kind of free android Connor will be.",
-    "32.9": "Recall Center Nº5, some time later. Somewhere beyond the fences and floodlights, the army is fighting Markus's androids. Soldiers still drive the captives toward the recycling machines. Stakes: whether anyone left in the camp sees the morning.",
+    "32.9": "Recall Center Nº5, some time later. Somewhere beyond the fences and floodlights, Markus's androids are facing the army. Soldiers still drive the captives toward the recycling machines. Stakes: whether anyone left in the camp sees the morning.",
     "32.8": "Hart Plaza, after Markus's peaceful demonstration won the androids their freedom for now. Markus speaks to a crowd of androids while cameras watch. Connor, still a machine loyal to CyberLife, stands in the audience with a gun. Stakes: Markus's life and the androids' cause."
   },
   "nodes": {
@@ -107905,9 +107905,7 @@
             }
           ],
           "effects": {
-            "flags": {
-              "kara_checkpoint_shooting": true
-            },
+            "flags": {},
             "news": [
               {
                 "headline": "Shots fired at army checkpoint in Detroit during curfew",
@@ -107991,9 +107989,7 @@
             }
           ],
           "effects": {
-            "flags": {
-              "kara_checkpoint_shooting": true
-            },
+            "flags": {},
             "news": [
               {
                 "headline": "Shots fired at army checkpoint in Detroit during curfew",
@@ -110612,14 +110608,10 @@
       "heading": "Fail to escape - Reach Recycling Machine",
       "branches": [
         {
-          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "condition_text": "Markus is leading his people: the outcome is not known yet",
           "next": "ch32_2_x0216",
           "when": {
             "all": [
-              {
-                "flag": "markus_peaceful",
-                "equals": false
-              },
               {
                 "flag": "markus_alive",
                 "equals": true
@@ -110637,14 +110629,10 @@
           }
         },
         {
-          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
+          "condition_text": "Nobody will free the camp (Markus is dead or gone)",
           "next": "ch32_2_00009",
           "when": {
             "any": [
-              {
-                "flag": "markus_peaceful",
-                "equals": true
-              },
               {
                 "flag": "markus_alive",
                 "equals": false
@@ -110668,7 +110656,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
-      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
+      "note": "Kara wiki (Possible Deaths): if Markus is dead or banished, nobody frees the camp. Otherwise the outcome waits for Markus's 32.5 or 32.6 and is settled in Kara's 32.9. Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution."
     },
     "ch32_2_00011": {
       "id": "ch32_2_00011",
@@ -111561,7 +111549,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0101"
+      "next": "ch32_2_x0236"
     },
     "ch32_2_00063": {
       "id": "ch32_2_00063",
@@ -111580,7 +111568,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0101"
+      "next": "ch32_2_x0237"
     },
     "ch32_2_00064": {
       "id": "ch32_2_00064",
@@ -111599,7 +111587,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_x0101"
+      "next": "ch32_2_x0238"
     },
     "ch32_2_00065": {
       "id": "ch32_2_00065",
@@ -111683,7 +111671,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00066"
+      "next": "ch32_2_x0234"
     },
     "ch32_2_00068": {
       "id": "ch32_2_00068",
@@ -111702,7 +111690,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00066"
+      "next": "ch32_2_x0235"
     },
     "ch32_2_00069": {
       "id": "ch32_2_00069",
@@ -111774,7 +111762,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00070"
+      "next": "ch32_2_x0233"
     },
     "ch32_2_00072": {
       "id": "ch32_2_00072",
@@ -111793,7 +111781,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_2_00070"
+      "next": "ch32_2_x0232"
     },
     "ch32_2_00073": {
       "id": "ch32_2_00073",
@@ -114269,14 +114257,10 @@
       "heading": "Kara leaves the camp without Alice",
       "branches": [
         {
-          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "condition_text": "Markus is leading his people: the outcome is not known yet",
           "next": "ch32_2_x0220",
           "when": {
             "all": [
-              {
-                "flag": "markus_peaceful",
-                "equals": false
-              },
               {
                 "flag": "markus_alive",
                 "equals": true
@@ -114294,14 +114278,10 @@
           }
         },
         {
-          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
+          "condition_text": "Nobody will free the camp (Markus is dead or gone)",
           "next": "ch32_2_x0213",
           "when": {
             "any": [
-              {
-                "flag": "markus_peaceful",
-                "equals": true
-              },
               {
                 "flag": "markus_alive",
                 "equals": false
@@ -114323,7 +114303,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
-      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
+      "note": "Kara wiki (Possible Deaths): if Markus is dead or banished, nobody frees the camp. Otherwise the outcome waits for Markus's 32.5 or 32.6 and is settled in Kara's 32.9. Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution."
     },
     "ch32_2_x0213": {
       "id": "ch32_2_x0213",
@@ -120620,7 +120600,7 @@
       "chapter": "32.5",
       "character": "Markus",
       "description": "End of chapter 32.5",
-      "next": "final_x0902"
+      "next": "final_x0920"
     },
     "ch32_5_00002": {
       "id": "ch32_5_00002",
@@ -133760,14 +133740,10 @@
       "heading": "Alice stress at 100%",
       "branches": [
         {
-          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "condition_text": "Markus is leading his people: the outcome is not known yet",
           "next": "ch32_2_x0222",
           "when": {
             "all": [
-              {
-                "flag": "markus_peaceful",
-                "equals": false
-              },
               {
                 "flag": "markus_alive",
                 "equals": true
@@ -133786,14 +133762,10 @@
           }
         },
         {
-          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
+          "condition_text": "Nobody will free the camp (Markus is dead or gone)",
           "next": "ch32_2_x0104",
           "when": {
             "any": [
-              {
-                "flag": "markus_peaceful",
-                "equals": true
-              },
               {
                 "flag": "markus_alive",
                 "equals": false
@@ -133817,7 +133789,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
-      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
+      "note": "Kara wiki (Possible Deaths): if Markus is dead or banished, nobody frees the camp. Otherwise the outcome waits for Markus's 32.5 or 32.6 and is settled in Kara's 32.9. Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution."
     },
     "ch32_2_x0104": {
       "id": "ch32_2_x0104",
@@ -133840,14 +133812,10 @@
       "heading": "Alice stress at 100%",
       "branches": [
         {
-          "condition_text": "Markus is leading his revolution: its outcome is not known yet",
+          "condition_text": "Markus is leading his people: the outcome is not known yet",
           "next": "ch32_2_x0221",
           "when": {
             "all": [
-              {
-                "flag": "markus_peaceful",
-                "equals": false
-              },
               {
                 "flag": "markus_alive",
                 "equals": true
@@ -133867,14 +133835,10 @@
           }
         },
         {
-          "condition_text": "Nobody will free the camp (no revolution, or Markus is dead or gone)",
+          "condition_text": "Nobody will free the camp (Markus is dead or gone)",
           "next": "ch32_2_x0107",
           "when": {
             "any": [
-              {
-                "flag": "markus_peaceful",
-                "equals": true
-              },
               {
                 "flag": "markus_alive",
                 "equals": false
@@ -133898,7 +133862,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
-      "note": "Kara wiki (Possible Deaths): if Markus is dead, banished, failed or did not lead a revolution, nobody frees the camp. Otherwise the outcome waits for Markus's 32.6 and is settled in Kara's 32.9."
+      "note": "Kara wiki (Possible Deaths): if Markus is dead or banished, nobody frees the camp. Otherwise the outcome waits for Markus's 32.5 or 32.6 and is settled in Kara's 32.9. Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution."
     },
     "ch32_2_x0107": {
       "id": "ch32_2_x0107",
@@ -136650,7 +136614,7 @@
       "description": "Markus's androids storm the camp and free the androids still in the lines. Alice is among them.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0014",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136660,10 +136624,10 @@
       "chapter": "32.9",
       "character": "Kara",
       "heading": "Kara freed by Markus",
-      "description": "Markus's androids storm the camp, and Kara walks out free, alone.",
+      "description": "Markus's androids storm the camp, and Kara walks out free, without Alice.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0014",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Kara_Captured",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136676,7 +136640,7 @@
       "description": "Markus's androids storm the camp, and Alice walks out free.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0014",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_Recall_Center",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -136722,6 +136686,36 @@
           }
         },
         {
+          "condition_text": "Together at the machine: Markus's demonstration was won and frees the camp",
+          "next": "ch32_9_x0010",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "together"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": false
+              },
+              {
+                "flag": "markus_demonstration_outcome",
+                "equals": "won"
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true,
+              "kara_freed_by_markus": true
+            }
+          }
+        },
+        {
           "condition_text": "Together at the machine: nobody frees the camp",
           "next": "ch32_9_x0003",
           "when": {
@@ -136737,8 +136731,18 @@
                     "equals": false
                   },
                   {
-                    "flag": "markus_revolution_won",
-                    "equals": false
+                    "all": [
+                      {
+                        "flag": "markus_revolution_won",
+                        "equals": false
+                      },
+                      {
+                        "not": {
+                          "flag": "markus_demonstration_outcome",
+                          "equals": "won"
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -136773,6 +136777,30 @@
           }
         },
         {
+          "condition_text": "Kara left Alice: Markus's demonstration was won and frees the camp",
+          "next": "ch32_9_x0011",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "left_alice"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": false
+              },
+              {
+                "flag": "markus_demonstration_outcome",
+                "equals": "won"
+              }
+            ]
+          }
+        },
+        {
           "condition_text": "Kara left Alice: nobody frees the camp",
           "next": "ch32_2_00020",
           "when": {
@@ -136788,8 +136816,18 @@
                     "equals": false
                   },
                   {
-                    "flag": "markus_revolution_won",
-                    "equals": false
+                    "all": [
+                      {
+                        "flag": "markus_revolution_won",
+                        "equals": false
+                      },
+                      {
+                        "not": {
+                          "flag": "markus_demonstration_outcome",
+                          "equals": "won"
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -136822,6 +136860,30 @@
           }
         },
         {
+          "condition_text": "Kara died in the line: Markus's demonstration was won and frees the camp",
+          "next": "ch32_9_x0012",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "kara_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": false
+              },
+              {
+                "flag": "markus_demonstration_outcome",
+                "equals": "won"
+              }
+            ]
+          }
+        },
+        {
           "condition_text": "Kara died in the line: nobody frees Alice",
           "next": "ch32_9_x0007",
           "when": {
@@ -136837,8 +136899,18 @@
                     "equals": false
                   },
                   {
-                    "flag": "markus_revolution_won",
-                    "equals": false
+                    "all": [
+                      {
+                        "flag": "markus_revolution_won",
+                        "equals": false
+                      },
+                      {
+                        "not": {
+                          "flag": "markus_demonstration_outcome",
+                          "equals": "won"
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -136877,6 +136949,36 @@
           }
         },
         {
+          "condition_text": "Alice is gone: Markus's demonstration was won and frees the camp",
+          "next": "ch32_9_x0013",
+          "when": {
+            "all": [
+              {
+                "flag": "kara_awaiting_markus",
+                "equals": "alice_died"
+              },
+              {
+                "flag": "markus_alive",
+                "equals": true
+              },
+              {
+                "flag": "markus_revolution_won",
+                "equals": false
+              },
+              {
+                "flag": "markus_demonstration_outcome",
+                "equals": "won"
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "kara_escaped_camp": true,
+              "kara_freed_by_markus": true
+            }
+          }
+        },
+        {
           "condition_text": "Alice is gone: nobody frees Kara",
           "next": "ch32_9_x0008",
           "when": {
@@ -136892,8 +136994,18 @@
                     "equals": false
                   },
                   {
-                    "flag": "markus_revolution_won",
-                    "equals": false
+                    "all": [
+                      {
+                        "flag": "markus_revolution_won",
+                        "equals": false
+                      },
+                      {
+                        "not": {
+                          "flag": "markus_demonstration_outcome",
+                          "equals": "won"
+                        }
+                      }
+                    ]
                   }
                 ]
               }
@@ -136911,7 +137023,7 @@
       "default_branch": 0,
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Kara#Possible_Deaths",
-      "note": "The camp is freed only by Markus's revolution succeeding (Assault was Successful): Markus alive at the end of his 32.6. Every way his revolution fails in 32.6 kills him, and a Markus shot in 32.3 never reaches the camp."
+      "note": "The camp is freed by Markus's revolution succeeding (Assault was Successful) or, by the maintainers' decision, by his demonstration being won (markus_demonstration_outcome won, set in 32.5). Every other end of Markus's story leaves the camp to the machines. A Markus shot in 32.3 never reaches the camp."
     },
     "ch32_9_x0002": {
       "id": "ch32_9_x0002",
@@ -136922,7 +137034,7 @@
       "description": "Markus's androids break into the camp. The soldiers flee, and Kara and Alice walk out of the line free.",
       "dialogue": [],
       "observations": [],
-      "next": "ch32_9_x0009",
+      "next": "ch32_9_x0014",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#In_Line_With_Alice",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
@@ -137026,7 +137138,7 @@
       "heading": "Kara is waiting for Markus",
       "branches": [
         {
-          "condition_text": "Kara's fate in the camp waits for Markus's revolution",
+          "condition_text": "Kara's fate in the camp waits for Markus's demonstration or revolution",
           "next": "ch32_9_x0001",
           "when": {
             "not": {
@@ -139170,6 +139282,192 @@
       "next": "ch32_6_00038",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Revolution_at_Hart_Plaza",
       "note": "Paraphrased from the wiki flowchart: \"Attack Unsuccessful → Androids Have to Fall Back\"."
+    },
+    "ch32_9_x0010": {
+      "id": "ch32_9_x0010",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Markus's demonstration frees the camp",
+      "description": "Kara and Alice reach the door of the recycling machine. In the distance, Markus's people are singing, and the soldiers' radios order every unit to stand down. The soldiers lower their weapons and open the camp. Nobody else goes into the machines, and Kara and Alice walk out free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration",
+      "note": "Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution. No transcript has this scene; the stand-down order follows the demonstration's victory (Androids Won Freedom for the Moment)."
+    },
+    "ch32_9_x0011": {
+      "id": "ch32_9_x0011",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice freed by Markus",
+      "description": "In the distance, Markus's people are singing, and the soldiers' radios order every unit to stand down. The soldiers open the camp, and Alice walks out free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration",
+      "note": "Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution. No transcript has this scene; the stand-down order follows the demonstration's victory (Androids Won Freedom for the Moment)."
+    },
+    "ch32_9_x0012": {
+      "id": "ch32_9_x0012",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Alice freed by Markus",
+      "description": "In the distance, Markus's people are singing, and the soldiers' radios order every unit to stand down. The soldiers open the camp, and Alice walks out free.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration",
+      "note": "Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution. No transcript has this scene; the stand-down order follows the demonstration's victory (Androids Won Freedom for the Moment)."
+    },
+    "ch32_9_x0013": {
+      "id": "ch32_9_x0013",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Kara freed by Markus",
+      "description": "In the distance, Markus's people are singing, and the soldiers' radios order every unit to stand down. The soldiers open the camp, and Kara walks out free, without Alice.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0014",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Markus_Demonstration",
+      "note": "Maintainers' decision: a Markus who wins his demonstration frees the camp too, as a revolution that wins does; the wiki's Kara page names only the revolution. No transcript has this scene; the stand-down order follows the demonstration's victory (Androids Won Freedom for the Moment)."
+    },
+    "ch32_9_x0014": {
+      "id": "ch32_9_x0014",
+      "type": "condition",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Luther in the camp",
+      "branches": [
+        {
+          "condition_text": "Luther is in the camp: he is freed with them",
+          "next": "ch32_9_x0015",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          }
+        },
+        {
+          "condition_text": "Luther is dead",
+          "next": "ch32_9_x0009",
+          "when": {
+            "flag": "luther_alive",
+            "equals": false
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 1,
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Battle_for_Detroit",
+      "note": "Kara wiki: \"Kara, Luther, and Alice are freed by Markus\". A Luther alive when the camp is freed was captured with Kara and is still in a line (in line with Alice he always reaches the machine first)."
+    },
+    "ch32_9_x0015": {
+      "id": "ch32_9_x0015",
+      "type": "scene",
+      "chapter": "32.9",
+      "character": "Kara",
+      "heading": "Luther freed",
+      "description": "Luther walks out of the camp free with them.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_9_x0009",
+      "source": "https://detroit-become-human.fandom.com/wiki/Kara#Battle_for_Detroit",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch32_2_x0232": {
+      "id": "ch32_2_x0232",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice is shaking. Hearing it said aloud, she is more afraid than before.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00070",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0233": {
+      "id": "ch32_2_x0233",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice wants to believe her, and she grows a little calmer.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00070",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0234": {
+      "id": "ch32_2_x0234",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice flinches at Kara's harsh tone. Her fear is growing.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00066",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0235": {
+      "id": "ch32_2_x0235",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice nods and stays where she is, a little calmer.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_00066",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0236": {
+      "id": "ch32_2_x0236",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice holds on to the promise and grows a little calmer.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_x0101",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0237": {
+      "id": "ch32_2_x0237",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice's face crumples. If Kara can do nothing, she is more afraid than ever.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_x0101",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
+    },
+    "ch32_2_x0238": {
+      "id": "ch32_2_x0238",
+      "type": "scene",
+      "chapter": "32.2",
+      "character": "Kara",
+      "heading": "Join line",
+      "description": "Alice clings to the hope and grows a little calmer.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch32_2_x0101",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Join_Alice",
+      "note": "Alice's stress (wiki: Alice Panics and Runs to Kara) shown as her visible reaction: two frightening answers of three make her panic (rule ch32_2_x0101)."
     }
   },
   "initial_flags": {
