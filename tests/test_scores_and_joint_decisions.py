@@ -370,7 +370,7 @@ def test_the_other_decider_learns_the_outcome(tmp_path):
     events = _play_joint(tmp_path)
     after = next(e for e in events if e["node_id"] == "m3")
     learned = after["input"]["chapter_segment_so_far"][0]
-    assert learned["joint_decision"] == "Decided with Markus's and Connor's memories"
+    assert learned["decided"] == "Decided with Markus's and Connor's memories"
     assert learned["your_choice"] == "REACH THE GUN FIRST" and learned["chapter"] == "2"
     updates = [e for e in events if e["type"] == "memory_update"]
     markus_after = updates[-1]
@@ -386,10 +386,12 @@ def test_the_other_decider_learns_the_outcome(tmp_path):
 @pytest.mark.parametrize(
     "change, problem",
     [
-        (lambda n: n.update(deciders=["Markus"]), "two or more"),
+        (lambda n: n.update(deciders=["Connor"]), "one other Character"),
+        (lambda n: n.update(deciders=[]), "one other Character"),
         (lambda n: n.update(deciders=["Markus", "Kara"]), "including its own"),
-        (lambda n: n.update(deciders=["Markus", "Connor", "Hank"]), "two or more"),
+        (lambda n: n.update(deciders=["Markus", "Connor", "Hank"]), "including its own"),
         (lambda n: n.update(decider_context={}), "no decider_context"),
+        (lambda n: n.update(deciders=["Markus"], decider_context={}), "no decider_context"),
     ],
 )
 def test_the_validator_checks_deciders(change, problem):
@@ -403,27 +405,73 @@ def test_the_validator_checks_deciders(change, problem):
 def test_the_story_says_whose_memories_decided(tmp_path):
     Runner(_joint_graph(), "mock", None, tmp_path / "runs" / "r").run()
     (gun,) = [m for m in story_moments(tmp_path / "runs", "2") if m["type"] == "decision"]
-    assert gun["joint"] == "Decided with Markus's and Connor's memories"
+    assert gun["decided"] == "Decided with Markus's and Connor's memories"
     assert gun["deciders"] == ["Markus", "Connor"]
     (alone,) = [m for m in story_moments(tmp_path / "runs", "3") if m["type"] == "decision"]
-    assert "joint" not in alone and "deciders" not in alone
+    assert "decided" not in alone and "deciders" not in alone
+
+
+def _markus_alone_graph() -> dict:
+    """The gun in Connor's segment is Markus's decision alone."""
+    graph = _joint_graph()
+    graph["nodes"]["gun"]["deciders"] = ["Markus"]
+    return graph
+
+
+def test_a_cross_segment_decision_carries_only_the_deciders_memory(tmp_path):
+    Runner(_markus_alone_graph(), "mock", None, tmp_path / "r").run()
+    events = read_events(tmp_path / "r")
+    gun = next(e for e in events if e["node_id"] == "gun")
+    payload = gun["input"]
+    assert payload["current_scene"]["character"] == "Markus"
+    assert payload["character_memory"].startswith("Chapter 1")  # Markus's, from chapter 1.
+    assert payload["this_moment"] == "Connor draws on Markus in the hold."
+    assert not {"chapter_segment_so_far", "points_of_view", "joint_decision"} & set(payload)
+    assert gun["deciders"] == ["Markus"]
+
+
+def test_the_segments_character_learns_what_the_other_decided(tmp_path):
+    Runner(_markus_alone_graph(), "mock", None, tmp_path / "r").run()
+    events = read_events(tmp_path / "r")
+    connor, markus = [e for e in events if e["type"] == "memory_update"][1:]
+    # Connor's Memory Update gets the outcome, not a choice of his own.
+    assert connor["input"]["chapter_segment"][-1] == {
+        "at": "In the hold", "decided_by": "Markus", "outcome": "REACH THE GUN FIRST"}
+    # Markus remembers his choice, in his next segment and Memory Update.
+    learned = next(e for e in events if e["node_id"] == "m3")["input"]["chapter_segment_so_far"][0]
+    assert learned["decided"] == "Decided as Markus"
+    assert learned["your_choice"] == "REACH THE GUN FIRST"
+    assert markus["input"]["chapter_segment"][0] == learned
+
+
+def test_the_story_says_who_decided_alone(tmp_path):
+    Runner(_markus_alone_graph(), "mock", None, tmp_path / "runs" / "r").run()
+    (gun,) = [m for m in story_moments(tmp_path / "runs", "2") if m["type"] == "decision"]
+    assert gun["decided"] == "Decided as Markus" and gun["character"] == "Markus"
 
 
 GUN, FIGHT, AS_MARKUS, AS_CONNOR = "ch30_2_00010", "ch32_6_00046", "ch32_6_x0127", "ch32_6_x0119"
 
 
-def test_the_two_joint_decisions_are_choices_for_markus_and_connor():
+def test_who_decides_the_gun_and_the_final_fight():
     nodes = load_dataset()["nodes"]
-    for nid, segment in [(GUN, "30.2"), (FIGHT, "32.6"), (AS_MARKUS, "32.6"), (AS_CONNOR, "32.6")]:
-        node = nodes[nid]
-        assert node["type"] == "choice" and node["chapter"] == segment
-        assert node["deciders"] == ["Markus", "Connor"]
+    assert nodes[GUN]["type"] == "choice" and nodes[GUN]["chapter"] == "30.2"
+    assert nodes[GUN]["deciders"] == ["Markus"]  # In Connor's segment, Markus's alone.
+    assert nodes[FIGHT]["deciders"] == ["Markus", "Connor"]  # Who to control: joint.
+    assert nodes[AS_CONNOR]["deciders"] == ["Connor"]
+    assert "deciders" not in nodes[AS_MARKUS]  # Markus's own, in his own segment.
     labels = [o["label"] for o in nodes[GUN]["options"]]
     assert labels == ["REACH THE GUN FIRST", "LET CONNOR REACH IT"]
 
 
+def _memory_before(events: list, event: dict, character: str) -> str:
+    updates = [e for e in events[: events.index(event)]
+               if e["type"] == "memory_update" and e["character"] == character]
+    return updates[-1]["memory"]
+
+
 @pytest.mark.parametrize("pick", ["REACH THE GUN FIRST", "LET CONNOR REACH IT"])
-def test_the_gun_in_the_hold_keeps_its_outcomes(tmp_path, pick):
+def test_the_gun_in_the_hold_is_markus_decision(tmp_path, pick):
     run = play_story(tmp_path, {**MACHINE_WITH_MARKUS, GUN: pick})
     reached = pick == "REACH THE GUN FIRST"
     # Markus shoots Connor (one of Connor's Deaths), or Connor shoots Markus (his Fate).
@@ -432,24 +480,40 @@ def test_the_gun_in_the_hold_keeps_its_outcomes(tmp_path, pick):
     if not reached:
         assert run.flags["markus_alive"] is False
     gun = next(e for e in run.events if e["node_id"] == GUN)
-    assert set(gun["input"]["points_of_view"]) == {"Markus", "Connor"}
-    assert gun["input"]["points_of_view"]["Markus"]["character_memory"]
+    payload = gun["input"]
+    assert payload["current_scene"]["character"] == "Markus"
+    assert payload["character_memory"] == _memory_before(run.events, gun, "Markus")
+    assert "chapter_segment_so_far" not in payload and "points_of_view" not in payload
+    connor = next(e for e in run.events[run.events.index(gun):] if e["type"] == "memory_update")
+    assert connor["character"] == "Connor"
+    assert {"at": "In the hold", "decided_by": "Markus", "outcome": pick} in connor["input"]["chapter_segment"]
     if reached:
         # Markus's next segment knows what he decided in Connor's.
-        markus = next(e for e in run.events[run.events.index(gun):]
+        markus = next(e for e in run.events[run.events.index(gun) + 1:]
                       if e["type"] == "decision" and e["input"]["current_scene"]["character"] == "Markus")
         assert markus["input"]["chapter_segment_so_far"][0]["your_choice"] == pick
 
 
-def test_the_final_fight_is_decided_with_both_memories(tmp_path):
+def test_only_who_to_control_is_decided_together(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, **MACHINE, FIGHT: "CONTROL CONNOR"})
-    for nid in (FIGHT, AS_CONNOR):
-        event = next(e for e in run.events if e["node_id"] == nid)
-        assert event["deciders"] == ["Markus", "Connor"]
-        views = event["input"]["points_of_view"]
-        assert views["Connor"]["character_memory"] and views["Markus"]["character_memory"]
-        assert "chapter_segment_so_far" in views["Markus"]
-        assert views["Connor"]["this_moment"]
+    fight = next(e for e in run.events if e["node_id"] == FIGHT)
+    assert fight["deciders"] == ["Markus", "Connor"]
+    assert set(fight["input"]["points_of_view"]) == {"Markus", "Connor"}
+    as_connor = next(e for e in run.events if e["node_id"] == AS_CONNOR)
+    payload = as_connor["input"]
+    assert as_connor["deciders"] == ["Connor"]
+    assert payload["current_scene"]["character"] == "Connor"
+    assert payload["character_memory"] == _memory_before(run.events, as_connor, "Connor")
+    assert payload["since_last_memory"][0]["decided"] == "Decided with Markus's and Connor's memories"
+    assert "chapter_segment_so_far" not in payload
+
+
+def test_controlling_markus_he_fights_with_his_own_memory(tmp_path):
+    run = play_story(tmp_path, {**REVOLUTION, **MACHINE, FIGHT: "CONTROL MARKUS"})
+    as_markus = next(e for e in run.events if e["node_id"] == AS_MARKUS)
+    assert "deciders" not in as_markus
+    assert as_markus["input"]["character_memory"] == _memory_before(run.events, as_markus, "Markus")
+    assert "chapter_segment_so_far" in as_markus["input"]
 
 
 # --- Relationships ------------------------------------------------------------------

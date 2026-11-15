@@ -68,11 +68,11 @@ def test_voted_out_without_a_raid_markus_simply_leaves(tmp_path):
     assert run.flags["markus_left_jericho"] is True
 
 
-def test_reaching_the_gun_is_a_joint_decision():
-    # The player controls Markus in this struggle and can let Connor win: the user made
-    # it a Joint Decision with Markus's and Connor's memories (ADR 0005).
+def test_reaching_the_gun_is_markus_decision():
+    # The player controls Markus in this struggle and can let Connor win: Markus decides
+    # alone, with his own memory, inside Connor's segment (ADR 0005).
     node = load_dataset()["nodes"]["ch30_2_00010"]
-    assert node["type"] == "choice" and node["deciders"] == ["Markus", "Connor"]
+    assert node["type"] == "choice" and node["deciders"] == ["Markus"]
 
 
 # 30.2 Connor: one path per Run (the wiki's Crossroads flowchart).

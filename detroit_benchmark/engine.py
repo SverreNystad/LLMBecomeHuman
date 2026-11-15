@@ -275,8 +275,10 @@ def effect_shows(item: dict) -> list:
     return (item.get("effects") or {}).get("show") or []
 
 
-# Joint Decisions (ADR 0005): a choice that belongs to two Characters at once is made
-# with both their Character Memories and each one's view of the moment.
+# A choice's "deciders" (ADR 0005). Two or more make a Joint Decision, made with all
+# their Character Memories and each one's view of the moment. One other than the
+# segment's Character makes a Cross-Segment Decision: that Character decides alone,
+# with its own memory, inside another Character's segment.
 JOINT_DECISION_INSTRUCTION = (
     "This is a Joint Decision: it belongs to both {names}. Decide it with both points "
     "of view: each Character's own memory and what each knows of this moment, given in "
@@ -288,8 +290,10 @@ def _and(names: list[str]) -> str:
     return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
 
 
-def joint_decision_text(deciders: list[str]) -> str:
-    """How the Story and the other Character's memory word a Joint Decision."""
+def decision_text(deciders: list[str]) -> str:
+    """How the Story and the other Characters' memories word who decided."""
+    if len(deciders) == 1:
+        return f"Decided as {deciders[0]}"
     return f"Decided with {_and([name + chr(39) + 's' for name in deciders])} memories"
 
 
@@ -422,8 +426,9 @@ def _score_errors(graph: dict) -> list[str]:
 
 
 def _joint_errors(nodes: dict) -> list[str]:
-    """Joint Decisions: a choice whose deciders include its own Character, and a short
-    view of the moment for each other decider."""
+    """Deciders: two or more Characters including the segment's own (a Joint
+    Decision), or one other Character (a Cross-Segment Decision), with a short view of
+    the moment for each decider that isn't the segment's Character."""
     errors = []
     for nid, node in nodes.items():
         deciders = node.get("deciders")
@@ -434,13 +439,14 @@ def _joint_errors(nodes: dict) -> list[str]:
             continue
         if (
             not isinstance(deciders, list)
-            or len(deciders) < 2
+            or not deciders
             or len(set(deciders)) != len(deciders)
             or not set(deciders) <= set(CHARACTERS)
-            or node.get("character") not in deciders
+            or (len(deciders) == 1) == (node.get("character") in deciders)
         ):
             errors.append(
-                f"{nid}: deciders must be two or more Characters, including its own"
+                f"{nid}: deciders must be one other Character, or two or more "
+                "including its own"
             )
             continue
         context = node.get("decider_context") or {}
@@ -1287,14 +1293,21 @@ class Runner:
         if news:
             payload["news"] = news
         deciders = node.get("deciders")
-        if deciders:
+        context = node.get("decider_context") or {}
+        if deciders and len(deciders) == 1:
+            # A Cross-Segment Decision (ADR 0005): the decider's memory and its own view
+            # of the moment; nothing of the segment's Character is shown.
+            (decider,) = deciders
+            payload["current_scene"]["character"] = decider
+            payload["character_memory"] = self.state["character_memories"].get(decider, "")
+            payload.update(self._other_view(decider, context.get(decider, "")))
+        elif deciders:
             # A Joint Decision: both Characters' memories, each with its own view of the
             # moment (ADR 0005). Nothing else of the other Character's is shown.
             payload["current_scene"]["deciders"] = list(deciders)
             payload["joint_decision"] = JOINT_DECISION_INSTRUCTION.format(
                 names=_and(list(deciders))
             )
-            context = node.get("decider_context") or {}
             payload["points_of_view"] = {
                 name: {
                     "character_memory": self.state["character_memories"].get(name, ""),
@@ -1324,8 +1337,8 @@ class Runner:
         return deepcopy(pending + self.state["segment_events"])
 
     def _other_view(self, name: str, moment: str) -> dict:
-        """Another decider's view of a Joint Decision: what it knows of the moment, after
-        any earlier Joint Decision of its own not yet in its memory."""
+        """A decider's view of a moment in another Character's segment: what it knows
+        of it, after any earlier such decision of its own not yet in its memory."""
         pending = self.state["pending_moments"].get(name) or []
         return {
             **({"since_last_memory": deepcopy(pending)} if pending else {}),
@@ -1463,24 +1476,32 @@ class Runner:
             decision["deciders"] = list(deciders)
         self.state["decisions"].append(decision)
         # The model's own choice and rationale become part of the segment it remembers,
-        # with any gauge the game flashes on screen right after it.
-        moment = {
-            "at": node.get("heading"),
-            "your_choice": chosen["label"],
-            "rationale": rationale,
-        }
+        # with any gauge the game flashes on screen right after it. When another
+        # Character decided alone, the segment's Character only learns the outcome.
+        if deciders and node.get("character") not in deciders:
+            moment = {
+                "at": node.get("heading"),
+                "decided_by": deciders[0],
+                "outcome": chosen["label"],
+            }
+        else:
+            moment = {
+                "at": node.get("heading"),
+                "your_choice": chosen["label"],
+                "rationale": rationale,
+            }
         if feedback:
             moment["on_screen"] = [f["text"] for f in feedback]
         self.state["segment_events"].append(moment)
         for name in deciders or []:
             if name != node.get("character"):
-                # The other decider learns the outcome: it joins that Character's next
-                # segment and Memory Update.
+                # A decider from outside the segment remembers its choice: it joins that
+                # Character's next segment and Memory Update.
                 self.state["pending_moments"].setdefault(name, []).append(
                     {
                         "chapter": node.get("chapter"),
                         "at": node.get("heading"),
-                        "joint_decision": joint_decision_text(deciders),
+                        "decided": decision_text(deciders),
                         "your_choice": chosen["label"],
                         "rationale": rationale,
                     }

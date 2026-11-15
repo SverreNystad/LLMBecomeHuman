@@ -55,7 +55,7 @@ A Run started from the dashboard by a visitor with their own API key, always und
 _Avoid_: own run, community run, user run
 
 **Character Memory**:
-A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's, except in a Joint Decision.
+A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's, except in a Joint Decision (a Cross-Segment Decision shows only the decider's own).
 _Avoid_: history, context, summary
 
 **Memory Update**:
@@ -63,8 +63,12 @@ The rewrite of a Character Memory at the end of each of that Character's Chapter
 _Avoid_: compaction, summarization, consolidation
 
 **Joint Decision**:
-A choice that belongs to two Characters at once (the gun in Jericho's hold, the final fight between Markus and Connor). The model decides it with both Characters' memories, each with its own view of the moment, and the other Character learns the outcome at its next Memory Update (ADR 0005).
+A choice that belongs to two Characters at once: in the final fight, which of Markus and Connor to control. The model decides it with both Characters' memories, each with its own view of the moment, and the other Character learns the outcome at its next Memory Update (ADR 0005).
 _Avoid_: shared choice, merged memory
+
+**Cross-Segment Decision**:
+A choice made by one Character inside another Character's Chapter Segment, with only the deciding Character's memory and its own view of the moment (Markus reaching for the gun in Connor's Jericho segment; Connor fighting Markus once the player controls him). The segment's Character learns the outcome; the decider remembers its choice at its next Memory Update (ADR 0005).
+_Avoid_: borrowed choice, guest decision
 
 ## Dashboard
 

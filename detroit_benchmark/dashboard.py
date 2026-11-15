@@ -29,7 +29,7 @@ from .engine import (
     chapter_briefing,
     create_model,
     iter_events,
-    joint_decision_text,
+    decision_text,
     limit_sentences,
     read_json_object as _json_file,
 )
@@ -331,9 +331,9 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
             rationale=(event.get("output") or {}).get("rationale"),
         )
         deciders = event.get("deciders")
-        if isinstance(deciders, list) and len(deciders) > 1:
-            # A Joint Decision: made with more than one Character's memory.
-            beat.update(deciders=deciders, joint=joint_decision_text(deciders))
+        if isinstance(deciders, list) and deciders:
+            # A Joint Decision, or a Cross-Segment Decision by another Character alone.
+            beat.update(deciders=deciders, decided=decision_text(deciders))
     elif kind == "condition":
         beat.update(
             branch_index=event.get("branch_index"),

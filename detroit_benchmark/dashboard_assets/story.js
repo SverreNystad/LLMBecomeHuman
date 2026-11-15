@@ -122,7 +122,9 @@ function renderDecision(item, number, total, key, tables, run) {
   const who = deciders
     ? deciders.slice(0, -1).join(', ') + ' and ' + deciders[deciders.length - 1]
     : record.character && record.character !== 'multiple' ? record.character : null;
-  const joint = deciders && record.joint ? `<p class="story-joint">${esc(record.joint)}</p>` : '';
+  // Who decided, when it isn't simply the segment's Character: "Decided as Markus", or a
+  // Joint Decision's "Decided with Markus's and Connor's memories".
+  const joint = record.decided ? `<p class="story-deciders">${esc(record.decided)}</p>` : '';
   const exploration = Boolean(graphNode(record.node_id)?.exploration);
   const options = (record.available_choices || []).map(option => {
     const chosen = option.id === record.choice_id, group = byChoice.get(option.id) || [];

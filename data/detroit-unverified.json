@@ -89758,11 +89758,10 @@
       "character": "Connor",
       "heading": "In the hold",
       "unverified": true,
-      "description": "Markus pushes Connor aside and the gun falls between them. As in the game, you control Markus: reach the gun first, or let Connor reach it.",
+      "description": "Markus pushes Connor aside and the gun falls between them. Markus decides: reach the gun first, or let Connor reach it.",
       "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
       "deciders": [
-        "Markus",
-        "Connor"
+        "Markus"
       ],
       "decider_context": {
         "Markus": "Soldiers are storming Jericho. In the hold, Markus is trying to get his people out when Connor, the deviant hunter, finds him and draws on him. Markus pushes him aside and both lunge for the gun."
@@ -136017,7 +136016,6 @@
         }
       ],
       "deciders": [
-        "Markus",
         "Connor"
       ],
       "decider_context": {
@@ -137445,14 +137443,7 @@
             }
           }
         }
-      ],
-      "deciders": [
-        "Markus",
-        "Connor"
-      ],
-      "decider_context": {
-        "Connor": "Connor, still a machine, has tracked the deviant leader through the assault on the Recall Center. His mission is to stop Markus, and now they face each other and fight."
-      }
+      ]
     },
     "ch1_x0107": {
       "id": "ch1_x0107",
