@@ -95,6 +95,12 @@ def play_story(run_dir: Path, picks: dict[str, str]) -> Playthrough:
     return Playthrough(read_events(run_dir), run.state["flags"])
 
 
+def play_story_with_hank_given_time(run_dir: Path, picks: dict[str, str]) -> Playthrough:
+    """``play_story`` with Hank given a drink in Partners unless ``picks`` says otherwise,
+    so Connor finds the deviant and the story reaches The Interrogation."""
+    return play_story(run_dir, {**HANK_GIVES_TIME, **picks})
+
+
 def story_moments(runs_root: Path, chapter: str) -> list[dict]:
     """The Story's moments for one chapter of the only Run under ``runs_root``, as the
     dashboard serves them."""

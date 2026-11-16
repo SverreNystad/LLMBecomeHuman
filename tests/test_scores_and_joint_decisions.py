@@ -15,9 +15,8 @@ import pytest
 from detroit_benchmark.engine import Runner, pick_branch, validate_graph
 from detroit_benchmark.visitor_estimate import _extreme_route
 from tests.dataset import (
-    HANK_GIVES_TIME,
     load_dataset,
-    play_story as _play_story,
+    play_story_with_hank_given_time as play_story,
     read_events,
     story_moments,
 )
@@ -25,10 +24,6 @@ from tests.test_crossroads import MACHINE_WITH_MARKUS
 from tests.test_markus_wiki_audit import REVOLUTION
 from tests.test_night_of_the_soul import MACHINE
 
-
-def play_story(run_dir, picks):
-    """Play the story with Hank given a drink in Partners unless ``picks`` says otherwise."""
-    return _play_story(run_dir, {**HANK_GIVES_TIME, **picks})
 
 STRESS = "connor_deviant_stress"
 SCORES = {

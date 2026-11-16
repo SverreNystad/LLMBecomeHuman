@@ -3,12 +3,8 @@ that depend on it follow what happened (issue #41)."""
 
 import pytest
 
-from tests.dataset import HANK_GIVES_TIME, load_dataset, play_story as _play_story
+from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
 
-
-def play_story(run_dir, picks):
-    """Play the story with Hank given a drink in Partners unless ``picks`` says otherwise."""
-    return _play_story(run_dir, {**HANK_GIVES_TIME, **picks})
 
 # The Hostage
 CONNOR_SHOT_DANIEL, DANIEL_SHOT_CONNOR = "ch1_x0101", "ch1_x0102"

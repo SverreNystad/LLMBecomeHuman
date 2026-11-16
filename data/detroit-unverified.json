@@ -17679,61 +17679,91 @@
           "id": "option_0",
           "label": "WRITING",
           "next": "ch9_00044",
-          "requirements_unverified": [
-            "Looked at the writing on the wall in Partners"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_1",
           "label": "STATUETTE",
           "next": "ch9_00046",
-          "requirements_unverified": [
-            "Looked at the statuette in Partners"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_2",
           "label": "OFFERING",
           "next": "ch9_00048",
-          "requirements_unverified": [
-            "Asked about the statuette"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_3",
           "label": "rA9",
           "next": "ch9_00050",
-          "requirements_unverified": [
-            "Looked at the rA9 writings in Partners"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_4",
           "label": "INSIST rA9",
           "next": "ch9_00051",
-          "requirements_unverified": [
-            "Asked about rA9"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_5",
@@ -19335,9 +19365,7 @@
           "id": "option_1",
           "label": "SHOW PHOTOS",
           "next": "ch9_00120",
-          "requirements_unverified": [
-            "Looked at the files"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -19346,7 +19374,16 @@
             "add": {
               "connor_deviant_stress": 4
             }
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch9_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress"
         },
         {
           "id": "option_2",
@@ -20598,13 +20635,18 @@
           "id": "option_3",
           "label": "HOSPITALITY",
           "next": "ch10_00045",
-          "requirements_unverified": [
-            "Kara doesn't have the gun"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_took_gun",
+              "equals": false
+            }
+          ],
+          "note": "Kara asks for help with no gun to threaten Ralph."
         },
         {
           "id": "option_4",
@@ -26050,15 +26092,14 @@
           "id": "option_6",
           "label": "START WORKING",
           "next": "ch12_00054",
-          "requirements_unverified": [
-            "Kara died in Stormy Night"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_knows_sumo_name": false
             }
-          }
+          },
+          "note": "Always offered: it ends the small talk and leads to the deviant files and the AX400 lead. The game's lunch branch (Kara died in Stormy Night) does not exist in this story."
         },
         {
           "id": "option_7",
@@ -26187,20 +26228,10 @@
           "effects": {
             "flags": {}
           }
-        },
-        {
-          "id": "option_3",
-          "label": "THANKS",
-          "next": "ch12_00055",
-          "requirements_unverified": [
-            "Hank intervened during The Interrogation"
-          ],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
         }
-      ]
+      ],
+      "note": "THANKS (thanking Hank for stopping Gavin) is locked in the game by a bug, so it is left out.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Waiting_for_Hank...#Trivia"
     },
     "ch12_00061": {
       "id": "ch12_00061",
@@ -28416,13 +28447,19 @@
           "id": "option_0",
           "label": "STATUETTE",
           "next": "ch12_00157",
-          "requirements_unverified": [
-            "Looked at the statuette in Partners"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch6_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
           "id": "option_1",
@@ -33431,13 +33468,19 @@
           "id": "option_0",
           "label": "CHECK GUN",
           "next": "ch13_00145",
-          "requirements_unverified": [
-            "Took the gun in Stormy Night and didn't forget it upstairs"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "kara_forgot_gun",
+              "equals": true
+            }
+          ],
+          "note": "Kara checks for the gun she took in Stormy Night and finds it gone: she left it upstairs (Forgot Gun).",
+          "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Trivia"
         },
         {
           "id": "option_1",
@@ -44026,25 +44069,35 @@
           "id": "option_0",
           "label": "SAVING HANK",
           "next": "ch18_00066",
-          "requirements_unverified": [
-            "Saved Hank in The Nest"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_nest_rooftop",
+              "equals": "saved_hank"
+            }
+          ],
+          "note": "Recalls saving Hank on the roof in The Nest."
         },
         {
           "id": "option_1",
           "label": "CONNOR’S DEATH",
           "next": "ch18_00067",
-          "requirements_unverified": [
-            "Connor died before"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_deaths",
+              "gte": 1
+            }
+          ],
+          "note": "Recalls a Connor being destroyed and replaced (Connor's Deaths)."
         },
         {
           "id": "option_2",
@@ -44384,37 +44437,57 @@
           "id": "option_0",
           "label": "DEVIANT",
           "next": "ch18_00081",
-          "requirements_unverified": [
-            "Found Rupert's ID in The Nest"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch15_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart",
+          "note": "The deviant's ID is found only by a thorough search of the apartment."
         },
         {
           "id": "option_1",
           "label": "DIARY",
           "next": "ch18_00082",
-          "requirements_unverified": [
-            "Found Rupert's diary in The Nest"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_ch15_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart",
+          "note": "The diary is found only by a thorough search of the apartment."
         },
         {
           "id": "option_2",
           "label": "SIGNS ON WALLS",
           "next": "ch18_00083",
-          "requirements_unverified": [
-            "Observed the signs on the wall in The Nest"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch15_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Nest#Flowchart",
+          "note": "The rA9 signs are seen unless Connor only checks the exits."
         },
         {
           "id": "option_3",
@@ -55944,9 +56017,7 @@
           "id": "option_0",
           "label": "PERSONAL QUESTION",
           "next": "ch22_00082",
-          "requirements_unverified": [
-            "Looked at Cole's photo in Russian Roulette"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -55955,7 +56026,8 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Always offered: it leads to PHOTO, which needs Cole's photo seen in Russian Roulette, or SUICIDE."
         },
         {
           "id": "option_1",
@@ -63813,9 +63885,7 @@
           "id": "option_0",
           "label": "SINCERE",
           "next": "ch24_00167",
-          "requirements_unverified": [
-            "Spared the Tracis in The Eden Club"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Amanda",
@@ -63824,7 +63894,14 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_eden_tracis",
+              "equals": "spared"
+            }
+          ],
+          "note": "Doubts that follow sparing the Tracis in The Eden Club."
         },
         {
           "id": "option_1",
@@ -64130,13 +64207,12 @@
           "id": "option_0",
           "label": "HANK",
           "next": "ch24_00176",
-          "requirements_unverified": [
-            "Hank shot Connor in The Bridge"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Always offered: what Connor says depends on whether Hank shot him on the Bridge (ch24_00176)."
         },
         {
           "id": "option_1",
@@ -78946,25 +79022,43 @@
           "id": "option_0",
           "label": "FOLLOWERS",
           "next": "ch28_00150",
-          "requirements_unverified": [
-            "Sent a pacifist message in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_capitol_park_failed",
+              "equals": false
+            },
+            {
+              "flag": "markus_capitol_park_violent",
+              "equals": false
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Trivia"
         },
         {
           "id": "option_1",
           "label": "APPEAL OF POWER",
           "next": "ch28_00151",
-          "requirements_unverified": [
-            "Sent an aggressive message in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_capitol_park_failed",
+              "equals": false
+            },
+            {
+              "flag": "markus_capitol_park_violent",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Trivia"
         },
         {
           "id": "option_2",
@@ -78987,13 +79081,18 @@
           "id": "option_3",
           "label": "FAILED",
           "next": "ch28_00153",
-          "requirements_unverified": [
-            "Failed to free the androids in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_capitol_park_failed",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Trivia"
         },
         {
           "id": "option_4",
@@ -95651,9 +95750,7 @@
           "id": "option_1",
           "label": "SIMON AND JOSH",
           "next": "ch30_3_00126",
-          "requirements_unverified": [
-            "Simon is alive"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -95665,15 +95762,20 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "simon_alive",
+              "equals": true
+            }
+          ],
+          "note": "Asks after Simon, so Simon must be alive."
         },
         {
           "id": "option_2",
           "label": "JOSH",
           "next": "ch30_3_00128",
-          "requirements_unverified": [
-            "Simon is dead"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -95685,7 +95787,14 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart"
               }
             ]
-          }
+          },
+          "requires": [
+            {
+              "flag": "simon_alive",
+              "equals": false
+            }
+          ],
+          "note": "Asks after Josh alone because Simon is dead."
         },
         {
           "id": "option_3",
@@ -100804,13 +100913,18 @@
           "id": "option_0",
           "label": "MARKUS",
           "next": "ch31_2_00017",
-          "requirements_unverified": [
-            "Markus is dead"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_alive",
+              "equals": false
+            }
+          ],
+          "note": "Mourns Markus as dead, so not when he only left Jericho."
         },
         {
           "id": "option_1",
@@ -101190,13 +101304,20 @@
           "id": "option_0",
           "label": "PHOTO",
           "next": "ch31_2_00039",
-          "requirements_unverified": [
-            "Looked at Cole's photo in Russian Roulette"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "not": {
+                "flag": "connor_ch18_exploration",
+                "equals": "rush"
+              }
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Russian_Roulette#Flowchart"
         },
         {
           "id": "option_1",
@@ -108196,13 +108317,18 @@
           "id": "option_1",
           "label": "COLD",
           "next": "ch32_1_00318",
-          "requirements_unverified": [
-            "Luther is here"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          ],
+          "note": "Luther is with Kara and Alice at the checkpoint."
         },
         {
           "id": "option_2",
@@ -108432,13 +108558,18 @@
           "id": "option_0",
           "label": "ALICE EXCUSE",
           "next": "ch32_1_00327",
-          "requirements_unverified": [
-            "Luther is here"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "luther_alive",
+              "equals": true
+            }
+          ],
+          "note": "Luther is with Kara and Alice at the checkpoint."
         },
         {
           "id": "option_1",
@@ -125275,13 +125406,19 @@
           "id": "option_7",
           "label": "JERICHO ASSAULT",
           "next": "ch32_5_00195",
-          "requirements_unverified": [
-            "Jericho was attacked"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_knows_jericho",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Crossroads#Flowchart",
+          "note": "Jericho is attacked in Crossroads only if Connor found it."
         },
         {
           "id": "option_8",
@@ -132894,7 +133031,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "kara_took_gun": false
+              "kara_took_gun": false,
+              "kara_forgot_gun": true
             }
           }
         }
@@ -139618,6 +139756,7 @@
     "connor_died_in_crossroads": false,
     "connor_androids_woke": false,
     "kara_escaped_camp": false,
+    "kara_forgot_gun": false,
     "markus_demonstration_outcome": "none",
     "connor_shot_deviant_leader": false,
     "connor_killed_by_markus": false,

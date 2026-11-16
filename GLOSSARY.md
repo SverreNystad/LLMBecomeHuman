@@ -20,6 +20,10 @@ _Avoid_: scene context, chapter summary, lore
 A choice at the start of an investigation about how thoroughly to search: thorough, key areas only, or rush. Searching less means seeing less, and sometimes losing later options.
 _Avoid_: investigation strategy, sandbox
 
+**Unlock Requirement**:
+What must have happened earlier for the game to offer an option (e.g. asking about Simon only if Simon is alive, mentioning the statuette only if Connor searched the bathroom in Partners). An option is offered only when the story shows its requirement was met. An option whose requirement the story does not track is still offered, and the Run marks it unverified. An option the game never offers (THANKS in Waiting for Hank..., locked by a bug) is left out.
+_Avoid_: prerequisite, gate, unlock condition
+
 **Quick-Time Event**:
 An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices.
 _Avoid_: QTE choice, willingness choice

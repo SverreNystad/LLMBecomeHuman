@@ -6,12 +6,8 @@ import pytest
 
 from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES, _flowchart_projection
 from detroit_benchmark.engine import pick_branch
-from tests.dataset import HANK_GIVES_TIME, load_dataset, play_story as _play_story
+from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
 
-
-def play_story(run_dir, picks):
-    """Play the story with Hank given a drink in Partners unless ``picks`` says otherwise."""
-    return _play_story(run_dir, {**HANK_GIVES_TIME, **picks})
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
 HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}
