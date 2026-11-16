@@ -72,6 +72,12 @@ class Playthrough:
         return [o["label"] for o in event["input"]["available_choices"]]
 
 
+# Partners: after a spilled drink Hank refuses Connor more time and the deviant is never
+# found, and the default (first) option spills it. Tests that need The Interrogation
+# and what follows it buy Hank a drink instead.
+HANK_GIVES_TIME = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
+
+
 def play_story(run_dir: Path, picks: dict[str, str]) -> Playthrough:
     """Play the whole real story, picking the option labelled ``picks[node]`` at
     each listed choice node and the first option elsewhere."""

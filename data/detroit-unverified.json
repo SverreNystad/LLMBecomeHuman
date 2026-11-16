@@ -10900,7 +10900,7 @@
       "description": "Talk to Hank",
       "dialogue": [],
       "observations": [],
-      "next": "ch6_00053"
+      "next": "ch6_x0103"
     },
     "ch6_00071": {
       "id": "ch6_00071",
@@ -132317,6 +132317,57 @@
       "dialogue": [],
       "observations": [],
       "next": "ch6_00001",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch6_x0103": {
+      "id": "ch6_x0103",
+      "type": "condition",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank wants to go",
+      "branches": [
+        {
+          "condition_text": "Connor spilled Hank's drink and took his time searching: Hank refuses more time",
+          "when": {
+            "all": [
+              {
+                "flag": "connor_hank_bar_choice",
+                "equals": "spill"
+              },
+              {
+                "not": {
+                  "flag": "connor_ch6_exploration",
+                  "equals": "rush"
+                }
+              }
+            ]
+          },
+          "next": "ch6_x0105",
+          "effects": {
+            "flags": {
+              "connor_partners_found_deviant": false
+            }
+          }
+        }
+      ],
+      "unverified": false,
+      "default_branch": 0,
+      "next": "ch6_00053",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
+      "note": "Whether Hank ends the investigation depends on how Connor treated him at Jimmy's Bar, not on how long the search lasts: after a spilled drink he refuses Connor more time; otherwise he gives it, and the search never runs out of time. Reporting to Hank straight away gives him no time to want to leave."
+    },
+    "ch6_x0105": {
+      "id": "ch6_x0105",
+      "type": "scene",
+      "chapter": "6",
+      "character": "Connor",
+      "heading": "Hank wants to go",
+      "description": "Hank has had enough and wants to leave. Connor asks for more time, but Hank, still sore about his spilled drink, refuses and ends the investigation.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch6_x0101",
       "source": "https://detroit-become-human.fandom.com/wiki/Partners#Flowchart",
       "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },

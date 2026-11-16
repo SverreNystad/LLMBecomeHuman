@@ -13,7 +13,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
-from tests.dataset import flag_values, flags_in, load_dataset
+from tests.dataset import HANK_GIVES_TIME, flag_values, flags_in, load_dataset
 
 
 def _scene(nid, nxt):
@@ -421,7 +421,12 @@ class _ScriptedRunner(Runner):
 def _play_story(tmp_path, picks):
     """Play the whole real story; return the headings seen per chapter."""
     run = _ScriptedRunner(
-        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+        _dataset(),
+        "mock",
+        None,
+        tmp_path / "run",
+        allow_unverified=True,
+        picks={**HANK_GIVES_TIME, **picks},
     )
     run.run()
     seen = {}

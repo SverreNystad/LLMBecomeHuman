@@ -257,30 +257,25 @@ def test_a_played_hostage_prompt_shows_the_probability_moving(tmp_path):
     assert calm[-1]["on_screen"] == ["Probability of success: up"]
 
 
-# Partners: the text version has no timer, so Hank never runs out of patience; the drink
-# only changes how friendly he is (wiki Partners#Notes: "If you run out of time").
+# Partners: whether Hank ends the search depends on how Connor treated him at the bar
+# (tests/test_connor_wiki_audit.py covers the search itself).
 BAR, LAST_NIGHT_TOPICS = "ch6_00145", "ch12_00066"
 WRONG_ANSWER = {"ch6_00025": "…WITH THE BAT."}
 
 
-def test_the_timer_approximation_is_gone():
-    nodes = load_dataset()["nodes"]
-    assert not {"ch6_x0103", "ch6_x0104", "ch6_x0105"} & set(nodes)
-    assert nodes["ch6_00054"]["next"] == "ch6_00053"
-
-
-@pytest.mark.parametrize("bar", ["SPILL HIS DRINK", "BUY HIM ANOTHER DRINK", "WAIT OUTSIDE"])
-def test_hank_goes_to_the_house_whatever_happens_to_his_drink(tmp_path, bar):
+@pytest.mark.parametrize("bar", ["BUY HIM ANOTHER DRINK", "WAIT OUTSIDE"])
+def test_without_a_spilled_drink_hank_goes_to_the_house(tmp_path, bar):
     run = play_story(tmp_path, {BAR: bar})
     assert run.flags["connor_partners_found_deviant"] is True
     assert "9" in run.chapters
     assert "LAST NIGHT" not in run.offered(LAST_NIGHT_TOPICS)
 
 
-def test_the_default_run_reaches_the_interrogation(tmp_path):
+def test_the_default_run_spills_the_drink_and_leaves_the_crime_unsolved(tmp_path):
     run = play_story(tmp_path, {})
     assert run.labels[BAR] == "SPILL HIS DRINK"
-    assert "ch9_00095" in run.nodes
+    assert run.flags["connor_partners_found_deviant"] is False
+    assert "ch9_00095" not in run.nodes
 
 
 def test_last_night_needs_a_spilled_drink_and_an_unsolved_case(tmp_path):

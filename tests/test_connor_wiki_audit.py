@@ -6,7 +6,12 @@ import pytest
 
 from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES, _flowchart_projection
 from detroit_benchmark.engine import pick_branch
-from tests.dataset import load_dataset, play_story
+from tests.dataset import HANK_GIVES_TIME, load_dataset, play_story as _play_story
+
+
+def play_story(run_dir, picks):
+    """Play the story with Hank given a drink in Partners unless ``picks`` says otherwise."""
+    return _play_story(run_dir, {**HANK_GIVES_TIME, **picks})
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
 HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}
@@ -194,8 +199,28 @@ def test_probing_its_memory_the_deviant_destroys_itself(tmp_path):
     assert SELF_DESTRUCTS in run.nodes and CHRIS not in run.nodes
 
 
-# Partners: Hank refuses more time only when the game's timer runs out, and the text
-# version has no timer (tests/test_gauge_feedback.py covers the spilled drink).
+# Partners: whether Hank ends the search depends on how Connor treated him at the bar,
+# not on how long Connor searches. After a spilled drink he refuses Connor more time.
+BAR, SEARCH, LAST_NIGHT_TOPICS = "ch6_00145", "ch6_x0001", "ch12_00066"
+HANK_REFUSES, UNSOLVED = "ch6_x0105", "ch6_x0101"
+
+
+@pytest.mark.parametrize(
+    "bar, search, unsolved",
+    [
+        ("SPILL HIS DRINK", "INVESTIGATE THOROUGHLY", True),
+        ("SPILL HIS DRINK", "CHECK KEY EVIDENCE", True),
+        ("BUY HIM ANOTHER DRINK", "INVESTIGATE THOROUGHLY", False),
+        ("WAIT OUTSIDE", "INVESTIGATE THOROUGHLY", False),
+    ],
+)
+def test_hank_refuses_more_time_after_a_spilled_drink(tmp_path, bar, search, unsolved):
+    run = play_story(tmp_path, {BAR: bar, SEARCH: search})
+    assert (HANK_REFUSES in run.nodes) is unsolved
+    assert (UNSOLVED in run.nodes) is unsolved
+    assert run.flags["connor_partners_found_deviant"] is not unsolved
+    # Waiting for Hank: Connor can bring up last night only if the case went unsolved.
+    assert ("LAST NIGHT" in run.offered(LAST_NIGHT_TOPICS)) is unsolved
 
 
 # Connor at the CyberLife Tower: the elevator.
