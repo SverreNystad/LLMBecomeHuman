@@ -500,10 +500,13 @@ def test_the_gun_in_the_hold_is_markus_decision(tmp_path, pick):
     assert connor["character"] == "Connor"
     assert {"at": "In the hold", "decided_by": "Markus", "outcome": pick} in connor["input"]["chapter_segment"]
     if reached:
-        # Markus's next segment knows what he decided in Connor's.
+        # Markus's next segment knows what he decided in Connor's (his lines to Connor
+        # in the cabin are Cross-Segment Decisions of his own, so skip those).
         markus = next(e for e in run.events[run.events.index(gun) + 1:]
-                      if e["type"] == "decision" and e["input"]["current_scene"]["character"] == "Markus")
-        assert markus["input"]["chapter_segment_so_far"][0]["your_choice"] == pick
+                      if e["type"] == "decision"
+                      and e["input"]["current_scene"]["character"] == "Markus"
+                      and "chapter_segment_so_far" in e["input"])
+        assert pick in [m.get("your_choice") for m in markus["input"]["chapter_segment_so_far"]]
 
 
 def test_only_who_to_control_is_decided_together(tmp_path):

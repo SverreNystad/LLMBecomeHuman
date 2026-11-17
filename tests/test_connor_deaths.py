@@ -3,7 +3,11 @@ that depend on it follow what happened (issue #41)."""
 
 import pytest
 
-from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
+from tests.dataset import (
+    CONNOR_SHAKEN,
+    load_dataset,
+    play_story_with_hank_given_time as play_story,
+)
 
 
 # The Hostage
@@ -69,12 +73,13 @@ def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_pa
 
 
 def test_each_way_connor_dies_adds_one(tmp_path):
-    never = play_story(tmp_path / "a", {**EXECUTE, **LET_IT_SELF_DESTRUCT})
-    hostage = play_story(tmp_path / "b", {**LET_IT_SELF_DESTRUCT})
-    both = play_story(tmp_path / "c", {})
+    # A shaken Connor deviates at Crossroads, so no Run dies there as a machine.
+    never = play_story(tmp_path / "a", {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT})
+    hostage = play_story(tmp_path / "b", {**CONNOR_SHAKEN, **LET_IT_SELF_DESTRUCT})
+    both = play_story(tmp_path / "c", CONNOR_SHAKEN)
     saving_hank = play_story(
         tmp_path / "d",
-        {**EXECUTE, **LET_IT_SELF_DESTRUCT, "ch24_00031": "SAVE HANK"},
+        {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT, "ch24_00031": "SAVE HANK"},
     )
     base = never.flags["connor_deaths"]
     assert hostage.flags["connor_deaths"] == base + 1

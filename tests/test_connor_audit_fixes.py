@@ -39,6 +39,8 @@ HANKS_HOUSE_SUICIDE = "ch31_2_00048"
 # Connor's Last Mission (32.3)
 HANK_ON_THE_ROOF, ALLEN_OR_HANK = "ch32_3_00047", "ch32_3_00066"
 ROOFTOP_TALK, LEAVE_OR_ATTACK = "ch32_3_00033", "ch32_3_00020"
+# Insisting follows asking about Cole (tests/test_unlock_requirements.py).
+INSIST_ABOUT_COLE = {ROOFTOP_TALK: "HANK'S SON", "ch32_3_x0301": "HANK'S SON (INSIST)"}
 SPARE_OR_KILL, ALLEN_FIGHT_OR_FLEE = "ch32_3_00015", "ch32_3_00052"
 DODGE = "ch32_3_00013"
 # The crowd at Markus's speech plays after his demonstration, in 32.8 (docs/adr/0004).
@@ -177,7 +179,7 @@ def test_allen_intervening_reads_as_a_sentence():
 
 def test_connor_can_leave_the_rooftop_only_after_insisting_about_cole(tmp_path):
     plain = play_story(tmp_path / "a", MACHINE)
-    insist = play_story(tmp_path / "b", {**MACHINE, ROOFTOP_TALK: "HANK'S SON (INSIST)"})
+    insist = play_story(tmp_path / "b", {**MACHINE, **INSIST_ABOUT_COLE})
     assert "LEAVE" not in plain.offered(LEAVE_OR_ATTACK)
     assert "LEAVE" in insist.offered(LEAVE_OR_ATTACK)
 
@@ -185,7 +187,7 @@ def test_connor_can_leave_the_rooftop_only_after_insisting_about_cole(tmp_path):
 def test_a_hostile_hank_cannot_talk_connor_off_the_rooftop(tmp_path):
     run = play_story(
         tmp_path,
-        {**MACHINE, **HOSTILE_HANK, **KAMSKI_GAVE_JERICHO, ROOFTOP_TALK: "HANK'S SON (INSIST)"},
+        {**MACHINE, **HOSTILE_HANK, **KAMSKI_GAVE_JERICHO, **INSIST_ABOUT_COLE},
     )
     assert "LEAVE" not in run.offered(LEAVE_OR_ATTACK)
 

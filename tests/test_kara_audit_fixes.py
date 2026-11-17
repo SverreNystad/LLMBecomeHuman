@@ -120,10 +120,10 @@ def test_kara_fires_a_warning_shot_only_with_the_gun_in_hand():
 
 
 def test_the_ra9_topics_need_the_writing_seen_in_the_tavern():
-    for label in ("rA9", "rA9 DOUBTS"):
-        assert option("ch21_00036", label)["requires"] == [
-            {"not": {"flag": "kara_ch21_exploration", "equals": "rush"}}
-        ]
+    # rA9 DOUBTS follows rA9 (tests/test_unlock_requirements.py), so it needs it too.
+    assert option("ch21_00036", "rA9")["requires"] == [
+        {"not": {"flag": "kara_ch21_exploration", "equals": "rush"}}
+    ]
 
 
 # Battle for Detroit, Kara leaving Detroit (32.1)

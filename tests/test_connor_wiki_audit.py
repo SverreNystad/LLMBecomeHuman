@@ -6,7 +6,11 @@ import pytest
 
 from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES, _flowchart_projection
 from detroit_benchmark.engine import pick_branch
-from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
+from tests.dataset import (
+    CONNOR_SHAKEN,
+    load_dataset,
+    play_story_with_hank_given_time as play_story,
+)
 
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
@@ -130,7 +134,7 @@ def test_refusing_to_shoot_amanda_takes_over_unless_connor_escapes(
     "picks",
     [
         {**MACHINE, **MARKUS_TAKES_THE_DEAL},  # Perkins shoots Markus
-        MARKUS_SPEAKS,  # a deviant Connor is at CyberLife Tower
+        {**MARKUS_SPEAKS, **CONNOR_SHAKEN},  # a deviant Connor is at CyberLife Tower
         {**MACHINE, "ch31_1_00006": "REVOLUTION"},  # no demonstration
     ],
     ids=["markus-dead", "deviant-connor", "revolution"],

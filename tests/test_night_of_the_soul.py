@@ -2,7 +2,7 @@
 
 import pytest
 
-from tests.dataset import play_story
+from tests.dataset import CONNOR_SHAKEN, play_story
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
 SIMON_LEFT_ON_THE_ROOF = {
@@ -11,6 +11,7 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00033": "LEAVE",
 }
 NOBODY_SAVES_MARKUS = {
+    **CONNOR_SHAKEN,  # Connor, facing North, is unstable enough to become deviant
     "ch19_00081": "REFUSE",
     **SIMON_LEFT_ON_THE_ROOF,
     "ch28_00044": "STAND GROUND",

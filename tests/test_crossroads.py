@@ -7,7 +7,7 @@ chooses to leave forever or go back.
 
 import pytest
 
-from tests.dataset import load_dataset, play_story
+from tests.dataset import CONNOR_SHAKEN, load_dataset, play_story
 
 NO_CLUES = {
     "ch27_00031": "DON'T SHOOT",
@@ -85,6 +85,7 @@ MARKUS_SETS_THE_CHARGES, BOMB_WENT_OFF = "ch30_3_00135", "ch30_3_00007"
 NORTH_IS_SHOT = "ch30_3_00034"
 MACHINE_WITH_MARKUS = {"ch30_2_00124": "REMAIN A MACHINE"}
 MARKUS_DIES_IN_THE_MARCH = {
+    **CONNOR_SHAKEN,  # Connor, facing North, is unstable enough to become deviant
     "ch19_00081": "REFUSE",
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
@@ -136,7 +137,7 @@ def test_running_from_the_soldier_gets_connor_shot(tmp_path):
 
 
 def test_a_voted_out_markus_who_goes_back_finds_connor_s_bomb_already_gone_off(tmp_path):
-    run = play_story(tmp_path, {**FLED_THE_MARCH, ROOFTOP: "GO BACK TO JERICHO"})
+    run = play_story(tmp_path, {**FLED_THE_MARCH, **CONNOR_SHAKEN, ROOFTOP: "GO BACK TO JERICHO"})
     assert CONNOR_ESCAPED in run.nodes
     assert MARKUS_SETS_THE_CHARGES not in run.nodes
     assert BOMB_WENT_OFF in run.nodes

@@ -24,6 +24,10 @@ _Avoid_: investigation strategy, sandbox
 What must have happened earlier for the game to offer an option (e.g. asking about Simon only if Simon is alive, mentioning the statuette only if Connor searched the bathroom in Partners). An option is offered only when the story shows its requirement was met. An option whose requirement the story does not track is still offered, and the Run marks it unverified. An option the game never offers (THANKS in Waiting for Hank..., locked by a bug) is left out.
 _Avoid_: prerequisite, gate, unlock condition
 
+**Seen Condition**:
+An Unlock Requirement or rule that asks whether the Run has already passed a given story node (e.g. "Kara made the clerk open the register", "Connor inspected Hank's desk"), so something that happened in a scene needs no flag of its own. Within a Run, a node it never passed is simply not seen, never unknown.
+_Avoid_: visited flag, history check
+
 **Quick-Time Event**:
 An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices.
 _Avoid_: QTE choice, willingness choice
@@ -43,6 +47,10 @@ _Avoid_: hint, meter, relation hint
 **Running Score**:
 A number the game keeps behind a gauge and uses to decide an outcome: The Hostage's Probability of Success and the deviant's stress in The Interrogation. It starts at the wiki's value, moves by the wiki's modifiers, and is compared against the wiki's thresholds (REASSURE works at 80% or more; convincing the deviant works between 50% and 70%).
 _Avoid_: probability roll, hidden score, meter
+
+**Hint Score**:
+A Running Score moved by the game's own arrows on each choice (an option's relation hints) instead of written modifiers: Connor's Software Instability, and the relationships with North and Simon. A small arrow moves it by 2, a large one by 6, so the Gauge Feedback the model reads is the move that counts. Only a Connor not clearly more stable than when he was activated (-4 or more) can become deviant; the wiki gives no numbers, so these thresholds are this story's calibration of its rules.
+_Avoid_: relationship meter, instability counter
 
 **Public News**:
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.

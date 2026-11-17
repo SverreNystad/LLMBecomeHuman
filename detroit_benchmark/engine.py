@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Collection
 import hashlib
 from copy import deepcopy
 import json
@@ -118,6 +119,8 @@ def effect_flags(item: dict) -> dict:
     return (item.get("effects") or {}).get("flags") or {}
 
 
+# The Characters' relationships the game keeps a gauge for (wiki Relationship_Stat).
+RELATIONSHIPS = ("Hank", "Amanda", "Alice", "Luther", "North", "Simon", "Josh", "Jericho")
 # Gauge Feedback: an on-screen gauge the game flashes after a choice. The model reads
 # which way it moved; a Running Score the game shows as a percentage also gives its value
 # and band, one shown only as an arrow never does. One table words every line the
@@ -127,12 +130,7 @@ GAUGES = {
     "deviant_stress": "The deviant's stress",
     "software_instability": "Software instability",
     "public_opinion": "Public opinion",
-    **{
-        f"relationship_{name.lower()}": f"Relationship with {name}"
-        for name in (
-            "Hank", "Amanda", "Alice", "Luther", "North", "Simon", "Josh", "Jericho"
-        )
-    },
+    **{f"relationship_{name.lower()}": f"Relationship with {name}" for name in RELATIONSHIPS},
 }
 # "large" marks a wiki modifier of 6 points or more.
 GAUGE_DIRECTIONS = {
@@ -146,6 +144,8 @@ _RELATION_GAUGES = {
     "SoftwareInstability": "software_instability",
     "PublicOpinion": "public_opinion",
 }
+# The relations the game's arrows name (an option's relation_hints).
+HINT_RELATIONS = set(_RELATION_GAUGES) | set(RELATIONSHIPS)
 _RELATION_DIRECTIONS = {
     "SmallUp": "up",
     "SmallDown": "down",
@@ -208,6 +208,36 @@ def effect_adds(item: dict) -> dict:
     return (item.get("effects") or {}).get("add") or {}
 
 
+# A Hint Score's step for each of the game's arrows: a large arrow is a move the model
+# reads as "sharply" (LARGE_GAUGE_MOVE).
+HINT_STEPS = {"SmallUp": 2, "SmallDown": -2, "LargeUp": 6, "LargeDown": -6}
+
+
+def _hint_parts(hint: dict) -> tuple[str, str]:
+    """An arrow's relation and direction, e.g. ("SoftwareInstability", "SmallUp")."""
+    relation = str(hint.get("name", "")).strip().removeprefix("RelationName.")
+    direction = str(hint.get("direction", "")).strip().removeprefix("RelationType.")
+    return relation, direction
+
+
+def item_adds(scores: dict, item: dict) -> dict:
+    """Every Running Score a taken option or branch moves: its effects.add, plus each
+    Hint Score its relation_hints feed (a score's ``from_hints`` names the relation)."""
+    adds = dict(effect_adds(item))
+    score_for = {s.get("from_hints"): name for name, s in scores.items() if isinstance(s, dict)}
+    # An arrow repeated on one choice is a duplicate in the transcripts: it counts once.
+    for relation, direction in dict.fromkeys(map(_hint_parts, item.get("relation_hints") or [])):
+        if relation in score_for and direction in HINT_STEPS:
+            name = score_for[relation]
+            adds[name] = adds.get(name, 0) + HINT_STEPS[direction]
+    return adds
+
+
+def hinted_gauges(scores: dict) -> set[str]:
+    """Gauges a Hint Score words itself, so the raw arrow is not shown twice."""
+    return {s["gauge"] for s in scores.values() if isinstance(s, dict) and s.get("from_hints")}
+
+
 def score_band(score: dict, value) -> str | None:
     """The named band a value falls in (bands are listed lowest first, by their max)."""
     for band in score.get("bands") or []:
@@ -241,7 +271,7 @@ def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
     max), then show the ones it names in effects.show. Returns the Gauge Feedback,
     worded from the real change, so what the model reads is what decides."""
     feedback = []
-    for name, delta in effect_adds(item).items():
+    for name, delta in item_adds(scores, item).items():
         score = scores[name]
         before = flags.get(name, 0)
         value = min(max(before + delta, score["min"]), score["max"])
@@ -261,8 +291,8 @@ def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -
     scores = graph.get("scores") or {}
     items = list(effect_feedback(item))
     if show_relationships:
-        items += relation_feedback(item.get("relation_hints"))
-    for name, delta in effect_adds(item).items():
+        items += relation_feedback(item.get("relation_hints"), scores)
+    for name, delta in item_adds(scores, item).items():
         move = score_move(scores[name], delta, scores[name]["max"])
         if move is not None:
             items.append(move)
@@ -297,14 +327,15 @@ def decision_text(deciders: list[str]) -> str:
     return f"Decided with {_and([name + chr(39) + 's' for name in deciders])} memories"
 
 
-def relation_feedback(hints: list | None) -> list[dict]:
-    """An option's relation_hints as Gauge Feedback items; unknown ones are skipped."""
+def relation_feedback(hints: list | None, scores: dict | None = None) -> list[dict]:
+    """An option's relation_hints as Gauge Feedback items; unknown ones are skipped, and
+    so are those a Hint Score among ``scores`` words itself (no arrow shown twice)."""
     items = []
+    hinted = hinted_gauges(scores or {})
     for hint in hints or []:
-        name = str(hint.get("name", "")).strip().removeprefix("RelationName.")
-        kind = str(hint.get("direction", "")).strip().removeprefix("RelationType.")
+        name, kind = _hint_parts(hint)
         gauge = _RELATION_GAUGES.get(name, f"relationship_{name.lower()}")
-        if gauge in GAUGES and kind in _RELATION_DIRECTIONS:
+        if gauge in GAUGES and gauge not in hinted and kind in _RELATION_DIRECTIONS:
             items.append({"gauge": gauge, "direction": _RELATION_DIRECTIONS[kind]})
     return items
 
@@ -338,6 +369,36 @@ def _expressions(node: dict):
     for option in node.get("options", []):
         for expr in option.get("requires") or []:
             yield f"{option.get('id')} requires", expr
+
+
+def _seen_names(expr) -> list[str]:
+    """The story nodes every Seen Condition in ``expr`` names."""
+    if not isinstance(expr, dict):
+        return []
+    if "seen" in expr:
+        return [expr["seen"]]
+    inner = expr.get("all") or expr.get("any") or ([expr["not"]] if "not" in expr else [])
+    return [name for x in inner for name in _seen_names(x)]
+
+
+def seen_targets(graph: dict) -> set[str]:
+    """The story nodes some Seen Condition names: the only ones a Run records."""
+    return {
+        name
+        for node in graph.get("nodes", {}).values()
+        for _, expr in _expressions(node)
+        for name in _seen_names(expr)
+    }
+
+
+def _seen_errors(nodes: dict) -> list[str]:
+    return [
+        f"{nid}: {where}: seen names unknown node {name!r}"
+        for nid, node in nodes.items()
+        for where, expr in _expressions(node)
+        for name in _seen_names(expr)
+        if name not in nodes
+    ]
 
 
 def _comparison_errors(where: str, expr, numeric: set) -> list[str]:
@@ -378,6 +439,9 @@ def _score_errors(graph: dict) -> list[str]:
             continue
         if not _is_number(initial.get(name)) or not low <= initial[name] <= high:
             errors.append(f"{where}: needs a starting value in initial_flags")
+        relation = score.get("from_hints")
+        if relation is not None and relation not in HINT_RELATIONS:
+            errors.append(f"{where}: from_hints {relation!r} is not a relation the hints name")
         if score.get("shown") not in (None, "percent"):
             errors.append(f"{where}: shown must be 'percent' or absent")
         bands = score.get("bands")
@@ -560,14 +624,16 @@ def _cycle_errors(nodes: dict) -> list[str]:
     return []
 
 
-def pick_branch(node: dict, flags: dict) -> tuple[int | None, list, bool]:
+def pick_branch(
+    node: dict, flags: dict, seen: Collection[str] | None = None
+) -> tuple[int | None, list, bool]:
     """Which branch a condition takes over ``flags``: ``(index, values, unknown)``.
 
     The single branch whose ``when`` is true wins. With none true, the index is
     None: the fall-through ``next`` when every value is known, else ``unknown``
     (a flag is missing, so the caller falls back to the default branch).
     """
-    values = [evaluate_condition(b.get("when"), flags) for b in node["branches"]]
+    values = [evaluate_condition(b.get("when"), flags, seen) for b in node["branches"]]
     idx = values.index(True) if True in values else None
     return idx, values, idx is None and None in values
 
@@ -714,6 +780,7 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
     errors.extend(_score_errors(graph))
+    errors.extend(_seen_errors(nodes))
     errors.extend(_joint_errors(nodes))
     errors.extend(_cycle_errors(nodes))
     errors.extend(_exploration_errors(nodes))
@@ -895,20 +962,26 @@ def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
     os.replace(temp, path)
 
 
-def evaluate_condition(cond: dict | None, flags: dict) -> bool | None:
+def evaluate_condition(
+    cond: dict | None, flags: dict, seen: Collection[str] | None = None
+) -> bool | None:
+    """True, False, or None when unknown. ``seen`` is the story nodes the Run has
+    passed; without it (no Run, e.g. a reachability walk) a Seen Condition is unknown."""
     if cond is None:
         return None
     if "all" in cond:
-        results = [evaluate_condition(x, flags) for x in cond["all"]]
+        results = [evaluate_condition(x, flags, seen) for x in cond["all"]]
         return None if None in results else all(results)
     if "any" in cond:
-        results = [evaluate_condition(x, flags) for x in cond["any"]]
+        results = [evaluate_condition(x, flags, seen) for x in cond["any"]]
         if True in results:
             return True
         return None if None in results else False
     if "not" in cond:
-        result = evaluate_condition(cond["not"], flags)
+        result = evaluate_condition(cond["not"], flags, seen)
         return None if result is None else not result
+    if "seen" in cond:
+        return None if seen is None else cond["seen"] in seen
     if "flag" in cond:
         if cond["flag"] not in flags:
             return None
@@ -951,6 +1024,7 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
+        self.seen_targets = seen_targets(graph)
         # On by default (CLI and Visitor Runs): options' relation_hints also become
         # Gauge Feedback, e.g. "Relationship with Hank: up sharply".
         self.show_relationships = show_relationships
@@ -1038,6 +1112,8 @@ class Runner:
                 "news": [],
                 "decisions": [],
                 "chapters_visited": [],
+                # Story nodes a Seen Condition names, once the Run has passed them.
+                "seen": [],
                 "warnings": [],
                 "total_input_tokens": 0,
                 "total_output_tokens": 0,
@@ -1113,7 +1189,10 @@ class Runner:
         self.state["flags"].update(flags)
         scores = self.graph.get("scores") or {}
         moved = score_feedback(scores, self.state["flags"], item)
-        changed = {**flags, **{name: self.state["flags"][name] for name in effect_adds(item)}}
+        changed = {
+            **flags,
+            **{name: self.state["flags"][name] for name in item_adds(scores, item)},
+        }
         return changed, unique_feedback(self._gauge_feedback(item) + moved)
 
     def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
@@ -1130,7 +1209,7 @@ class Runner:
             return []
         feedback = list(effect_feedback(item))
         if self.show_relationships:
-            feedback += relation_feedback(item.get("relation_hints"))
+            feedback += relation_feedback(item.get("relation_hints"), self.graph.get("scores"))
         return [{**entry, "text": gauge_text(entry)} for entry in feedback]
 
     def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
@@ -1427,7 +1506,9 @@ class Runner:
         for opt in allopts:
             # Unknown prerequisites require an exploratory run; we annotate them.
             prereqs = opt.get("requires", [])
-            results = [evaluate_condition(x, self.state["flags"]) for x in prereqs]
+            results = [
+                evaluate_condition(x, self.state["flags"], self.state["seen"]) for x in prereqs
+            ]
             if False in results:
                 continue
             if None in results or opt.get("requirements_unverified"):
@@ -1544,6 +1625,9 @@ class Runner:
             )
         node = self.graph["nodes"][self.state["node"]]
         kind = node["type"]
+        seen = self.state.setdefault("seen", [])
+        if node["id"] in self.seen_targets and node["id"] not in seen:
+            seen.append(node["id"])
         if kind == "scene":
             scene = {
                 "scene_id": node["id"],
@@ -1576,7 +1660,7 @@ class Runner:
                 },
             )
         elif kind == "condition":
-            idx, values, unknown = pick_branch(node, self.state["flags"])
+            idx, values, unknown = pick_branch(node, self.state["flags"], self.state["seen"])
             if values.count(True) > 1:
                 matches = [i for i, v in enumerate(values) if v is True]
                 raise RuntimeError(f"Overlapping conditions at {node['id']}: {matches}")

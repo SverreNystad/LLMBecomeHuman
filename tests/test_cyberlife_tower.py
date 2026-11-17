@@ -2,7 +2,7 @@
 
 import pytest
 
-from tests.dataset import play_story
+from tests.dataset import CONNOR_SHAKEN, play_story
 
 HOSTAGE, AFTER_SAVING, NEW_CONNOR = "ch32_4_00086", "ch32_4_00069", "ch32_4_00082"
 SON = "ch32_4_00042"
@@ -62,6 +62,7 @@ def test_without_hank_only_swapping_bodies_finishes_the_conversion(tmp_path, lab
 
 def test_the_media_credit_connor_only_if_the_androids_woke(tmp_path):
     peaceful_markus_succeeds = {
+        **CONNOR_SHAKEN,  # a deviant Connor at the tower
         "ch26_00070": "REFUSE",
         "ch28_00044": "DISPERSE",
         "ch28_00041": "DISPERSE",

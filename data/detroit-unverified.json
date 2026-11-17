@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 17,
+    "condition_nodes_unverified": 13,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -518,6 +518,9 @@
               "connor_deaths": 1,
               "connor_died_in_hostage": true,
               "emma_saved": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -526,7 +529,12 @@
           "label": "STAY BACK",
           "next": "ch1_x0104",
           "requirements_unverified": [],
-          "relation_hints": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
           "effects": {
             "flags": {
               "emma_saved": false
@@ -556,7 +564,13 @@
               }
             ]
           },
-          "next": "ch1_00003"
+          "next": "ch1_00003",
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
+          ]
         },
         {
           "condition_text": "Probability of success too low: Daniel jumps with Emma",
@@ -673,9 +687,7 @@
           "id": "option_2",
           "label": "USE GUN",
           "next": "ch1_x0101",
-          "requirements_unverified": [
-            "Close enough to Daniel"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -693,6 +705,10 @@
             {
               "flag": "connor_lied_about_gun",
               "equals": true
+            },
+            {
+              "flag": "connor_close_to_daniel",
+              "equals": true
             }
           ],
           "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
@@ -701,17 +717,26 @@
           "id": "option_3",
           "label": "SACRIFICE SELF",
           "next": "ch1_x0103",
-          "requirements_unverified": [
-            "Close enough to Daniel"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_daniel_final_plea": "sacrifice",
               "connor_deaths": 1,
               "connor_died_in_hostage": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_close_to_daniel",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Trivia",
+          "note": "Only up close (Get Close Enough)."
         }
       ]
     },
@@ -785,17 +810,15 @@
           "label": "CONVINCE",
           "next": "ch1_00012",
           "requirements_unverified": [],
-          "relation_hints": [
-            {
-              "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
-              "direction": "RelationType.SmallUp"
-            }
-          ],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_hostage": true,
               "connor_daniel_final_plea": "convince"
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -964,9 +987,7 @@
           "id": "option_0",
           "label": "USE GUN",
           "next": "ch1_00016",
-          "requirements_unverified": [
-            "Close enough to Daniel"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
@@ -995,6 +1016,10 @@
             },
             {
               "flag": "connor_lied_about_gun",
+              "equals": true
+            },
+            {
+              "flag": "connor_close_to_daniel",
               "equals": true
             }
           ],
@@ -1030,21 +1055,25 @@
           "id": "option_3",
           "label": "SACRIFICE SELF",
           "next": "ch1_x0103",
-          "requirements_unverified": [
-            "Close enough to Daniel"
-          ],
-          "relation_hints": [
-            {
-              "name": "RelationName.SoftwareInstability",
-              "direction": "RelationType.SmallUp"
-            }
-          ],
+          "requirements_unverified": [],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_hostage": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_close_to_daniel",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Trivia",
+          "note": "Only up close (Get Close Enough)."
         }
       ]
     },
@@ -1253,15 +1282,21 @@
           "id": "option_2",
           "label": "BLUFF",
           "next": "ch1_00026",
-          "requirements_unverified": [
-            "Close enough to Daniel"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_asked_daniel_to_trust": false
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_close_to_daniel",
+              "equals": true
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Trivia",
+          "note": "Only up close (Get Close Enough)."
         },
         {
           "id": "option_3",
@@ -1817,15 +1852,25 @@
           "id": "option_6",
           "label": "TALK TO HOSTAGE",
           "next": "ch1_00049",
-          "requirements_unverified": [
-            "Close enough to Daniel and didn't take the gun"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_daniel_topic_warm": false
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_close_to_daniel",
+              "equals": true
+            },
+            {
+              "flag": "connor_ch1_exploration",
+              "equals": "rush"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Trivia",
+          "note": "Up close, and only if Connor inspected neither Emma's nor John's tablet (a rushed search, which also finds no gun)."
         }
       ]
     },
@@ -1838,7 +1883,43 @@
       "description": "Speak with Daniel",
       "dialogue": [],
       "observations": [],
-      "next": "ch1_00050"
+      "next": "ch1_x0201"
+    },
+    "ch1_x0201": {
+      "id": "ch1_x0201",
+      "type": "choice",
+      "chapter": "1",
+      "character": "Connor",
+      "heading": "Speak with Daniel",
+      "description": "Daniel stands at the edge of the terrace with Emma, his gun to her head. Between you are the patio tables and the wounded officer by the pool. You can close the distance slowly as you talk, or stay where you are.",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart",
+      "note": "Getting close enough unlocks BLUFF, SACRIFICE SELF and USE GUN (wiki The_Hostage#Trivia). It moves no gauge.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "GET CLOSE TO DANIEL",
+          "next": "ch1_00050",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_close_to_daniel": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "STAY PUT",
+          "next": "ch1_00050",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_close_to_daniel": false
+            }
+          }
+        }
+      ]
     },
     "ch1_00052": {
       "id": "ch1_00052",
@@ -17310,9 +17391,7 @@
           "id": "option_0",
           "label": "GIVE UP",
           "next": "ch9_00025",
-          "requirements_unverified": [
-            "Put deviant under stress and failed to get a confession"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "\n\t\t\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t\t\t",
@@ -17327,15 +17406,14 @@
             "flags": {
               "connor_interrogation_ending": "let_chris_take_it"
             }
-          }
+          },
+          "note": "Always offered when Chris steps in (wiki The_Interrogation#Flowchart); who gets shot follows the stress."
         },
         {
           "id": "option_1",
           "label": "INTERVENE",
           "next": "ch9_00039",
-          "requirements_unverified": [
-            "Used the CONVINCE approach to get a confession"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -17350,7 +17428,8 @@
             "flags": {
               "connor_interrogation_ending": "intervened_with_chris"
             }
-          }
+          },
+          "note": "Always offered when Chris steps in (wiki The_Interrogation#Flowchart); the deviant trusts Connor only if he convinced it."
         }
       ]
     },
@@ -17475,7 +17554,41 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00042"
+      "next": "ch9_x0301"
+    },
+    "ch9_x0301": {
+      "id": "ch9_x0301",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Deviant confesses",
+      "description": "The deviant says the sculpture was an offering, so it would be saved.",
+      "note": "OFFERING follows up STATUETTE; in the game the menu offers it once STATUETTE has been asked.",
+      "options": [
+        {
+          "label": "OFFERING",
+          "next": "ch9_00048",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches.",
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch9_00042",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes"
     },
     "ch9_00046": {
       "id": "ch9_00046",
@@ -17551,7 +17664,41 @@
         }
       ],
       "observations": [],
-      "next": "ch9_00042"
+      "next": "ch9_x0302"
+    },
+    "ch9_x0302": {
+      "id": "ch9_x0302",
+      "type": "choice",
+      "chapter": "9",
+      "character": "Connor",
+      "heading": "Deviant confesses",
+      "description": "The deviant recites what rA9 promises.",
+      "note": "INSIST rA9 follows up rA9; in the game the menu offers it once rA9 has been asked.",
+      "options": [
+        {
+          "label": "INSIST rA9",
+          "next": "ch9_00051",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
+          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches.",
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch9_00042",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes"
     },
     "ch9_00050": {
       "id": "ch9_00050",
@@ -17712,45 +17859,9 @@
           "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
         },
         {
-          "id": "option_2",
-          "label": "OFFERING",
-          "next": "ch9_00048",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          },
-          "requires": [
-            {
-              "flag": "connor_ch6_exploration",
-              "equals": "thorough"
-            }
-          ],
-          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
-          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
-        },
-        {
           "id": "option_3",
           "label": "rA9",
           "next": "ch9_00050",
-          "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          },
-          "requires": [
-            {
-              "flag": "connor_ch6_exploration",
-              "equals": "thorough"
-            }
-          ],
-          "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Notes",
-          "note": "The rA9 signs, the I AM ALIVE message and the statuette are in the bathroom, which only a thorough search of the house reaches."
-        },
-        {
-          "id": "option_4",
-          "label": "INSIST rA9",
-          "next": "ch9_00051",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -18690,16 +18801,20 @@
           "id": "option_3",
           "label": "GIVE UP",
           "next": "ch9_00094",
-          "requirements_unverified": [
-            "Will also automatically happen if the chosen approach failed twice"
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
           ],
-          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_interrogation_approach": "give_up",
               "connor_interrogation_ending": "sent_to_cell"
             }
-          }
+          },
+          "note": "Giving up is always a choice here; the game also forces it after two failed approaches (ch9_x0105)."
         }
       ]
     },
@@ -21105,19 +21220,67 @@
       "branches": [
         {
           "condition_text": "Stole a toy at the supermarket",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "any": [
+                  {
+                    "flag": "kara_ch10_shoplifted",
+                    "equals": "toy"
+                  },
+                  {
+                    "flag": "kara_ch10_shoplifted",
+                    "equals": "everything"
+                  }
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "seen": "ch10_00133"
+                    }
+                  },
+                  {
+                    "seen": "ch10_00125"
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch10_00068"
         },
         {
           "condition_text": "Stole a chocolate bar at the supermarket",
-          "when": null,
+          "when": {
+            "all": [
+              {
+                "flag": "kara_ch10_shoplifted",
+                "equals": "chocolate"
+              },
+              {
+                "any": [
+                  {
+                    "not": {
+                      "seen": "ch10_00133"
+                    }
+                  },
+                  {
+                    "seen": "ch10_00125"
+                  }
+                ]
+              }
+            ]
+          },
           "next": "ch10_00069"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch10_00066",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "note": "Kept unless the clerk spotted Kara and she did not draw the gun (wiki Fugitives#Trivia). With everything taken, Alice talks about the toy."
     },
     "ch10_00071": {
       "id": "ch10_00071",
@@ -22402,9 +22565,7 @@
           "id": "option_0",
           "label": "GUN",
           "next": "ch10_00125",
-          "requirements_unverified": [
-            "Took the gun in Stormy Night"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Alice",
@@ -22434,25 +22595,23 @@
           "id": "option_1",
           "label": "LEAVE",
           "next": "ch10_00128",
-          "requirements_unverified": [
-            "Kara is seen stealing from the register"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Caught stealing in the aisles, Kara leaves with nothing."
         },
         {
           "id": "option_2",
           "label": "PUT BACK",
           "next": "ch10_00131",
-          "requirements_unverified": [
-            "Kara is seen stealing food or a toy"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Caught stealing in the aisles, Kara puts it all back."
         }
       ]
     },
@@ -22503,7 +22662,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00136": {
       "id": "ch10_00136",
@@ -22541,7 +22700,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00138": {
       "id": "ch10_00138",
@@ -22560,7 +22719,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00139": {
       "id": "ch10_00139",
@@ -22598,7 +22757,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00141": {
       "id": "ch10_00141",
@@ -22710,7 +22869,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00145": {
       "id": "ch10_00145",
@@ -22887,7 +23046,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00149"
+      "next": "ch10_00157"
     },
     "ch10_00153": {
       "id": "ch10_00153",
@@ -23042,20 +23201,10 @@
               "kara_convinced_clerk": false
             }
           }
-        },
-        {
-          "id": "option_3",
-          "label": "BILLS!",
-          "next": "ch10_00157",
-          "requirements_unverified": [
-            "Chose OPEN REGISTER"
-          ],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
         }
-      ]
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "note": "Resuming the hold-up: \"Don't move\" (BACK OFF! / TURN AROUND!) takes the money; OPEN THE REGISTER! makes the clerk grab a gun (then CONVINCE or GIVE UP)."
     },
     "ch10_00159": {
       "id": "ch10_00159",
@@ -23145,13 +23294,12 @@
           "id": "option_0",
           "label": "STAY",
           "next": "ch10_00162",
-          "requirements_unverified": [
-            "Chose OPEN REGISTER"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "STAY resumes the hold-up once the customer has gone (wiki Fugitives#Flowchart)."
         },
         {
           "id": "option_1",
@@ -23377,7 +23525,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00174": {
       "id": "ch10_00174",
@@ -23415,7 +23563,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00176": {
       "id": "ch10_00176",
@@ -23434,7 +23582,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00177": {
       "id": "ch10_00177",
@@ -23472,7 +23620,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00134"
+      "next": "ch10_00115"
     },
     "ch10_00179": {
       "id": "ch10_00179",
@@ -23700,6 +23848,78 @@
       "observations": [],
       "next": "ch10_00188"
     },
+    "ch10_x0301": {
+      "id": "ch10_x0301",
+      "type": "choice",
+      "chapter": "10",
+      "character": "Kara",
+      "heading": "In the aisles",
+      "description": "The clerk is busy behind the counter, half watching the news. The shelves are within reach: chocolate bars, a stuffed toy, a pair of wire cutters by the hardware. Alice is cold and hungry, and you have no money.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "note": "Taking one thing goes unnoticed; taking several, the clerk always spots Kara (wiki Fugitives#Trivia).",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "TAKE NOTHING",
+          "next": "ch10_00189",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_shoplifted": "none"
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "TAKE A CHOCOLATE BAR",
+          "next": "ch10_00189",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_shoplifted": "chocolate"
+            }
+          }
+        },
+        {
+          "id": "option_2",
+          "label": "TAKE A TOY",
+          "next": "ch10_00189",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_shoplifted": "toy"
+            }
+          }
+        },
+        {
+          "id": "option_3",
+          "label": "TAKE THE WIRE CUTTERS",
+          "next": "ch10_00189",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_shoplifted": "wire_cutters"
+            }
+          }
+        },
+        {
+          "id": "option_4",
+          "label": "TAKE EVERYTHING YOU NEED",
+          "next": "ch10_00134",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_ch10_shoplifted": "everything"
+            }
+          }
+        }
+      ]
+    },
     "ch10_00190": {
       "id": "ch10_00190",
       "type": "scene",
@@ -23717,7 +23937,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00189"
+      "next": "ch10_x0301"
     },
     "ch10_00191": {
       "id": "ch10_00191",
@@ -23774,7 +23994,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00189"
+      "next": "ch10_x0301"
     },
     "ch10_00194": {
       "id": "ch10_00194",
@@ -23793,7 +24013,7 @@
         }
       ],
       "observations": [],
-      "next": "ch10_00189"
+      "next": "ch10_x0301"
     },
     "ch10_00195": {
       "id": "ch10_00195",
@@ -23889,7 +24109,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch10_00189",
+      "next": "ch10_x0301",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Laundromat_branch"
     },
@@ -25992,9 +26212,7 @@
           "id": "option_0",
           "label": "DOG",
           "next": "ch12_00026",
-          "requirements_unverified": [
-            "Analyzed the dog hairs on the chair"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -26005,15 +26223,19 @@
             "flags": {
               "connor_knows_sumo_name": true
             }
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch12_00111"
+            }
+          ],
+          "note": "Seen on Hank's desk."
         },
         {
           "id": "option_1",
           "label": "BASKETBALL",
           "next": "ch12_00029",
-          "requirements_unverified": [
-            "Analyzed the basketball cap"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -26024,15 +26246,19 @@
             "flags": {
               "connor_knows_sumo_name": false
             }
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch12_00111"
+            }
+          ],
+          "note": "Seen on Hank's desk."
         },
         {
           "id": "option_2",
           "label": "MUSIC",
           "next": "ch12_00032",
-          "requirements_unverified": [
-            "Listened to Hank's music"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -26043,15 +26269,19 @@
             "flags": {
               "connor_knows_sumo_name": false
             }
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch12_00112"
+            }
+          ],
+          "note": "Connor listened to Hank's music at his desk."
         },
         {
           "id": "option_3",
           "label": "ANTI-ANDROIDS",
           "next": "ch12_00034",
-          "requirements_unverified": [
-            "Looked at the anti-androids stickers"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -26062,7 +26292,13 @@
             "flags": {
               "connor_knows_sumo_name": false
             }
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch12_00111"
+            }
+          ],
+          "note": "Seen on Hank's desk."
         },
         {
           "id": "option_4",
@@ -30491,14 +30727,19 @@
       "chapter": "13",
       "character": "Kara",
       "heading": "Reach the fence",
-      "description": "Reach the fence",
+      "description": "Kara and Alice are across the fence, running onto the highway. Connor decides: go after them, or give up as Hank orders.",
       "options": [
         {
           "id": "option_0",
           "label": "GO",
           "next": "ch13_00008",
           "requirements_unverified": [],
-          "relation_hints": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallDown"
+            }
+          ],
           "effects": {
             "flags": {
               "connor_highway_pursuit": true
@@ -30516,14 +30757,26 @@
           "label": "GIVE UP",
           "next": "ch13_00002",
           "requirements_unverified": [],
-          "relation_hints": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
           "effects": {
             "flags": {
               "connor_highway_pursuit": false
             }
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Connor"
+      ],
+      "decider_context": {
+        "Connor": "Connor and Hank are chasing Kara and Alice. They have climbed the fence and are running across the highway. Hank shouts at Connor not to follow them: he will get himself killed."
+      },
+      "source": "https://detroit-become-human.fandom.com/wiki/On_the_Run#Flowchart"
     },
     "ch13_00010": {
       "id": "ch13_00010",
@@ -32854,7 +33107,40 @@
         }
       ],
       "observations": [],
-      "next": "ch13_00122"
+      "next": "ch13_x0401"
+    },
+    "ch13_x0401": {
+      "id": "ch13_x0401",
+      "type": "choice",
+      "chapter": "13",
+      "character": "Kara",
+      "heading": "In the squat with Ralph",
+      "description": "Ralph says the man was already dead when he found him.",
+      "note": "INSIST ABOUT CORPSE follows up ASK ABOUT CORPSE; in the game the menu offers it once ASK ABOUT CORPSE has been asked.",
+      "options": [
+        {
+          "label": "INSIST ABOUT CORPSE",
+          "next": "ch13_00127",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_threatened_ralph": false
+            }
+          },
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch13_00122",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
     },
     "ch13_00124": {
       "id": "ch13_00124",
@@ -33107,29 +33393,14 @@
           "id": "option_0",
           "label": "ASK ABOUT CORPSE",
           "next": "ch13_00124",
-          "requirements_unverified": [
-            "Saw the body in the bathroom"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "kara_threatened_ralph": false
             }
-          }
-        },
-        {
-          "id": "option_1",
-          "label": "INSIST ABOUT CORPSE",
-          "next": "ch13_00127",
-          "requirements_unverified": [
-            "Asked about corpse"
-          ],
-          "relation_hints": [],
-          "effects": {
-            "flags": {
-              "kara_threatened_ralph": false
-            }
-          }
+          },
+          "note": "Approximation: Kara goes upstairs to change, where the body lies in the shower."
         },
         {
           "id": "option_2",
@@ -33928,19 +34199,45 @@
       "branches": [
         {
           "condition_text": "Kara stole wire cutters from the supermarket in Fugitives",
-          "when": null,
+          "when": {
+            "any": [
+              {
+                "flag": "kara_ch10_shoplifted",
+                "equals": "wire_cutters"
+              },
+              {
+                "flag": "kara_ch10_shoplifted",
+                "equals": "everything"
+              }
+            ]
+          },
           "next": "ch13_00165"
         },
         {
           "condition_text": "Kara didn't steal the wire cutters",
-          "when": null,
+          "when": {
+            "not": {
+              "any": [
+                {
+                  "flag": "kara_ch10_shoplifted",
+                  "equals": "wire_cutters"
+                },
+                {
+                  "flag": "kara_ch10_shoplifted",
+                  "equals": "everything"
+                }
+              ]
+            }
+          },
           "next": "ch13_00171"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch13_00159",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Fugitives#Flowchart",
+      "note": "The CCTV shows what Kara tried to steal, even if the clerk made her put it back."
     },
     "ch13_00173": {
       "id": "ch13_00173",
@@ -37660,21 +37957,23 @@
           "id": "option_0",
           "label": "GAMBLING",
           "next": "ch15_00136",
-          "requirements_unverified": [
-            "Watch Hank with Pedro"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch15_00169"
+            }
+          ],
+          "note": "Connor watched Hank with Pedro."
         },
         {
           "id": "option_1",
           "label": "CHOLESTEROL",
           "next": "ch15_00138",
-          "requirements_unverified": [
-            "Scan the hamburger"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -37683,15 +37982,19 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch15_00154"
+            }
+          ],
+          "note": "Connor scanned the hamburger."
         },
         {
           "id": "option_2",
           "label": "COMPANY",
           "next": "ch15_00140",
-          "requirements_unverified": [
-            "Scan Pedro and Gary"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Hank",
@@ -37700,7 +38003,13 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "seen": "ch15_00165"
+            }
+          ],
+          "note": "Connor scanned Pedro and Gary."
         },
         {
           "id": "option_3",
@@ -50932,9 +51241,7 @@
           "id": "option_0",
           "label": "SHOOT IN THE AIR",
           "next": "ch21_00016",
-          "requirements_unverified": [
-            "Kara saw the gun in the bag and grabbed it"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
@@ -51201,7 +51508,38 @@
         }
       ],
       "observations": [],
-      "next": "ch21_00025"
+      "next": "ch21_x0301"
+    },
+    "ch21_x0301": {
+      "id": "ch21_x0301",
+      "type": "choice",
+      "chapter": "21",
+      "character": "Kara",
+      "heading": "Talking to Luther",
+      "description": "Luther says rA9 was the first of them to awaken, and will free them one day.",
+      "note": "rA9 DOUBTS follows up rA9; in the game the menu offers it once rA9 has been asked.",
+      "options": [
+        {
+          "label": "rA9 DOUBTS",
+          "next": "ch21_00029",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch21_00025",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
     },
     "ch21_00027": {
       "id": "ch21_00027",
@@ -51386,29 +51724,7 @@
           "id": "option_0",
           "label": "rA9",
           "next": "ch21_00027",
-          "requirements_unverified": [
-            "Looked at rA9 writing on the wall"
-          ],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          },
-          "requires": [
-            {
-              "not": {
-                "flag": "kara_ch21_exploration",
-                "equals": "rush"
-              }
-            }
-          ]
-        },
-        {
-          "id": "option_1",
-          "label": "rA9 DOUBTS",
-          "next": "ch21_00029",
-          "requirements_unverified": [
-            "Asked about [ rA9 ]"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
@@ -52932,13 +53248,12 @@
           "id": "option_0",
           "label": "OFFER COOKIE",
           "next": "ch21_00103",
-          "requirements_unverified": [
-            "Checked the bag before telling Alice a story"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Reached only by checking the bag."
         }
       ]
     },
@@ -55616,13 +55931,29 @@
           "id": "option_0",
           "label": "rA9",
           "next": "ch22_00066",
-          "requirements_unverified": [
-            "Looked at rA9 clues in previous chapters"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "any": [
+                {
+                  "flag": "connor_ch6_exploration",
+                  "equals": "thorough"
+                },
+                {
+                  "not": {
+                    "flag": "connor_ch15_exploration",
+                    "equals": "rush"
+                  }
+                }
+              ]
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/The_Bridge#Flowchart",
+          "note": "rA9 clues: the bathroom in Partners (thorough search) or the walls of the Nest."
         },
         {
           "id": "option_1",
@@ -58566,9 +58897,7 @@
           "id": "option_0",
           "label": "RUSE",
           "next": "ch23_00097",
-          "requirements_unverified": [
-            "Take too much time drawing the gun"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.North",
@@ -58596,7 +58925,8 @@
               "markus_stratford_guards_shot": false,
               "markus_stratford_guard_shot_first": "none"
             }
-          }
+          },
+          "note": "In the game a hesitation on drawing the gun; here the ruse is a choice."
         },
         {
           "id": "option_1",
@@ -60676,20 +61006,14 @@
           "id": "option_0",
           "label": "CHARGE DEVIANT",
           "next": "ch24_00009",
-          "requirements_unverified": [
-            "Connor dies rushing Simon"
-          ],
-          "relation_hints": [
-            {
-              "name": "\n\t\t\t\t\t\t\t\t\t\t\t\tRelationName.SoftwareInstability\n\t\t\t\t\t\t\t\t\t\t\t",
-              "direction": "RelationType.LargeUp"
-            }
-          ],
+          "requirements_unverified": [],
+          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_probed_simon": true
             }
-          }
+          },
+          "note": "Charging Simon gets Connor killed: that is the outcome, not an unlock. Its death lowers Software Instability (wiki); the large rise is for reaching Simon (traumatized), not for this."
         },
         {
           "id": "option_1",
@@ -66949,7 +67273,38 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00126"
+      "next": "ch25_x0301"
+    },
+    "ch25_x0301": {
+      "id": "ch25_x0301",
+      "type": "choice",
+      "chapter": "25",
+      "character": "Kara",
+      "heading": "Get inside",
+      "description": "Rose says more and more androids have come through these past weeks.",
+      "note": "DANGEROUS follows up MANY DEVIANTS?; in the game the menu offers it once MANY DEVIANTS? has been asked.",
+      "options": [
+        {
+          "label": "DANGEROUS",
+          "next": "ch25_00132",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch25_00126",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
     },
     "ch25_00130": {
       "id": "ch25_00130",
@@ -67107,18 +67462,6 @@
           "label": "MANY DEVIANTS?",
           "next": "ch25_00130",
           "requirements_unverified": [],
-          "relation_hints": [],
-          "effects": {
-            "flags": {}
-          }
-        },
-        {
-          "id": "option_2",
-          "label": "DANGEROUS",
-          "next": "ch25_00132",
-          "requirements_unverified": [
-            "Chose MANY DEVIANTS?"
-          ],
           "relation_hints": [],
           "effects": {
             "flags": {}
@@ -74948,13 +75291,19 @@
           "id": "option_3",
           "label": "CHRIS",
           "next": "ch27_00096",
-          "requirements_unverified": [
-            "Connor and Hank arrived separately"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_public_enemy_chase",
+              "equals": "save_hank"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart",
+          "note": "Hank arrived alone (ch27_00117): arriving together, he tells Connor about Chris on the way in."
         }
       ]
     },
@@ -76033,6 +76382,10 @@
               {
                 "flag": "simon_alive",
                 "equals": true
+              },
+              {
+                "flag": "relationship_simon",
+                "gte": -3
               }
             ]
           },
@@ -76043,7 +76396,7 @@
           }
         },
         {
-          "condition_text": "No one is there to save Markus",
+          "condition_text": "No one is there to save Markus (Simon is dead or resents him)",
           "next": "ch28_00026",
           "when": {
             "all": [
@@ -76052,8 +76405,16 @@
                 "equals": false
               },
               {
-                "flag": "simon_alive",
-                "equals": false
+                "any": [
+                  {
+                    "flag": "simon_alive",
+                    "equals": false
+                  },
+                  {
+                    "flag": "relationship_simon",
+                    "lt": -3
+                  }
+                ]
               }
             ]
           },
@@ -76069,7 +76430,7 @@
       "next": "ch28_00001",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Flowchart",
-      "note": "Approximation: Simon counts as dead if he did not escape the Stratford Tower with Markus (left behind, Connor finds him in Public Enemy), and he gives his life in the Freedom March whenever he is alive, assuming Markus and Simon are at least friends."
+      "note": "Approximation: Simon counts as dead if he did not escape the Stratford Tower with Markus (left behind, Connor finds him in Public Enemy). Alive, he gives his life for Markus unless he resents him: the transcript says 'a good relationship'. This story's calibration of the wiki's levels (Relationship_Stat): from Neutral (0), Hostile at -10 or lower, Resentful below -3, Friend or higher at 6 or more."
     },
     "ch28_00028": {
       "id": "ch28_00028",
@@ -76140,10 +76501,7 @@
           "id": "option_1",
           "label": "SACRIFICE",
           "next": "ch28_00027",
-          "requirements_unverified": [
-            "John joined in Spare Parts",
-            "Simon survived in Public Enemy and has a good relationship with Markus"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.PublicOpinion",
@@ -76166,7 +76524,8 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
               }
             ]
-          }
+          },
+          "note": "Always offered; who saves Markus follows John joining in Spare Parts or Simon's Fate (wiki Freedom_March#Flowchart)."
         },
         {
           "id": "option_2",
@@ -76313,10 +76672,7 @@
           "id": "option_1",
           "label": "STAND GROUND",
           "next": "ch28_00032",
-          "requirements_unverified": [
-            "John joined in Spare Parts",
-            "Simon survived in Public Enemy and has a good relationship with Markus"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.PublicOpinion",
@@ -76359,7 +76715,8 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
               }
             ]
-          }
+          },
+          "note": "Always offered; who saves Markus follows John joining in Spare Parts or Simon's Fate (wiki Freedom_March#Flowchart)."
         },
         {
           "id": "option_2",
@@ -76690,10 +77047,7 @@
           "id": "option_1",
           "label": "STAND GROUND",
           "next": "ch28_00039",
-          "requirements_unverified": [
-            "John joined in Spare Parts",
-            "Simon survived in Public Enemy and has a good relationship with Markus"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Josh",
@@ -76752,7 +77106,8 @@
                 "source": "https://detroit-become-human.fandom.com/wiki/Freedom_March#Public_Opinion"
               }
             ]
-          }
+          },
+          "note": "Always offered; who saves Markus follows John joining in Spare Parts or Simon's Fate (wiki Freedom_March#Flowchart)."
         },
         {
           "id": "option_2",
@@ -78116,14 +78471,19 @@
       "branches": [
         {
           "condition_text": "North is friend or higher",
-          "when": null,
+          "when": {
+            "flag": "relationship_north",
+            "gte": 6
+          },
           "next": "ch28_00120"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch28_00115",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Relationship_Stat#Levels_of_Relationship",
+      "note": "This story's calibration of the wiki's levels: from Neutral (0), Hostile at -10 or lower, Friend or higher at 6 or more."
     },
     "ch28_00122": {
       "id": "ch28_00122",
@@ -78308,9 +78668,7 @@
           "id": "option_0",
           "label": "OTHER NORTH",
           "next": "ch28_00122",
-          "requirements_unverified": [
-            "Looked at the other North in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.North",
@@ -78319,7 +78677,15 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "requires": [
+            {
+              "flag": "markus_ch26_exploration",
+              "equals": "thorough"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Capitol_Park#Flowchart",
+          "note": "Approximation: the android that looks like North is in the store; Markus notices it only when he takes Capitol Park in."
         },
         {
           "id": "option_1",
@@ -78426,19 +78792,27 @@
       "branches": [
         {
           "condition_text": "North is hostile",
-          "when": null,
+          "when": {
+            "flag": "relationship_north",
+            "lte": -10
+          },
           "next": "ch28_00116"
         },
         {
           "condition_text": "North is not hostile",
-          "when": null,
+          "when": {
+            "flag": "relationship_north",
+            "gt": -10
+          },
           "next": "ch28_00132"
         }
       ],
-      "unverified": true,
+      "unverified": false,
       "default_branch": 0,
       "next": "ch28_00115",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Relationship_Stat#Levels_of_Relationship",
+      "note": "This story's calibration of the wiki's levels: from Neutral (0), Hostile at -10 or lower, Friend or higher at 6 or more."
     },
     "ch28_00134": {
       "id": "ch28_00134",
@@ -78509,9 +78883,7 @@
           "id": "option_0",
           "label": "NORTH’S PAST",
           "next": "ch28_00134",
-          "requirements_unverified": [
-            "Looked at the other North in Capitol Park"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.North",
@@ -78548,7 +78920,8 @@
           ],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Always offered; OTHER NORTH, which follows, needs the android seen in Capitol Park."
         },
         {
           "id": "option_1",
@@ -80161,15 +80534,14 @@
           "id": "option_0",
           "label": "IMITATE MARKUS' VOICE",
           "next": "ch29_00045",
-          "requirements_unverified": [
-            "Copied Markus' voice with the tablet"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_knows_jericho": true
             }
-          }
+          },
+          "note": "Markus's Stratford Tower broadcast is on file in the evidence room, so Connor can reproduce his voice."
         },
         {
           "id": "option_1",
@@ -80537,15 +80909,14 @@
           "id": "option_0",
           "label": "IMITATE MARKUS' VOICE",
           "next": "ch29_00064",
-          "requirements_unverified": [
-            "Copied Markus' voice with the tablet"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
               "connor_knows_jericho": true
             }
-          }
+          },
+          "note": "Markus's Stratford Tower broadcast is on file in the evidence room, so Connor can reproduce his voice."
         },
         {
           "id": "option_1",
@@ -91573,9 +91944,7 @@
           "id": "option_0",
           "label": "BECOME A DEVIANT",
           "next": "ch30_2_00094",
-          "requirements_unverified": [
-            "Have enough software instability"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Amanda",
@@ -91586,7 +91955,15 @@
             "flags": {
               "connor_deviant": true
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_software_instability",
+              "gte": -4
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability",
+          "note": "Only a Connor not clearly more stable than when he was activated (-4 or more: at most two small falls net) can deviate. The wiki gives no numbers: arrows move the score by 2 (small) or 6 (large), each death by -2, and -4 is this story's calibration, so that a Connor who killed every deviant and Chloe but raised it at every other chance still can (wiki, Notes; about 8) and one who made every cold choice cannot (about -20)."
         },
         {
           "id": "option_1",
@@ -92220,9 +92597,7 @@
           "id": "option_0",
           "label": "BECOME A DEVIANT",
           "next": "ch30_2_00121",
-          "requirements_unverified": [
-            "Have enough software instability"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [
             {
               "name": "RelationName.Amanda",
@@ -92233,7 +92608,15 @@
             "flags": {
               "connor_deviant": true
             }
-          }
+          },
+          "requires": [
+            {
+              "flag": "connor_software_instability",
+              "gte": -4
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability",
+          "note": "Only a Connor not clearly more stable than when he was activated (-4 or more: at most two small falls net) can deviate. The wiki gives no numbers: arrows move the score by 2 (small) or 6 (large), each death by -2, and -4 is this story's calibration, so that a Connor who killed every deviant and Chloe but raised it at every other chance still can (wiki, Notes; about 8) and one who made every cold choice cannot (about -20)."
         },
         {
           "id": "option_1",
@@ -92350,7 +92733,7 @@
       "chapter": "30.2",
       "character": "Connor",
       "heading": "Finding Markus",
-      "description": "Finding Markus",
+      "description": "Connor holds Markus at gunpoint in the captain's cabin. Markus decides what to say to him.",
       "options": [
         {
           "id": "option_0",
@@ -92412,7 +92795,14 @@
             "flags": {}
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Markus"
+      ],
+      "decider_context": {
+        "Markus": "Soldiers are storming Jericho. In the captain's cabin, Connor, the deviant hunter, holds Markus at gunpoint. Markus can try to reach him: the androids are his people too."
+      },
+      "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability#Changes"
     },
     "ch30_2_00131": {
       "id": "ch30_2_00131",
@@ -92599,7 +92989,7 @@
       "chapter": "30.2",
       "character": "Connor",
       "heading": "Finding Markus",
-      "description": "Finding Markus",
+      "description": "Connor holds Markus at gunpoint in the captain's cabin. Markus decides what to say to him.",
       "options": [
         {
           "id": "option_0",
@@ -92656,7 +93046,14 @@
             "flags": {}
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Markus"
+      ],
+      "decider_context": {
+        "Markus": "Soldiers are storming Jericho. In the captain's cabin, Connor, the deviant hunter, holds Markus at gunpoint. Markus can try to reach him: the androids are his people too."
+      },
+      "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability#Changes"
     },
     "ch30_2_00139": {
       "id": "ch30_2_00139",
@@ -92808,7 +93205,7 @@
       "chapter": "30.2",
       "character": "Connor",
       "heading": "Finding Markus",
-      "description": "Finding Markus",
+      "description": "Connor holds Markus at gunpoint in the captain's cabin. Markus decides what to say to him.",
       "options": [
         {
           "id": "option_0",
@@ -92855,7 +93252,14 @@
             "flags": {}
           }
         }
-      ]
+      ],
+      "deciders": [
+        "Markus"
+      ],
+      "decider_context": {
+        "Markus": "Soldiers are storming Jericho. In the captain's cabin, Connor, the deviant hunter, holds Markus at gunpoint. Markus can try to reach him: the androids are his people too."
+      },
+      "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability#Changes"
     },
     "ch30_2_00147": {
       "id": "ch30_2_00147",
@@ -99900,7 +100304,139 @@
         }
       ],
       "observations": [],
-      "next": "ch31_1_00094"
+      "next": "ch31_1_x0004"
+    },
+    "ch31_1_x0004": {
+      "id": "ch31_1_x0004",
+      "type": "choice",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Explore the house",
+      "description": "The house is quiet. Everything is where you left it: the bookshelves, the piano, the chessboard by the window, and the studio where Carl taught you to paint. Carl is upstairs.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "note": "Each pastime is offered only if Markus chose it in The Painter (markus_ch5_pastime).",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "BROWSE THE BOOKS",
+          "next": "ch31_1_x0005",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "markus_ch5_pastime",
+              "equals": "read"
+            }
+          ]
+        },
+        {
+          "id": "option_1",
+          "label": "PLAY THE PIANO",
+          "next": "ch31_1_x0006",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "markus_ch5_pastime",
+              "equals": "piano"
+            }
+          ]
+        },
+        {
+          "id": "option_2",
+          "label": "LOOK AT THE CHESSBOARD",
+          "next": "ch31_1_x0007",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          },
+          "requires": [
+            {
+              "flag": "markus_ch5_pastime",
+              "equals": "chess"
+            }
+          ]
+        },
+        {
+          "id": "option_3",
+          "label": "LOOK AT YOUR PAINTING",
+          "next": "ch31_1_x0008",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_4",
+          "label": "GO UPSTAIRS",
+          "next": "ch31_1_00094",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
+    },
+    "ch31_1_x0005": {
+      "id": "ch31_1_x0005",
+      "type": "scene",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Browse books",
+      "description": "Markus runs his fingers along the books he used to read to Carl, and opens one of them again.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch31_1_00094",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch31_1_x0006": {
+      "id": "ch31_1_x0006",
+      "type": "scene",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Play piano",
+      "description": "Markus sits at Carl's piano and plays, as he did the afternoons Carl rested.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch31_1_00094",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch31_1_x0007": {
+      "id": "ch31_1_x0007",
+      "type": "scene",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Look at the chessboard",
+      "description": "The chessboard is as Markus left it, the pieces waiting mid-game.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch31_1_00094",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
+    },
+    "ch31_1_x0008": {
+      "id": "ch31_1_x0008",
+      "type": "scene",
+      "chapter": "31.1",
+      "character": "Markus",
+      "heading": "Look at your painting",
+      "description": "In the studio, the painting Markus made for Carl still stands on its easel.",
+      "dialogue": [],
+      "observations": [],
+      "next": "ch31_1_00094",
+      "source": "https://detroit-become-human.fandom.com/wiki/Night_of_the_Soul#Welcome_Home",
+      "note": "Paraphrased from the Detroit: Become Human Wiki (CC BY-SA 3.0)."
     },
     "ch31_1_00096": {
       "id": "ch31_1_00096",
@@ -105167,9 +105703,7 @@
           "id": "option_5",
           "label": "Use Luther",
           "next": "ch32_1_00164",
-          "requirements_unverified": [
-            "Luther is here"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -105984,9 +106518,7 @@
           "id": "option_0",
           "label": "DIVERSION LUTHER",
           "next": "ch32_1_00207",
-          "requirements_unverified": [
-            "Luther is here"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -106955,9 +107487,7 @@
           "id": "option_5",
           "label": "YOUR STORY",
           "next": "ch32_1_00252",
-          "requirements_unverified": [
-            "Opened Alice's box in A New Home"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -116225,7 +116755,42 @@
         }
       ],
       "observations": [],
-      "next": "ch32_3_00020"
+      "next": "ch32_3_x0301"
+    },
+    "ch32_3_x0301": {
+      "id": "ch32_3_x0301",
+      "type": "choice",
+      "chapter": "32.3",
+      "character": "Connor",
+      "heading": "On the rooftop",
+      "description": "Hank tells Connor to shut up and not talk about his son.",
+      "note": "HANK'S SON (INSIST) follows up HANK'S SON; in the game the menu offers it once HANK'S SON has been asked.",
+      "options": [
+        {
+          "label": "HANK'S SON (INSIST)",
+          "next": "ch32_3_00032",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "connor_insisted_about_cole": true
+            }
+          },
+          "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
+          "id": "option_0"
+        },
+        {
+          "id": "option_1",
+          "label": "MOVE ON",
+          "next": "ch32_3_00020",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ],
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
     "ch32_3_00028": {
       "id": "ch32_3_00028",
@@ -116398,29 +116963,6 @@
           "relation_hints": [],
           "effects": {
             "flags": {}
-          },
-          "requires": [
-            {
-              "not": {
-                "flag": "connor_ch18_exploration",
-                "equals": "rush"
-              }
-            }
-          ],
-          "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
-        },
-        {
-          "id": "option_4",
-          "label": "HANK'S SON (INSIST)",
-          "next": "ch32_3_00032",
-          "requirements_unverified": [
-            "Chose HANK'S SON"
-          ],
-          "relation_hints": [],
-          "effects": {
-            "flags": {
-              "connor_insisted_about_cole": true
-            }
           },
           "requires": [
             {
@@ -117196,6 +117738,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117209,6 +117754,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117222,6 +117770,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117235,6 +117786,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117248,6 +117802,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117261,6 +117818,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117274,6 +117834,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -117300,6 +117863,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117313,6 +117879,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117326,6 +117895,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117339,6 +117911,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117352,6 +117927,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117365,6 +117943,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117378,6 +117959,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -117404,6 +117988,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117417,6 +118004,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117430,6 +118020,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117443,6 +118036,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117456,6 +118052,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117469,6 +118068,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117482,6 +118084,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -117508,6 +118113,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117521,6 +118129,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117534,6 +118145,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117547,6 +118161,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117560,6 +118177,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117573,6 +118193,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -117586,6 +118209,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -119272,13 +119898,12 @@
           "id": "option_0",
           "label": "SHOOT",
           "next": "ch32_4_00066",
-          "requirements_unverified": [
-            "Will be highlighted if Connor looked at the photo in Russian Roulette"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Always offered; the game highlights it if Connor saw Cole's photo in Russian Roulette."
         },
         {
           "id": "option_1",
@@ -119668,13 +120293,12 @@
           "id": "option_0",
           "label": "SAVE HANK",
           "next": "ch32_4_00070",
-          "requirements_unverified": [
-            "Will be highlighted if Connor looked at the photo in Russian Roulette"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {}
-          }
+          },
+          "note": "Always offered; the game highlights it if Connor saw Cole's photo in Russian Roulette."
         },
         {
           "id": "option_1",
@@ -121721,9 +122345,7 @@
           "id": "option_1",
           "label": "KISS NORTH",
           "next": "ch32_5_00037",
-          "requirements_unverified": [
-            "North has lover status"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -131848,6 +132470,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131862,6 +132487,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131876,6 +132504,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131890,6 +132521,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131904,6 +132538,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131918,6 +132555,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131932,6 +132572,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -131959,6 +132602,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131973,6 +132619,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -131987,6 +132636,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132001,6 +132653,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132015,6 +132670,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132029,6 +132687,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132043,6 +132704,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_died_in_interrogation": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -132083,6 +132747,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132097,6 +132764,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132111,6 +132781,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132125,6 +132798,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132139,6 +132815,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132153,6 +132832,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132167,6 +132849,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_shot_by_hank": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -132206,6 +132891,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132219,6 +132907,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132232,6 +132923,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132245,6 +132939,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132258,6 +132955,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132271,6 +132971,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132284,6 +132987,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -132311,6 +133017,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132325,6 +133034,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132339,6 +133051,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132353,6 +133068,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132367,6 +133085,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132381,6 +133102,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -132395,6 +133119,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -135161,6 +135888,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135175,6 +135905,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135189,6 +135922,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135203,6 +135939,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135217,6 +135956,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135231,6 +135973,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135245,6 +135990,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -135273,6 +136021,9 @@
             "flags": {
               "connor_deaths": 1,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135287,6 +136038,9 @@
             "flags": {
               "connor_deaths": 2,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135301,6 +136055,9 @@
             "flags": {
               "connor_deaths": 3,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135315,6 +136072,9 @@
             "flags": {
               "connor_deaths": 4,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135329,6 +136089,9 @@
             "flags": {
               "connor_deaths": 5,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135343,6 +136106,9 @@
             "flags": {
               "connor_deaths": 6,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135357,6 +136123,9 @@
             "flags": {
               "connor_deaths": 7,
               "connor_died_in_crossroads": true
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -135386,6 +136155,9 @@
               "connor_deaths": 1,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135401,6 +136173,9 @@
               "connor_deaths": 2,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135416,6 +136191,9 @@
               "connor_deaths": 3,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135431,6 +136209,9 @@
               "connor_deaths": 4,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135446,6 +136227,9 @@
               "connor_deaths": 5,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135461,6 +136245,9 @@
               "connor_deaths": 6,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135476,6 +136263,9 @@
               "connor_deaths": 7,
               "connor_died_in_crossroads": true,
               "connor_deviant": false
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -135573,6 +136363,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135586,6 +136379,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135599,6 +136395,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135612,6 +136411,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135625,6 +136427,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135638,6 +136443,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -135651,6 +136459,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -137668,6 +138479,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 1
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137681,6 +138495,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 2
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137694,6 +138511,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 3
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137707,6 +138527,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 4
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137720,6 +138543,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 5
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137733,6 +138559,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 6
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         },
@@ -137746,6 +138575,9 @@
           "effects": {
             "flags": {
               "connor_deaths": 7
+            },
+            "add": {
+              "connor_software_instability": -2
             }
           }
         }
@@ -137919,16 +138751,20 @@
           "id": "option_2",
           "label": "GIVE UP",
           "next": "ch9_00094",
-          "requirements_unverified": [
-            "Will also automatically happen if the chosen approach failed twice"
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
           ],
-          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_interrogation_approach": "give_up",
               "connor_interrogation_ending": "sent_to_cell"
             }
-          }
+          },
+          "note": "Giving up is always a choice here; the game also forces it after two failed approaches."
         }
       ]
     },
@@ -138388,16 +139224,20 @@
           "id": "option_2",
           "label": "GIVE UP",
           "next": "ch9_00094",
-          "requirements_unverified": [
-            "Will also automatically happen if the chosen approach failed twice"
+          "requirements_unverified": [],
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
           ],
-          "relation_hints": [],
           "effects": {
             "flags": {
               "connor_interrogation_approach": "give_up",
               "connor_interrogation_ending": "sent_to_cell"
             }
-          }
+          },
+          "note": "Giving up is always a choice here; the game also forces it after two failed approaches."
         }
       ]
     },
@@ -138467,9 +139307,7 @@
           "id": "option_0",
           "label": "KISS NORTH",
           "next": "ch32_5_00037",
-          "requirements_unverified": [
-            "North has lover status"
-          ],
+          "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
             "flags": {
@@ -139746,6 +140584,7 @@
     "connor_insisted_about_cole": false,
     "markus_john_joined": false,
     "markus_spare_parts_outcome": "none",
+    "markus_ch5_pastime": "none",
     "markus_capitol_park_failed": false,
     "kara_alive": true,
     "alice_alive": true,
@@ -139755,11 +140594,13 @@
     "hank_alive": true,
     "connor_died_in_crossroads": false,
     "connor_androids_woke": false,
+    "kara_ch10_shoplifted": "none",
     "kara_escaped_camp": false,
     "kara_forgot_gun": false,
     "markus_demonstration_outcome": "none",
     "connor_shot_deviant_leader": false,
     "connor_killed_by_markus": false,
+    "connor_software_instability": 0,
     "connor_stopped_the_revolution": false,
     "markus_hart_plaza_provoked": false,
     "markus_hart_plaza_accused": false,
@@ -139781,9 +140622,12 @@
     "connor_hostage_probability": 48,
     "connor_deviant_stress": 35,
     "connor_pressured_four_times": false,
+    "connor_close_to_daniel": false,
     "connor_convince_failed": false,
     "carl_alive": true,
-    "connor_mission_failed": false
+    "connor_mission_failed": false,
+    "relationship_north": 0,
+    "relationship_simon": 0
   },
   "scores": {
     "connor_hostage_probability": {
@@ -139812,6 +140656,27 @@
         }
       ],
       "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Influencing_Carlos'_android's_stress"
+    },
+    "connor_software_instability": {
+      "gauge": "software_instability",
+      "min": -60,
+      "max": 60,
+      "from_hints": "SoftwareInstability",
+      "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability#Changes"
+    },
+    "relationship_north": {
+      "gauge": "relationship_north",
+      "min": -30,
+      "max": 30,
+      "from_hints": "North",
+      "source": "https://detroit-become-human.fandom.com/wiki/Relationship_Stat#Levels_of_Relationship"
+    },
+    "relationship_simon": {
+      "gauge": "relationship_simon",
+      "min": -30,
+      "max": 30,
+      "from_hints": "Simon",
+      "source": "https://detroit-become-human.fandom.com/wiki/Relationship_Stat#Levels_of_Relationship"
     }
   }
 }
