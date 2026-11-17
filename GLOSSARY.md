@@ -29,7 +29,7 @@ An Unlock Requirement or rule that asks whether the Run has already passed a giv
 _Avoid_: visited flag, history check
 
 **Quick-Time Event**:
-An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices.
+An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices. Moments that test only attention (wandering off without Carl, taking the wrong path behind North, forgetting a tool) are treated the same way: the attentive player always passes.
 _Avoid_: QTE choice, willingness choice
 
 **Presence Guard**:

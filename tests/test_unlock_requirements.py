@@ -349,7 +349,17 @@ NO_DEATHS_BEFORE = {
 
 @pytest.mark.parametrize("saved_hank", [False, True])
 def test_connor_asks_about_chris_only_after_arriving_apart(tmp_path, saved_hank):
-    picks = {**NO_DEATHS_BEFORE, "ch24_00031": "SAVE HANK"} if saved_hank else {}
+    # Capitol Park: the police patrol arrives and Markus faces Chris.
+    met_chris = {
+        "ch26_x0001": "HEAD FOR THE STORE",
+        "ch26_x0101": "SECURE THE AREA FIRST",
+        "ch26_00146": "HIDE",
+        "ch26_00075": "DO NOTHING",
+        "ch26_00030": "REVENGE",
+    }
+    picks = (
+        {**NO_DEATHS_BEFORE, **met_chris, "ch24_00031": "SAVE HANK"} if saved_hank else {}
+    )
     offered = play_story(tmp_path, picks).offered(KAMSKI_OUTSIDE)
     assert ("CHRIS" in offered) is saved_hank
     assert "KAMSKI" in offered

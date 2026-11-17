@@ -52,7 +52,7 @@
       "Chapter exits assume narrative order unless explicitly overridden."
     ],
     "chapters_indexed": 40,
-    "condition_nodes_unverified": 13,
+    "condition_nodes_unverified": 1,
     "branch_extraction_coverage": {
       "1": {
         "choice_groups": 13,
@@ -1060,7 +1060,8 @@
           "effects": {
             "flags": {
               "connor_deaths": 1,
-              "connor_died_in_hostage": true
+              "connor_died_in_hostage": true,
+              "connor_daniel_final_plea": "sacrifice"
             },
             "add": {
               "connor_software_instability": -2
@@ -6447,14 +6448,17 @@
       "branches": [
         {
           "condition_text": "Todd's room was cleaned before Alice's room",
-          "when": null,
+          "when": {
+            "seen": "ch4_00031"
+          },
           "next": "ch4_00021"
         }
       ],
       "unverified": true,
       "default_branch": 0,
       "next": "ch4_00020",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/A_New_Home#Flowchart"
     },
     "ch4_00023": {
       "id": "ch4_00023",
@@ -9316,9 +9320,10 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch5_00094",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Wandering off or dawdling here tests attention, not judgement: like a Quick-Time Event, the attentive player always passes."
     },
     "ch5_00101": {
       "id": "ch5_00101",
@@ -14962,7 +14967,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch7_00099",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Wandering off or dawdling here tests attention, not judgement: like a Quick-Time Event, the attentive player always passes."
     },
     "ch7_00103": {
       "id": "ch7_00103",
@@ -16538,9 +16544,10 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch8_00061",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Wandering off or dawdling here tests attention, not judgement: like a Quick-Time Event, the attentive player always passes."
     },
     "ch8_00065": {
       "id": "ch8_00065",
@@ -18217,14 +18224,18 @@
       "branches": [
         {
           "condition_text": "Talk to deviant after probing",
-          "when": null,
+          "when": {
+            "flag": "connor_interrogation_approach",
+            "equals": "probe"
+          },
           "next": "ch9_00071"
         }
       ],
       "unverified": true,
       "default_branch": 0,
       "next": "ch9_00058",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch9_00073": {
       "id": "ch9_00073",
@@ -18364,10 +18375,11 @@
           "next": "ch9_00078"
         }
       ],
-      "unverified": true,
       "default_branch": 0,
       "next": "ch9_00058",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Probing is a Quick-Time Event; the wiki marks resisting the probe as a failure that loops back to the same choices.",
+      "source": "https://detroit-become-human.fandom.com/wiki/The_Interrogation#Flowchart"
     },
     "ch9_00080": {
       "id": "ch9_00080",
@@ -47825,9 +47837,10 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch19_00124",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Wandering off or dawdling here tests attention, not judgement: like a Quick-Time Event, the attentive player always passes."
     },
     "ch19_00128": {
       "id": "ch19_00128",
@@ -61811,14 +61824,18 @@
       "branches": [
         {
           "condition_text": "Probing the wrong android",
-          "when": null,
+          "when": {
+            "flag": "connor_kitchen_pressure",
+            "equals": "probe"
+          },
           "next": "ch24_00046"
         }
       ],
       "unverified": true,
       "default_branch": 0,
       "next": "ch24_00042",
-      "resolution": "unknown"
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
     "ch24_00048": {
       "id": "ch24_00048",
@@ -65150,20 +65167,27 @@
       "branches": [
         {
           "condition_text": "Made coffee",
-          "when": null,
+          "when": {
+            "flag": "kara_made_coffee",
+            "equals": true
+          },
           "next": "ch25_00021"
         },
         {
           "condition_text": "Didn't make coffee",
-          "when": null,
+          "when": {
+            "flag": "kara_made_coffee",
+            "equals": false
+          },
           "next": "ch25_00022"
         }
       ],
       "unverified": true,
       "default_branch": 0,
       "next": "ch25_00020",
-      "resolution": "unknown",
-      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record."
+      "resolution": "rule",
+      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00024": {
       "id": "ch25_00024",
@@ -65478,15 +65502,19 @@
       "branches": [
         {
           "condition_text": "Made coffee",
-          "when": null,
+          "when": {
+            "flag": "kara_made_coffee",
+            "equals": true
+          },
           "next": "ch25_00037"
         }
       ],
       "unverified": true,
       "default_branch": 0,
       "next": "ch25_00036",
-      "resolution": "unknown",
-      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record."
+      "resolution": "rule",
+      "unknown_reason": "Whether Kara brings the policeman his coffee is a timed action the story data does not record.",
+      "source": "https://detroit-become-human.fandom.com/wiki/Midnight_Train#Flowchart"
     },
     "ch25_00039": {
       "id": "ch25_00039",
@@ -65979,7 +66007,43 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00058"
+      "next": "ch25_x0101"
+    },
+    "ch25_x0101": {
+      "id": "ch25_x0101",
+      "type": "choice",
+      "chapter": "25",
+      "character": "Kara",
+      "heading": "Open the door",
+      "source": "https://www.gamepressure.com/detroit-become-human/train-at-midnight/z9b016",
+      "description": "The policeman has accepted your offer of coffee and is looking around the room while he asks his questions. The coffee machine is in the kitchen. Adam is standing beside you, tense.",
+      "note": "The wiki's flowchart lists Made Coffee among the ways to handle the policeman; guides describe going to the machine as the player's action.",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "MAKE COFFEE",
+          "next": "ch25_00058",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_made_coffee": true
+            }
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "STAY WITH HIM",
+          "next": "ch25_00058",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {
+              "kara_made_coffee": false
+            }
+          }
+        }
+      ]
     },
     "ch25_00060": {
       "id": "ch25_00060",
@@ -70014,7 +70078,8 @@
       "unverified": true,
       "default_branch": 0,
       "next": "ch26_00060",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "How Markus walks up to the dumpster is movement, not judgement; the direct approach is taken and either way North joins him."
     },
     "ch26_00064": {
       "id": "ch26_00064",
@@ -70721,9 +70786,10 @@
         }
       ],
       "unverified": true,
-      "default_branch": 0,
+      "default_branch": null,
       "next": "ch26_00102",
-      "resolution": "unknown"
+      "resolution": "qte",
+      "note": "Wandering off or dawdling here tests attention, not judgement: like a Quick-Time Event, the attentive player always passes."
     },
     "ch26_00105": {
       "id": "ch26_00105",
@@ -75397,6 +75463,12 @@
             {
               "flag": "connor_public_enemy_chase",
               "equals": "save_hank"
+            },
+            {
+              "not": {
+                "flag": "markus_capitol_park_police_killed",
+                "equals": "none"
+              }
             }
           ],
           "source": "https://detroit-become-human.fandom.com/wiki/Meet_Kamski#Flowchart",
@@ -111856,7 +111928,8 @@
       "default_branch": 0,
       "next": "ch32_2_00022",
       "resolution": "unknown",
-      "unknown_reason": "Needs Kara to lose a fight, a failed Quick-Time Event that never happens here."
+      "unknown_reason": "Needs Kara to lose a fight, a failed Quick-Time Event that never happens here.",
+      "note": "Unreachable: it follows a lost fight at the fence (ch32_2_x0110), a Quick-Time Event that always succeeds, so no Run gets here and its rule is left unsettled."
     },
     "ch32_2_00026": {
       "id": "ch32_2_00026",
@@ -141079,7 +141152,10 @@
     "carl_alive": true,
     "connor_mission_failed": false,
     "relationship_north": 0,
-    "relationship_simon": 0
+    "relationship_simon": 0,
+    "markus_capitol_park_police_killed": "none",
+    "connor_daniel_final_plea": "none",
+    "markus_took_detonator": false
   },
   "scores": {
     "connor_hostage_probability": {

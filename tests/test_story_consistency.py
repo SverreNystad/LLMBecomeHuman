@@ -73,6 +73,48 @@ def test_luther_who_killed_the_policeman_does_not_see_him_leave(tmp_path):
     ] == []
 
 
+def guessed_conditions(run) -> list[str]:
+    """Condition nodes the Run could not decide and fell back to a default branch."""
+    return [
+        e["node_id"]
+        for e in run.events
+        if e["type"] == "condition" and e.get("used_unverified_default")
+    ]
+
+
+def test_a_default_run_decides_every_condition(tmp_path):
+    assert guessed_conditions(play_story(tmp_path, {})) == []
+
+
+def test_dying_for_daniel_in_the_last_plea_is_remembered(tmp_path):
+    # The Hostage: Connor steps forward and Daniel shoots him (wiki Last Chance, Connor:
+    # a reactivated Daniel then apologises instead of calling Connor a liar).
+    run = play_story(
+        tmp_path,
+        {
+            "ch1_x0201": "GET CLOSE TO DANIEL",
+            "ch1_00028": "RATIONAL",
+            "ch1_00019": "SACRIFICE SELF",
+        },
+    )
+    assert run.flags["connor_daniel_final_plea"] == "sacrifice"
+
+
+def test_kara_chooses_whether_to_make_the_policeman_coffee(tmp_path):
+    run = play_story(tmp_path, {"ch25_x0101": "STAY WITH HIM"})
+    assert run.offered("ch25_x0101") == ["MAKE COFFEE", "STAY WITH HIM"]
+    assert "ch25_00022" in run.nodes and "ch25_00021" not in run.nodes
+    assert guessed_conditions(run) == []
+
+
+def test_connor_cannot_ask_about_a_policeman_markus_never_met(tmp_path):
+    # Capitol Park: a failed mission ends before the police patrol arrives.
+    run = play_story(tmp_path, {"ch24_00031": "SAVE HANK"})
+    assert run.flags["markus_capitol_park_police_killed"] == "none"
+    assert "CHRIS" not in run.offered("ch27_00097")
+    assert guessed_conditions(run) == []
+
+
 FATES = {
     "Simon": "simon_alive",
     "North": "north_alive",
