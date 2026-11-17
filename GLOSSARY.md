@@ -32,6 +32,10 @@ _Avoid_: visited flag, history check
 An action sequence from the game that tests reflexes, not judgement. It always succeeds and is never shown to the model as a choice, unless succeeding or failing is really a decision: a player could fail it on purpose to spare someone, let someone win or let themselves be hurt (e.g. whether to shoot, whether to beat Hank in a fight or let him win, whether to step out of his way). Those are shown as choices.
 _Avoid_: QTE choice, willingness choice
 
+**Presence Guard**:
+A rule placed before a side character's line or conversation that skips it when that character's Fate has ended or they are elsewhere (e.g. Simon's line in Jericho after he died in The Stratford Tower, "Talk to Luther" at the bus station after he died in Midnight Train). The scene carries on without them; nothing is rewritten.
+_Avoid_: dead-speaker check, ghost filter
+
 **Fate**:
 Whether Kara, Markus or a side character (Alice, Hank, Luther, Simon, North, Josh, Carl) is still alive at a point in the story. Every one starts alive; a choice, or an earlier outcome that follows from choices, can end it, and later scenes play the version that fits.
 _Avoid_: alive flag, death state, survival

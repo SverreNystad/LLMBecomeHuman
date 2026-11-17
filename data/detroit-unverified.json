@@ -65505,7 +65505,7 @@
         }
       ],
       "observations": [],
-      "next": "ch25_00038"
+      "next": "ch25_00007"
     },
     "ch25_00040": {
       "id": "ch25_00040",
@@ -69855,6 +69855,27 @@
       "observations": [],
       "next": "ch26_00054"
     },
+    "ch26_x0702": {
+      "id": "ch26_x0702",
+      "type": "condition",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "Take too much time again",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch26_00055"
+        }
+      ],
+      "next": "ch26_00054"
+    },
     "ch26_00056": {
       "id": "ch26_00056",
       "type": "scene",
@@ -69864,7 +69885,7 @@
       "description": "Take too much time again",
       "dialogue": [],
       "observations": [],
-      "next": "ch26_00055"
+      "next": "ch26_x0702"
     },
     "ch26_00057": {
       "id": "ch26_00057",
@@ -72666,6 +72687,27 @@
       "observations": [],
       "next": "ch26_00210"
     },
+    "ch26_x0701": {
+      "id": "ch26_x0701",
+      "type": "condition",
+      "chapter": "26",
+      "character": "Markus",
+      "heading": "In Jericho",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch26_00211"
+        }
+      ],
+      "next": "ch26_00210"
+    },
     "ch26_00212": {
       "id": "ch26_00212",
       "type": "scene",
@@ -72683,7 +72725,7 @@
         }
       ],
       "observations": [],
-      "next": "ch26_00211"
+      "next": "ch26_x0701"
     },
     "ch26_00213": {
       "id": "ch26_00213",
@@ -77234,6 +77276,27 @@
       "observations": [],
       "next": "ch28_00045"
     },
+    "ch28_x0701": {
+      "id": "ch28_x0701",
+      "type": "condition",
+      "chapter": "28",
+      "character": "Markus",
+      "heading": "Start the march",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch28_00046"
+        }
+      ],
+      "next": "ch28_00045"
+    },
     "ch28_00047": {
       "id": "ch28_00047",
       "type": "scene",
@@ -77251,7 +77314,7 @@
         }
       ],
       "observations": [],
-      "next": "ch28_00046"
+      "next": "ch28_x0701"
     },
     "ch28_00048": {
       "id": "ch28_00048",
@@ -94213,6 +94276,27 @@
       "observations": [],
       "next": "ch30_3_00014"
     },
+    "ch30_3_x0705": {
+      "id": "ch30_3_x0705",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "North is shot",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Josh",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Josh is here: Josh's line",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00038"
+        }
+      ],
+      "next": "ch30_3_00014"
+    },
     "ch30_3_00039": {
       "id": "ch30_3_00039",
       "type": "scene",
@@ -94230,7 +94314,28 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00038"
+      "next": "ch30_3_x0705"
+    },
+    "ch30_3_x0704": {
+      "id": "ch30_3_x0704",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "North is shot",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00039"
+        }
+      ],
+      "next": "ch30_3_x0705"
     },
     "ch30_3_00040": {
       "id": "ch30_3_00040",
@@ -94288,7 +94393,7 @@
         {
           "id": "option_1",
           "label": "RUN",
-          "next": "ch30_3_00039",
+          "next": "ch30_3_x0704",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -94351,6 +94456,27 @@
       "observations": [],
       "next": "ch30_3_00040"
     },
+    "ch30_3_x0706": {
+      "id": "ch30_3_x0706",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "North is shot",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Josh",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Josh is here: Josh's line",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00042"
+        }
+      ],
+      "next": "ch30_3_00040"
+    },
     "ch30_3_00043": {
       "id": "ch30_3_00043",
       "type": "condition",
@@ -94368,7 +94494,7 @@
         },
         {
           "condition_text": "Simon is dead",
-          "next": "ch30_3_00042",
+          "next": "ch30_3_x0706",
           "when": {
             "flag": "simon_alive",
             "equals": false
@@ -97786,6 +97912,27 @@
       "observations": [],
       "next": "ch30_3_00205"
     },
+    "ch30_3_x0701": {
+      "id": "ch30_3_x0701",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus is alive",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00206"
+        }
+      ],
+      "next": "ch30_3_00205"
+    },
     "ch30_3_00207": {
       "id": "ch30_3_00207",
       "type": "scene",
@@ -97803,7 +97950,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00206"
+      "next": "ch30_3_x0701"
     },
     "ch30_3_00208": {
       "id": "ch30_3_00208",
@@ -98266,6 +98413,27 @@
       "observations": [],
       "next": "ch30_3_00224"
     },
+    "ch30_3_x0702": {
+      "id": "ch30_3_x0702",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus is alive",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00225"
+        }
+      ],
+      "next": "ch30_3_00224"
+    },
     "ch30_3_00226": {
       "id": "ch30_3_00226",
       "type": "scene",
@@ -98283,7 +98451,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00225"
+      "next": "ch30_3_x0702"
     },
     "ch30_3_00227": {
       "id": "ch30_3_00227",
@@ -98304,6 +98472,27 @@
       "observations": [],
       "next": "ch30_3_00226"
     },
+    "ch30_3_x0703": {
+      "id": "ch30_3_x0703",
+      "type": "condition",
+      "chapter": "30.3",
+      "character": "Markus",
+      "heading": "Markus is alive",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch30_3_00227"
+        }
+      ],
+      "next": "ch30_3_00226"
+    },
     "ch30_3_00228": {
       "id": "ch30_3_00228",
       "type": "scene",
@@ -98321,7 +98510,7 @@
         }
       ],
       "observations": [],
-      "next": "ch30_3_00227"
+      "next": "ch30_3_x0703"
     },
     "ch30_3_00229": {
       "id": "ch30_3_00229",
@@ -102365,6 +102554,27 @@
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
+    "ch32_1_x0704": {
+      "id": "ch32_1_x0704",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Kara is here: Adam talks with Kara in Canada",
+          "when": {
+            "flag": "kara_alive",
+            "equals": true
+          },
+          "next": "ch32_1_00007"
+        }
+      ],
+      "next": "ch32_1_00001"
+    },
     "ch32_1_00008": {
       "id": "ch32_1_00008",
       "type": "scene",
@@ -102382,7 +102592,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00007"
+      "next": "ch32_1_x0704"
     },
     "ch32_1_00009": {
       "id": "ch32_1_00009",
@@ -102401,7 +102611,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00007"
+      "next": "ch32_1_x0704"
     },
     "ch32_1_00010": {
       "id": "ch32_1_00010",
@@ -102420,7 +102630,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00007"
+      "next": "ch32_1_x0704"
     },
     "ch32_1_00011": {
       "id": "ch32_1_00011",
@@ -102474,7 +102684,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00007",
+      "next": "ch32_1_x0704",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart"
     },
@@ -103426,6 +103636,27 @@
       "observations": [],
       "next": "ch32_1_00059"
     },
+    "ch32_1_x0703": {
+      "id": "ch32_1_x0703",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "In the line",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Luther",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Luther is here: Luther steps in and Alice calls to him",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "next": "ch32_1_00060"
+        }
+      ],
+      "next": "ch32_1_00058"
+    },
     "ch32_1_00061": {
       "id": "ch32_1_00061",
       "type": "scene",
@@ -103443,7 +103674,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00060"
+      "next": "ch32_1_x0703"
     },
     "ch32_1_00062": {
       "id": "ch32_1_00062",
@@ -104293,6 +104524,27 @@
       "observations": [],
       "next": "ch32_1_00100"
     },
+    "ch32_1_x0701": {
+      "id": "ch32_1_x0701",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Talk to Luther",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Luther",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Luther is here: Talk to Luther",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "next": "ch32_1_00101"
+        }
+      ],
+      "next": "ch32_1_00095"
+    },
     "ch32_1_00102": {
       "id": "ch32_1_00102",
       "type": "scene",
@@ -104310,7 +104562,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00101"
+      "next": "ch32_1_x0701"
     },
     "ch32_1_00103": {
       "id": "ch32_1_00103",
@@ -104329,7 +104581,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_1_00101"
+      "next": "ch32_1_x0701"
     },
     "ch32_1_00104": {
       "id": "ch32_1_00104",
@@ -104357,7 +104609,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_1_00101",
+      "next": "ch32_1_x0701",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#At_the_Bus_Terminal"
     },
@@ -108673,6 +108925,27 @@
       "observations": [],
       "next": "ch32_1_00309"
     },
+    "ch32_1_x0702": {
+      "id": "ch32_1_x0702",
+      "type": "condition",
+      "chapter": "32.1",
+      "character": "Kara",
+      "heading": "Approach checkpoint",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Luther",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Luther is here: Kara warns Luther",
+          "when": {
+            "flag": "luther_alive",
+            "equals": true
+          },
+          "next": "ch32_1_00310"
+        }
+      ],
+      "next": "ch32_1_00308"
+    },
     "ch32_1_00311": {
       "id": "ch32_1_00311",
       "type": "choice",
@@ -108705,7 +108978,7 @@
         {
           "id": "option_1",
           "label": "DO NOTHING",
-          "next": "ch32_1_00310",
+          "next": "ch32_1_x0702",
           "requirements_unverified": [],
           "relation_hints": [
             {
@@ -124452,6 +124725,27 @@
       "observations": [],
       "next": "ch32_5_00130"
     },
+    "ch32_5_x0703": {
+      "id": "ch32_5_x0703",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Talk with North",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/North",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "North is here: Talk with North",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          },
+          "next": "ch32_5_00131"
+        }
+      ],
+      "next": "ch32_5_00118"
+    },
     "ch32_5_00132": {
       "id": "ch32_5_00132",
       "type": "scene",
@@ -124469,7 +124763,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00131"
+      "next": "ch32_5_x0703"
     },
     "ch32_5_00133": {
       "id": "ch32_5_00133",
@@ -124508,7 +124802,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00131",
+      "next": "ch32_5_x0703",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
     },
@@ -124567,7 +124861,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00131"
+      "next": "ch32_5_x0703"
     },
     "ch32_5_00138": {
       "id": "ch32_5_00138",
@@ -124606,7 +124900,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00131",
+      "next": "ch32_5_x0703",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#CyberLife_HQ"
     },
@@ -124682,7 +124976,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch32_5_00131",
+      "next": "ch32_5_x0703",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Battle_for_Detroit#Flowchart",
       "note": "Approximation: Simon watches the soldiers with Markus if he lives, else Josh."
@@ -124736,6 +125030,27 @@
       "observations": [],
       "next": "ch32_5_00144"
     },
+    "ch32_5_x0702": {
+      "id": "ch32_5_x0702",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "At the barricade",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Josh",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Josh is here: Josh's line",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "next": "ch32_5_00145"
+        }
+      ],
+      "next": "ch32_5_00144"
+    },
     "ch32_5_00146": {
       "id": "ch32_5_00146",
       "type": "scene",
@@ -124753,7 +125068,28 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00145"
+      "next": "ch32_5_x0702"
+    },
+    "ch32_5_x0701": {
+      "id": "ch32_5_x0701",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "At the barricade",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon is here: Simon's line",
+          "when": {
+            "flag": "simon_alive",
+            "equals": true
+          },
+          "next": "ch32_5_00146"
+        }
+      ],
+      "next": "ch32_5_x0702"
     },
     "ch32_5_00147": {
       "id": "ch32_5_00147",
@@ -124772,7 +125108,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_5_00146"
+      "next": "ch32_5_x0701"
     },
     "ch32_5_00148": {
       "id": "ch32_5_00148",
@@ -124940,6 +125276,27 @@
       "observations": [],
       "next": "ch32_5_00152"
     },
+    "ch32_5_x0704": {
+      "id": "ch32_5_x0704",
+      "type": "condition",
+      "chapter": "32.5",
+      "character": "Markus",
+      "heading": "Hart Plaza freedom march",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Josh",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Josh is here: Josh's line",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "next": "ch32_5_00155"
+        }
+      ],
+      "next": "ch32_5_00152"
+    },
     "ch32_5_00156": {
       "id": "ch32_5_00156",
       "type": "condition",
@@ -124973,7 +125330,7 @@
         },
         {
           "condition_text": "Simon is dead",
-          "next": "ch32_5_00155",
+          "next": "ch32_5_x0704",
           "when": {
             "all": [
               {
@@ -128733,6 +129090,27 @@
       "observations": [],
       "next": "ch32_6_00111"
     },
+    "ch32_6_x0701": {
+      "id": "ch32_6_x0701",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Hart Plaza",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/North",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "North is here: North's line",
+          "when": {
+            "flag": "north_alive",
+            "equals": true
+          },
+          "next": "ch32_6_00112"
+        }
+      ],
+      "next": "ch32_6_00111"
+    },
     "ch32_6_00113": {
       "id": "ch32_6_00113",
       "type": "scene",
@@ -128750,7 +129128,7 @@
         }
       ],
       "observations": [],
-      "next": "ch32_6_00112"
+      "next": "ch32_6_x0701"
     },
     "ch32_6_00114": {
       "id": "ch32_6_00114",
@@ -128809,6 +129187,27 @@
       "observations": [],
       "next": "ch32_6_00113"
     },
+    "ch32_6_x0702": {
+      "id": "ch32_6_x0702",
+      "type": "condition",
+      "chapter": "32.6",
+      "character": "Markus",
+      "heading": "Hart Plaza",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Josh",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Josh is here: Josh's line",
+          "when": {
+            "flag": "josh_alive",
+            "equals": true
+          },
+          "next": "ch32_6_00116"
+        }
+      ],
+      "next": "ch32_6_00113"
+    },
     "ch32_6_00117": {
       "id": "ch32_6_00117",
       "type": "condition",
@@ -128842,7 +129241,7 @@
         },
         {
           "condition_text": "Simon is dead",
-          "next": "ch32_6_00116",
+          "next": "ch32_6_x0702",
           "when": {
             "all": [
               {

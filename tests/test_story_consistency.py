@@ -4,6 +4,8 @@ Checked against the wiki (Simon, Public Enemy, Midnight Train, Capitol Park, Mee
 Last Chance, Connor) and walkthroughs (PowerPyx, GamePressure).
 """
 
+import pytest
+
 from tests.dataset import play_story_with_hank_given_time as play_story
 
 # The Stratford Tower: SWAT wounds Simon, Markus carries him to the roof and leaves him.
@@ -32,6 +34,103 @@ def test_simon_left_on_the_roof_dies_when_connor_finds_him(tmp_path):
     assert "ch24_00068" not in run.nodes  # the roof ends the investigation
     assert run.flags["simon_alive"] is False
     assert "ch26_00224" not in run.nodes
+
+
+def lines_by(run, speaker: str, after: str | None = None) -> list[tuple[str, str]]:
+    """(chapter, node) of every line ``speaker`` says in the Run, or only those after
+    the Run passed node ``after``."""
+    start = run.nodes.index(after) if after else 0
+    return [
+        (str(e.get("chapter")), e["node_id"])
+        for e in run.events[start:]
+        if e["type"] == "scene"
+        for line in e["visible_to_agent"]["dialogue"]
+        if line["speaker"] == speaker
+    ]
+
+
+def test_simon_killed_in_the_broadcast_never_speaks_again(tmp_path):
+    run = play_story(
+        tmp_path,
+        {
+            "ch23_00107": "ASSAULT",
+            "ch23_00103": "SHOOT GUARD DRAWING WEAPON",
+            "ch23_00043": "FLEE",
+        },
+    )
+    assert run.flags["simon_alive"] is False
+    later = lines_by(run, "Simon", after="ch23_00043")
+    # Last Chance, Connor: his body can be reactivated in the evidence room.
+    assert [n for c, n in later if c != "29"] == []
+
+
+def test_luther_who_killed_the_policeman_does_not_see_him_leave(tmp_path):
+    run = play_story(tmp_path, {"ch25_x0001": "WAIT FOR ROSE", "ch25_00076": "KITCHEN"})
+    assert run.flags["luther_killed_cop"] is True
+    assert "ch25_00006" not in run.nodes  # the policeman's polite goodbye
+    assert [
+        n for c, n in lines_by(run, "Luther") if n in ("ch25_00003", "ch25_00005")
+    ] == []
+
+
+FATES = {
+    "Simon": "simon_alive",
+    "North": "north_alive",
+    "Josh": "josh_alive",
+    "Luther": "luther_alive",
+    "Alice": "alice_alive",
+    "Carl": "carl_alive",
+    "Hank": "hank_alive",
+    "Kara": "kara_alive",
+}
+# Last Chance, Connor: Simon's body can be reactivated in the evidence room.
+SPEAKS_AFTER_DEATH = {("Simon", "29")}
+
+
+def play_randomly(run_dir, seed: int) -> list[tuple[str, str, str, str]]:
+    """Play the whole story picking at random; return every line spoken by a side
+    character in a later chapter than the one in which their Fate ended:
+    (speaker, node, chapter of the line, chapter of the death)."""
+    import random
+
+    from detroit_benchmark.engine import ModelDecision, Runner
+    from tests.dataset import load_dataset
+
+    rng = random.Random(seed)
+    died_in: dict[str, str] = {}
+    late_lines = []
+
+    class RandomPlayer(Runner):
+        def _model_response(self, payload, options):
+            return ModelDecision(choice_id=rng.choice(options)["id"], rationale="x"), {}
+
+        def step(self):
+            node = self.graph["nodes"][self.state["node"]]
+            chapter = str(node.get("chapter"))
+            if node["type"] == "scene":
+                for line in node.get("dialogue", []):
+                    who = line["speaker"]
+                    death = died_in.get(who)
+                    if (
+                        death
+                        and death != chapter
+                        and (who, chapter) not in SPEAKS_AFTER_DEATH
+                    ):
+                        late_lines.append((who, node["id"], chapter, death))
+            super().step()
+            for who, flag in FATES.items():
+                if self.state["flags"].get(flag) is False:
+                    died_in.setdefault(who, chapter)
+
+    run = RandomPlayer(load_dataset(), "mock", None, run_dir, allow_unverified=True)
+    run.run()
+    assert run.state["status"] == "complete"
+    return late_lines
+
+
+@pytest.mark.parametrize("seed", range(24))
+def test_nobody_speaks_after_their_fate_ended(tmp_path, seed):
+    assert play_randomly(tmp_path, seed) == []
 
 
 def test_without_simon_on_the_roof_connor_goes_on_to_the_kitchen(tmp_path):
