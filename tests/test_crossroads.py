@@ -38,6 +38,7 @@ def test_with_markus_dead_north_holds_the_cabin(tmp_path):
         "ch23_00077": "SPARE",
         "ch23_00043": "Help",
         "ch23_00033": "LEAVE",
+        "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
         "ch28_00044": "STAND GROUND",
         "ch28_00035": "STAND GROUND",
         "ch28_00030": "SACRIFICE",
@@ -90,6 +91,7 @@ MARKUS_DIES_IN_THE_MARCH = {
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
     "ch28_00044": "STAND GROUND",
     "ch28_00035": "STAND GROUND",
     "ch28_00030": "SACRIFICE",

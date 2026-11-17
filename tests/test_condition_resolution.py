@@ -596,6 +596,7 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
 }
 # Convincing works only with the stress in the optimal band (The Interrogation#Influencing
 # Carlos' android's stress): 35+4+4+4+4+4 = 55, then -7+7+7 = 62%.

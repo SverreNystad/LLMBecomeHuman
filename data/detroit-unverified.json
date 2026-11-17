@@ -57091,8 +57091,7 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "markus_simon_fate": "left_behind",
-              "simon_alive": false
+              "markus_simon_fate": "left_behind"
             }
           }
         }
@@ -57203,8 +57202,7 @@
           ],
           "effects": {
             "flags": {
-              "markus_simon_fate": "left_behind",
-              "simon_alive": false
+              "markus_simon_fate": "left_behind"
             }
           }
         }
@@ -60986,7 +60984,14 @@
         {
           "condition_text": "Connor reaches Simon",
           "when": null,
-          "next": "ch24_00008"
+          "next": "ch24_00008",
+          "relation_hints": [
+            {
+              "name": "RelationName.SoftwareInstability",
+              "direction": "RelationType.SmallUp"
+            }
+          ],
+          "source": "https://detroit-become-human.fandom.com/wiki/Software_Instability#Changes"
         }
       ],
       "unverified": true,
@@ -61010,7 +61015,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_probed_simon": true
+              "connor_probed_simon": true,
+              "simon_alive": false
             }
           },
           "note": "Charging Simon gets Connor killed: that is the outcome, not an unlock. Its death lowers Software Instability (wiki); the large rise is for reaching Simon (traumatized), not for this."
@@ -61023,7 +61029,8 @@
           "relation_hints": [],
           "effects": {
             "flags": {
-              "connor_probed_simon": false
+              "connor_probed_simon": false,
+              "simon_alive": false
             }
           }
         }
@@ -61134,7 +61141,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00001",
+      "next": "ch24_00068",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart"
     },
@@ -61284,7 +61291,33 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00024"
+      "next": "ch24_x0202"
+    },
+    "ch24_x0202": {
+      "id": "ch24_x0202",
+      "type": "condition",
+      "chapter": "24",
+      "character": "Connor",
+      "heading": "In the kitchen",
+      "resolution": "rule",
+      "source": "https://detroit-become-human.fandom.com/wiki/Simon#Public_Enemy",
+      "default_branch": 0,
+      "branches": [
+        {
+          "condition_text": "Simon was left on the roof and Connor never went up: he stays hidden",
+          "when": {
+            "flag": "markus_simon_fate",
+            "equals": "left_behind"
+          },
+          "effects": {
+            "flags": {
+              "markus_simon_fate": "hid_on_roof"
+            }
+          },
+          "next": "ch24_00001"
+        }
+      ],
+      "next": "ch24_00001"
     },
     "ch24_00026": {
       "id": "ch24_00026",
@@ -61341,7 +61374,7 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00024"
+      "next": "ch24_x0202"
     },
     "ch24_00029": {
       "id": "ch24_00029",
@@ -61486,7 +61519,7 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00024"
+      "next": "ch24_x0202"
     },
     "ch24_00034": {
       "id": "ch24_00034",
@@ -61546,7 +61579,7 @@
       ],
       "unverified": true,
       "default_branch": 0,
-      "next": "ch24_00024",
+      "next": "ch24_x0202",
       "resolution": "qte"
     },
     "ch24_00037": {
@@ -61585,7 +61618,7 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00024"
+      "next": "ch24_x0202"
     },
     "ch24_00039": {
       "id": "ch24_00039",
@@ -61688,7 +61721,7 @@
       ],
       "unverified": false,
       "default_branch": 0,
-      "next": "ch24_00024",
+      "next": "ch24_x0202",
       "resolution": "rule",
       "source": "https://detroit-become-human.fandom.com/wiki/JB300_336_445_581#Public_Enemy",
       "note": "Approximation: the game's hidden pressure on the deviant JB300; here probing a random android's memory finds nothing and lets it slip away, any other pressure exposes it."
@@ -62297,8 +62330,40 @@
         }
       ],
       "observations": [],
-      "next": "ch24_00068",
+      "next": "ch24_x0201",
       "key": true
+    },
+    "ch24_x0201": {
+      "id": "ch24_x0201",
+      "type": "choice",
+      "chapter": "24",
+      "character": "Connor",
+      "heading": "Investigating",
+      "source": "https://detroit-become-human.fandom.com/wiki/Public_Enemy#Flowchart",
+      "description": "You have seen what the broadcast room can tell you. The station's android staff are being held for questioning in the kitchen, and the stairs lead up to the roof, where the deviants jumped. Hank is waiting to see where you go next.",
+      "note": "The kitchen chase ends the investigation; the roof ends it only when a wounded Simon hides there (Connor always finds him; the wiki's 'leaves the rooftop without finding him' is not modelled). Without Simon the roof is a detour on the way to the kitchen (wiki Public Enemy flowchart and notes; wiki Simon; PowerPyx; GamePressure).",
+      "options": [
+        {
+          "id": "option_0",
+          "label": "QUESTION THE KITCHEN STAFF",
+          "next": "ch24_00068",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        },
+        {
+          "id": "option_1",
+          "label": "GO UP TO THE ROOF",
+          "next": "ch24_00024",
+          "requirements_unverified": [],
+          "relation_hints": [],
+          "effects": {
+            "flags": {}
+          }
+        }
+      ]
     },
     "ch24_00078": {
       "id": "ch24_00078",
@@ -68815,18 +68880,16 @@
         {
           "condition_text": "Simon is alive",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch26_00007"
         },
         {
-          "condition_text": "Simon is dead",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch26_00008"
         }
@@ -69723,18 +69786,16 @@
         {
           "condition_text": "Simon is here",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch26_00050"
         },
         {
-          "condition_text": "Simon was left behind or died in Stratford Tower",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch26_00051"
         }
@@ -72169,18 +72230,16 @@
         {
           "condition_text": "Simon is alive",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch26_00185"
         },
         {
-          "condition_text": "Simon is dead",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch26_00186"
         }
@@ -73016,18 +73075,16 @@
         {
           "condition_text": "Simon is here",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch26_00224"
         },
         {
-          "condition_text": "Simon was left behind or died in Stratford Tower",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch26_00232"
         }
@@ -73211,18 +73268,16 @@
         {
           "condition_text": "Simon is here",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch26_00240"
         },
         {
-          "condition_text": "Simon was left behind or died in Stratford Tower",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch26_00241"
         }
@@ -78228,18 +78283,16 @@
         {
           "condition_text": "Simon is alive",
           "when": {
-            "flag": "markus_simon_fate",
-            "equals": "escaped"
+            "flag": "simon_alive",
+            "equals": true
           },
           "next": "ch28_00106"
         },
         {
-          "condition_text": "Simon is dead",
+          "condition_text": "Simon died in The Stratford Tower or Public Enemy",
           "when": {
-            "not": {
-              "flag": "markus_simon_fate",
-              "equals": "escaped"
-            }
+            "flag": "simon_alive",
+            "equals": false
           },
           "next": "ch28_00107"
         }
@@ -130415,8 +130468,8 @@
         },
         {
           "id": "option_2",
-          "label": "GO TO THE KITCHEN",
-          "next": "ch24_00068",
+          "label": "SKIP THE CRIME SCENE",
+          "next": "ch24_x0201",
           "requirements_unverified": [],
           "relation_hints": [],
           "effects": {
@@ -132883,7 +132936,7 @@
       "branches": [
         {
           "condition_text": "Connor had died 0 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 0
@@ -132899,7 +132952,7 @@
         },
         {
           "condition_text": "Connor had died 1 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 1
@@ -132915,7 +132968,7 @@
         },
         {
           "condition_text": "Connor had died 2 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 2
@@ -132931,7 +132984,7 @@
         },
         {
           "condition_text": "Connor had died 3 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 3
@@ -132947,7 +133000,7 @@
         },
         {
           "condition_text": "Connor had died 4 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 4
@@ -132963,7 +133016,7 @@
         },
         {
           "condition_text": "Connor had died 5 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 5
@@ -132979,7 +133032,7 @@
         },
         {
           "condition_text": "Connor had died 6 times",
-          "next": "ch24_00024",
+          "next": "ch24_x0202",
           "when": {
             "flag": "connor_deaths",
             "equals": 6

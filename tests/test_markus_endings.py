@@ -116,7 +116,13 @@ def test_a_successful_revolution_never_plays_the_failure(tmp_path):
     assert KAMSKI_WITH_MARKUS in run.nodes
 
 
-SIMON_LEFT_ON_THE_ROOF = {"ch23_00077": "SPARE", "ch23_00043": "Help", "ch23_00033": "LEAVE"}
+# Connor then finds him on the roof in Public Enemy, so Simon dies there.
+SIMON_LEFT_ON_THE_ROOF = {
+    "ch23_00077": "SPARE",
+    "ch23_00043": "Help",
+    "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",
+}
 
 
 @pytest.mark.parametrize(

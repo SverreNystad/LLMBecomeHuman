@@ -16,6 +16,7 @@ SIMON_LEFT_BEHIND = {
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
 }
 
 
@@ -90,6 +91,7 @@ NORTH_TALK = "ch31_2_00024"
 MARKUS_DIES = {
     **SIMON_LEFT_BEHIND,
     **CONNOR_SHAKEN,  # Connor, facing North, is unstable enough to become deviant
+    "ch24_00158": "CONFLICTED",  # he goes to the roof, not the kitchen, in Public Enemy
     "ch28_00044": "STAND GROUND",
     "ch28_00035": "STAND GROUND",
     "ch28_00030": "SACRIFICE",
