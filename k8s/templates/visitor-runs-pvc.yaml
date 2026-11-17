@@ -1,0 +1,22 @@
+{{- with .Values.visitorRuns.persistence }}
+{{- if and .enabled (not .existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "llm-become-human.visitorRunsClaimName" $ }}
+  labels:
+    {{- include "llm-become-human.labels" $ | nindent 4 }}
+  annotations:
+    # Keep Visitor Runs when the release is uninstalled; delete the claim by hand.
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    {{- toYaml .accessModes | nindent 4 }}
+  {{- with .storageClassName }}
+  storageClassName: {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+{{- end }}
+{{- end }}

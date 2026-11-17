@@ -43,7 +43,7 @@ jobs:
 
             - name: Run root tests
               run: |
-                  uv run pytest --doctest-modules --cov=src --cov-report=html
+                  uv run pytest -n auto --doctest-modules --cov=src --cov-report=html
 
     build-and-test-docker:
         name: continuous-integration
@@ -52,13 +52,22 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Run docker compose build
+            # The full test suite already runs in the Python job; here we only check the
+            # image builds and the dashboard serves inside it.
+            - name: Build image
+              run: docker compose build dashboard
+            - name: Smoke test dashboard
               run: |
-                  docker compose up --build -d
-                  docker compose down
-            - name: Run tests in docker compose
-              run: |
-                  docker compose run --rm --build --entrypoint pytest runner -q
+                  docker compose up -d dashboard
+                  for i in $(seq 1 30); do
+                      curl -fsS http://127.0.0.1:8000/api/health && exit 0
+                      sleep 2
+                  done
+                  docker compose logs dashboard
+                  exit 1
+            - name: Stop dashboard
+              if: always()
+              run: docker compose down
 
     deploy:
         name: Deploy to GitHub Pages
@@ -114,6 +123,9 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            # QEMU lets buildx build the arm64 image (Raspberry Pi) on this amd64 runner.
+            - uses: docker/setup-qemu-action@v3
+
             - uses: docker/setup-buildx-action@v3
 
             - name: Log in to GitHub Container Registry
@@ -137,6 +149,8 @@ jobs:
               with:
                   context: .
                   file: Dockerfile
+                  # Multi-arch manifest: clusters pull the variant matching their nodes.
+                  platforms: linux/amd64,linux/arm64
                   push: true
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}

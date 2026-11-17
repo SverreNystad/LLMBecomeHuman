@@ -32,10 +32,12 @@ def flag_values(graph: dict) -> dict[str, set]:
 
 
 def flags_in(expr: dict) -> set[str]:
-    """Every flag name a rule's ``when`` expression reads."""
+    """Every flag name a rule's ``when`` expression reads (a Seen Condition reads none)."""
     if "flag" in expr:
         return {expr["flag"]}
-    inner = expr.get("all") or expr.get("any") or [expr["not"]]
+    if "seen" in expr:
+        return set()
+    inner = expr["all"] if "all" in expr else expr.get("any") or [expr["not"]]
     return set().union(*(flags_in(x) for x in inner))
 
 
@@ -72,6 +74,22 @@ class Playthrough:
         return [o["label"] for o in event["input"]["available_choices"]]
 
 
+# Partners: after a spilled drink Hank refuses Connor more time and the deviant is never
+# found, and the default (first) option spills it. Tests that need The Interrogation
+# and what follows it buy Hank a drink instead.
+HANK_GIVES_TIME = {"ch6_00145": "BUY HIM ANOTHER DRINK"}
+# Software Instability: Connor becomes deviant at Crossroads only if unstable enough.
+# Dialogue-only answers that shake him (wiki Software_Instability#Changes), for tests
+# that need a deviant Connor on paths where the first options leave him stable.
+CONNOR_SHAKEN = {
+    "ch22_00027": "TRUTH",
+    "ch24_00171": "TROUBLED",
+    "ch29_00256": "CONNOR SERIES",
+    "ch30_2_00101": "DISTURBED",
+    "ch30_2_00105": "DISTURBED",
+}
+
+
 def play_story(run_dir: Path, picks: dict[str, str]) -> Playthrough:
     """Play the whole real story, picking the option labelled ``picks[node]`` at
     each listed choice node and the first option elsewhere."""
@@ -87,3 +105,23 @@ def play_story(run_dir: Path, picks: dict[str, str]) -> Playthrough:
     run.run()
     assert run.state["status"] == "complete"
     return Playthrough(read_events(run_dir), run.state["flags"])
+
+
+def play_story_with_hank_given_time(run_dir: Path, picks: dict[str, str]) -> Playthrough:
+    """``play_story`` with Hank given a drink in Partners unless ``picks`` says otherwise,
+    so Connor finds the deviant and the story reaches The Interrogation."""
+    return play_story(run_dir, {**HANK_GIVES_TIME, **picks})
+
+
+def story_moments(runs_root: Path, chapter: str) -> list[dict]:
+    """The Story's moments for one chapter of the only Run under ``runs_root``, as the
+    dashboard serves them."""
+    from fastapi.testclient import TestClient
+
+    from detroit_benchmark.dashboard import create_app
+
+    client = TestClient(create_app(runs_root))
+    (run,) = client.get("/api/runs").json()["runs"]
+    response = client.get(f"/api/runs/{run['id']}/story", params={"chapter": chapter})
+    assert response.status_code == 200
+    return response.json()["moments"]

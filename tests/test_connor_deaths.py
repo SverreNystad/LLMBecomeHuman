@@ -3,15 +3,21 @@ that depend on it follow what happened (issue #41)."""
 
 import pytest
 
-from tests.dataset import load_dataset, play_story
+from tests.dataset import (
+    CONNOR_SHAKEN,
+    load_dataset,
+    play_story_with_hank_given_time as play_story,
+)
+
 
 # The Hostage
 CONNOR_SHOT_DANIEL, DANIEL_SHOT_CONNOR = "ch1_x0101", "ch1_x0102"
 DIED_PROTECTING_EMMA = "ch1_x0103"
 FINAL_PLEA = "ch1_00009"
 EXECUTE = {"ch1_00016": "EXECUTE"}
-# The Interrogation: leaving the deviant to self-destruct (no death).
-LET_IT_SELF_DESTRUCT = {"ch9_00008": "GIVE UP"}
+# The Interrogation: maintaining pressure, then leaving the deviant to self-destruct
+# (no death). Backing off instead, Chris steps in and the deviant shoots Connor.
+LET_IT_SELF_DESTRUCT = {"ch9_00061": "MAINTAIN PRESSURE", "ch9_00008": "GIVE UP"}
 # The Bridge
 HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}
 HANK_SHOT_CONNOR = "ch22_x0101"
@@ -67,12 +73,13 @@ def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_pa
 
 
 def test_each_way_connor_dies_adds_one(tmp_path):
-    never = play_story(tmp_path / "a", {**EXECUTE, **LET_IT_SELF_DESTRUCT})
-    hostage = play_story(tmp_path / "b", {**LET_IT_SELF_DESTRUCT})
-    both = play_story(tmp_path / "c", {})
+    # A shaken Connor deviates at Crossroads, so no Run dies there as a machine.
+    never = play_story(tmp_path / "a", {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT})
+    hostage = play_story(tmp_path / "b", {**CONNOR_SHAKEN, **LET_IT_SELF_DESTRUCT})
+    both = play_story(tmp_path / "c", CONNOR_SHAKEN)
     saving_hank = play_story(
         tmp_path / "d",
-        {**EXECUTE, **LET_IT_SELF_DESTRUCT, "ch24_00031": "SAVE HANK"},
+        {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT, "ch24_00031": "SAVE HANK"},
     )
     base = never.flags["connor_deaths"]
     assert hostage.flags["connor_deaths"] == base + 1

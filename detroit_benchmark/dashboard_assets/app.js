@@ -68,7 +68,7 @@ const state = {
   rendered: null, selected: null, scale: 1, panX: 0, panY: 0,
   requestVersion: 0, busyRefresh: false, pickerOpen: false, search: '',
   toastTimer: null, selectionHydrated: false, shadeSlots: new Map(), focusedId: null, viewTouched: false,
-  view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null
+  view: 'story', storyRunId: null, storyMode: 'full', pendingMoment: null, emptyShown: false
 };
 const providerOf = run => String(run?.display_provider || run?.provider || 'unknown').toLowerCase();
 /* Every provider the dashboard knows: its family (gemini and grok are aliases), its display
@@ -90,7 +90,7 @@ const providerFamily = run => PROVIDERS[providerOf(run)]?.family || null;
 const markSrc = provider => {const mark=PROVIDERS[String(provider||'').toLowerCase()]?.mark; return mark?`/assets/${mark}-mark.svg`:null;};
 const modelLabel = run => `${run?.model || 'Unknown model'} · ${run?.name || 'run'}`;
 const niceNum = n => Number(n || 0).toLocaleString('en-US');
-const runStatusLabel = run => ({running: 'playing', stopped: 'stopped'})[run?.status] || '';
+const runStatusLabel = run => ({running: 'playing', stopped: 'stopped', partial: 'partial'})[run?.status] || '';
 const shortTitle = (s, n=44) => String(s||'').length>n ? String(s).slice(0,n-1)+'…' : String(s||'');
 const providerStyle = run => providerFamily(run) || 'other';
 const runSortKey = run => `${providerOf(run)}\u0000${run?.model || ''}\u0000${run?.name || ''}`;
@@ -213,6 +213,7 @@ async function api(path){
  if(!res.ok){let reason=`${res.status} ${res.statusText}`;try{reason=(await res.json()).detail||reason;}catch(_){}throw new Error(reason);}
  return res.json();
 }
+let modelBarHtml='';
 function updateSelectors() {
   assignShadeSlots();
   // With no model chosen, controls that need one hide and the + button pulses.
@@ -223,10 +224,92 @@ function updateSelectors() {
   const best=bestOfEach();
   $('bestOfEach').disabled=!best.length||(best.length===state.selectedIds.length&&best.every(id=>state.selectedIds.includes(id)));
   const chips=$('selectedRunChips');
-  chips.innerHTML=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip" data-focus-id="${esc(run.id)}" role="button" tabindex="0" title="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span>`).join('') : '';
-  chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
+  const chipsHtml=activeRuns().length ? activeRuns().map(run=>`<span class="run-chip${state.view==='story'&&run.id===storyRun()?.id?' is-followed':''}" data-focus-id="${esc(run.id)}" role="button" tabindex="0" aria-label="${esc(modelLabel(run))}" style="--run-color:${routeColor(run)}"><span class="run-chip-mark">${modelIcon(providerOf(run))}</span><span class="run-chip-more"><span class="run-chip-more-inner"><span class="run-chip-label" title="${esc(modelLabel(run))}">${esc(shortTitle(run.model,24))}</span><button type="button" class="run-chip-remove" data-remove-id="${esc(run.id)}" aria-label="Remove ${esc(modelLabel(run))} from view" title="Remove from view">×</button></span></span></span>`).join('') : '';
+  // Redrawn only when the chips change, so a refresh doesn't cut short a chip's hover or grow.
+  if(chipsHtml!==modelBarHtml){
+    modelBarHtml=chips.innerHTML=chipsHtml;
+    chips.querySelectorAll('[data-remove-id]').forEach(btn=>btn.addEventListener('click',()=>toggleRun(btn.dataset.removeId,false)));
+  }
   $('searchRuns').value=state.search;
   renderPickerList();
+  fitModelBar();
+}
+/* Keeps the model bar on one line: collapse to logos when the full chips would overflow, then
+   show arrows and fades for whatever is still out of view. Worked out from each chip's grown
+   width, so a fit never flips the bar's classes back and forth (which would cut a chip's grow
+   animation short). */
+function fitModelBar(){
+  const chips=$('selectedRunChips'),all=[...chips.querySelectorAll('.run-chip')],style=getComputedStyle(chips);
+  const full=all.reduce((sum,chip)=>sum+grownChipWidth(chip),0)+(parseFloat(style.columnGap)||0)*Math.max(0,all.length-1)
+    +(parseFloat(style.paddingLeft)||0)+(parseFloat(style.paddingRight)||0);
+  chips.classList.toggle('is-compact',full>chips.clientWidth+1);
+  modelBarChipSizes.disconnect();all.forEach(chip=>modelBarChipSizes.observe(chip));
+  updateModelBarArrows();
+}
+/* A chip's width with its name showing, whether it is collapsed, grown or in between. */
+function grownChipWidth(chip){
+  const more=chip.querySelector('.run-chip-more'),label=chip.querySelector('.run-chip-label');
+  const grown=more.firstElementChild.scrollWidth-label.clientWidth+label.scrollWidth;
+  return Math.min(chip.getBoundingClientRect().width-more.getBoundingClientRect().width+grown,parseFloat(getComputedStyle(chip).maxWidth)||Infinity);
+}
+/* A grown chip pushes the rest along, so the arrows follow every chip's size as it animates. */
+const modelBarChipSizes=new ResizeObserver(()=>updateModelBarArrows());
+function updateModelBarArrows(){
+  const chips=$('selectedRunChips'),bar=$('modelBar');
+  const before=chips.scrollLeft>1,after=chips.scrollLeft+chips.clientWidth<chips.scrollWidth-1;
+  bar.classList.toggle('fade-start',before);bar.classList.toggle('fade-end',after);
+  bar.querySelector('[data-scroll="-1"]').classList.toggle('is-hidden',!before);
+  bar.querySelector('[data-scroll="1"]').classList.toggle('is-hidden',!after);
+}
+/* In the compact bar the hovered logo grows into its chip (.is-grown). Only a real pointer move
+   changes which one: a growing chip shifts its neighbours, and the chip that slides under a
+   still pointer must not take over. The gaps between chips keep the current one, so crossing
+   them doesn't flicker. Hover never scrolls the bar. */
+function growModelBarChip(chip){
+  $('selectedRunChips').querySelectorAll('.run-chip.is-grown').forEach(c=>{if(c!==chip)c.classList.remove('is-grown');});
+  chip?.classList.add('is-grown');
+}
+/* Glides the bar so a chip that is growing (a new Followed Run's) ends fully in view, clear of
+   the fades. It aims at where the chips will be once their sizes settle, so the scroll runs
+   with the grow, and checks again when the grow ends. */
+function revealModelBarChip(chip){
+  const chips=$('selectedRunChips');
+  if(!chip||!chips.contains(chip))return;
+  const style=getComputedStyle(chips),gap=parseFloat(style.columnGap)||0,compact=chips.classList.contains('is-compact');
+  const margin=parseFloat(getComputedStyle($('modelBar')).getPropertyValue('--model-bar-fade'))||0;
+  let left=parseFloat(style.paddingLeft)||0,start=0,end=0;
+  for(const c of chips.querySelectorAll('.run-chip')){
+    const open=!compact||c.matches('.is-followed, .is-grown, :focus-visible, :has(:focus-visible)');
+    const width=open?grownChipWidth(c):c.getBoundingClientRect().width-c.querySelector('.run-chip-more').getBoundingClientRect().width;
+    if(c===chip){start=left;end=left+width;}
+    left+=width+gap;
+  }
+  const view=chips.scrollLeft,room=chips.clientWidth,last=left-gap+(parseFloat(style.paddingRight)||0);
+  const edge=s=>s>0.5?margin:0;  // no fade at either end of the row
+  let target=null;
+  if(start-edge(start)<view)target=start-edge(start);
+  else if(end+edge(last-end)>view+room)target=end+edge(last-end)-room;
+  if(target!==null)chips.scrollTo({left:Math.max(0,target),behavior:reducedMotion()?'auto':'smooth'});
+  const more=chip.querySelector('.run-chip-more');
+  if(more.getAnimations().length)more.addEventListener('transitionend',()=>{
+    const box=chip.getBoundingClientRect(),bar=chips.getBoundingClientRect();
+    if(box.left<bar.left-0.5||box.right>bar.right+0.5)revealModelBarChip(chip);
+  },{once:true});
+}
+function setupModelBar(){
+  const chips=$('selectedRunChips');
+  let pointer=null;
+  chips.addEventListener('pointermove',e=>{
+    if(e.pointerType==='touch'||(pointer&&pointer.x===e.clientX&&pointer.y===e.clientY))return;
+    pointer={x:e.clientX,y:e.clientY};
+    const chip=e.target.closest('.run-chip');
+    if(chip)growModelBarChip(chip);
+  });
+  chips.addEventListener('pointerleave',()=>{pointer=null;growModelBarChip(null);});
+  chips.addEventListener('scroll',updateModelBarArrows,{passive:true});
+  $('modelBar').querySelectorAll('[data-scroll]').forEach(btn=>btn.addEventListener('click',()=>
+    chips.scrollBy({left:Number(btn.dataset.scroll)*Math.max(60,chips.clientWidth*.7),behavior:reducedMotion()?'auto':'smooth'})));
+  new ResizeObserver(fitModelBar).observe($('modelBar'));
 }
 function renderPickerList(){
   const list=$('pickerList');
@@ -249,24 +332,49 @@ async function toggleRun(id,enabled){
   if(!enabled&&selected)state.selectedIds=state.selectedIds.filter(x=>x!==id);
   if(state.focusedId===id)state.focusedId=null;
   state.selected=null;closeDrawer();
-  const changedAnchor=!state.selectedIds.length || !state.graph || !state.graphHash || state.graphHash!==anchorRun()?.graph_sha256;
+  const changedAnchor=!state.selectedIds.length || !state.graph || !state.details.size || !state.graphHash || state.graphHash!==anchorRun()?.graph_sha256;
   updateSelectors();
-  if(!state.selectedIds.length){state.graph=null;state.details.clear();renderChapterList();displayNoRuns();return;}
+  if(!state.selectedIds.length){state.details.clear();displayNoRuns();return;}
   await loadCurrent(changedAnchor);
 }
+/* The Run listing; it names this browser's private Visitor Runs (visitor.js) so they are listed. */
+const runsPath=()=>'/api/runs'+(window.visitorRunsQuery?.()||'');
+/* A Visitor Run just started joins the Shown Runs and becomes the Followed Run. A Run of
+ * another story replaces them; with six shown, the last one makes room. */
+window.showStartedRun=async id=>{
+  state.runs=(await api(runsPath())).runs||[];state.selectionHydrated=true;
+  const run=runById(id);if(!run)return;
+  if(!compatible(run))state.selectedIds=[];
+  state.selectedIds=state.selectedIds.filter(x=>x!==id).slice(0,MAX_VISIBLE_RUNS-1).concat(id);
+  state.storyRunId=id;state.selected=null;closeDrawer();
+  updateSelectors();await loadCurrent(true);
+};
+/* No Shown Runs. The last loaded story graph still lists its chapters, all faded, and the
+ * current chapter keeps its Character theme; with no story graph at all there is nothing to list. */
+const CHOOSE_MODEL='<button type="button" class="choose-model" data-choose-model>Choose a model</button>';
 function displayNoRuns(){
+ state.emptyShown=true;
  $('graphEmpty').classList.remove('is-hidden');
- $('graphEmpty').innerHTML='<strong>Choose a model</strong>';
+ $('graphEmpty').innerHTML=CHOOSE_MODEL;
+ $('graphNotice').classList.add('is-hidden');
  $('graphEdges').replaceChildren();$('graphNodes').replaceChildren();$('canvasLegend').innerHTML='<summary class="legend-title">Models</summary>';
- $('storyContent').innerHTML='<div class="story-empty"><strong>Choose a model</strong></div>';$('decisionStrip').replaceChildren();renderStoryToolbar(null);
- $('chapterList').replaceChildren();
- state.rendered=null;state.chapter=null;setCharacterTheme(null);
+ $('storyContent').innerHTML=`<div class="story-empty">${CHOOSE_MODEL}</div>`;$('decisionStrip').replaceChildren();renderStoryToolbar(null);
+ state.rendered=null;
+ if(!chapters().includes(state.chapter))state.chapter=chapters()[0]||null;
+ renderChapterList();
+ if(state.chapter){renderChapterHeading(state.chapter);emitScene();}
+ else setCharacterTheme(null);
+}
+/* Focuses a text field the reader did not tap, except after a touch: the phone keyboard never opens unasked. */
+function autoFocus(el){if(el&&!window.lastPointerWasTouch?.())el.focus();}
+function openPicker(){
+ setFollowingMenu(false);state.pickerOpen=true;updateSelectors();autoFocus($('searchRuns'));
 }
 async function refreshRuns({reselect=false}={}){
  if(state.busyRefresh)return;
  state.busyRefresh=true;
  try{
-   const results=(await api('/api/runs')).runs||[];
+   const results=(await api(runsPath())).runs||[];
    state.runs=results;
    state.selectedIds=state.selectedIds.filter(id=>runById(id));
    if(!state.selectionHydrated && results.length){
@@ -280,7 +388,7 @@ async function refreshRuns({reselect=false}={}){
    }
    if(!results.length){state.selectedIds=[];state.graph=null;state.details.clear();updateSelectors();displayNoRuns();return;}
    updateSelectors();
-   if(!state.selectedIds.length){displayNoRuns();return;}
+   if(!state.selectedIds.length){if(!state.emptyShown)displayNoRuns();return;}
    if(reselect||!state.graph||!state.details.size)await loadCurrent(true);
    else if(activeRuns().some(r=>r.status==='running'||state.details.get(r.id)?.run.status!==r.status))await refreshEventsInPlace();
  }catch(error){toast('Could not load runs: '+error.message);}
@@ -298,7 +406,9 @@ async function loadCurrent(fit=true){
      ...selected.map(r=>api(`/api/runs/${encodeURIComponent(r.id)}`))
    ]);
    if(request!==state.requestVersion)return;
-   const switched=state.graphHash!==anchor.graph_sha256;
+   // Coming back from Clear, the chapter in view stays if this story has it.
+   const fromClear=Boolean(state.graph)&&!state.details.size;
+   const switched=state.graphHash!==anchor.graph_sha256&&!(fromClear&&(graph.chapters||[]).includes(state.chapter));
    state.graph=graph;state.graphHash=anchor.graph_sha256;
    state.details=new Map(selected.map((run,i)=>[run.id,details[i]]));
    const chapters=graph.chapters||[];
@@ -374,8 +484,9 @@ function renderChapterList() {
   const followed = storyRun(), storyDetail = followed && state.details.get(followed.id);
   const decisionCounts = new Map((storyDetail?.decisions_by_chapter||[]).map(entry=>[entry.chapter,entry.choices]));
   $('chapterList').innerHTML = all.length ? all.map((ch,i) => {
+    // Chapters the Followed Run never reached fade; with no Shown Runs, every chapter fades.
     const reached = decisionCounts.has(ch), character = chapterCharacter(ch);
-    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${followed&&!reached?'not-reached':''}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
+    return `<button type="button" class="chapter-entry ${state.chapter === ch ? 'active':''} ${reached?'':'not-reached'}" data-chapter="${esc(ch)}" data-character="${esc(String(character||'').toLowerCase())}" title="${esc(chapterTitle(ch))}" aria-current="${state.chapter===ch?'page':'false'}">
       <span class="chapter-numeral">${esc(chapterNumeral(ch,i))}</span>${typeof portraitThumb==='function'?portraitThumb(character):''}<span class="chapter-name"><b>${esc(chapterTitle(ch))}</b>${character?`<small>${esc(character)}</small>`:''}</span>
     </button>`;}).join('') : '';
   document.querySelectorAll('[data-chapter]').forEach(b => b.addEventListener('click', () => changeChapter(b.dataset.chapter)));
@@ -478,9 +589,11 @@ function buildChapterGraph(chapter) {
     const type = n.type === 'condition' || n.type === 'route' ? 'junction'
                : n.type === 'chapter_exit' ? 'exit' : n.type;
     const label = n.heading || ({choice:'CHOICE',condition:'CONDITION',route:'STORY BRANCH',chapter_exit:'CHAPTER COMPLETE',ending:'STORY END'}[n.type] || shortTitle(n.id,26));
+    // A route node headed by its question needs room to read it in full.
+    const small = n.type === 'condition' || (n.type === 'route' && !n.heading);
     nodes.set(n.id, {id:n.id, parent:null, type, label, node:n,
-                     width: n.type === 'choice' ? 180 : n.type === 'condition'||n.type === 'route' ? 135 : 190,
-                     height: n.type === 'condition'||n.type === 'route' ? 39 : 60});
+                     width: n.type === 'choice' ? 180 : small ? 135 : 190,
+                     height: small ? 39 : 60});
   }
   for (const n of originals) {
     if (n.type === 'scene') continue;
@@ -654,7 +767,7 @@ function createLogo(node, view) {
   btn.addEventListener('click',e=>{
     e.stopPropagation();
     // On a touch screen the first tap opens the marker's card, the second the details.
-    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);return;}
+    if(window.lastPointerWasTouch?.()&&window.unfoldCard&&!window.unfoldCard.isOpenFor(btn)){window.unfoldCard.open(btn);fitDecisionCard(node);return;}
     inspect(node.id,run.id);
   });
   return btn;
@@ -748,7 +861,7 @@ function drawGraph(graph, paths) {
     }
     n.addEventListener('click',e=>{
       e.stopPropagation();
-      if(window.touchPeek?.(n))return;  // touch: the first tap shows the dialogue
+      if(window.touchPeek?.(n)){fitPeekedNode(node);return;}  // touch: the first tap shows the dialogue
       if(node.type==='portal'&&node.destinationChapter&&chapters().includes(node.destinationChapter))changeChapter(node.destinationChapter);
       else showMomentInStory(node,users.map(view=>view.run.id));
     });
@@ -768,13 +881,19 @@ function showMomentInStory(node,visitorIds){
  state.storyRunId=runId;
  setView('story');renderChapterList();
 }
-function renderChapter(fit=true){
- if(!state.graph||!state.chapter)return;
- const chapter=state.chapter;
+function renderChapterHeading(chapter){
  $('chapterIndexLabel').textContent=chapterNumber(chapter)?`Chapter ${chapterNumber(chapter)}`:'Endings';
  setCharacterTheme(chapterCharacter(chapter));
- emitScene();
  $('chapterTitle').textContent=chapterTitle(chapter);
+ $('chapterSubtitle').textContent=chapterCharacter(chapter)||'';
+}
+function renderChapter(fit=true){
+ if(!state.graph||!state.chapter)return;
+ if(!activeRuns().length){displayNoRuns();return;}
+ state.emptyShown=false;
+ const chapter=state.chapter;
+ renderChapterHeading(chapter);
+ emitScene();
  if(state.view==='story'){state.rendered=null;return renderStory({keepScroll:!fit});}
  renderFlowchart(fit);
 }
@@ -864,17 +983,82 @@ function centerSelectedNode({glide=false}={}) {
   if (!state.selected || !state.rendered) return;
   const node=state.rendered.graph.nodes.get(state.selected.id);
   if(!node)return;
+  // Phones: the node, and its dialogue if showing, fit in the chart above the sheet.
+  if(window.isPhoneLayout?.()){fitNodeInView(node,{glide});return;}
   state.viewTouched=true;
   const box=$('viewport').getBoundingClientRect();
   state.scale=clamp(Math.max(.72,state.scale),.16,1.45);
   state.panX=box.width*.44-(node.x+node.width/2)*state.scale;
-  state.panY=box.height*(window.isPhoneLayout?.()?.22:.50)-(node.y+node.height/2)*state.scale;
-  const world=$('graphWorld');
-  if(glide&&!reducedMotion()){
-    world.classList.add('is-gliding');clearTimeout(state.glideTimer);
-    state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
-  }
+  state.panY=box.height*.50-(node.y+node.height/2)*state.scale;
+  if(glide)glideWorld();
   applyTransform();
+}
+/* The next transform change glides, unless the viewer prefers reduced motion. */
+function glideWorld(){
+  if(reducedMotion())return;
+  const world=$('graphWorld');
+  world.classList.add('is-gliding');clearTimeout(state.glideTimer);
+  state.glideTimer=setTimeout(()=>world.classList.remove('is-gliding'),700);
+}
+/* The part of the chart nothing covers, in viewport coordinates: on phones the reasoning
+ * sheet overlays the bottom of the chart. */
+function visibleChartArea(){
+  const vp=$('viewport').getBoundingClientRect(), sheet=$('reasoningDrawer');
+  let bottom=vp.height;
+  if(window.isPhoneLayout?.()&&!sheet.classList.contains('is-hidden'))
+    bottom=Math.min(bottom,document.documentElement.clientHeight-(window.phoneSheetHeight?.()??sheet.offsetHeight)-vp.top);
+  return {left:0,top:0,right:vp.width,bottom:Math.max(0,bottom)};
+}
+/* Fits world rectangles into the visible chart area: zooms out as needed, but not below
+ * minScale (and up to it, if the chart is further out). What still does not fit keeps the
+ * first rectangle's top left corner at the area's top left. */
+const FIT_PAD=12, READABLE_SCALE=.85;
+function fitWorldRects(rects,{minScale=READABLE_SCALE,glide=false}={}){
+  if(!rects.length)return;
+  const area=visibleChartArea();
+  const w=area.right-area.left-2*FIT_PAD, h=area.bottom-area.top-2*FIT_PAD;
+  const x0=Math.min(...rects.map(r=>r.x)),x1=Math.max(...rects.map(r=>r.x+r.width));
+  const y0=Math.min(...rects.map(r=>r.y)),y1=Math.max(...rects.map(r=>r.y+r.height));
+  const fit=Math.min(w/(x1-x0),h/(y1-y0));
+  const scale=Math.max(minScale,Math.min(state.scale,fit));
+  const place=(lo,hi,start,room,anchor)=>(hi-lo)*scale<=room?start+(room-(hi-lo)*scale)/2-lo*scale:start-anchor*scale;
+  state.scale=scale;
+  state.panX=place(x0,x1,area.left+FIT_PAD,w,rects[0].x);
+  state.panY=place(y0,y1,area.top+FIT_PAD,h,rects[0].y);
+  if(glide)glideWorld();
+  applyTransform();
+}
+/* A node, with its dialogue when it is showing, as world rectangles. */
+function nodeWorldRects(node){
+  const rects=[{x:node.x,y:node.y,width:node.width,height:node.height}];
+  const el=document.querySelector(`.flow-node[data-node-id="${CSS.escape(node.id)}"]`);
+  const dialogue=el?.classList.contains('is-peeked')&&el.querySelector('.node-dialogue');
+  if(dialogue)rects.push({x:node.x-1,y:node.y+node.height-1,width:node.width+2,height:dialogue.offsetHeight});
+  return rects;
+}
+/* A node, and its dialogue when it is showing, fit in the visible chart area. */
+function fitNodeInView(node,{glide=false}={}){
+  state.viewTouched=true;
+  fitWorldRects(nodeWorldRects(node),{glide});
+}
+/* Phones: a tapped node's dialogue glides into view. */
+function fitPeekedNode(node){
+  if(window.isPhoneLayout?.())fitNodeInView(node,{glide:true});
+}
+/* Phones: a model's decision card unfolds below its node (unfold.js); the node and the
+ * whole card glide into view as a dialogue does. The card keeps its screen size, so its
+ * world size depends on the scale: a few passes settle it. A card still too tall is
+ * capped to the room below the node and scrolls inside. */
+function fitDecisionCard(node){
+  const card=window.isPhoneLayout?.()&&document.querySelector('#unfoldCard.is-open');
+  if(!card)return;
+  state.viewTouched=true;
+  const rects=nodeWorldRects(node), bottom=Math.max(...rects.map(r=>r.y+r.height)), gap=window.unfoldCard.gap;
+  const withCard=()=>[...rects,{x:node.x,y:bottom+gap/state.scale,width:card.offsetWidth/state.scale,height:card.offsetHeight/state.scale}];
+  for(let pass=0;pass<3;pass++)fitWorldRects(withCard(),{glide:true});
+  const room=visibleChartArea().bottom-FIT_PAD-(state.panY+bottom*state.scale+gap);
+  if(card.offsetHeight>room)card.style.setProperty('--card-room',`${Math.max(60,room)}px`);
+  window.unfoldCard.follow(()=>$('graphWorld').classList.contains('is-gliding'));
 }
 function zoom(factor,clientX,clientY){
   const vp=$('viewport').getBoundingClientRect();
@@ -886,7 +1070,7 @@ function zoom(factor,clientX,clientY){
   state.panY=y-(y-state.panY)/old*next;
   state.scale=next;applyTransform();
 }
-function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
+function closeDrawer(){state.selected=null;if(state.view==='flow')emitFlowScene(null);$('reasoningDrawer').classList.add('is-hidden');$('reasoningDrawer').classList.remove('is-tall');document.querySelectorAll('.flow-node.selected').forEach(n=>n.classList.remove('selected'));}
 function fmtValue(v) {return typeof v==='string'?v:JSON.stringify(v);}
 function renderInspectorShell(node,view){
  const run=view.run, color=routeColor(run),provider=providerOf(run);
@@ -958,8 +1142,13 @@ function setupInteractions(){
  // The background follows the hovered node, else the selected one.
  $('graphNodes').addEventListener('mouseover',e=>{const n=e.target.closest('.flow-node');if(n)emitFlowScene(n.dataset.nodeId);});
  $('graphNodes').addEventListener('mouseleave',()=>emitFlowScene(state.selected?.id));
- $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)$('searchRuns').focus();});
+ $('pickerToggle').addEventListener('click',e=>{e.stopPropagation();setFollowingMenu(false);state.pickerOpen=!state.pickerOpen;updateSelectors();if(state.pickerOpen)autoFocus($('searchRuns'));});
  $('pickerPanel').addEventListener('click',e=>e.stopPropagation());
+ // "Choose a model" in the Story and the Flowchart opens the picker.
+ for(const host of [$('storyContent'),$('graphEmpty')])host.addEventListener('click',e=>{
+  if(!e.target.closest('[data-choose-model]'))return;
+  e.stopPropagation();openPicker();
+ });
  document.addEventListener('click',e=>{if(state.pickerOpen&&!e.target.closest('#pickerContainer')){state.pickerOpen=false;updateSelectors();}});
  $('searchRuns').addEventListener('input',e=>{state.search=e.target.value;renderPickerList();});
  $('bestOfEach').addEventListener('click',async()=>{
@@ -968,7 +1157,7 @@ function setupInteractions(){
   state.selectedIds=best;state.focusedId=null;
   updateSelectors();await loadCurrent(!sameStory);
  });
- $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.graph=null;state.details.clear();state.selected=null;closeDrawer();updateSelectors();renderChapterList();displayNoRuns();});
+ $('clearRuns').addEventListener('click',async()=>{state.focusedId=null;state.selectedIds=[];state.details.clear();state.selected=null;closeDrawer();updateSelectors();displayNoRuns();});
  const fitToButton=()=>{fitGraph();state.viewTouched=true;};
  $('zoomIn').addEventListener('click',()=>zoom(1.2));
  $('zoomOut').addEventListener('click',()=>zoom(1/1.2));
@@ -984,7 +1173,7 @@ function setupInteractions(){
    touches.set(e.pointerId,{x:e.clientX,y:e.clientY});
    if(touches.size===2){drag=null;vp.classList.remove('dragging');pinch=pinchState();return;}
   }
-  if(e.button!==0||e.target.closest('.flow-node,.canvas-zoombar,.graph-notice,.canvas-legend'))return;
+  if(e.button!==0||e.target.closest('.flow-node,.canvas-zoombar,.graph-notice,.canvas-legend,.choose-model'))return;
   drag={id:e.pointerId,x:e.clientX,y:e.clientY,px:state.panX,py:state.panY};
   vp.classList.add('dragging');try{vp.setPointerCapture(e.pointerId);}catch{}
  });
@@ -1013,12 +1202,16 @@ function setupInteractions(){
  let resizeDebounce;
  new ResizeObserver(()=>{clearTimeout(resizeDebounce);resizeDebounce=setTimeout(()=>{
   // Closing the drawer also resizes the canvas; that must not undo where the viewer has moved to.
-  if(state.selected)centerSelectedNode();
+  // Phones: the selected node glides back above the sheet (level 2 folding resizes the chart).
+  if(state.selected)centerSelectedNode({glide:!!window.isPhoneLayout?.()});
   else if(!state.viewTouched)openChapterView();
  },130);}).observe(vp);
+ // Phones: once the sheet settles at a new height (phone.js), the selected node glides back
+ // into view above it.
+ window.fitSelectedNode=()=>{if(state.selected&&window.isPhoneLayout?.())centerSelectedNode({glide:true});};
 }
 async function init(){
- setupInteractions();setupStoryInteractions();
+ setupInteractions();setupStoryInteractions();setupModelBar();
  if(new URLSearchParams(location.hash.replace(/^#/,'')).get('view')==='flow'){
   state.view='flow';$('storyView').classList.add('is-hidden');$('viewerWrap').classList.remove('is-hidden');
   $('viewStory').setAttribute('aria-pressed','false');$('viewFlow').setAttribute('aria-pressed','true');

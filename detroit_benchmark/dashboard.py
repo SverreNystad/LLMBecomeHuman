@@ -1,7 +1,8 @@
 """Read-only dashboard for saved LLM benchmark experiments.
 
 The dashboard is intentionally limited to local, previously recorded run directories.
-It does not invoke LLMs or alter the benchmark's state.
+It does not invoke LLMs or alter the benchmark's state, except that with ``allow_own_runs``
+visitors can play Visitor Runs with their own key (see visitor_runs.py).
 """
 
 from __future__ import annotations
@@ -13,15 +14,46 @@ import json
 import time
 from collections import Counter
 from functools import lru_cache
-
-from .engine import canonical_hash, chapter_briefing, iter_events, limit_sentences
 from pathlib import Path
 from typing import Any
 from urllib.parse import quote
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+from .ending import assumed_route_text, ending_summary, route_question
+from .engine import (
+    canonical_hash,
+    chapter_briefing,
+    create_model,
+    iter_events,
+    decision_text,
+    limit_sentences,
+    read_json_object as _json_file,
+)
+from .visitor_estimate import story_estimate
+from .visitor_runs import (
+    PROVIDERS,
+    VISITOR_FOLDER,
+    VISITOR_STORY,
+    AlreadyPlaying,
+    Busy,
+    ModelFactory,
+    ModelLister,
+    PlayingRuns,
+    ProviderAuthError,
+    ProviderUnreachable,
+    Publications,
+    RateLimit,
+    TooManyRequests,
+    is_public,
+    list_models,
+    mark_cut_off_runs,
+    scrub,
+    start_visitor_run,
+)
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
 ART_RECHECK_SECONDS = 30
@@ -78,16 +110,10 @@ DETROIT_CHAPTER_TITLES = {
     "32.5": "Battle for Detroit: Markus Demonstration",
     "32.6": "Battle for Detroit: Markus Revolution",
     "32.7": "Battle for Detroit: Connor in the Zen Garden",
+    "32.8": "Battle for Detroit: Connor in the Crowd",
+    "32.9": "Battle for Detroit: Kara After the Assault",
     "final": "Final Routes",
 }
-
-
-def _json_file(path: Path) -> dict[str, Any] | None:
-    try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-        return obj if isinstance(obj, dict) else None
-    except (OSError, json.JSONDecodeError):
-        return None
 
 
 def _run_id(root: Path, directory: Path) -> str:
@@ -120,6 +146,19 @@ def _discovered_runs(root: Path) -> list[Path]:
         if resolved.is_relative_to(root) and (resolved / "events.jsonl").is_file():
             paths.append(resolved)
     return sorted(set(paths), key=lambda p: p.as_posix().lower())
+
+
+def _is_private(root: Path, directory: Path) -> bool:
+    """Visitor Runs are private, unless made public: only a request naming their id lists them."""
+    return directory.relative_to(root).parts[0] == VISITOR_FOLDER and not is_public(
+        directory
+    )
+
+
+def _visitor_ip(request: Request) -> str:
+    """The client IP that identifies a visitor: Cloudflare's connecting IP, else the peer."""
+    forwarded = request.headers.get("cf-connecting-ip", "").strip()
+    return forwarded or (request.client.host if request.client else "unknown")
 
 
 def _seconds_since_write(directory: Path) -> float:
@@ -201,6 +240,7 @@ def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
         "end_description": summary.get("end_description"),
         "final_flags": summary.get("final_flags", state.get("flags", {})),
         "graph_sha256": exp.get("graph_sha256", summary.get("graph_sha256")),
+        "stop_reason": state.get("stop_reason"),
     }
 
 
@@ -290,6 +330,10 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
             choice_id=(event.get("output") or {}).get("choice_id"),
             rationale=(event.get("output") or {}).get("rationale"),
         )
+        deciders = event.get("deciders")
+        if isinstance(deciders, list) and deciders:
+            # A Joint Decision, or a Cross-Segment Decision by another Character alone.
+            beat.update(deciders=deciders, decided=decision_text(deciders))
     elif kind == "condition":
         beat.update(
             branch_index=event.get("branch_index"),
@@ -301,6 +345,8 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
             value=event.get("value"),
             assumed=event.get("assumed", False),
         )
+        if beat["assumed"]:
+            beat["text"] = assumed_route_text(event.get("flag"), event.get("value"))
     elif kind == "ending":
         beat.update(description=event.get("description"))
     elif kind == "memory_update":
@@ -315,6 +361,13 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
         )
     else:
         return None
+    if kind in ("decision", "condition") and isinstance(event.get("feedback"), list):
+        # Gauge Feedback: what the game flashed on screen after this moment.
+        beat["feedback"] = [
+            item["text"]
+            for item in event["feedback"]
+            if isinstance(item, dict) and isinstance(item.get("text"), str)
+        ]
     return beat
 
 
@@ -381,7 +434,28 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
         "decisions_by_chapter": [
             {"chapter": ch, "choices": chapter_counts[ch]} for ch in ordered_chapters
         ],
+        "ending_summary": ending_summary(
+            meta["final_flags"] or {},
+            [ev for ev in events if ev["type"] == "route"],
+            _public_news(directory),
+            finished=meta["status"] == "complete",
+        ),
     }
+
+
+def _public_news(directory: Path) -> list[str]:
+    """Public News lives only in the checkpoint; it is re-read only when that changes."""
+    return list(
+        _cached_news(
+            str(directory / "checkpoint.json"), _stamp(directory / "checkpoint.json")
+        )
+    )
+
+
+@lru_cache(maxsize=64)
+def _cached_news(path: str, _stamp) -> tuple[str, ...]:
+    news = ((_json_file(Path(path)) or {}).get("state") or {}).get("news") or []
+    return tuple(str(item) for item in news if isinstance(item, str))
 
 
 def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
@@ -454,6 +528,19 @@ def _chapter_info(
     }
 
 
+def _chapter_order(graph: dict, nodes: dict) -> list[str]:
+    """Chapters in story order: as the graph lists its Chapter Segments, so a segment
+    played late (32.7, 32.8) follows the ones before it; others keep first-seen order."""
+    seen = list(
+        dict.fromkeys(
+            str(node["chapter"]) for node in nodes.values() if node.get("chapter")
+        )
+    )
+    listed = [str(c) for c in graph.get("chapter_entries", {})]
+    rank = {chapter: i for i, chapter in enumerate(listed)}
+    return sorted(seen, key=lambda c: (rank.get(c, len(listed)), seen.index(c)))
+
+
 def _flowchart_projection(
     graph: dict, *, complete: bool, source: str
 ) -> dict[str, Any]:
@@ -496,16 +583,17 @@ def _flowchart_projection(
                 }
                 for o in node.get("options", [])
             ]
+        if node.get("type") == "route" and "heading" not in node:
+            # The Flowchart labels a route node with the question its flag answers.
+            question = route_question(str(node.get("flag")))
+            if question:
+                nodes[node_id]["heading"] = question
         if node.get("type") == "condition":
             nodes[node_id]["branches"] = [
                 {k: b[k] for k in ("next", "condition_text") if k in b}
                 for b in node.get("branches", [])
             ]
-    chapters = list(
-        dict.fromkeys(
-            str(node["chapter"]) for node in nodes.values() if node.get("chapter")
-        )
-    )
+    chapters = _chapter_order(graph, nodes)
     return {
         "metadata": graph.get("metadata", {}),
         "start": graph.get("start"),
@@ -672,14 +760,32 @@ def create_app(
     graphs_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
     art_manifest: str | Path | None = None,
+    *,
+    allow_own_runs: bool = False,
+    model_lister: ModelLister | None = None,
+    model_factory: ModelFactory = create_model,
+    visitor_story: str | Path = VISITOR_STORY,
+    max_playing: int = 2,
+    max_playing_per_visitor: int = 1,
+    model_listings_per_minute: int = 10,
 ) -> FastAPI:
+    """The dashboard app. With ``allow_own_runs``, visitors can play Visitor Runs with their
+    own key: ``model_lister`` (provider, key) -> model ids and ``model_factory`` (the shape of
+    :func:`engine.create_model`) are the real ones unless a test injects fakes. At most
+    ``max_playing`` Visitor Runs play at once, and ``max_playing_per_visitor`` per client IP;
+    a client IP may list a provider's models ``model_listings_per_minute`` times a minute."""
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
     graph_root = (
         Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
     )
+    story_path = Path(visitor_story).expanduser().resolve()
     app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
+    # Lists a provider's models for the Visitor Run form.
+    app.state.model_lister = model_lister or list_models
+    # Empty unless Visitor Runs are on.
+    playing = PlayingRuns(max_playing, max_playing_per_visitor)
 
     @app.middleware("http")
     async def revalidate_frontend(request, call_next):
@@ -694,14 +800,37 @@ def create_app(
         return {"ok": True, "runs_dir": str(root)}
 
     @app.get("/api/runs")
-    def list_runs():
+    def list_runs(visitor_runs: list[str] = Query([])):
+        """Every Run except private Visitor Runs, which are listed only when named."""
+        named = set(visitor_runs)
+        # A Visitor Run is playing until its thread has ended and its publication is decided.
+        still_playing = playing.playing_ids()
+        runs = (
+            {**run, "status": "running"} if run["id"] in still_playing else run
+            for run in (_metadata(root, path) for path in _discovered_runs(root))
+        )
         return {
             "runs": sorted(
-                (_metadata(root, path) for path in _discovered_runs(root)),
+                (
+                    run
+                    for run in runs
+                    if not _is_private(root, Path(root, run["name"]))
+                    or run["id"] in named
+                ),
                 key=lambda run: run.get("started_at") or "",
                 reverse=True,
             )
         }
+
+    if allow_own_runs:
+        _add_visitor_run_routes(
+            app,
+            root,
+            story_path,
+            playing,
+            model_factory,
+            RateLimit(model_listings_per_minute),
+        )
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):
@@ -847,3 +976,126 @@ def create_app(
 
     app.mount("/assets", StaticFiles(directory=ASSETS), name="dashboard_assets")
     return app
+
+
+class VisitorRunStart(BaseModel):
+    provider: str
+    model: str
+    key: str
+
+
+class VisitorModelsRequest(BaseModel):
+    provider: str
+    key: str
+
+
+def _require_known_provider(provider: str) -> None:
+    if provider not in PROVIDERS:
+        raise HTTPException(status_code=422, detail="Unknown provider")
+
+
+def _add_visitor_run_routes(
+    app: FastAPI,
+    root: Path,
+    story_path: Path,
+    playing: PlayingRuns,
+    model_factory: ModelFactory,
+    model_listings: RateLimit,
+) -> None:
+    """Every Visitor Run route: the form's config, model list and token estimate, the
+    public-Run check, Start and Stop. Registered only with ``allow_own_runs``."""
+    # A Run a restart cut off is partial; a complete one a restart left undecided is decided.
+    mark_cut_off_runs(root)
+    publications = Publications(root)
+    publications.settle()
+
+    @app.get("/api/visitor-runs/config")
+    def visitor_run_config():
+        return {"providers": list(PROVIDERS)}
+
+    @app.post("/api/visitor-runs/models")
+    def list_visitor_models(body: VisitorModelsRequest, request: Request):
+        """The model ids the provider lists for this key. The key is never echoed."""
+        key = body.key.strip()
+        _require_known_provider(body.provider)
+        if not key:
+            raise HTTPException(status_code=422, detail="Enter your API key")
+        try:
+            model_listings.check(_visitor_ip(request))
+        except TooManyRequests as exc:
+            raise HTTPException(status_code=429, detail=str(exc)) from None
+        try:
+            ids = app.state.model_lister(body.provider, key)
+        except ProviderAuthError:
+            raise HTTPException(
+                status_code=401,
+                detail="The provider rejected this API key. Check the key and try again.",
+            ) from None
+        except ProviderUnreachable:
+            raise HTTPException(
+                status_code=502,
+                detail="Could not reach the provider to list its models. "
+                "You can still type a model id.",
+            ) from None
+        return {"models": list(ids)}
+
+    @app.get("/api/visitor-runs/estimate")
+    def estimate_visitor_run(provider: str, model: str):
+        """About how many tokens a Visitor Run uses, and whether a public Run of this
+        exact model exists already (the form warns before Start if so)."""
+        _require_known_provider(provider)
+        return {
+            **story_estimate(story_path),
+            "approximate": True,
+            "public_run_exists": publications.public_run_exists(provider, model.strip()),
+        }
+
+    @app.get("/api/visitor-runs/public")
+    def visitor_run_public(provider: str, model: str):
+        return {
+            "public_run_exists": publications.public_run_exists(provider, model.strip())
+        }
+
+    @app.post("/api/visitor-runs")
+    def start_run(body: VisitorRunStart, request: Request):
+        _require_known_provider(body.provider)
+        model, key = body.model.strip(), body.key.strip()
+        if not model or not key:
+            raise HTTPException(status_code=422, detail="Enter a key and a model id")
+        try:
+            slot = playing.reserve(_visitor_ip(request))
+        except AlreadyPlaying as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from None
+        except Busy as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from None
+
+        def ended():
+            try:
+                publications.settle()  # Public if the first complete Run of its model.
+            finally:
+                playing.release(slot)
+
+        try:
+            directory = start_visitor_run(
+                root,
+                story_path,
+                body.provider,
+                model,
+                key,
+                model_factory,
+                stop_requested=slot.stop_requested,
+                on_end=ended,
+            )
+        except Exception as exc:
+            playing.release(slot)
+            detail = scrub(f"Could not start the Run: {exc}", key)
+            raise HTTPException(status_code=500, detail=detail) from None
+        slot.run_id = _run_id(root, directory)
+        return {"id": slot.run_id}
+
+    @app.post("/api/visitor-runs/{run_id}/stop", status_code=202)
+    def stop_run(run_id: str):
+        """Stops a playing Visitor Run after its current model call; it stays partial."""
+        if not playing.stop(run_id):
+            raise HTTPException(status_code=404, detail="No such Run is playing")
+        return {"id": run_id, "stopping": True}

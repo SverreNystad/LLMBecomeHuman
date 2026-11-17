@@ -1,0 +1,54 @@
+/* Ending Summary: the card that opens Final Routes (ending.js). Colours are the
+ * --ending-* tokens on :root in styles.css, and each column takes its Run's colour.
+ */
+.ending-summary {
+  /* Wider than the text column when several Runs sit side by side, never wider than the pane. */
+  --ending-width: min(calc(100cqw - 56px), max(100%, calc(var(--ending-columns, 1) * 280px)));
+  position: relative; left: 50%; width: var(--ending-width); transform: translateX(-50%);
+  margin: 0 0 44px; padding: 20px 22px 16px;
+  background: var(--ending-surface); border: 1px solid var(--ending-line);
+}
+.ending-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.ending-title { font-size: 11px; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--ending-label); }
+.ending-head::after { content: ""; flex: 1; height: 1px; background: var(--ending-line); }
+
+/* One column per Run; their sections line up across columns. */
+.ending-columns {
+  display: grid; grid-template-columns: repeat(var(--ending-columns, 1), minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto); column-gap: 26px;
+}
+.ending-run { grid-row: span 4; display: grid; grid-template-rows: subgrid; row-gap: 14px; min-width: 0; }
+.ending-run.is-unfinished { grid-template-rows: auto 1fr; }
+.ending-run-name {
+  display: flex; align-items: center; gap: 8px; margin: 0; padding-bottom: 9px;
+  font-size: 13px; font-weight: 500; color: var(--ending-alive);
+  border-bottom: 2px solid var(--run-color);
+}
+.ending-run-name > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ending-run-logo { display: inline-flex; flex: 0 0 auto; width: 16px; height: 16px; color: var(--run-color); }
+.ending-run-logo :is(img, svg, .mock-icon) { width: 100%; height: 100%; }
+.ending-unfinished { margin: 0; padding: 18px 0; font-size: 14px; font-style: italic; font-weight: 300; color: var(--ending-label); }
+
+.ending-characters { margin: 0; display: grid; gap: 10px; align-content: start; }
+.ending-character { --who: var(--ending-connor); padding-left: 11px; border-left: 2px solid var(--who); }
+.ending-character[data-character="kara"] { --who: var(--ending-kara); }
+.ending-character[data-character="markus"] { --who: var(--ending-markus); }
+.ending-character dt { font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--who); }
+.ending-character dd { margin: 1px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--ending-text); }
+
+.ending-fates { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 4px 12px; align-content: start; }
+.ending-fates li { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; font-size: 12px; border-bottom: 1px solid var(--ending-line); }
+.ending-fates span { color: var(--ending-text); }
+.ending-fates b { font-weight: 500; color: var(--ending-alive); }
+.ending-fates .is-dead b { color: var(--ending-dead); }
+.ending-fates .is-unknown b { font-weight: 400; color: var(--ending-unknown); }
+
+.ending-world h4 { margin: 0 0 3px; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--ending-label); }
+.ending-world p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ending-text); }
+.ending-news { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 5px; }
+.ending-news li { position: relative; padding-left: 12px; font-size: 12px; line-height: 1.45; font-style: italic; color: var(--ending-label); }
+.ending-news li::before { content: ""; position: absolute; left: 0; top: .6em; width: 5px; height: 1px; background: var(--run-color); }
+
+.ending-note { margin: 16px 0 0; padding-top: 10px; border-top: 1px solid var(--ending-line); font-size: 11.5px; color: var(--ending-label); }
+
+body.is-phone .ending-summary { left: auto; width: auto; transform: none; padding: 16px 16px 12px; }

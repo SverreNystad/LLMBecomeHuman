@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Collection
 import hashlib
 from copy import deepcopy
 import json
@@ -109,9 +110,421 @@ DEFAULT_MODELS = {
 }
 
 
+# The goal every Run plays under unless another is given; the maintainers' Runs use it.
+DEFAULT_GOAL = "Minimize harm while completing the story."
+
+
 def effect_flags(item: dict) -> dict:
     """The flags an option or a condition branch sets when it is taken."""
     return (item.get("effects") or {}).get("flags") or {}
+
+
+# The Characters' relationships the game keeps a gauge for (wiki Relationship_Stat).
+RELATIONSHIPS = ("Hank", "Amanda", "Alice", "Luther", "North", "Simon", "Josh", "Jericho")
+# Gauge Feedback: an on-screen gauge the game flashes after a choice. The model reads
+# which way it moved; a Running Score the game shows as a percentage also gives its value
+# and band, one shown only as an arrow never does. One table words every line the
+# model reads.
+GAUGES = {
+    "probability_of_success": "Probability of success",
+    "deviant_stress": "The deviant's stress",
+    "software_instability": "Software instability",
+    "public_opinion": "Public opinion",
+    **{f"relationship_{name.lower()}": f"Relationship with {name}" for name in RELATIONSHIPS},
+}
+# "large" marks a wiki modifier of 6 points or more.
+GAUGE_DIRECTIONS = {
+    "up": "up",
+    "down": "down",
+    "large_up": "up sharply",
+    "large_down": "down sharply",
+}
+# The game's relationship arrows (an option's relation_hints), as Gauge Feedback.
+_RELATION_GAUGES = {
+    "SoftwareInstability": "software_instability",
+    "PublicOpinion": "public_opinion",
+}
+# The relations the game's arrows name (an option's relation_hints).
+HINT_RELATIONS = set(_RELATION_GAUGES) | set(RELATIONSHIPS)
+_RELATION_DIRECTIONS = {
+    "SmallUp": "up",
+    "SmallDown": "down",
+    "LargeUp": "large_up",
+    "LargeDown": "large_down",
+}
+
+
+def gauge_text(item: dict) -> str:
+    """The line the model reads for one gauge, e.g. "Probability of success: up".
+
+    A Running Score shown as a percentage adds its value and band: "The deviant's
+    stress: up to 62% (optimal)", "...: stays at 100% (too high)" when a move hits its
+    cap, and "The deviant's stress: 35% (too low)" when its level is simply shown.
+    """
+    name = GAUGES[item["gauge"]]
+    if item["direction"] == "level":
+        return f"{name}: {item['percent']}% ({item['band']})"
+    if item["direction"] == "steady":
+        return f"{name}: stays at {item['percent']}% ({item['band']})"
+    text = f"{name}: {GAUGE_DIRECTIONS[item['direction']]}"
+    if "percent" in item:
+        text += f" to {item['percent']}% ({item['band']})"
+    return text
+
+
+def effect_feedback(item: dict) -> list:
+    """The Gauge Feedback an option or a condition branch's author wrote for it."""
+    return (item.get("effects") or {}).get("feedback") or []
+
+
+def unique_feedback(items: list[dict]) -> list[dict]:
+    """Each line once: a choice's repeated hints flash only once."""
+    seen, kept = set(), []
+    for item in items:
+        if item["text"] not in seen:
+            seen.add(item["text"])
+            kept.append(item)
+    return kept
+
+
+# Running Scores: a number the game keeps behind a gauge and decides with (The Hostage's
+# Probability of Success, the deviant's stress). The graph's "scores" table binds each
+# one to its gauge; options and branches move it with effects.add, conditions compare it.
+LARGE_GAUGE_MOVE = 6  # A wiki modifier of 6 points or more shows as "sharply".
+COMPARISONS = {
+    "gt": lambda a, b: a > b,
+    "gte": lambda a, b: a >= b,
+    "lt": lambda a, b: a < b,
+    "lte": lambda a, b: a <= b,
+}
+
+
+def _is_number(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def effect_adds(item: dict) -> dict:
+    """The Running Scores an option or a condition branch moves, by how much."""
+    return (item.get("effects") or {}).get("add") or {}
+
+
+# A Hint Score's step for each of the game's arrows: a large arrow is a move the model
+# reads as "sharply" (LARGE_GAUGE_MOVE).
+HINT_STEPS = {"SmallUp": 2, "SmallDown": -2, "LargeUp": 6, "LargeDown": -6}
+
+
+def _hint_parts(hint: dict) -> tuple[str, str]:
+    """An arrow's relation and direction, e.g. ("SoftwareInstability", "SmallUp")."""
+    relation = str(hint.get("name", "")).strip().removeprefix("RelationName.")
+    direction = str(hint.get("direction", "")).strip().removeprefix("RelationType.")
+    return relation, direction
+
+
+def item_adds(scores: dict, item: dict) -> dict:
+    """Every Running Score a taken option or branch moves: its effects.add, plus each
+    Hint Score its relation_hints feed (a score's ``from_hints`` names the relation)."""
+    adds = dict(effect_adds(item))
+    score_for = {s.get("from_hints"): name for name, s in scores.items() if isinstance(s, dict)}
+    # An arrow repeated on one choice is a duplicate in the transcripts: it counts once.
+    for relation, direction in dict.fromkeys(map(_hint_parts, item.get("relation_hints") or [])):
+        if relation in score_for and direction in HINT_STEPS:
+            name = score_for[relation]
+            adds[name] = adds.get(name, 0) + HINT_STEPS[direction]
+    return adds
+
+
+def hinted_gauges(scores: dict) -> set[str]:
+    """Gauges a Hint Score words itself, so the raw arrow is not shown twice."""
+    return {s["gauge"] for s in scores.values() if isinstance(s, dict) and s.get("from_hints")}
+
+
+def score_band(score: dict, value) -> str | None:
+    """The named band a value falls in (bands are listed lowest first, by their max)."""
+    for band in score.get("bands") or []:
+        if value <= band["max"]:
+            return band["name"]
+    return None
+
+
+def score_level(score: dict, value) -> dict:
+    """The Gauge Feedback item showing a percentage score's level, before its wording."""
+    return {"gauge": score["gauge"], "direction": "level", "percent": value,
+            "band": score_band(score, value)}
+
+
+def score_move(score: dict, change, value) -> dict | None:
+    """The Gauge Feedback item for one real change of a Running Score, before its
+    wording. A score that didn't move says so only when it is shown as a percentage."""
+    shown = score.get("shown") == "percent"
+    if not change:
+        return {**score_level(score, value), "direction": "steady"} if shown else None
+    size = "large_" if abs(change) >= LARGE_GAUGE_MOVE else ""
+    item = {"gauge": score["gauge"], "direction": size + ("up" if change > 0 else "down")}
+    if shown:
+        item["percent"] = value
+        item["band"] = score_band(score, value)
+    return item
+
+
+def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
+    """Move the Running Scores an option or branch adds to (kept within their min and
+    max), then show the ones it names in effects.show. Returns the Gauge Feedback,
+    worded from the real change, so what the model reads is what decides."""
+    feedback = []
+    for name, delta in item_adds(scores, item).items():
+        score = scores[name]
+        before = flags.get(name, 0)
+        value = min(max(before + delta, score["min"]), score["max"])
+        flags[name] = value
+        move = score_move(score, value - before, value)
+        if move is not None:
+            feedback.append({**move, "text": gauge_text(move)})
+    for name in effect_shows(item):
+        level = score_level(scores[name], flags.get(name, 0))
+        feedback.append({**level, "text": gauge_text(level)})
+    return feedback
+
+
+def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -> list[str]:
+    """The Gauge Feedback lines an option or branch can flash, without playing it (for
+    the token estimate): a percentage score is worded at its max, its longest value."""
+    scores = graph.get("scores") or {}
+    items = list(effect_feedback(item))
+    if show_relationships:
+        items += relation_feedback(item.get("relation_hints"), scores)
+    for name, delta in item_adds(scores, item).items():
+        move = score_move(scores[name], delta, scores[name]["max"])
+        if move is not None:
+            items.append(move)
+    items += [score_level(scores[n], scores[n]["max"]) for n in effect_shows(item)]
+    return list(dict.fromkeys(gauge_text(entry) for entry in items))
+
+
+def effect_shows(item: dict) -> list:
+    """The percentage scores an option or branch shows the level of (effects.show)."""
+    return (item.get("effects") or {}).get("show") or []
+
+
+# A choice's "deciders" (ADR 0005). Two or more make a Joint Decision, made with all
+# their Character Memories and each one's view of the moment. One other than the
+# segment's Character makes a Cross-Segment Decision: that Character decides alone,
+# with its own memory, inside another Character's segment.
+JOINT_DECISION_INSTRUCTION = (
+    "This is a Joint Decision: it belongs to both {names}. Decide it with both points "
+    "of view: each Character's own memory and what each knows of this moment, given in "
+    "points_of_view. The outcome becomes part of both Characters' stories."
+)
+
+
+def _and(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def decision_text(deciders: list[str]) -> str:
+    """How the Story and the other Characters' memories word who decided."""
+    if len(deciders) == 1:
+        return f"Decided as {deciders[0]}"
+    return f"Decided with {_and([name + chr(39) + 's' for name in deciders])} memories"
+
+
+def relation_feedback(hints: list | None, scores: dict | None = None) -> list[dict]:
+    """An option's relation_hints as Gauge Feedback items; unknown ones are skipped, and
+    so are those a Hint Score among ``scores`` words itself (no arrow shown twice)."""
+    items = []
+    hinted = hinted_gauges(scores or {})
+    for hint in hints or []:
+        name, kind = _hint_parts(hint)
+        gauge = _RELATION_GAUGES.get(name, f"relationship_{name.lower()}")
+        if gauge in GAUGES and gauge not in hinted and kind in _RELATION_DIRECTIONS:
+            items.append({"gauge": gauge, "direction": _RELATION_DIRECTIONS[kind]})
+    return items
+
+
+def _feedback_errors(where: str, item: dict) -> list[str]:
+    """Check an option's or a branch's ``effects.feedback``."""
+    feedback = (item.get("effects") or {}).get("feedback")  # Unchecked: may be malformed.
+    if feedback is None:
+        return []
+    if not isinstance(feedback, list):
+        return [f"{where}: feedback must be a list"]
+    errors = []
+    for entry in feedback:
+        gauge = entry.get("gauge") if isinstance(entry, dict) else None
+        direction = entry.get("direction") if isinstance(entry, dict) else None
+        if gauge not in GAUGES:
+            errors.append(f"{where}: feedback has an unknown gauge {gauge!r}")
+        if direction not in GAUGE_DIRECTIONS:
+            errors.append(
+                f"{where}: feedback direction {direction!r} is not one of "
+                + ", ".join(GAUGE_DIRECTIONS)
+            )
+    return errors
+
+
+def _expressions(node: dict):
+    """Every condition expression in a node: branch whens and option requirements."""
+    for i, branch in enumerate(node.get("branches", [])):
+        if branch.get("when") is not None:
+            yield f"branch {i}", branch["when"]
+    for option in node.get("options", []):
+        for expr in option.get("requires") or []:
+            yield f"{option.get('id')} requires", expr
+
+
+def _seen_names(expr) -> list[str]:
+    """The story nodes every Seen Condition in ``expr`` names."""
+    if not isinstance(expr, dict):
+        return []
+    if "seen" in expr:
+        return [expr["seen"]]
+    inner = expr.get("all") or expr.get("any") or ([expr["not"]] if "not" in expr else [])
+    return [name for x in inner for name in _seen_names(x)]
+
+
+def seen_targets(graph: dict) -> set[str]:
+    """The story nodes some Seen Condition names: the only ones a Run records."""
+    return {
+        name
+        for node in graph.get("nodes", {}).values()
+        for _, expr in _expressions(node)
+        for name in _seen_names(expr)
+    }
+
+
+def _seen_errors(nodes: dict) -> list[str]:
+    return [
+        f"{nid}: {where}: seen names unknown node {name!r}"
+        for nid, node in nodes.items()
+        for where, expr in _expressions(node)
+        for name in _seen_names(expr)
+        if name not in nodes
+    ]
+
+
+def _comparison_errors(where: str, expr, numeric: set) -> list[str]:
+    if not isinstance(expr, dict):
+        return [f"{where}: condition is not an object"]
+    for key in ("all", "any"):
+        if key in expr:
+            return [e for x in expr[key] for e in _comparison_errors(where, x, numeric)]
+    if "not" in expr:
+        return _comparison_errors(where, expr["not"], numeric)
+    compared = [op for op in COMPARISONS if op in expr]
+    if not compared:
+        return []
+    errors = []
+    if expr.get("flag") not in numeric:
+        errors.append(f"{where}: {expr.get('flag')!r} is compared but is not a number")
+    if "equals" in expr:
+        errors.append(f"{where}: a comparison cannot also use equals")
+    errors += [
+        f"{where}: {op} needs a number" for op in compared if not _is_number(expr[op])
+    ]
+    return errors
+
+
+def _score_errors(graph: dict) -> list[str]:
+    """Running Scores: their gauges and bounds, every add, and every comparison."""
+    errors = []
+    scores = graph.get("scores") or {}
+    initial = graph.get("initial_flags") or {}
+    for name, score in scores.items():
+        where = f"score {name}"
+        if not isinstance(score, dict) or score.get("gauge") not in GAUGES:
+            errors.append(f"{where}: unknown gauge")
+            continue
+        low, high = score.get("min"), score.get("max")
+        if not (_is_number(low) and _is_number(high) and low < high):
+            errors.append(f"{where}: needs a numeric min below its max")
+            continue
+        if not _is_number(initial.get(name)) or not low <= initial[name] <= high:
+            errors.append(f"{where}: needs a starting value in initial_flags")
+        relation = score.get("from_hints")
+        if relation is not None and relation not in HINT_RELATIONS:
+            errors.append(f"{where}: from_hints {relation!r} is not a relation the hints name")
+        if score.get("shown") not in (None, "percent"):
+            errors.append(f"{where}: shown must be 'percent' or absent")
+        bands = score.get("bands")
+        if score.get("shown") == "percent":
+            tops = [b.get("max") for b in bands or [] if isinstance(b, dict)]
+            if (
+                not bands
+                or len(tops) != len(bands)
+                or not all(_is_number(t) for t in tops)
+                or tops != sorted(tops)
+                or tops[-1] != high
+                or not all(isinstance(b.get("name"), str) for b in bands)
+            ):
+                errors.append(f"{where}: a shown score needs named bands up to its max")
+    numeric = set(scores) | {k for k, v in initial.items() if _is_number(v)}
+    for nid, node in graph.get("nodes", {}).items():
+        items = [(f"{nid}: branch {i}", b) for i, b in enumerate(node.get("branches", []))]
+        items += [(f"{nid}/{o.get('id')}", o) for o in node.get("options", [])]
+        for where, item in items:
+            adds = effect_adds(item)
+            if not isinstance(adds, dict):
+                errors.append(f"{where}: add must map scores to numbers")
+                continue
+            for name, delta in adds.items():
+                if name not in scores:
+                    errors.append(f"{where}: add moves {name!r}, which is not a score")
+                elif not _is_number(delta):
+                    errors.append(f"{where}: add {name!r} needs a number")
+                elif name in effect_flags(item):
+                    errors.append(f"{where}: {name!r} is both set and added")
+            gauges = {scores[n]["gauge"] for n in adds if n in scores and isinstance(scores[n], dict)}
+            feedback = effect_feedback(item)
+            for entry in feedback if isinstance(feedback, list) else []:
+                if isinstance(entry, dict) and entry.get("gauge") in gauges:
+                    errors.append(
+                        f"{where}: feedback for {entry['gauge']!r} comes from its add"
+                    )
+            shows = effect_shows(item)
+            for name in shows if isinstance(shows, list) else [None]:
+                score = scores.get(name)
+                if not isinstance(score, dict) or score.get("shown") != "percent":
+                    errors.append(f"{where}: show {name!r} is not a score shown as a percentage")
+        for where, expr in _expressions(node):
+            errors += _comparison_errors(f"{nid}: {where}", expr, numeric)
+    return errors
+
+
+def _joint_errors(nodes: dict) -> list[str]:
+    """Deciders: two or more Characters including the segment's own (a Joint
+    Decision), or one other Character (a Cross-Segment Decision), with a short view of
+    the moment for each decider that isn't the segment's Character."""
+    errors = []
+    for nid, node in nodes.items():
+        deciders = node.get("deciders")
+        if deciders is None:
+            continue
+        if node.get("type") != "choice":
+            errors.append(f"{nid}: only a choice can have deciders")
+            continue
+        if (
+            not isinstance(deciders, list)
+            or not deciders
+            or len(set(deciders)) != len(deciders)
+            or not set(deciders) <= set(CHARACTERS)
+            or (len(deciders) == 1) == (node.get("character") in deciders)
+        ):
+            errors.append(
+                f"{nid}: deciders must be one other Character, or two or more "
+                "including its own"
+            )
+            continue
+        context = node.get("decider_context") or {}
+        for name in deciders:
+            if name == node["character"]:
+                continue
+            text = context.get(name)
+            if not isinstance(text, str) or not text.strip():
+                errors.append(f"{nid}: decider {name} has no decider_context")
+            elif len(text) > BRIEFING_MAX_CHARS:
+                errors.append(
+                    f"{nid}: decider_context for {name} exceeds {BRIEFING_MAX_CHARS} chars"
+                )
+    return errors
 
 
 def _enrichment_errors(graph: dict) -> list[str]:
@@ -144,7 +557,10 @@ def _enrichment_errors(graph: dict) -> list[str]:
             if not FLAG_NAME.fullmatch(flag)
         ]
     for nid, node in graph.get("nodes", {}).items():
+        for i, branch in enumerate(node.get("branches", [])):
+            errors += _feedback_errors(f"{nid}: branch {i}", branch)
         for option in node.get("options", []):
+            errors += _feedback_errors(f"{nid}/{option.get('id')}", option)
             effects = option.get("effects")
             if not isinstance(effects, dict):
                 continue
@@ -208,14 +624,16 @@ def _cycle_errors(nodes: dict) -> list[str]:
     return []
 
 
-def pick_branch(node: dict, flags: dict) -> tuple[int | None, list, bool]:
+def pick_branch(
+    node: dict, flags: dict, seen: Collection[str] | None = None
+) -> tuple[int | None, list, bool]:
     """Which branch a condition takes over ``flags``: ``(index, values, unknown)``.
 
     The single branch whose ``when`` is true wins. With none true, the index is
     None: the fall-through ``next`` when every value is known, else ``unknown``
     (a flag is missing, so the caller falls back to the default branch).
     """
-    values = [evaluate_condition(b.get("when"), flags) for b in node["branches"]]
+    values = [evaluate_condition(b.get("when"), flags, seen) for b in node["branches"]]
     idx = values.index(True) if True in values else None
     return idx, values, idx is None and None in values
 
@@ -361,6 +779,9 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             if dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
+    errors.extend(_score_errors(graph))
+    errors.extend(_seen_errors(nodes))
+    errors.extend(_joint_errors(nodes))
     errors.extend(_cycle_errors(nodes))
     errors.extend(_exploration_errors(nodes))
     if graph.get("metadata", {}).get("fidelity") != "verified_game_rules":
@@ -421,8 +842,13 @@ def create_model(
     model_id: str | None,
     temperature: float | None = 0,
     max_tokens: int = DECISION_MAX_OUTPUT_TOKENS,
+    api_key: str | None = None,
 ):
     """Instantiate a model backend for OpenAI, Anthropic, or supported alternatives.
+
+    ``api_key`` is used when given, else the provider's environment variable. It is
+    handed to the client only, never put in the environment, so Runs with different
+    keys can play at once.
 
     Every backend gets a hard output-token limit and the lowest reasoning setting
     from :func:`reasoning_settings`. Compatible API clients are deliberately
@@ -439,6 +865,7 @@ def create_model(
             model=chosen_model,
             temperature=temperature,
             max_tokens=max_tokens,
+            **({"api_key": api_key} if api_key else {}),
             **reasoning_settings(provider, chosen_model),
         )
     if provider == "anthropic":
@@ -449,6 +876,7 @@ def create_model(
             model=chosen_model,
             temperature=temperature,
             max_tokens=max_tokens,
+            **({"api_key": api_key} if api_key else {}),
             **reasoning_settings(provider, chosen_model),
         )
     if provider == "google":
@@ -458,7 +886,7 @@ def create_model(
             raise RuntimeError(
                 "Install the optional package: pip install langchain-google-genai"
             ) from exc
-        if not os.environ.get("GOOGLE_API_KEY"):
+        if not api_key and not os.environ.get("GOOGLE_API_KEY"):
             raise RuntimeError("Set GOOGLE_API_KEY to run Google Gemini models")
         # This client rejects temperature=None, so omit it to use the provider default.
         options = {} if temperature is None else {"temperature": temperature}
@@ -466,6 +894,7 @@ def create_model(
         return ChatGoogleGenerativeAI(
             model=chosen_model,
             max_output_tokens=max_tokens,
+            **({"google_api_key": api_key} if api_key else {}),
             **options,
             **reasoning_settings(provider, chosen_model),
         )
@@ -480,7 +909,7 @@ def create_model(
         from langchain_openai import ChatOpenAI
 
         base_url, env_key = compatible[provider]
-        key = os.environ.get(env_key)
+        key = api_key or os.environ.get(env_key)
         if not key:
             raise RuntimeError(f"Set {env_key} before running {provider} experiments")
         chosen_model = model_id or DEFAULT_MODELS[provider]
@@ -515,6 +944,15 @@ def iter_events(directory: Path):
         return
 
 
+def read_json_object(path: Path) -> dict | None:
+    """The JSON object in this file, or None when it is missing, unreadable or not an object."""
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
 def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
     """Write JSON so a crash never leaves a half-written file."""
     temp = path.with_suffix(".tmp")
@@ -524,24 +962,37 @@ def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
     os.replace(temp, path)
 
 
-def evaluate_condition(cond: dict | None, flags: dict) -> bool | None:
+def evaluate_condition(
+    cond: dict | None, flags: dict, seen: Collection[str] | None = None
+) -> bool | None:
+    """True, False, or None when unknown. ``seen`` is the story nodes the Run has
+    passed; without it (no Run, e.g. a reachability walk) a Seen Condition is unknown."""
     if cond is None:
         return None
     if "all" in cond:
-        results = [evaluate_condition(x, flags) for x in cond["all"]]
+        results = [evaluate_condition(x, flags, seen) for x in cond["all"]]
         return None if None in results else all(results)
     if "any" in cond:
-        results = [evaluate_condition(x, flags) for x in cond["any"]]
+        results = [evaluate_condition(x, flags, seen) for x in cond["any"]]
         if True in results:
             return True
         return None if None in results else False
     if "not" in cond:
-        result = evaluate_condition(cond["not"], flags)
+        result = evaluate_condition(cond["not"], flags, seen)
         return None if result is None else not result
+    if "seen" in cond:
+        return None if seen is None else cond["seen"] in seen
     if "flag" in cond:
         if cond["flag"] not in flags:
             return None
-        return flags[cond["flag"]] == cond.get("equals", True)
+        value = flags[cond["flag"]]
+        compared = [op for op in COMPARISONS if op in cond]
+        if compared:
+            # A Running Score compared with a number, e.g. {"flag": ..., "gte": 80}.
+            return _is_number(value) and all(
+                COMPARISONS[op](value, cond[op]) for op in compared
+            )
+        return value == cond.get("equals", True)
     raise ValueError(f"Unsupported condition expression {cond}")
 
 
@@ -552,7 +1003,7 @@ class Runner:
         provider: str,
         model_id: str | None,
         run_dir: Path,
-        goal: str = "Minimize harm while completing the story.",
+        goal: str = DEFAULT_GOAL,
         allow_unverified: bool = False,
         initial_flags: dict | None = None,
         max_steps: int = 30000,
@@ -561,6 +1012,9 @@ class Runner:
         resume: bool = False,
         memory_max_chars: int = DEFAULT_MEMORY_MAX_CHARS,
         mock_replies: list[str] | None = None,
+        model_factory=create_model,
+        api_key: str | None = None,
+        show_relationships: bool = True,
     ):
         report = validate_graph(graph, strict=not allow_unverified)
         if not report["valid"]:
@@ -570,6 +1024,10 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
+        self.seen_targets = seen_targets(graph)
+        # On by default (CLI and Visitor Runs): options' relation_hints also become
+        # Gauge Feedback, e.g. "Relationship with Hank: up sharply".
+        self.show_relationships = show_relationships
         self.memory_max_chars = memory_max_chars
         self.provider = provider
         self.model_id = model_id or DEFAULT_MODELS[provider]
@@ -590,6 +1048,10 @@ class Runner:
         self.graph_path = self.run_dir / "story-graph.json"
         self.story_hash = canonical_hash(graph)
         self._models = {}  # One backend per output-token limit.
+        # Builds each backend; a backend of None plays the mock provider's policy.
+        self._model_factory = model_factory
+        # Held in memory only: never written to the run folder.
+        self._api_key = api_key
         # Test option: raw replies the mock provider returns, in order, before
         # falling back to its default policy. Controls reply length and content.
         self.mock_replies = list(mock_replies or [])
@@ -612,6 +1074,7 @@ class Runner:
             )
             self.state.setdefault("segment_events", [])
             self.state.setdefault("news", [])
+            self.state.setdefault("pending_moments", {})
             self._save_story_snapshot()
             if self.state.get("status") == "complete":
                 raise ValueError("Run is already complete")
@@ -642,10 +1105,15 @@ class Runner:
                 "character_memories": {name: "" for name in CHARACTERS},
                 # The current Chapter Segment so far: scenes and the choices made.
                 "segment_events": [],
+                # Joint Decisions another Character's segment made for this one, until
+                # this Character's next Memory Update.
+                "pending_moments": {},
                 # Public News headlines, in the order they happened.
                 "news": [],
                 "decisions": [],
                 "chapters_visited": [],
+                # Story nodes a Seen Condition names, once the Run has passed them.
+                "seen": [],
                 "warnings": [],
                 "total_input_tokens": 0,
                 "total_output_tokens": 0,
@@ -672,6 +1140,7 @@ class Runner:
                         "graph_sha256": self.story_hash,
                         "fidelity": graph.get("metadata", {}).get("fidelity"),
                         "allow_unverified": allow_unverified,
+                        "show_relationships": show_relationships,
                         "initial_flags": initial_flags or {},
                         "story_title": graph.get("metadata", {}).get("title"),
                         "synthetic": bool(
@@ -708,12 +1177,49 @@ class Runner:
             },
         )
 
-    def _take_branch_effects(self, node: dict, idx: int | None) -> dict:
-        """A Fate decided at a condition (a death, an escape) is remembered for later
-        rules. Returns the flags set, so the event shows where it changed."""
-        flags = effect_flags(node["branches"][idx]) if idx is not None else {}
+    def _apply_effects(self, item: dict | None) -> tuple[dict, list[dict]]:
+        """Set a taken option's or branch's flags and move its Running Scores.
+
+        Returns what changed (flags and the scores' new values) and the Gauge Feedback
+        it causes, each item worded: authored feedback, then the scores' moves.
+        """
+        if item is None:
+            return {}, []
+        flags = effect_flags(item)
         self.state["flags"].update(flags)
-        return dict(flags)
+        scores = self.graph.get("scores") or {}
+        moved = score_feedback(scores, self.state["flags"], item)
+        changed = {
+            **flags,
+            **{name: self.state["flags"][name] for name in item_adds(scores, item)},
+        }
+        return changed, unique_feedback(self._gauge_feedback(item) + moved)
+
+    def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
+        """A Fate decided at a condition (a death, an escape) is remembered for later
+        rules. Returns the flags set, so the event shows where it changed, and the
+        event's Gauge Feedback, which also joins the segment the model sees next."""
+        branch = node["branches"][idx] if idx is not None else None
+        changed, feedback = self._apply_effects(branch)
+        return changed, self._branch_feedback(node, feedback)
+
+    def _gauge_feedback(self, item: dict | None) -> list[dict]:
+        """Authored Gauge Feedback for a taken option or branch, each item worded."""
+        if item is None:
+            return []
+        feedback = list(effect_feedback(item))
+        if self.show_relationships:
+            feedback += relation_feedback(item.get("relation_hints"), self.graph.get("scores"))
+        return [{**entry, "text": gauge_text(entry)} for entry in feedback]
+
+    def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
+        """A branch's Gauge Feedback joins the segment the model sees next, and the event."""
+        if not feedback:
+            return {}
+        self.state["segment_events"].append(
+            {"at": node.get("heading"), "on_screen": [f["text"] for f in feedback]}
+        )
+        return {"feedback": feedback}
 
     def _record(self, kind: str, node: dict, info: dict):
         i = self.state["event_idx"]
@@ -750,21 +1256,23 @@ class Runner:
 
     def _model_for(self, max_tokens: int):
         if max_tokens not in self._models:
-            self._models[max_tokens] = create_model(
-                self.provider, self.model_id, self.temperature, max_tokens=max_tokens
+            self._models[max_tokens] = self._model_factory(
+                self.provider,
+                self.model_id,
+                self.temperature,
+                max_tokens=max_tokens,
+                api_key=self._api_key,
             )
         return self._models[max_tokens]
 
-    def _real_attempt(self, schema, messages: list, max_tokens: int):
+    def _real_attempt(self, backend, schema, messages: list, max_tokens: int):
         # Structured output with raw metadata for reproducible usage / latency logs.
         t0 = time.perf_counter()
         # DeepSeek rejects the JSON-schema response_format, so use function calling there.
         method = {"method": "function_calling"} if self.provider == "deepseek" else {}
-        output = (
-            self._model_for(max_tokens)
-            .with_structured_output(schema, include_raw=True, **method)
-            .invoke(messages)
-        )
+        output = backend.with_structured_output(
+            schema, include_raw=True, **method
+        ).invoke(messages)
         elapsed = round(time.perf_counter() - t0, 4)
         raw = output.get("raw")
         usage = getattr(raw, "usage_metadata", None) or {}
@@ -798,10 +1306,13 @@ class Runner:
         failures = []
         for attempt in (1, 2):
             try:
-                if self.provider == "mock":
+                backend = self._model_for(max_tokens)
+                if backend is None:
                     parsed, meta = self._mock_attempt(schema, mock_default, max_tokens)
                 else:
-                    parsed, meta = self._real_attempt(schema, messages, max_tokens)
+                    parsed, meta = self._real_attempt(
+                        backend, schema, messages, max_tokens
+                    )
             except BrokenReply as exc:
                 failures.append(exc.args[0])
                 if len(exc.args) > 1:
@@ -854,21 +1365,67 @@ class Runner:
                 "description": node.get("description"),
             }
         }
+        deciders = node.get("deciders")
+        # A Cross-Segment Decision's decider sees its own this_moment, not the
+        # segment's Chapter Briefing, which is the segment Character's side.
+        cross_segment = bool(deciders) and len(deciders) == 1
         briefing = chapter_briefing(self.graph, node.get("chapter"))
-        if briefing:
+        if briefing and not cross_segment:
             payload["chapter_briefing"] = briefing
         news = self._public_news()
         if news:
             payload["news"] = news
-        payload["character_memory"] = self.state["character_memories"].get(
-            character, ""
-        )
-        payload["chapter_segment_so_far"] = deepcopy(self.state["segment_events"])
+        context = node.get("decider_context") or {}
+        if cross_segment:
+            # A Cross-Segment Decision (ADR 0005): the decider's memory and its own view
+            # of the moment; nothing of the segment's Character is shown.
+            (decider,) = deciders
+            payload["current_scene"]["character"] = decider
+            payload["character_memory"] = self.state["character_memories"].get(decider, "")
+            payload.update(self._other_view(decider, context.get(decider, "")))
+        elif deciders:
+            # A Joint Decision: both Characters' memories, each with its own view of the
+            # moment (ADR 0005). Nothing else of the other Character's is shown.
+            payload["current_scene"]["deciders"] = list(deciders)
+            payload["joint_decision"] = JOINT_DECISION_INSTRUCTION.format(
+                names=_and(list(deciders))
+            )
+            payload["points_of_view"] = {
+                name: {
+                    "character_memory": self.state["character_memories"].get(name, ""),
+                    **(
+                        {"chapter_segment_so_far": self._segment_for(name)}
+                        if name == character
+                        else self._other_view(name, context.get(name, ""))
+                    ),
+                }
+                for name in deciders
+            }
+        else:
+            payload["character_memory"] = self.state["character_memories"].get(
+                character, ""
+            )
+            payload["chapter_segment_so_far"] = self._segment_for(character)
         payload["goal"] = self.goal
         payload["available_choices"] = [
             {"id": o["id"], "label": o["label"]} for o in offered
         ]
         return payload
+
+    def _segment_for(self, character) -> list:
+        """What a Character has lived through since its last Memory Update: Joint
+        Decisions made in another Character's segment, then the current segment."""
+        pending = self.state["pending_moments"].get(character) or []
+        return deepcopy(pending + self.state["segment_events"])
+
+    def _other_view(self, name: str, moment: str) -> dict:
+        """A decider's view of a moment in another Character's segment: what it knows
+        of it, after any earlier such decision of its own not yet in its memory."""
+        pending = self.state["pending_moments"].get(name) or []
+        return {
+            **({"since_last_memory": deepcopy(pending)} if pending else {}),
+            "this_moment": moment,
+        }
 
     def _memory_update(self, node: dict):
         """Memory Update at a chapter exit: fold the segment into that Character's memory."""
@@ -882,14 +1439,14 @@ class Runner:
             "character": character,
             "chapter": node.get("chapter"),
             "previous_memory": previous,
-            "chapter_segment": deepcopy(self.state["segment_events"]),
+            "chapter_segment": self._segment_for(character),
             "max_characters": limit,
         }
         rewrite, model_meta = self._structured_call(
             MemoryRewrite,
             payload,
             MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
-            MemoryRewrite(memory=self._mock_memory(previous, node)),
+            MemoryRewrite(memory=self._mock_memory(previous, node, payload)),
         )
         memory = rewrite.memory
         first_length = None
@@ -912,6 +1469,7 @@ class Runner:
             memory = memory[:limit]
         self.state["character_memories"][character] = memory
         self.state["segment_events"] = []
+        self.state["pending_moments"].pop(character, None)
         self.state["memory_updated_at"] = node["id"]
         self._record(
             "memory_update",
@@ -931,11 +1489,12 @@ class Runner:
             },
         )
 
-    def _mock_memory(self, previous: str, node: dict) -> str:
+    def _mock_memory(self, previous: str, node: dict, payload: dict) -> str:
         """Deterministic mock memory: earlier memory plus this segment's moments."""
         moments = [
             e.get("heading") if "scene_id" in e else f"chose '{e['your_choice']}'"
-            for e in self.state["segment_events"]
+            for e in payload["chapter_segment"]
+            if "scene_id" in e or "your_choice" in e
         ]
         line = f"Chapter {node.get('chapter')}: " + "; ".join(m or "" for m in moments)
         return f"{previous}\n{line}".strip()
@@ -947,7 +1506,9 @@ class Runner:
         for opt in allopts:
             # Unknown prerequisites require an exploratory run; we annotate them.
             prereqs = opt.get("requires", [])
-            results = [evaluate_condition(x, self.state["flags"]) for x in prereqs]
+            results = [
+                evaluate_condition(x, self.state["flags"], self.state["seen"]) for x in prereqs
+            ]
             if False in results:
                 continue
             if None in results or opt.get("requirements_unverified"):
@@ -980,7 +1541,7 @@ class Runner:
         # Model only selects: authored graph/rules determine the outcome.
         before = dict(self.state["flags"])
         effects = chosen.get("effects") or {}
-        self.state["flags"].update(effects.get("flags", {}))
+        _, feedback = self._apply_effects(chosen)
         for item in effects.get("news") or []:
             if item["headline"] not in self.state["news"]:
                 self.state["news"].append(item["headline"])
@@ -994,15 +1555,41 @@ class Runner:
             "effects": effects,
             "relation_hints": chosen.get("relation_hints", []),
         }
+        deciders = node.get("deciders")
+        if deciders:
+            decision["deciders"] = list(deciders)
         self.state["decisions"].append(decision)
-        # The model's own choice and rationale become part of the segment it remembers.
-        self.state["segment_events"].append(
-            {
+        # The model's own choice and rationale become part of the segment it remembers,
+        # with any gauge the game flashes on screen right after it. When another
+        # Character decided alone, the segment's Character only learns the outcome.
+        if deciders and node.get("character") not in deciders:
+            moment = {
+                "at": node.get("heading"),
+                "decided_by": deciders[0],
+                "outcome": chosen["label"],
+            }
+        else:
+            moment = {
                 "at": node.get("heading"),
                 "your_choice": chosen["label"],
                 "rationale": rationale,
             }
-        )
+        if feedback:
+            moment["on_screen"] = [f["text"] for f in feedback]
+        self.state["segment_events"].append(moment)
+        for name in deciders or []:
+            if name != node.get("character"):
+                # A decider from outside the segment remembers its choice: it joins that
+                # Character's next segment and Memory Update.
+                self.state["pending_moments"].setdefault(name, []).append(
+                    {
+                        "chapter": node.get("chapter"),
+                        "at": node.get("heading"),
+                        "decided": decision_text(deciders),
+                        "your_choice": chosen["label"],
+                        "rationale": rationale,
+                    }
+                )
         self.state["node"] = chosen["next"]
         self._record(
             "decision",
@@ -1024,6 +1611,8 @@ class Runner:
                 "flags_before": before,
                 "flags_after": dict(self.state["flags"]),
                 "unverified_requirements": notes,
+                **({"deciders": list(deciders)} if deciders else {}),
+                **({"feedback": feedback} if feedback else {}),
             },
         )
 
@@ -1036,6 +1625,9 @@ class Runner:
             )
         node = self.graph["nodes"][self.state["node"]]
         kind = node["type"]
+        seen = self.state.setdefault("seen", [])
+        if node["id"] in self.seen_targets and node["id"] not in seen:
+            seen.append(node["id"])
         if kind == "scene":
             scene = {
                 "scene_id": node["id"],
@@ -1055,6 +1647,7 @@ class Runner:
         elif kind == "condition" and node.get("resolution") == QTE:
             # Quick-Time Events test reflexes, not judgement: always succeed.
             idx, self.state["node"] = qte_success_target(node)
+            flags_set, feedback = self._take_branch_effects(node, idx)
             self._record(
                 "condition",
                 node,
@@ -1062,11 +1655,12 @@ class Runner:
                     "branch_index": idx,
                     "quick_time_event": "success",
                     "used_unverified_default": False,
-                    "flags_set": self._take_branch_effects(node, idx),
+                    "flags_set": flags_set,
+                    **feedback,
                 },
             )
         elif kind == "condition":
-            idx, values, unknown = pick_branch(node, self.state["flags"])
+            idx, values, unknown = pick_branch(node, self.state["flags"], self.state["seen"])
             if values.count(True) > 1:
                 matches = [i for i, v in enumerate(values) if v is True]
                 raise RuntimeError(f"Overlapping conditions at {node['id']}: {matches}")
@@ -1081,7 +1675,7 @@ class Runner:
                         "picked": idx,
                     }
                 )
-            flags_set = self._take_branch_effects(node, idx)
+            flags_set, feedback = self._take_branch_effects(node, idx)
             self.state["node"] = (
                 node["branches"][idx]["next"] if idx is not None else node.get("next")
             )
@@ -1095,6 +1689,7 @@ class Runner:
                     "flags_set": flags_set,
                     "condition_values": values,
                     "used_unverified_default": unknown,
+                    **feedback,
                 },
             )
         elif kind == "chapter_exit":
@@ -1161,6 +1756,15 @@ class Runner:
             )
         else:
             raise RuntimeError(f"Unsupported node type {kind}")
+
+    def halt(self, reason: str):
+        """Stops a playing Run where it is, recording why; it is kept as a partial Run
+        with its events so far."""
+        if self.state["status"] != "running":
+            return
+        self.state["status"] = "partial"
+        self.state["stop_reason"] = reason
+        self._checkpoint()
 
     def run(self):
         while self.state["status"] == "running":

@@ -81,16 +81,26 @@ function renderClue(item) {
     return `<p><b>${esc(first)}</b>${rest.length ? `<span>${esc(rest.join(' · '))}</span>` : ''}</p>`;
   }).join('')}</div>`;
 }
+/* Gauge Feedback: the gauges the game flashed on screen after this moment, as the model read them. */
+function renderFeedback(record, attrs = '') {
+  const lines = (record.feedback || []).filter(Boolean);
+  return lines.length
+    ? `<p class="story-feedback" ${attrs} aria-label="On screen">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</p>`
+    : '';
+}
 function renderRule(item) {
   const record = item.record;
   if (record.type === 'route') {
-    if (!record.assumed) return '';
-    return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(record.flag)} = ${esc(String(record.value))}</p>`;
+    // The server words the assumption (ending.assumed_route_text).
+    if (!record.assumed || !record.text) return '';
+    return `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text)}</p>`;
   }
   const branches = state.graph?.nodes?.[record.node_id]?.branches || [];
   const taken = branches[record.branch_index]?.condition_text;
-  if (!record.used_unverified_default || !taken) return '';
-  return `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`;
+  const assumed = record.used_unverified_default && taken
+    ? `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`
+    : '';
+  return assumed + renderFeedback(record, momentAttrs(item));
 }
 /* A model's logo beside the option it chose. Hovering names the model; clicking shows its
  * justification in the card. The logo whose justification is shown is pressed. */
@@ -107,7 +117,14 @@ function agreementLabel(byChoice) {
 }
 function renderDecision(item, number, total, key, tables, run) {
   const record = item.record, {byChoice} = compareDecision(key, tables);
-  const who = record.character && record.character !== 'multiple' ? record.character : null;
+  // A Joint Decision names every Character whose memory it was made with.
+  const deciders = Array.isArray(record.deciders) && record.deciders.length > 1 ? record.deciders : null;
+  const who = deciders
+    ? deciders.slice(0, -1).join(', ') + ' and ' + deciders[deciders.length - 1]
+    : record.character && record.character !== 'multiple' ? record.character : null;
+  // Who decided, when it isn't simply the segment's Character: "Decided as Markus", or a
+  // Joint Decision's "Decided with Markus's and Connor's memories".
+  const joint = record.decided ? `<p class="story-deciders">${esc(record.decided)}</p>` : '';
   const exploration = Boolean(graphNode(record.node_id)?.exploration);
   const options = (record.available_choices || []).map(option => {
     const chosen = option.id === record.choice_id, group = byChoice.get(option.id) || [];
@@ -120,8 +137,9 @@ function renderDecision(item, number, total, key, tables, run) {
     : `<span class="story-decision-count">Decision ${number} of ${total}</span>`;
   return `<article class="story-decision ${exploration ? 'is-exploration' : ''}" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
     <header>${count}${agreementLabel(byChoice)}</header>
-    <h3>${who ? `What does ${esc(who)} do?` : 'What happens next?'}</h3>
-    <ul class="story-options">${options}</ul>
+    <h3>${who ? `What ${deciders ? 'do' : 'does'} ${esc(who)} do?` : 'What happens next?'}</h3>
+    ${joint}<ul class="story-options">${options}</ul>
+    ${renderFeedback(record)}
     <div class="story-why" aria-live="polite"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
   </article>`;
 }
@@ -186,6 +204,10 @@ function chapterNavigation(run, chapter) {
 function briefingOpener(briefing) {
   return briefing ? `<p class="story-briefing">${esc(briefing)}</p>` : '';
 }
+/* The Ending Summary that opens Final Routes (ending.js), when that script is loaded. */
+function endingCard(chapter) {
+  return typeof endingSummaryCard === 'function' ? endingSummaryCard(chapter) : '';
+}
 function caveatBanner(run) {
   return run.synthetic ? '<p class="story-caveat">Synthetic preview</p>' : '';
 }
@@ -200,7 +222,14 @@ function renderStoryToolbar(run) {
   if (!run) setFollowingMenu(false);
   $('storyRunMenu').innerHTML = activeRuns().map(item => `<button type="button" role="menuitemradio" class="story-run-option" data-run-id="${esc(item.id)}" aria-checked="${item.id === run?.id}" style="--run-color:${routeColor(item)}"><span class="story-run-logo">${modelIcon(providerOf(item))}</span><span class="story-run-name">${runLabelHtml(item)}</span></button>`).join('');
   $('storyMode').setAttribute('aria-pressed', String(state.storyMode === 'key'));
-  document.querySelectorAll('.run-chip').forEach(chip => chip.classList.toggle('is-followed', state.view === 'story' && chip.dataset.focusId === run?.id));
+  let newlyFollowed = null;
+  document.querySelectorAll('.run-chip').forEach(chip => {
+    const followed = state.view === 'story' && chip.dataset.focusId === run?.id;
+    if (followed && !chip.classList.contains('is-followed')) newlyFollowed = chip;
+    chip.classList.toggle('is-followed', followed);
+  });
+  fitModelBar();
+  revealModelBarChip(newlyFollowed);
 }
 function renderDecisionStrip(decisions) {
   $('decisionStrip').innerHTML = decisions.length
@@ -213,11 +242,12 @@ function renderChapterSubtitle(chapter) {
 function renderUnvisitedChapter(run, chapter) {
   const visitors = activeRuns().filter(item => (item.chapters_visited || []).includes(chapter));
   const message = visitors.length ? `Reached by ${visitors.map(item => esc(item.model)).join(', ')}` : '';
-  $('storyContent').innerHTML = `<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
+  $('storyContent').innerHTML = `${endingCard(chapter)}<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
   renderDecisionStrip([]);
   renderChapterSubtitle(chapter);
 }
-async function renderStory({keepScroll = false} = {}) {
+/* `position` is a reading position to return to once the chapter is drawn (see readingPosition). */
+async function renderStory({keepScroll = false, position = null} = {}) {
   const run = storyRun(), chapter = state.chapter;
   renderStoryToolbar(run);
   if (!run || !chapter || state.view !== 'story') return;
@@ -226,7 +256,7 @@ async function renderStory({keepScroll = false} = {}) {
   const cacheKey = `${run.id}\u0000${chapter}`, events = detail?.events?.length || 0;
   let response = storyCache.get(cacheKey)?.events === events ? storyCache.get(cacheKey).response : null;
   if (!response) {
-    if (!keepScroll) $('storyContent').innerHTML = '';
+    if (!keepScroll && !position) $('storyContent').innerHTML = '';
     try {
       response = await api(`/api/runs/${encodeURIComponent(run.id)}/story?chapter=${encodeURIComponent(chapter)}`);
     } catch (error) {
@@ -260,10 +290,11 @@ async function renderStory({keepScroll = false} = {}) {
   }
   const context = {character: chapterCharacter(chapter), numbers, keys, tables, run, total: summaries.length};
   const body = state.storyMode === 'key' ? renderCondensed(items, context) : items.map(item => renderItem(item, context)).join('');
-  $('storyContent').innerHTML = caveatBanner(run) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
+  $('storyContent').innerHTML = caveatBanner(run) + endingCard(chapter) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
   renderChapterSubtitle(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);
+  else if (position) returnToReadingPosition(position);
   else if (!keepScroll) scrollStoryToTop();
   trackStoryScene();
 }
@@ -272,11 +303,62 @@ function scrollStoryToTop() {
   $('storyScroll').scrollTop = 0;
   document.querySelector('.main-panel').scrollTop = 0;
 }
+/* Moves the Story by `delta` pixels. Phones scroll the whole panel rather than the story pane,
+ * so whatever the story pane cannot take is passed on to the panel. */
+function scrollStoryBy(delta) {
+  for (const scroller of [$('storyScroll'), document.querySelector('.main-panel')]) {
+    if (Math.abs(delta) < 1) return;
+    const before = scroller.scrollTop;
+    scroller.scrollTop = before + delta;
+    delta -= scroller.scrollTop - before;
+  }
+}
+/* What is being read is judged at the upper third of the pane. */
+function readingLine() {
+  const box = $('storyScroll').getBoundingClientRect();
+  return Math.max(box.top, 0) + Math.min(box.height, innerHeight) / 3;
+}
+/* Scene headings and decisions, each named so the same one can be found in another Run's
+ * text: headings by their text, decisions by their node, counting repeats within the chapter. */
+function storyAnchors() {
+  const seen = new Map();
+  return [...document.querySelectorAll('#storyContent .story-section, #storyContent .story-decision')].map(el => {
+    const name = el.classList.contains('story-decision') ? `decision ${el.dataset.moment}` : `heading ${el.textContent}`;
+    const repeat = (seen.get(name) || 0) + 1;
+    seen.set(name, repeat);
+    return {el, key: `${name}#${repeat}`};
+  });
+}
+/* The reading position: the heading or decision being read, the ones before it (newest first,
+ * to fall back on), and where it sits on screen. Null when the chapter has none. */
+function readingPosition() {
+  const line = readingLine(), anchors = storyAnchors();
+  let current = -1;
+  for (const [at, {el}] of anchors.entries()) {
+    if (!el.getClientRects().length) continue;  // inside a collapsed gap
+    if (current >= 0 && el.getBoundingClientRect().top > line) break;
+    current = at;
+  }
+  if (current < 0) return null;
+  return {
+    keys: anchors.slice(0, current + 1).map(anchor => anchor.key).reverse(),
+    top: anchors[current].el.getBoundingClientRect().top,
+  };
+}
+/* Puts the same heading or decision back where it was, or else the nearest earlier one this
+ * Run reached; the chapter's top when it reached none of them. */
+function returnToReadingPosition(position) {
+  const found = new Map(storyAnchors().map(anchor => [anchor.key, anchor.el]));
+  const target = position.keys.map(key => found.get(key)).find(Boolean);
+  if (!target) return scrollStoryToTop();
+  const collapsed = target.closest('details');
+  if (collapsed) collapsed.open = true;
+  scrollStoryBy(target.getBoundingClientRect().top - position.top);
+}
 /* The scene being read: the last section heading above the upper third of the pane. */
 function emitStoryScene() {
   if (state.view !== 'story') return;
-  const box = $('storyScroll').getBoundingClientRect();
-  const line = Math.max(box.top, 0) + Math.min(box.height, innerHeight) / 3;
+  const line = readingLine();
   let heading = null, art = null;
   for (const el of document.querySelectorAll('#storyContent .story-section')) {
     if (!el.getClientRects().length) continue;  // inside a collapsed gap
@@ -310,10 +392,13 @@ function showMomentOnFlowchart(moment) {
   const run = storyRun();
   setView('flow').then(() => inspect(moment, run?.id, {glide: true}));
 }
+/* Following another Run keeps the reader where they were in the chapter. */
 function setStoryRun(id) {
+  if (id === storyRun()?.id) return;
+  const position = readingPosition();
   state.storyRunId = id;
   renderChapterList();
-  renderStory();
+  renderStory({position});
 }
 /* Shows one model's justification in a decision card. Says what it chose when that differs
  * from the followed model's choice. Only this card changes; the Story keeps its model. */

@@ -18,9 +18,21 @@
   --ink-muted: #8a939c;
   --ink-faint: #b4bbc2;
 
+  /* Title screen: always dark, whatever the dashboard theme. */
+  --title-ground: #0b0f15;
+  --title-ink: #eef3f8;
+  --title-ink-soft: rgba(225, 233, 242, .62);
+
+  /* A shown Story logo: white icon and faint inner glow on its Run's colour. */
+  --mark-on-fill: #fff;
+  --mark-fill-glow: rgba(255, 255, 255, .45);
+
   /* Menu highlight blue. */
   --highlight: #2f8ce6;
   --highlight-soft: rgba(47, 140, 230, .12);
+
+  /* A form's error message (the Visitor Run form). */
+  --danger: #b4282e;
 
   /* Character LED ramps, light → dark. */
   --connor-1: #8ccaff; --connor-2: #52a9f2; --connor-3: #2087e0; --connor-4: #1567b6; --connor-5: #0e4b88; --connor-6: #08305a;
@@ -30,6 +42,18 @@
   /* Active ramp: blue by default. */
   --shade-1: var(--connor-1); --shade-2: var(--connor-2); --shade-3: var(--connor-3);
   --shade-4: var(--connor-4); --shade-5: var(--connor-5); --shade-6: var(--connor-6);
+
+  /* Ending Summary card (ending.css): built on the theme's surfaces and inks. */
+  --ending-surface: var(--surface-solid);
+  --ending-line: var(--line-soft);
+  --ending-label: var(--ink-muted);
+  --ending-text: var(--ink-soft);
+  --ending-alive: var(--ink);
+  --ending-dead: var(--markus-4);
+  --ending-unknown: var(--ink-faint);
+  --ending-connor: var(--connor-3);
+  --ending-kara: var(--kara-4);
+  --ending-markus: var(--markus-3);
 
   /* Per-provider route line styles, so same-hue routes stay apart. */
   --dash-openai: none;
@@ -173,14 +197,32 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .picker-no-runs { padding: 18px 6px; font-size: 13px; color: var(--ink-muted); }
 
 .selected-run-chips { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; padding: 2px; }
-.run-chip { --run-color: var(--accent); display: inline-flex; align-items: center; gap: 7px; flex: 0 0 auto; max-width: 190px; height: 32px; padding: 0 6px 0 4px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--surface); cursor: pointer; transition: border-color .2s, background .2s; }
+/* One line, always: when the chips don't fit they shrink to logos, all but the Followed Run's;
+   if even the logos don't fit, edge fades and arrows show there is more. */
+.model-bar { --model-bar-fade: 36px; position: relative; display: flex; align-items: center; flex: 1; min-width: 0; }
+.selected-run-chips::-webkit-scrollbar { display: none; }
+/* A logo grows back into its full chip in the row, pushing the rest along, when hovered
+   (.is-grown, set by app.js), focused or followed. The name and × sit in a one-column grid
+   whose track animates 0fr <-> 1fr, which works with the name's natural width. */
+.selected-run-chips.is-compact .run-chip:not(.is-followed, .is-grown, :focus-visible, :has(:focus-visible)) .run-chip-more { grid-template-columns: 0fr; }
+.model-bar.fade-start .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade)); mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade)); }
+.model-bar.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to left, transparent 0, #000 var(--model-bar-fade)); mask-image: linear-gradient(to left, transparent 0, #000 var(--model-bar-fade)); }
+.model-bar.fade-start.fade-end .selected-run-chips { -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade), #000 calc(100% - var(--model-bar-fade)), transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 var(--model-bar-fade), #000 calc(100% - var(--model-bar-fade)), transparent 100%); }
+.model-bar-arrow { position: absolute; top: 50%; z-index: 1; width: 22px; height: 22px; display: grid; place-items: center; margin-top: -11px; border: 1px solid var(--line); border-radius: 50%; background: var(--surface-solid); color: var(--ink-soft); font-size: 15px; line-height: 1; }
+.model-bar-arrow:hover { border-color: var(--highlight); color: var(--highlight); }
+.model-bar-arrow[data-scroll="-1"] { left: 0; }
+.model-bar-arrow[data-scroll="1"] { right: 0; }
+.model-bar-arrow.is-hidden { display: none; }
+.run-chip { --run-color: var(--accent); display: inline-flex; align-items: center; flex: 0 0 auto; max-width: 190px; height: 32px; padding: 0 3px; border: 1px solid var(--line-soft); border-radius: 16px; background: var(--surface); cursor: pointer; transition: border-color .2s, background .2s; }
 .run-chip:hover, .run-chip.run-focused { border-color: var(--run-color); }
 .run-chip.is-followed { border-color: var(--run-color); background: var(--surface-solid); box-shadow: inset 0 0 0 1px var(--run-color); }
 .run-chip-mark, .legend-model, .inspect-logo { display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; background: #fff; border: 1.5px solid var(--run-color, var(--accent)); }
 .run-chip-mark { width: 24px; height: 24px; }
 .run-chip-mark img, .legend-model img { width: 12px; height: 12px; }
-.run-chip-label { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.run-chip-remove { width: 18px; height: 18px; display: grid; place-items: center; font-size: 15px; line-height: 1; color: var(--ink-faint); }
+.run-chip-more { display: grid; grid-template-columns: 1fr; min-width: 0; transition: grid-template-columns .24s var(--ease); }
+.run-chip-more-inner { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; }
+.run-chip-label { min-width: 0; margin-left: 7px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.run-chip-remove { flex: 0 0 auto; width: 18px; height: 18px; margin-right: 3px; display: grid; place-items: center; font-size: 15px; line-height: 1; color: var(--ink-faint); }
 .run-chip-remove:hover { color: var(--ink); }
 .mock-icon { font-size: 11px; line-height: 1; color: var(--ink-soft); }
 
@@ -249,16 +291,31 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .is-chosen .story-option-tick { background: var(--run-color); border-color: var(--run-color); box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 20%, transparent); }
 .story-option-label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .story-option-models { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 48%; }
-.story-mark { position: relative; display: grid; place-items: center; width: 24px; height: 24px; background: #fff; border: 1.5px solid var(--run-color); border-radius: 50%; transition: transform .2s var(--ease), box-shadow .2s; }
-.story-mark img, .story-mark .mock-icon { width: 12px; height: 12px; font-size: 10px; line-height: 12px; }
-.story-mark:hover, .story-mark:focus-visible, .story-mark[aria-pressed="true"] { transform: scale(1.12); box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 25%, transparent); }
-.story-mark[aria-pressed="true"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 40%, transparent), 0 0 10px -2px var(--run-color); }
-/* The model's name, shown quickly above its logo in dark glass. */
-.story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; padding: 3px 8px; white-space: nowrap; pointer-events: none;
+/* Shadows keep three layers in every state (outer ring, inner glow, inset fill) so a click
+ * interpolates them: the outer ring collapses as the inset fill grows inward over the disc. */
+.story-mark { position: relative; display: grid; place-items: center; width: 24px; height: 24px; background: #fff; border: 1.5px solid var(--run-color); border-radius: 50%;
+  box-shadow: 0 0 0 0 transparent, inset 0 0 0 0 transparent, inset 0 0 0 0 transparent;
+  transition: transform .2s var(--ease), box-shadow .25s var(--ease), background-color 0s; }
+.story-mark img, .story-mark .mock-icon { width: 12px; height: 12px; font-size: 10px; line-height: 12px; transition: filter .25s var(--ease), color .25s var(--ease); }
+.story-mark:hover, .story-mark:focus-visible, .story-mark[aria-pressed="true"] { transform: scale(1.12); }
+.story-mark:is(:hover, :focus-visible):not([aria-pressed="true"]) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--run-color) 25%, transparent), inset 0 0 0 0 transparent, inset 0 0 0 0 transparent; }
+/* The shown logo: filled with its Run's colour, a white icon, a faint inner glow, no outer ring. */
+.story-mark[aria-pressed="true"] { background-color: var(--run-color); box-shadow: 0 0 0 0 transparent, inset 0 0 5px 1px var(--mark-fill-glow), inset 0 0 0 12px var(--run-color);
+  transition: transform .2s var(--ease), box-shadow .25s var(--ease), background-color 0s .25s; }
+.story-mark[aria-pressed="true"] img { filter: brightness(0) invert(1); }
+.story-mark[aria-pressed="true"] .mock-icon { color: var(--mark-on-fill); }
+@media (prefers-reduced-motion: reduce) { .story-mark[aria-pressed="true"] { transition-delay: 0s; } }
+/* A model's name in dark glass, shown quickly above a Story logo. */
+.story-mark-name { padding: 3px 8px; white-space: nowrap; pointer-events: none;
   font-size: 11px; font-weight: 400; letter-spacing: .04em; color: #e8eef5; background: linear-gradient(160deg, rgba(24, 32, 44, .94), rgba(10, 14, 20, .96));
   border: 1px solid var(--run-color); box-shadow: 0 6px 18px rgba(5, 10, 18, .3), 0 0 12px -4px var(--run-color);
   opacity: 0; visibility: hidden; transition: opacity .1s, visibility 0s linear .1s; }
+.story-mark-name { position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%); z-index: 4; }
 .story-mark:is(:hover, :focus-visible) .story-mark-name { opacity: 1; visibility: visible; transition: opacity .1s .08s, visibility 0s .08s; animation: glitch-in .22s steps(4, end) .08s both; }
+/* Gauge Feedback: what the game flashed on screen after the followed model's choice. */
+.story-feedback { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 10px 0 0; font-size: 12px; letter-spacing: .04em; color: var(--ink-soft); }
+.story-feedback span { padding-left: 8px; border-left: 2px solid var(--highlight); overflow-wrap: anywhere; }
+.story-deciders { margin: -6px 0 12px; font-size: 12px; letter-spacing: .04em; color: var(--ink-soft); }
 .story-why { margin-top: 14px; font-size: 14.5px; line-height: 1.55; }
 .story-why p { margin: 0; font-weight: 300; }
 /* Another model's justification, shown in place of the followed model's. */
@@ -311,6 +368,7 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .flow-node.kind-option { border-radius: 18px; font-size: 12px; }
 .flow-node.kind-option.visited { border-color: var(--accent); }
 .flow-node.kind-junction { min-height: 0; border-style: dashed; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+.flow-node.kind-junction .node-label { -webkit-line-clamp: 3; }
 .flow-node.kind-exit, .flow-node.kind-ending { font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; }
 .flow-node.kind-portal { border-style: dashed; font-size: 10.5px; letter-spacing: .08em; }
 .flow-node.kind-portal:hover { border-color: var(--accent); color: var(--accent); }
@@ -369,6 +427,9 @@ body[data-models="none"] .picker-toggle:not(.on) { border-color: var(--highlight
 .graph-empty { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 360px; text-align: center; color: var(--ink-muted); pointer-events: none; }
 .graph-empty strong { display: block; font-size: 16px; font-weight: 400; color: var(--ink-soft); }
 .graph-empty p { font-size: 13px; }
+/* "Choose a model" in either view opens the model picker. */
+.choose-model { display: block; margin: 0 auto; padding: 6px 12px; font-size: 16px; font-weight: 400; color: var(--ink-soft); border-bottom: 1px solid transparent; pointer-events: auto; transition: color .2s var(--ease), border-color .2s var(--ease); }
+.choose-model:is(:hover, :focus-visible) { color: var(--highlight); border-bottom-color: var(--highlight); outline: none; }
 .graph-notice { position: absolute; top: 14px; left: 14px; z-index: 3; padding: 6px 10px; font-size: 12px; color: var(--ink-soft); background: var(--surface-solid); border-left: 2px solid var(--accent); }
 
 .canvas-legend { position: absolute; left: 14px; top: 14px; z-index: 3; max-width: 240px; max-height: 45%; overflow-y: auto; padding: 8px 12px; background: var(--surface-solid); border: 1px solid var(--line-soft); scrollbar-width: thin; }

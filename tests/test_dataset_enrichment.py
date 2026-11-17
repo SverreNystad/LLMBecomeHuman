@@ -51,9 +51,14 @@ def test_flags_are_snake_case(graph):
             assert SNAKE_CASE.fullmatch(flag), (where, flag)
 
 
+# The shooting at Kara's checkpoint only changed her relationship with Alice, which
+# isn't modelled: its headline is its only lasting effect, so it sets no flag.
+NEWS_ONLY = {"ch32_1_00308/option_0", "ch32_1_00311/option_0"}
+
+
 def test_news_options_also_set_a_flag(graph):
     for where, effects in choice_effects(graph):
-        if effects.get("news"):
+        if effects.get("news") and where not in NEWS_ONLY:
             assert effects.get("flags"), where
 
 

@@ -36,6 +36,8 @@ repos:
       - id: check-yaml
         name: "📁 filesystem/📝 yaml · Validate YAML files"
         types: [yaml]
+        # Helm templates are Go templates, not YAML until rendered (`helm lint k8s` covers them).
+        exclude: ^k8s/templates/
       - id: check-json
         name: "📁 filesystem/📝 json · Validate JSON files"
       - id: check-ast

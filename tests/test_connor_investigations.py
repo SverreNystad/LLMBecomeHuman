@@ -2,7 +2,8 @@
 
 import pytest
 
-from tests.dataset import load_dataset, play_story
+from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
+
 
 # Partners: reporting to Hank. The correct reconstruction is: it started in the
 # kitchen, with the bat, the android stabbed the victim, who fled to the living

@@ -2,15 +2,17 @@
 
 import pytest
 
-from tests.dataset import play_story
+from tests.dataset import CONNOR_SHAKEN, play_story
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
 SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
 }
 NOBODY_SAVES_MARKUS = {
+    **CONNOR_SHAKEN,  # Connor, facing North, is unstable enough to become deviant
     "ch19_00081": "REFUSE",
     **SIMON_LEFT_ON_THE_ROOF,
     "ch28_00044": "STAND GROUND",
@@ -50,7 +52,9 @@ def test_a_machine_connor_is_never_offered_trust(tmp_path):
 def test_with_markus_dead_north_calls_the_androids_to_arms(tmp_path):
     run = play_story(tmp_path, NOBODY_SAVES_MARKUS)
     assert "31.1" not in run.chapters
-    assert not {"32.5", "32.6"} & set(run.chapters)
+    # Markus's demonstration never plays; 32.6 plays only North's charge.
+    assert "32.5" not in run.chapters
+    assert "ch32_6_00125" not in run.nodes and "ch32_6_00011" in run.nodes
     assert CONNOR_CHURCH in run.nodes
     assert NORTH_CALLS_MARKUS_DEAD in run.nodes
 
@@ -73,7 +77,8 @@ def test_hank_quits_and_kills_himself_only_if_hostile(tmp_path, hostile):
     picks = {**MACHINE} | (HOSTILE_HANK if hostile else {})
     run = play_story(tmp_path, picks)
     assert (HANKS_HOUSE in run.nodes) is hostile
-    assert run.flags["hank_alive"] is not hostile
+    # Hank's Fate can change later, on the rooftop in 32.3.
+    assert (HANK_SUICIDE in run.nodes) is hostile
 
 
 def test_without_a_raid_markus_speaks_to_the_people_not_in_the_church(tmp_path):

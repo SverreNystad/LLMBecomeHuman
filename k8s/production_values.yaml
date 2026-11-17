@@ -1,0 +1,37 @@
+# Production: the CI-published image, exposed at llmbecomehuman.com via Cloudflare Tunnel.
+# Layered on top of values.yaml:
+#   helm upgrade --install llmbecomehuman ./k8s -f k8s/production_values.yaml
+# Requires the cloudflared-token Secret (see docs/developer_setup.md#kubernetes-helm).
+
+image:
+  # Published by the push-image job in .github/workflows/ci.yml on every push to main.
+  repository: ghcr.io/sverrenystad/llmbecomehuman
+  # "latest" tracks main. For a reproducible rollout pin a commit: --set image.tag=sha-abc1234
+  tag: "latest"
+  pullPolicy: Always
+
+cloudflared:
+  enabled: true
+  replicaCount: 2
+  tokenSecret:
+    name: cloudflared-token
+    key: token
+
+# Redeploy automatically when CI pushes a new "latest" (requires the Keel controller).
+keel:
+  enabled: true
+  pollSchedule: "@every 5m"
+
+# Visitor Runs live on a persistent volume so redeploys don't wipe them.
+# This switches the Deployment to the Recreate strategy (one pod on the volume at a time).
+# Visitors can play their own Runs with their own API keys (ADR 0003).
+visitorRuns:
+  allowOwnRuns: true
+  persistence:
+    enabled: true
+    size: 5Gi
+
+# The app runs as uid 1000 (see securityContext in values.yaml); fsGroup makes the
+# mounted Visitor Runs volume writable for it.
+podSecurityContext:
+  fsGroup: 1000

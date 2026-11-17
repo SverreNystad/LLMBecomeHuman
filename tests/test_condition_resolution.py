@@ -13,7 +13,7 @@ from detroit_benchmark.engine import (
     evaluate_condition,
     validate_graph,
 )
-from tests.dataset import flag_values, flags_in, load_dataset
+from tests.dataset import HANK_GIVES_TIME, flag_values, flags_in, load_dataset
 
 
 def _scene(nid, nxt):
@@ -348,10 +348,9 @@ FAILURE = re.compile(
     re.IGNORECASE,
 )
 # Outcome checks whose success is the outcome of an earlier Quick-Time Event
-# (always a success), checked against the wiki; and The Hostage's leap, where
-# succeeding means Connor reaches Emma in time and falls to his death.
+# (always a success), checked against the wiki. (The Hostage's leap for Emma is a
+# choice now: leaping saves her and costs Connor his body.)
 SUCCESS = {
-    "ch1_00005": "reaches Emma in time",
     "ch13_00063": "Kara shot Todd",
     "ch15_00189": "arrive together",
 }
@@ -422,7 +421,12 @@ class _ScriptedRunner(Runner):
 def _play_story(tmp_path, picks):
     """Play the whole real story; return the headings seen per chapter."""
     run = _ScriptedRunner(
-        _dataset(), "mock", None, tmp_path / "run", allow_unverified=True, picks=picks
+        _dataset(),
+        "mock",
+        None,
+        tmp_path / "run",
+        allow_unverified=True,
+        picks={**HANK_GIVES_TIME, **picks},
     )
     run.run()
     seen = {}
@@ -592,8 +596,21 @@ SIMON_LEFT_ON_THE_ROOF = {
     "ch23_00077": "SPARE",
     "ch23_00043": "Help",
     "ch23_00033": "LEAVE",
+    "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
 }
-TRUTH_IS_INSIDE = {"ch9_00095": "CONVINCE IT", "ch9_00040": "INTERVENE"}
+# Convincing works only with the stress in the optimal band (The Interrogation#Influencing
+# Carlos' android's stress): 35+4+4+4+4+4 = 55, then -7+7+7 = 62%.
+TRUTH_IS_INSIDE = {
+    "ch9_00123": "SHOW PHOTOS",
+    "ch9_00118": "THREATEN",
+    "ch9_00113": "THREATEN",
+    "ch9_00106": "TRUTH",
+    "ch9_00102": "TRUTH",
+    "ch9_00095": "CONVINCE IT",
+    "ch9_00089": "INDIFFERENT",
+    "ch9_00085": "TERRIFY",
+    "ch9_00040": "INTERVENE",
+}
 
 
 def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):

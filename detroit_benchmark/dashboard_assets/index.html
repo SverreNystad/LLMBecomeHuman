@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="/assets/glitch.css">
   <link rel="stylesheet" href="/assets/motion.css">
   <link rel="stylesheet" href="/assets/phone.css">
+  <link rel="stylesheet" href="/assets/visitor.css">
+  <link rel="stylesheet" href="/assets/ending.css">
 </head>
 <body data-character="none">
   <!-- Background layer: later layers (scene art, node network) mount inside here. -->
@@ -66,7 +68,11 @@
               <div class="picker-actions"><button id="bestOfEach" type="button" title="The best model of each provider">Best of each</button><button id="clearRuns" type="button">Clear</button></div>
             </div>
           </div>
-          <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>
+          <div class="model-bar" id="modelBar">
+            <button type="button" class="model-bar-arrow is-hidden" data-scroll="-1" aria-label="Scroll models left" title="More models">&lsaquo;</button>
+            <div id="selectedRunChips" class="selected-run-chips" aria-label="Shown models"></div>
+            <button type="button" class="model-bar-arrow is-hidden" data-scroll="1" aria-label="Scroll models right" title="More models">&rsaquo;</button>
+          </div>
         </section>
 
         <section class="story-view" id="storyView" aria-label="Story">
@@ -110,7 +116,9 @@
   <script src="/assets/portraits.js" defer></script>
   <script src="/assets/memory.js" defer></script>
   <script src="/assets/phone.js" defer></script>
+  <script src="/assets/ending.js" defer></script>
   <script src="/assets/story.js" defer></script>
+  <script src="/assets/visitor.js" defer></script>
   <script src="/assets/app.js" defer></script>
 </body>
 </html>

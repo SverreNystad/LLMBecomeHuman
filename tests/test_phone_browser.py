@@ -6,15 +6,9 @@ Screenshots are written to docs/images/phone_*.png.
 
 from __future__ import annotations
 
-import shutil
-import socket
-import threading
-import time
 from pathlib import Path
 
 import pytest
-
-from detroit_benchmark.dashboard import create_app
 
 PROJECT = Path(__file__).resolve().parents[1]
 SHOTS = PROJECT / "docs" / "images"
@@ -22,51 +16,10 @@ PHONE = {"width": 390, "height": 844}
 
 
 @pytest.fixture
-def detroit_dashboard(tmp_path):
-    uvicorn = pytest.importorskip("uvicorn")
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    app = create_app(PROJECT / "demo_runs" / "detroit", images_dir=tmp_path)
-    server = uvicorn.Server(
-        uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    )
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    deadline = time.time() + 10
-    while not server.started and time.time() < deadline:
-        time.sleep(0.05)
-    yield f"http://127.0.0.1:{port}/"
-    server.should_exit = True
-    thread.join(timeout=5)
-
-
-@pytest.fixture
-def phone(detroit_dashboard):
-    playwright = pytest.importorskip("playwright.sync_api")
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    with playwright.sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-        try:
-            context = browser.new_context(
-                viewport=PHONE, has_touch=True, is_mobile=True, device_scale_factor=2
-            )
-            page = context.new_page()
-            page.set_default_timeout(6000)
-            errors = []
-            page.on("pageerror", lambda e: errors.append(str(e)))
-            page.goto(detroit_dashboard)
-            page.locator("#titleScreen").wait_for()
-            page.wait_for_timeout(400)
-            page.touchscreen.tap(195, 420)
-            page.locator("#titleScreen").wait_for(state="detached")
-            page.locator(".story-decision").first.wait_for()
-            page.errors = errors
-            yield page
-        finally:
-            browser.close()
+def phone(open_dashboard, detroit_dashboard):
+    page = open_dashboard(detroit_dashboard, "phone")
+    page.locator(".story-decision").first.wait_for()
+    return page
 
 
 def on_screen(page, selector):
@@ -165,51 +118,32 @@ def test_phone_flowchart_fills_the_screen_and_swiping_the_bars_grows_it(phone):
     assert not page.errors
 
 
-def test_wider_screens_keep_todays_layout(detroit_dashboard):
-    playwright = pytest.importorskip("playwright.sync_api")
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    with playwright.sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-        try:
-            page = browser.new_page(viewport={"width": 1024, "height": 768})
-            page.goto(detroit_dashboard)
-            page.locator(".story-decision").first.wait_for(state="attached")
-            assert not page.evaluate("document.body.classList.contains('is-phone')")
-            assert page.locator(".chapter-rail #chapterList").count() == 1
-            assert page.locator(".control-strip #selectedRunChips").is_visible()
-            # Turning a phone to landscape (844 wide) restores the normal layout.
-            page.set_viewport_size({"width": 390, "height": 844})
-            page.wait_for_function("document.body.classList.contains('is-phone')")
-            page.set_viewport_size({"width": 844, "height": 390})
-            page.wait_for_function("!document.body.classList.contains('is-phone')")
-            assert page.locator(".chapter-rail #chapterList").count() == 1
-            assert page.locator(".chapter-heading .view-tabs").count() == 1
-        finally:
-            browser.close()
+def test_wider_screens_keep_todays_layout(detroit_dashboard, new_page):
+    page = new_page({"width": 1024, "height": 768}, timeout=30000)
+    page.goto(detroit_dashboard)
+    page.locator(".story-decision").first.wait_for(state="attached")
+    assert not page.evaluate("document.body.classList.contains('is-phone')")
+    assert page.locator(".chapter-rail #chapterList").count() == 1
+    assert page.locator(".control-strip #selectedRunChips").is_visible()
+    # Turning a phone to landscape (844 wide) restores the normal layout.
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.wait_for_function("document.body.classList.contains('is-phone')")
+    page.set_viewport_size({"width": 844, "height": 390})
+    page.wait_for_function("!document.body.classList.contains('is-phone')")
+    assert page.locator(".chapter-rail #chapterList").count() == 1
+    assert page.locator(".chapter-heading .view-tabs").count() == 1
 
 
-def test_phone_levels_respect_reduced_motion(detroit_dashboard):
-    playwright = pytest.importorskip("playwright.sync_api")
-    binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
-    with playwright.sync_playwright() as p:
-        browser = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
-        try:
-            context = browser.new_context(
-                viewport=PHONE, has_touch=True, is_mobile=True, reduced_motion="reduce"
-            )
-            page = context.new_page()
-            page.goto(detroit_dashboard)
-            page.locator(".phone-l2").wait_for(state="attached")
-            duration = page.evaluate(
-                "parseFloat(getComputedStyle(document.querySelector('.phone-l2')).transitionDuration)"
-            )
-            assert duration < 0.01
-        finally:
-            browser.close()
+def test_phone_levels_respect_reduced_motion(detroit_dashboard, new_page):
+    page = new_page(
+        "phone", device_scale_factor=1, reduced_motion="reduce", timeout=30000
+    )
+    page.goto(detroit_dashboard)
+    page.locator(".phone-l2").wait_for(state="attached")
+    duration = page.evaluate(
+        "parseFloat(getComputedStyle(document.querySelector('.phone-l2')).transitionDuration)"
+    )
+    assert duration < 0.01
 
 
 # ── Touch (#37) ──────────────────────────────────────────

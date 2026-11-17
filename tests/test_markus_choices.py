@@ -129,6 +129,7 @@ def test_with_nobody_to_save_him_markus_is_shot(tmp_path):
         "ch23_00077": "SPARE",
         "ch23_00043": "Help",
         "ch23_00033": "LEAVE",
+        "ch24_x0201": "GO UP TO THE ROOF",  # Connor finds him
     }
     run = play_story(
         tmp_path,

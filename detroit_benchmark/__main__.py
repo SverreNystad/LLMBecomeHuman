@@ -71,6 +71,11 @@ def main():
     play.add_argument(
         "--initial-flags", type=Path, help="Optional JSON dict of game-state flags"
     )
+    play.add_argument(
+        "--hide-relationships",
+        action="store_true",
+        help="Don't show the game's relationship arrows as Gauge Feedback (shown by default)",
+    )
     compare = sub.add_parser("compare", help="Compare saved playthroughs")
     compare.add_argument("run_dirs", type=Path, nargs="+")
     compare.add_argument("--out", type=Path)
@@ -88,6 +93,11 @@ def main():
         type=Path,
         help="Folder with local game art (default: the repository's images/ folder)",
     )
+    dashboard.add_argument(
+        "--allow-own-runs",
+        action="store_true",
+        help="Let visitors play Visitor Runs with their own API key (off by default)",
+    )
     dashboard.add_argument("--host", default="127.0.0.1")
     dashboard.add_argument("--port", type=int, default=8000)
     args = p.parse_args()
@@ -97,7 +107,12 @@ def main():
 
         print(f"Open http://{args.host}:{args.port} to view the benchmark dashboard")
         uvicorn.run(
-            create_app(args.runs_dir, args.graphs_dir, args.images_dir),
+            create_app(
+                args.runs_dir,
+                args.graphs_dir,
+                args.images_dir,
+                allow_own_runs=args.allow_own_runs,
+            ),
             host=args.host,
             port=args.port,
         )
@@ -138,6 +153,7 @@ def main():
             memory_max_chars=args.memory_max_chars,
             temperature=args.temperature,
             resume=args.resume,
+            show_relationships=not args.hide_relationships,
         )
         print(json.dumps(run.run(), indent=2, ensure_ascii=False))
     elif args.command == "compare":

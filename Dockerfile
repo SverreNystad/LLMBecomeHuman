@@ -20,5 +20,11 @@ COPY demo_runs/ ./demo_runs/
 COPY tests/ ./tests/
 COPY pytest.ini ./
 
+# Saved runs + story data baked in so the dashboard shows them without mounts
+# (Kubernetes). Same layout as docker-compose, which mounts over these read-only.
+COPY data/ ./data/
+COPY runs/ ./saved_runs/runs/
+COPY demo_runs/ ./saved_runs/previews/
+
 EXPOSE 8000
-CMD ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/runs", "--graphs-dir", "/app/data", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/saved_runs", "--graphs-dir", "/app/data", "--host", "0.0.0.0", "--port", "8000"]
