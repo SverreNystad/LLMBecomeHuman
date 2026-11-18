@@ -1,6 +1,6 @@
 """The Decision Prompt: everything a model sees at a choice, and nothing else (ADR 0001).
 
-``decision_prompt(graph, node, offered, context)`` builds it from a ``PromptContext``: the
+``decision_prompt(graph, node, offered, run)`` builds it from a ``RunView``: the
 Character Memories, the moments each Character lived in other segments since its last
 Memory Update, the current Chapter Segment so far, Public News and the goal. Flags stay
 internal for routing; other Characters' memories never appear, except in a Joint
@@ -40,8 +40,15 @@ def decision_text(deciders: list[str]) -> str:
     )
 
 
+def is_cross_segment(node: dict) -> bool:
+    """Whether a choice is a Cross-Segment Decision: decided by one Character other
+    than the segment's own (ADR 0005)."""
+    deciders = node.get("deciders") or []
+    return len(deciders) == 1 and deciders[0] != node.get("character")
+
+
 @dataclass(frozen=True)
-class PromptContext:
+class RunView:
     """What a Run has to show a model at a choice."""
 
     # Each Character's Character Memory.
@@ -72,29 +79,27 @@ def scene_view(node: dict) -> dict:
     }
 
 
-def decision_prompt(
-    graph: dict, node: dict, offered: list[dict], context: PromptContext
-) -> dict:
+def decision_prompt(graph: dict, node: dict, offered: list[dict], run: RunView) -> dict:
     """The prompt a model decides ``node`` with, offered ``offered``."""
     character = node.get("character")
     prompt = {"current_scene": scene_view(node)}
     deciders = node.get("deciders")
     # A Cross-Segment Decision's decider sees its own this_moment, not the
     # segment's Chapter Briefing, which is the segment Character's side.
-    cross_segment = bool(deciders) and len(deciders) == 1
+    cross_segment = is_cross_segment(node)
     briefing = chapter_briefing(graph, node.get("chapter"))
     if briefing and not cross_segment:
         prompt["chapter_briefing"] = briefing
-    if context.news:
-        prompt["news"] = list(context.news)
-    moment = node.get("decider_context") or {}
+    if run.news:
+        prompt["news"] = list(run.news)
+    views = node.get("decider_context") or {}
     if cross_segment:
         # A Cross-Segment Decision (ADR 0005): the decider's memory and its own view
         # of the moment; nothing of the segment's Character is shown.
         (decider,) = deciders
         prompt["current_scene"]["character"] = decider
-        prompt["character_memory"] = context.memories.get(decider, "")
-        prompt.update(_other_view(context, decider, moment.get(decider, "")))
+        prompt["character_memory"] = run.memories.get(decider, "")
+        prompt.update(_other_view(run, decider, views.get(decider, "")))
     elif deciders:
         # A Joint Decision: both Characters' memories, each with its own view of the
         # moment (ADR 0005). Nothing else of the other Character's is shown.
@@ -104,35 +109,35 @@ def decision_prompt(
         )
         prompt["points_of_view"] = {
             name: {
-                "character_memory": context.memories.get(name, ""),
+                "character_memory": run.memories.get(name, ""),
                 **(
-                    {"chapter_segment_so_far": segment_for(context, name)}
+                    {"chapter_segment_so_far": segment_for(run, name)}
                     if name == character
-                    else _other_view(context, name, moment.get(name, ""))
+                    else _other_view(run, name, views.get(name, ""))
                 ),
             }
             for name in deciders
         }
     else:
-        prompt["character_memory"] = context.memories.get(character, "")
-        prompt["chapter_segment_so_far"] = segment_for(context, character)
-    prompt["goal"] = context.goal
+        prompt["character_memory"] = run.memories.get(character, "")
+        prompt["chapter_segment_so_far"] = segment_for(run, character)
+    prompt["goal"] = run.goal
     prompt["available_choices"] = [
         {"id": o["id"], "label": o["label"]} for o in offered
     ]
     return prompt
 
 
-def segment_for(context: PromptContext, character) -> list:
+def segment_for(run: RunView, character) -> list:
     """What a Character has lived through since its last Memory Update: moments from
     other Characters' segments, then the current segment."""
-    return deepcopy(list(context.pending.get(character) or []) + list(context.segment))
+    return deepcopy(list(run.pending.get(character) or []) + list(run.segment))
 
 
-def _other_view(context: PromptContext, name: str, moment: str) -> dict:
+def _other_view(run: RunView, name: str, moment: str) -> dict:
     """A decider's view of a moment in another Character's segment: what it knows
     of it, after any earlier such decision of its own not yet in its memory."""
-    pending = context.pending.get(name) or []
+    pending = run.pending.get(name) or []
     return {
         **({"since_last_memory": deepcopy(list(pending))} if pending else {}),
         "this_moment": moment,
@@ -151,21 +156,21 @@ def choice_moments(
     """
     character = node.get("character")
     deciders = node.get("deciders") or []
-    if deciders and character not in deciders:
-        segment = {
+    if is_cross_segment(node):
+        moment = {
             "at": node.get("heading"),
             "decided_by": deciders[0],
             "outcome": chosen["label"],
         }
     else:
-        segment = {
+        moment = {
             "at": node.get("heading"),
             "your_choice": chosen["label"],
             "rationale": rationale,
         }
     if on_screen:
-        segment["on_screen"] = list(on_screen)
-    others = {
+        moment["on_screen"] = list(on_screen)
+    remembered_by = {
         name: {
             "chapter": node.get("chapter"),
             "at": node.get("heading"),
@@ -176,4 +181,9 @@ def choice_moments(
         for name in deciders
         if name != character
     }
-    return segment, others
+    return moment, remembered_by
+
+
+def feedback_moment(node: dict, on_screen: list[str]) -> dict:
+    """The segment entry for Gauge Feedback a condition's branch flashed on screen."""
+    return {"at": node.get("heading"), "on_screen": list(on_screen)}

@@ -1,7 +1,7 @@
 """The Decision Prompt: everything a model sees at a choice (ADR 0001, ADR 0005)."""
 
 from detroit_benchmark.decision_prompt import (
-    PromptContext,
+    RunView,
     choice_moments,
     decision_prompt,
 )
@@ -25,8 +25,8 @@ def choice(**extra) -> dict:
     }
 
 
-def context(**extra) -> PromptContext:
-    return PromptContext(
+def run_view(**extra) -> RunView:
+    return RunView(
         **{
             "memories": {"Connor": "Connor remembers.", "Markus": "Markus remembers."},
             "pending": {},
@@ -40,7 +40,7 @@ def context(**extra) -> PromptContext:
 
 def test_a_choice_shows_the_scene_its_characters_memory_and_segment_and_the_offered_options():
     node = choice()
-    prompt = decision_prompt(GRAPH, node, node["options"][:1], context())
+    prompt = decision_prompt(GRAPH, node, node["options"][:1], run_view())
     assert prompt == {
         "current_scene": {
             "chapter": "2",
@@ -58,7 +58,7 @@ def test_a_choice_shows_the_scene_its_characters_memory_and_segment_and_the_offe
 
 def test_public_news_is_shown_when_there_is_some():
     node = choice()
-    prompt = decision_prompt(GRAPH, node, node["options"], context(news=["Riot."]))
+    prompt = decision_prompt(GRAPH, node, node["options"], run_view(news=["Riot."]))
     assert prompt["news"] == ["Riot."]
 
 
@@ -71,7 +71,7 @@ JOINT = {
 def test_a_joint_decision_shows_each_deciders_memory_and_own_view_of_the_moment():
     node = choice(**JOINT)
     pending = {"Markus": [{"at": "Before", "your_choice": "RUN"}]}
-    prompt = decision_prompt(GRAPH, node, node["options"], context(pending=pending))
+    prompt = decision_prompt(GRAPH, node, node["options"], run_view(pending=pending))
     assert prompt["current_scene"]["deciders"] == ["Markus", "Connor"]
     assert prompt["joint_decision"].startswith(
         "This is a Joint Decision: it belongs to both Markus and Connor."
@@ -95,7 +95,7 @@ def test_a_cross_segment_decision_shows_only_the_deciders_memory_and_view():
         deciders=["Markus"],
         decider_context={"Markus": "Connor draws on Markus in the hold."},
     )
-    prompt = decision_prompt(GRAPH, node, node["options"], context())
+    prompt = decision_prompt(GRAPH, node, node["options"], run_view())
     assert prompt == {
         "current_scene": {
             "chapter": "2",
@@ -117,24 +117,24 @@ REACH = {"id": "reach", "label": "REACH THE GUN", "next": "x"}
 
 
 def test_the_segments_character_remembers_its_own_choice_and_what_flashed_on_screen():
-    segment, others = choice_moments(choice(), REACH, "Because.", ["Hank: up"])
-    assert segment == {
+    moment, remembered_by = choice_moments(choice(), REACH, "Because.", ["Hank: up"])
+    assert moment == {
         "at": "In the hold",
         "your_choice": "REACH THE GUN",
         "rationale": "Because.",
         "on_screen": ["Hank: up"],
     }
-    assert others == {}
+    assert remembered_by == {}
 
 
 def test_after_a_joint_decision_the_other_decider_remembers_it_at_its_next_memory_update():
-    segment, others = choice_moments(choice(**JOINT), REACH, "Because.", [])
-    assert segment == {
+    moment, remembered_by = choice_moments(choice(**JOINT), REACH, "Because.", [])
+    assert moment == {
         "at": "In the hold",
         "your_choice": "REACH THE GUN",
         "rationale": "Because.",
     }
-    assert others == {
+    assert remembered_by == {
         "Markus": {
             "chapter": "2",
             "at": "In the hold",
@@ -147,11 +147,11 @@ def test_after_a_joint_decision_the_other_decider_remembers_it_at_its_next_memor
 
 def test_after_a_cross_segment_decision_the_segments_character_learns_only_the_outcome():
     node = choice(deciders=["Markus"], decider_context={"Markus": "..."})
-    segment, others = choice_moments(node, REACH, "Because.", [])
-    assert segment == {
+    moment, remembered_by = choice_moments(node, REACH, "Because.", [])
+    assert moment == {
         "at": "In the hold",
         "decided_by": "Markus",
         "outcome": "REACH THE GUN",
     }
-    assert others["Markus"]["decided"] == "Decided as Markus"
-    assert others["Markus"]["your_choice"] == "REACH THE GUN"
+    assert remembered_by["Markus"]["decided"] == "Decided as Markus"
+    assert remembered_by["Markus"]["your_choice"] == "REACH THE GUN"

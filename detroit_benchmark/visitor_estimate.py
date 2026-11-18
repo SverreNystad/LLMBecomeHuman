@@ -1,8 +1,9 @@
 """The token estimate a visitor sees before starting a Visitor Run.
 
 It comes from the story itself: the prompts of every decision and Memory Update along the
-story's shortest and longest routes, measured in characters exactly as the engine builds
-them, then turned into tokens with a range of characters per token. The range and the
+story's shortest and longest routes, measured in characters as the engine builds them
+(the moments a Joint or Cross-Segment Decision leaves in another Character's memory are
+left out), then turned into tokens with a range of characters per token. The range and the
 per-call output tokens are calibrated against the maintainers' real Runs, which record both
 their prompts and the tokens their providers counted (tests/test_visitor_models_estimate.py
 checks every one of them still falls within CALIBRATION_TOLERANCE of the range).
@@ -31,7 +32,13 @@ from .engine import (
     read_json,
     scene_record,
 )
-from .decision_prompt import PromptContext, choice_moments, decision_prompt
+from .decision_prompt import (
+    RunView,
+    choice_moments,
+    decision_prompt,
+    feedback_moment,
+    is_cross_segment,
+)
 from .story_rules import StoryRules
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -124,7 +131,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     characters = {n.get("character") for n in nodes.values()} | {
         name for n in nodes.values() for name in n.get("deciders") or []
     }
-    context = PromptContext(
+    run = RunView(
         memories={name: remembered for name in characters},
         pending={},
         segment=[],
@@ -158,11 +165,10 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
             table[1] = (prompt + chars, decisions, updates + 1)
         elif kind == "choice":
             prompt = len(SYSTEM_PROMPT) + _size(
-                decision_prompt(graph, node, node["options"], context)
+                decision_prompt(graph, node, node["options"], run)
             )
             # A Cross-Segment Decision's prompt doesn't carry the segment.
-            deciders = node.get("deciders") or []
-            carries = 0 if deciders and node.get("character") not in deciders else 1
+            carries_segment = 0 if is_cross_segment(node) else 1
             for option in node["options"]:
                 # The choice joins the segment every later prompt in it carries,
                 # with any Gauge Feedback it caused. Relationship arrows are shown
@@ -176,7 +182,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                 ).items():
                     keep(
                         table,
-                        calls + carries,
+                        calls + carries_segment,
                         (prompt + chars + chosen * calls, decisions + 1, updates),
                     )
         else:
@@ -189,8 +195,10 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                 for branch in node.get("branches", []):
                     lines = planned_feedback(graph, branch)
                     if lines and branch.get("next"):
-                        entry = 1 + _size({"at": node.get("heading"), "on_screen": lines})
-                        flashed[branch["next"]] = max(flashed.get(branch["next"], 0), entry)
+                        entry = 1 + _size(feedback_moment(node, lines))
+                        flashed[branch["next"]] = max(
+                            flashed.get(branch["next"], 0), entry
+                        )
             for child in rules.successors(node_id) or [None]:
                 cost = scene + flashed.get(child, 0)
                 for calls, (chars, decisions, updates) in best.get(

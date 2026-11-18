@@ -13,9 +13,10 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from .decision_prompt import (
-    PromptContext,
+    RunView,
     choice_moments,
     decision_prompt,
+    feedback_moment,
     segment_for,
 )
 from .story_rules import (
@@ -1128,7 +1129,7 @@ class Runner:
         if not feedback:
             return {}
         self.state["segment_events"].append(
-            {"at": node.get("heading"), "on_screen": [f["text"] for f in feedback]}
+            feedback_moment(node, [f["text"] for f in feedback])
         )
         return {"feedback": feedback}
 
@@ -1258,10 +1259,10 @@ class Runner:
             ModelDecision, payload, DECISION_MAX_OUTPUT_TOKENS, default
         )
 
-    def _prompt_context(self) -> PromptContext:
+    def _run_view(self) -> RunView:
         """What this Run shows a model: its memories, pending moments, segment and the
         latest Public News."""
-        return PromptContext(
+        return RunView(
             memories=self.state["character_memories"],
             pending=self.state["pending_moments"],
             segment=self.state["segment_events"],
@@ -1278,7 +1279,7 @@ class Runner:
             character,
             node.get("chapter"),
             previous,
-            segment_for(self._prompt_context(), character),
+            segment_for(self._run_view(), character),
             limit,
         )
         rewrite, model_meta = self._structured_call(
@@ -1357,8 +1358,8 @@ class Runner:
                     }
                 )
             offered.append(opt)
-        payload = decision_prompt(self.graph, node, offered, self._prompt_context())
-        response, model_meta = self._model_response(payload, offered)
+        prompt = decision_prompt(self.graph, node, offered, self._run_view())
+        response, model_meta = self._model_response(prompt, offered)
         chosen = next((o for o in offered if o["id"] == response.choice_id), None)
         if chosen is None:
             raise RuntimeError(
@@ -1390,18 +1391,18 @@ class Runner:
         # The model's own choice and rationale become part of the segment it remembers,
         # with any gauge the game flashes on screen right after it; a decider from
         # outside the segment remembers it at its next Memory Update.
-        moment, others = choice_moments(
+        moment, remembered_by = choice_moments(
             node, chosen, rationale, [f["text"] for f in feedback]
         )
         self.state["segment_events"].append(moment)
-        for name, remembered in others.items():
+        for name, remembered in remembered_by.items():
             self.state["pending_moments"].setdefault(name, []).append(remembered)
         self.state["node"] = chosen["next"]
         self._record(
             "decision",
             node,
             {
-                "input": payload,
+                "input": prompt,
                 "output": {**response.model_dump(), "rationale": rationale},
                 **(
                     {"untrimmed_rationale": response.rationale}
