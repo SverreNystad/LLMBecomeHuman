@@ -7,6 +7,7 @@ import json
 import os
 import re
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -275,23 +276,51 @@ def score_move(score: dict, change, value) -> dict | None:
     return item
 
 
-def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
-    """Move the Running Scores an option or branch adds to (kept within their min and
-    max), then show the ones it names in effects.show. Returns the Gauge Feedback,
-    worded from the real change, so what the model reads is what decides."""
-    feedback = []
-    for name, delta in item_adds(scores, item).items():
+@dataclass(frozen=True)
+class Outcome:
+    """What taking an option or a condition branch does to a Run."""
+
+    # The Run's flags afterwards, its Running Scores' new values included.
+    flags: dict
+    # The flags the item set and the new values of the scores it moved.
+    changed: dict
+    # Its Gauge Feedback, each item worded: authored lines, then the scores' moves.
+    feedback: list[dict]
+    # The headlines it makes Public News.
+    news: list[str]
+
+
+def take(
+    graph: dict, item: dict | None, flags: dict, show_relationships: bool = True
+) -> Outcome:
+    """The Outcome of taking ``item`` (an option or a condition branch, or None when a
+    condition takes no branch) with the Run's ``flags``, which it leaves untouched.
+
+    It sets the item's flags, moves the Running Scores it adds to (kept within their
+    min and max), and words the Gauge Feedback from the real change, so what the model
+    reads is what decides; the scores named in effects.show then show their level.
+    """
+    if item is None:
+        return Outcome(dict(flags), {}, [], [])
+    scores = graph.get("scores") or {}
+    set_flags = effect_flags(item)
+    after = {**flags, **set_flags}
+    adds = item_adds(scores, item)
+    items = authored_feedback(item, scores, show_relationships)
+    for name, delta in adds.items():
         score = scores[name]
-        before = flags.get(name, 0)
-        value = min(max(before + delta, score["min"]), score["max"])
-        flags[name] = value
-        move = score_move(score, value - before, value)
+        before = after.get(name, 0)
+        after[name] = min(max(before + delta, score["min"]), score["max"])
+        move = score_move(score, after[name] - before, after[name])
         if move is not None:
-            feedback.append({**move, "text": gauge_text(move)})
-    for name in effect_shows(item):
-        level = score_level(scores[name], flags.get(name, 0))
-        feedback.append({**level, "text": gauge_text(level)})
-    return feedback
+            items.append(move)
+    items += [score_level(scores[name], after.get(name, 0)) for name in effect_shows(item)]
+    return Outcome(
+        flags=after,
+        changed={**set_flags, **{name: after[name] for name in adds}},
+        feedback=unique_feedback([{**entry, "text": gauge_text(entry)} for entry in items]),
+        news=[news["headline"] for news in (item.get("effects") or {}).get("news") or []],
+    )
 
 
 def authored_feedback(
@@ -1083,23 +1112,15 @@ class Runner:
             },
         )
 
-    def _apply_effects(self, item: dict | None) -> tuple[dict, list[dict]]:
-        """Set a taken option's or branch's flags and move its Running Scores.
-
-        Returns what changed (flags and the scores' new values) and the Gauge Feedback
-        it causes, each item worded: authored feedback, then the scores' moves.
-        """
-        if item is None:
-            return {}, []
-        flags = effect_flags(item)
-        self.state["flags"].update(flags)
-        scores = self.graph.get("scores") or {}
-        moved = score_feedback(scores, self.state["flags"], item)
-        changed = {
-            **flags,
-            **{name: self.state["flags"][name] for name in item_adds(scores, item)},
-        }
-        return changed, unique_feedback(self._gauge_feedback(item) + moved)
+    def _take(self, item: dict | None) -> Outcome:
+        """Commit the Outcome of a taken option or branch: its flags and scores, and
+        its Public News."""
+        outcome = take(self.graph, item, self.state["flags"], self.show_relationships)
+        self.state["flags"] = outcome.flags
+        for headline in outcome.news:
+            if headline not in self.state["news"]:
+                self.state["news"].append(headline)
+        return outcome
 
     def _facts(self) -> Facts:
         return Facts(flags=self.state["flags"], seen=self.state["seen"])
@@ -1107,22 +1128,12 @@ class Runner:
     def _resolve(self, node: dict) -> Step:
         return self.rules.resolve(node["id"], self._facts())
 
-    def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
+    def _take_branch(self, node: dict, idx: int | None) -> tuple[dict, dict]:
         """A Fate decided at a condition (a death, an escape) is remembered for later
-        rules. Returns the flags set, so the event shows where it changed, and the
-        event's Gauge Feedback, which also joins the segment the model sees next."""
-        branch = node["branches"][idx] if idx is not None else None
-        changed, feedback = self._apply_effects(branch)
-        return changed, self._branch_feedback(node, feedback)
-
-    def _gauge_feedback(self, item: dict | None) -> list[dict]:
-        """Authored Gauge Feedback for a taken option or branch, each item worded."""
-        if item is None:
-            return []
-        feedback = authored_feedback(
-            item, self.graph.get("scores"), self.show_relationships
-        )
-        return [{**entry, "text": gauge_text(entry)} for entry in feedback]
+        rules. Returns what changed, so the event shows it, and the event's Gauge
+        Feedback, which also joins the segment the model sees next."""
+        outcome = self._take(node["branches"][idx] if idx is not None else None)
+        return outcome.changed, self._branch_feedback(node, outcome.feedback)
 
     def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
         """A branch's Gauge Feedback joins the segment the model sees next, and the event."""
@@ -1370,10 +1381,7 @@ class Runner:
         # Model only selects: authored graph/rules determine the outcome.
         before = dict(self.state["flags"])
         effects = chosen.get("effects") or {}
-        _, feedback = self._apply_effects(chosen)
-        for item in effects.get("news") or []:
-            if item["headline"] not in self.state["news"]:
-                self.state["news"].append(item["headline"])
+        feedback = self._take(chosen).feedback
         key = f"{node['id']}:{chosen['id']}"
         decision = {
             "choice_key": key,
@@ -1448,7 +1456,7 @@ class Runner:
             # Quick-Time Events test reflexes, not judgement: always succeed.
             taken = self._resolve(node)
             self.state["node"] = taken.next
-            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            flags_set, feedback = self._take_branch(node, taken.branch_index)
             self._record(
                 "condition",
                 node,
@@ -1472,7 +1480,7 @@ class Runner:
                         "picked": taken.branch_index,
                     }
                 )
-            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            flags_set, feedback = self._take_branch(node, taken.branch_index)
             self.state["node"] = taken.next
             self._record(
                 "condition",
