@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
@@ -20,6 +19,7 @@ from .decision_prompt import (
     feedback_moment,
     segment_for,
 )
+from .run_folder import RunFolder, canonical_hash
 from .story_rules import (
     COMPARISONS,
     CONDITION_RESOLUTIONS,
@@ -103,12 +103,6 @@ class MemoryRewrite(BaseModel):
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def canonical_hash(obj) -> str:
-    return hashlib.sha256(
-        json.dumps(obj, sort_keys=True, ensure_ascii=False).encode()
-    ).hexdigest()
 
 
 BRIEFING_MAX_CHARS = 600
@@ -829,44 +823,6 @@ def create_model(
     raise ValueError(f"Unsupported provider {provider}")
 
 
-def _parse_event(line: bytes) -> dict | None:
-    try:
-        parsed = json.loads(line)
-    except ValueError:
-        return None
-    return parsed if isinstance(parsed, dict) else None
-
-
-def iter_events_at(directory: Path):
-    """A Run's events in order, each with the byte offset of its line, read line by line.
-    A half-written last line (the Run is still playing) and anything that is not an
-    event object are skipped."""
-    try:
-        with (directory / "events.jsonl").open("rb") as stream:
-            offset = 0
-            for line in stream:
-                start, offset = offset, offset + len(line)
-                if line.strip() and (event := _parse_event(line)) is not None:
-                    yield start, event
-    except OSError:
-        return
-
-
-def iter_events(directory: Path):
-    """A Run's events in order; see :func:`iter_events_at`."""
-    return (event for _, event in iter_events_at(directory))
-
-
-def event_at(directory: Path, offset: int) -> dict | None:
-    """The event whose line starts at this byte offset (from :func:`iter_events_at`)."""
-    try:
-        with (directory / "events.jsonl").open("rb") as stream:
-            stream.seek(offset)
-            return _parse_event(stream.readline())
-    except OSError:
-        return None
-
-
 def prompt_message(payload: dict) -> str:
     """A prompt payload as the model receives it: compact JSON after the system prompt."""
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -901,33 +857,6 @@ def memory_update_payload(
 def read_json(path: Path | str):
     """The JSON in this file; raises when it is missing or malformed."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
-
-
-def file_stamp(path: Path) -> tuple[int, int] | None:
-    """A file's version, for caches: (modified time, size), or None if it is missing."""
-    try:
-        stat = path.stat()
-    except OSError:
-        return None
-    return stat.st_mtime_ns, stat.st_size
-
-
-def read_json_object(path: Path) -> dict | None:
-    """The JSON object in this file, or None when it is missing, unreadable or not an object."""
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    return value if isinstance(value, dict) else None
-
-
-def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
-    """Write JSON so a crash never leaves a half-written file."""
-    temp = path.with_suffix(".tmp")
-    temp.write_text(
-        json.dumps(obj, ensure_ascii=False, indent=indent), encoding="utf-8"
-    )
-    os.replace(temp, path)
 
 
 class Runner:
@@ -973,13 +902,7 @@ class Runner:
         self.max_prompt_chars = max_prompt_chars
         self.temperature = temperature
         self.run_dir = Path(run_dir)
-        self.run_dir.mkdir(parents=True, exist_ok=True)
-        self.events_path = self.run_dir / "events.jsonl"
-        self.checkpoint_path = self.run_dir / "checkpoint.json"
-        self.summary_path = self.run_dir / "summary.json"
-        self.input_path = self.run_dir / "experiment.json"
-        # Immutable story snapshot enables end-of-chapter flowcharts (including untaken paths).
-        self.graph_path = self.run_dir / "story-graph.json"
+        self.folder = RunFolder(self.run_dir)
         self.story_hash = canonical_hash(graph)
         self._models = {}  # One backend per output-token limit.
         # Builds each backend; a backend of None plays the mock provider's policy.
@@ -989,127 +912,72 @@ class Runner:
         # Test option: raw replies the mock provider returns, in order, before
         # falling back to its default policy. Controls reply length and content.
         self.mock_replies = list(mock_replies or [])
-        if resume:
-            if not self.checkpoint_path.exists():
-                raise ValueError(f"No checkpoint at {self.checkpoint_path}")
-            payload = read_json(self.checkpoint_path)
-            if (
-                payload["graph_sha256"] != self.story_hash
-                or payload["provider"] != provider
-                or payload["model_id"] != self.model_id
-            ):
-                raise ValueError(
-                    "Cannot resume with different graph, provider, or model"
-                )
-            self.state = payload["state"]
-            # Checkpoints from before Character Memory start with empty memories.
-            self.state.setdefault(
-                "character_memories", {name: "" for name in CHARACTERS}
-            )
-            self.state.setdefault("segment_events", [])
-            self.state.setdefault("news", [])
-            self.state.setdefault("pending_moments", {})
-            self.state.setdefault("seen", [])
-            self._save_story_snapshot()
-            if self.state.get("status") == "complete":
-                raise ValueError("Run is already complete")
-            # Crash after append but before checkpoint: remove uncommitted events.
-            event_idx = self.state["event_idx"]
-            if self.events_path.exists():
-                lines = self.events_path.read_text(encoding="utf-8").splitlines()
-                self.events_path.write_text(
-                    "\n".join(lines[:event_idx]) + "\n" if event_idx else "",
-                    encoding="utf-8",
-                )
-        else:
-            if self.events_path.exists() or self.checkpoint_path.exists():
-                raise FileExistsError(
-                    "Run directory already contains a run. Choose a new folder or --resume."
-                )
-            self._save_story_snapshot()
-            self.state = {
-                "node": graph["start"],
-                "event_idx": 0,
-                "status": "running",
-                # The story's own starting facts (e.g. every side character alive),
-                # then any the caller adds.
-                "flags": {
-                    **(graph.get("initial_flags") or {}),
-                    **(initial_flags or {}),
-                },
-                "character_memories": {name: "" for name in CHARACTERS},
-                # The current Chapter Segment so far: scenes and the choices made.
-                "segment_events": [],
-                # Joint Decisions another Character's segment made for this one, until
-                # this Character's next Memory Update.
-                "pending_moments": {},
-                # Public News headlines, in the order they happened.
-                "news": [],
-                "decisions": [],
-                "chapters_visited": [],
-                # Story nodes a Seen Condition names, once the Run has passed them.
-                "seen": [],
-                "warnings": [],
-                "total_input_tokens": 0,
-                "total_output_tokens": 0,
-                "total_llm_latency_seconds": 0.0,
-                "started_at": now(),
-            }
-            self.input_path.write_text(
-                json.dumps(
-                    {
-                        "provider": provider,
-                        "model_id": self.model_id,
-                        "goal": goal,
-                        "temperature": temperature,
-                        "decision_limits": {
-                            "max_output_tokens": DECISION_MAX_OUTPUT_TOKENS,
-                            "rationale_max_sentences": RATIONALE_MAX_SENTENCES,
-                            "broken_reply_retries": 1,
-                            "reasoning": reasoning_settings(provider, self.model_id),
-                        },
-                        "character_memory": {
-                            "max_chars": memory_max_chars,
-                            "memory_update_max_output_tokens": MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
-                        },
-                        "graph_sha256": self.story_hash,
-                        "fidelity": graph.get("metadata", {}).get("fidelity"),
-                        "allow_unverified": allow_unverified,
-                        "show_relationships": show_relationships,
-                        "initial_flags": initial_flags or {},
-                        "story_title": graph.get("metadata", {}).get("title"),
-                        "synthetic": bool(
-                            graph.get("metadata", {}).get("synthetic", False)
-                        ),
-                        "started_at": self.state["started_at"],
-                    },
-                    indent=2,
-                ),
-                encoding="utf-8",
-            )
-            self._checkpoint()
-
-    def _save_story_snapshot(self):
-        """Store the original graph beside each run so untaken branches remain visible."""
-        if self.graph_path.exists():
-            existing = read_json(self.graph_path)
-            if canonical_hash(existing) != self.story_hash:
-                raise ValueError(
-                    "Existing story-graph.json does not match the run graph"
-                )
-            return
-        _write_json_atomic(self.graph_path, self.graph, indent=2)
-
-    def _checkpoint(self):
-        # Rewritten after every event, so kept compact.
-        _write_json_atomic(
-            self.checkpoint_path,
-            {
-                "graph_sha256": self.story_hash,
-                "provider": self.provider,
-                "model_id": self.model_id,
-                "state": self.state,
+        # A resume must match the story, provider and model the Run was played with.
+        key = {
+            "graph_sha256": self.story_hash,
+            "provider": provider,
+            "model_id": self.model_id,
+        }
+        blank = {
+            "node": graph["start"],
+            "event_idx": 0,
+            "status": "running",
+            # The story's own starting facts (e.g. every side character alive),
+            # then any the caller adds.
+            "flags": {
+                **(graph.get("initial_flags") or {}),
+                **(initial_flags or {}),
             },
+            "character_memories": {name: "" for name in CHARACTERS},
+            # The current Chapter Segment so far: scenes and the choices made.
+            "segment_events": [],
+            # Joint Decisions another Character's segment made for this one, until
+            # this Character's next Memory Update.
+            "pending_moments": {},
+            # Public News headlines, in the order they happened.
+            "news": [],
+            "decisions": [],
+            "chapters_visited": [],
+            # Story nodes a Seen Condition names, once the Run has passed them.
+            "seen": [],
+            "warnings": [],
+            "total_input_tokens": 0,
+            "total_output_tokens": 0,
+            "total_llm_latency_seconds": 0.0,
+            "started_at": now(),
+        }
+        if resume:
+            self.state = self.folder.resume(graph, key, blank)
+            return
+        self.state = blank
+        self.folder.begin(
+            graph,
+            key,
+            {
+                "provider": provider,
+                "model_id": self.model_id,
+                "goal": goal,
+                "temperature": temperature,
+                "decision_limits": {
+                    "max_output_tokens": DECISION_MAX_OUTPUT_TOKENS,
+                    "rationale_max_sentences": RATIONALE_MAX_SENTENCES,
+                    "broken_reply_retries": 1,
+                    "reasoning": reasoning_settings(provider, self.model_id),
+                },
+                "character_memory": {
+                    "max_chars": memory_max_chars,
+                    "memory_update_max_output_tokens": MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
+                },
+                "graph_sha256": self.story_hash,
+                "fidelity": graph.get("metadata", {}).get("fidelity"),
+                "allow_unverified": allow_unverified,
+                "show_relationships": show_relationships,
+                "initial_flags": initial_flags or {},
+                "story_title": graph.get("metadata", {}).get("title"),
+                "synthetic": bool(graph.get("metadata", {}).get("synthetic", False)),
+                "started_at": self.state["started_at"],
+            },
+            self.state,
         )
 
     def _take(self, item: dict | None) -> Outcome:
@@ -1154,12 +1022,9 @@ class Runner:
             "chapter": node.get("chapter"),
             **info,
         }
-        with self.events_path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(event, ensure_ascii=False) + "\n")
-            f.flush()
-            os.fsync(f.fileno())
+        self.folder.append(event)
         self.state["event_idx"] += 1
-        self._checkpoint()
+        self.folder.save(self.state)
 
     def _mock_attempt(self, schema, default, max_tokens: int):
         """Mock backend. Scripted ``mock_replies`` (raw text) are used first.
@@ -1551,22 +1416,16 @@ class Runner:
                 "started_at": self.state["started_at"],
                 "completed_at": self.state["completed_at"],
             }
-            self.summary_path.write_text(
-                json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8"
-            )
+            self.folder.finish(summary)
         else:
             raise RuntimeError(f"Unsupported node type {kind}")
 
     def halt(self, reason: str):
         """Stops a playing Run where it is, recording why; it is kept as a partial Run
         with its events so far."""
-        if self.state["status"] != "running":
-            return
-        self.state["status"] = "partial"
-        self.state["stop_reason"] = reason
-        self._checkpoint()
+        self.folder.stop(reason, self.state)
 
     def run(self):
         while self.state["status"] == "running":
             self.step()
-        return read_json(self.summary_path)
+        return self.folder.summary()

@@ -25,7 +25,6 @@ from .engine import (
     MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
     PUBLIC_NEWS_LIMIT,
     SYSTEM_PROMPT,
-    file_stamp,
     memory_update_payload,
     planned_feedback,
     prompt_message,
@@ -39,6 +38,7 @@ from .decision_prompt import (
     feedback_moment,
     is_cross_segment,
 )
+from .run_folder import file_stamp
 from .story_rules import StoryRules
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs

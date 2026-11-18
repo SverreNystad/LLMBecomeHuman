@@ -190,7 +190,8 @@ def test_flowchart_includes_unvisited_options_and_all_chapters():
 
 
 def test_new_runner_stores_full_graph_snapshot(tmp_path):
-    from detroit_benchmark.engine import Runner, canonical_hash
+    from detroit_benchmark.engine import Runner
+    from detroit_benchmark.run_folder import canonical_hash
 
     graph = json.loads((PROJECT / "examples" / "showcase_game.json").read_text())
     folder = tmp_path / "fresh"

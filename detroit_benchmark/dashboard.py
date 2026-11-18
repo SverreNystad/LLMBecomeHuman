@@ -26,13 +26,15 @@ from pydantic import BaseModel
 from .decision_prompt import chapter_briefing, decision_text
 from .ending import assumed_route_text, ending_summary, route_question
 from .engine import (
-    canonical_hash,
     create_model,
-    event_at,
-    file_stamp as _stamp,
-    iter_events,
-    iter_events_at,
     limit_sentences,
+)
+from .run_folder import (
+    NOT_STORY_GRAPHS,
+    RunFolder,
+    canonical_hash,
+    file_stamp as _stamp,
+    find_runs,
     read_json_object as _json_file,
 )
 from .visitor_estimate import story_estimate
@@ -133,21 +135,14 @@ def _resolve_run(root: Path, run_id: str) -> Path:
     if (
         path == root
         or not path.is_relative_to(root)
-        or not (path / "experiment.json").is_file()
+        or not RunFolder(path).is_run()
     ):
         raise HTTPException(status_code=404, detail="Unknown run")
     return path
 
 
 def _discovered_runs(root: Path) -> list[Path]:
-    if not root.is_dir():
-        return []
-    paths: list[Path] = []
-    for file in root.rglob("experiment.json"):
-        resolved = file.parent.resolve()
-        if resolved.is_relative_to(root) and (resolved / "events.jsonl").is_file():
-            paths.append(resolved)
-    return sorted(set(paths), key=lambda p: p.as_posix().lower())
+    return [folder.path for folder in find_runs(root) if folder.has_events()]
 
 
 def _is_private(root: Path, directory: Path) -> bool:
@@ -163,77 +158,20 @@ def _visitor_ip(request: Request) -> str:
     return forwarded or (request.client.host if request.client else "unknown")
 
 
-def _seconds_since_write(directory: Path) -> float:
-    try:
-        return time.time() - (directory / "events.jsonl").stat().st_mtime
-    except OSError:
-        return float("inf")
-
-
 def _metadata(root: Path, directory: Path) -> dict[str, Any]:
-    """The Run list is polled every few seconds; its files are re-read only when they change."""
-    summary = directory / "summary.json"
-    meta = dict(
-        _cached_metadata(
-            str(root),
-            str(directory),
-            _stamp(directory / "experiment.json"),
-            _stamp(summary),
-            # A finished Run's summary has everything; the checkpoint only fills in live ones.
-            None if summary.exists() else _stamp(directory / "checkpoint.json"),
-        )
-    )
+    """A Run as the Run list shows it; polled every few seconds, so its folder re-reads
+    its files only when they change."""
+    meta = {
+        "id": _run_id(root, directory),
+        "name": directory.relative_to(root).as_posix(),
+        **RunFolder(directory).metadata(),
+    }
     if (
         meta["status"] == "running"
-        and _seconds_since_write(directory) > STALE_RUN_SECONDS
+        and RunFolder(directory).seconds_since_write() > STALE_RUN_SECONDS
     ):
         meta["status"] = "stopped"
     return meta
-
-
-@lru_cache(maxsize=256)
-def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
-    root, directory = Path(root_s), Path(directory_s)
-    exp = _json_file(directory / "experiment.json") or {}
-    summary = _json_file(directory / "summary.json") or {}
-    state = {} if summary else _checkpoint_state(directory)
-    status = summary.get("status") or state.get("status") or "unknown"
-    chapters = summary.get("chapters_visited", state.get("chapters_visited", []))
-    decisions = summary.get("number_of_choices", len(state.get("decisions", [])))
-    return {
-        "id": _run_id(root, directory),
-        "name": directory.relative_to(root).as_posix(),
-        "provider": exp.get("provider", summary.get("provider", "unknown")),
-        "display_provider": exp.get("display_provider")
-        if exp.get("synthetic", False)
-        else None,
-        "model": exp.get("model_id", summary.get("model", "unknown")),
-        "goal": exp.get("goal", summary.get("goal", "")),
-        "story_title": exp.get("story_title"),
-        "synthetic": exp.get("synthetic", False),
-        "fidelity": exp.get("fidelity", summary.get("fidelity", "unknown")),
-        "unverified": exp.get("allow_unverified", summary.get("unverified", False)),
-        "status": status,
-        "choices": decisions,
-        "chapters": len(chapters),
-        "chapters_visited": chapters,
-        "started_at": exp.get("started_at", summary.get("started_at")),
-        "completed_at": summary.get("completed_at"),
-        "total_input_tokens": summary.get(
-            "total_input_tokens", state.get("total_input_tokens", 0)
-        ),
-        "total_output_tokens": summary.get(
-            "total_output_tokens", state.get("total_output_tokens", 0)
-        ),
-        "total_llm_latency_seconds": summary.get(
-            "total_llm_latency_seconds", state.get("total_llm_latency_seconds", 0)
-        ),
-        "warnings": len(summary.get("warnings", state.get("warnings", []))),
-        "end_description": summary.get("end_description"),
-        "final_flags": summary.get("final_flags", state.get("flags", {})),
-        "graph_sha256": exp.get("graph_sha256", summary.get("graph_sha256")),
-        "stop_reason": state.get("stop_reason"),
-    }
 
 
 def _event_scene(event: dict[str, Any]) -> dict[str, Any]:
@@ -398,7 +336,7 @@ def _parse_events(directory: str) -> tuple[list, dict, dict]:
     offsets: dict[Any, int] = {}
     visits: Counter = Counter()
     memories: dict[str, str] = {}
-    for offset, raw in iter_events_at(Path(directory)):
+    for offset, raw in RunFolder(Path(directory)).events_at():
         offsets.setdefault(raw.get("index"), offset)
         event = _capped_justification(raw)
         short.append(_short_event(event))
@@ -420,7 +358,7 @@ _PARSED_LOGS: dict[str, tuple[tuple[int, int], tuple[list, dict, dict]]] = {}
 
 
 def _parsed_events(directory: Path) -> tuple[list, dict, dict]:
-    stamp = _stamp(directory / "events.jsonl")
+    stamp = RunFolder(directory).events_version()
     if stamp is None:
         return [], {}, {}
     cached = _PARSED_LOGS.get(str(directory))
@@ -447,27 +385,10 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
         "ending_summary": ending_summary(
             meta["final_flags"] or {},
             [ev for ev in events if ev["type"] == "route"],
-            _public_news(directory),
+            RunFolder(directory).news(),
             finished=meta["status"] == "complete",
         ),
     }
-
-
-def _checkpoint_state(directory: Path) -> dict[str, Any]:
-    """A Run's checkpointed state, parsed once per version of checkpoint.json. Read-only."""
-    path = directory / "checkpoint.json"
-    return _cached_checkpoint_state(str(path), _stamp(path))
-
-
-@lru_cache(maxsize=8)
-def _cached_checkpoint_state(path: str, _stamp) -> dict[str, Any]:
-    return (_json_file(Path(path)) or {}).get("state") or {}
-
-
-def _public_news(directory: Path) -> list[str]:
-    """Public News lives only in the checkpoint."""
-    news = _checkpoint_state(directory).get("news") or []
-    return [str(item) for item in news if isinstance(item, str)]
 
 
 def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
@@ -620,7 +541,7 @@ def _flowchart_projection(
 
 def _event_only_graph(directory: Path) -> dict:
     """Compatibility for old logs: never fabricate the unrecorded branches."""
-    events = list(iter_events(directory))
+    events = list(RunFolder(directory).events())
     nodes = {}
     for i, event in enumerate(events):
         nid = event.get("node_id")
@@ -661,10 +582,11 @@ def _event_only_graph(directory: Path) -> dict:
 def _load_saved_graph(
     directory: Path, extra_graphs_dir: Path | None
 ) -> tuple[dict, bool, str]:
-    expected = (_json_file(directory / "experiment.json") or {}).get("graph_sha256")
+    folder = RunFolder(directory)
+    expected = folder.graph_sha256()
     # New benchmark runs always include their original full story graph.
-    snapshot = _json_file(directory / "story-graph.json")
-    if snapshot is not None and (not expected or canonical_hash(snapshot) == expected):
+    snapshot = folder.story_graph()
+    if snapshot is not None:
         return snapshot, True, "run_snapshot"
     # Compatibility with older runs, and optionally a user-provided graph directory.
     candidates = [Path(__file__).resolve().parent.parent / "examples"]
@@ -675,7 +597,7 @@ def _load_saved_graph(
             continue
         for path in parent.rglob("*.json"):
             # Ignore experiment/checkpoint/summary files even if a graph dir is broad.
-            if path.name in {"experiment.json", "summary.json", "checkpoint.json"}:
+            if path.name in NOT_STORY_GRAPHS:
                 continue
             graph = _json_file(path)
             if (
@@ -694,8 +616,9 @@ _STORIES: dict[tuple, tuple[dict, dict]] = {}
 
 def _story(directory: Path, extra_graphs_dir: Path | None) -> tuple[dict, dict]:
     """A Run's story graph and its Flowchart projection."""
-    expected = (_json_file(directory / "experiment.json") or {}).get("graph_sha256")
-    key = (expected, (directory / "story-graph.json").exists(), str(extra_graphs_dir))
+    folder = RunFolder(directory)
+    expected = folder.graph_sha256()
+    key = (expected, folder.has_story_graph(), str(extra_graphs_dir))
     if key in _STORIES:
         return _STORIES[key]
     graph, complete, source = _load_saved_graph(directory, extra_graphs_dir)
@@ -871,7 +794,7 @@ def create_app(
             raise HTTPException(status_code=404, detail="Unknown event")
         directory = _resolve_run(root, run_id)
         offset = _parsed_events(directory)[2].get(event_index)
-        event = None if offset is None else event_at(directory, offset)
+        event = None if offset is None else RunFolder(directory).event_at(offset)
         if event is None:
             raise HTTPException(status_code=404, detail="Unknown event")
         return _capped_justification(event)
