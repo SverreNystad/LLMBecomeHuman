@@ -31,7 +31,7 @@ from .engine import (
     read_json,
     scene_record,
 )
-from .decision_prompt import chapter_briefing, scene_view
+from .decision_prompt import PromptContext, choice_moments, decision_prompt
 from .story_rules import StoryRules
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -120,7 +120,17 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     nodes = graph["nodes"]
     rules = StoryRules(graph)
     remembered = "x" * memory
-    headlines = ["x" * HEADLINE_MAX_CHARS] * news
+    # Every Character's memory is full (or empty); other segments' moments are left out.
+    characters = {n.get("character") for n in nodes.values()} | {
+        name for n in nodes.values() for name in n.get("deciders") or []
+    }
+    context = PromptContext(
+        memories={name: remembered for name in characters},
+        pending={},
+        segment=[],
+        news=["x" * HEADLINE_MAX_CHARS] * news,
+        goal=DEFAULT_GOAL,
+    )
     best: dict[str, dict[int, tuple[int, int, int]]] = {}
 
     def keep(table, calls, value):
@@ -148,39 +158,25 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
             table[1] = (prompt + chars, decisions, updates + 1)
         elif kind == "choice":
             prompt = len(SYSTEM_PROMPT) + _size(
-                {
-                    "current_scene": scene_view(node),
-                    "chapter_briefing": chapter_briefing(graph, node.get("chapter")),
-                    "news": headlines,
-                    "character_memory": remembered,
-                    "chapter_segment_so_far": [],
-                    "goal": DEFAULT_GOAL,
-                    "available_choices": [
-                        {"id": o["id"], "label": o["label"]} for o in node["options"]
-                    ],
-                }
+                decision_prompt(graph, node, node["options"], context)
             )
-            # A Joint Decision also carries the other deciders' memories.
-            prompt += len(remembered) * (len(node.get("deciders") or [None]) - 1)
+            # A Cross-Segment Decision's prompt doesn't carry the segment.
+            deciders = node.get("deciders") or []
+            carries = 0 if deciders and node.get("character") not in deciders else 1
             for option in node["options"]:
                 # The choice joins the segment every later prompt in it carries,
-                # with any Gauge Feedback it caused.
-                moment = {
-                    "at": node.get("heading"),
-                    "your_choice": option["label"],
-                    "rationale": "x" * rationale,
-                }
-                # Relationship arrows are shown by default, as in CLI and Visitor Runs.
-                feedback = planned_feedback(graph, option)
-                if feedback:
-                    moment["on_screen"] = feedback
+                # with any Gauge Feedback it caused. Relationship arrows are shown
+                # by default, as in CLI and Visitor Runs.
+                moment, _ = choice_moments(
+                    node, option, "x" * rationale, planned_feedback(graph, option)
+                )
                 chosen = 1 + _size(moment)
                 for calls, (chars, decisions, updates) in best.get(
                     option.get("next"), {0: (0, 0, 0)}
                 ).items():
                     keep(
                         table,
-                        calls + 1,
+                        calls + carries,
                         (prompt + chars + chosen * calls, decisions + 1, updates),
                     )
         else:

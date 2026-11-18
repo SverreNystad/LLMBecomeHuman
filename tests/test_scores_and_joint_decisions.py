@@ -634,3 +634,50 @@ def test_the_estimate_counts_relationship_and_branch_feedback():
     unshown = deepcopy(shown)
     del unshown["nodes"]["look"]["branches"][0]["effects"]["show"]
     assert _estimate(shown) > _estimate(unshown)
+
+
+def _in_the_hold(deciders: list[str]) -> dict:
+    """Connor's segment: a choice in the hold decided by ``deciders``, then one of his."""
+    def option(oid, nxt):
+        return {"id": oid, "label": oid.upper(), "next": nxt, "effects": {"flags": {}}}
+
+    return {
+        "metadata": {"fidelity": "verified_game_rules"},
+        "start": "gun",
+        "nodes": {
+            "gun": {
+                "id": "gun", "type": "choice", "chapter": "2", "character": "Connor",
+                "heading": "In the hold", "description": "Both lunge for the gun.",
+                "deciders": deciders,
+                "decider_context": {"Markus": "Connor draws on Markus in the hold."},
+                "options": [option("reach", "after")],
+            },
+            "after": {
+                "id": "after", "type": "choice", "chapter": "2", "character": "Connor",
+                "heading": "After", "description": "Now what?",
+                "options": [option("go", "end")],
+            },
+            "end": {"id": "end", "type": "ending", "chapter": "2", "description": "Done."},
+        },
+    }
+
+
+def _recorded_prompt_chars(graph: dict, tmp_path) -> int:
+    Runner(graph, "mock", None, tmp_path / "r").run()
+    return sum(
+        len(e["system_prompt"])
+        + len(json.dumps(e["input"], ensure_ascii=False, separators=(",", ":")))
+        for e in read_events(tmp_path / "r")
+        if e["type"] == "decision"
+    )
+
+
+@pytest.mark.parametrize("deciders", [["Markus", "Connor"], ["Markus"]])
+def test_the_estimate_measures_joint_and_cross_segment_prompts_as_the_run_sends_them(
+    tmp_path, deciders
+):
+    graph = _in_the_hold(deciders)
+    mock_rationale = len("Mock policy: first listed choice.")
+    shortest = _extreme_route(graph, min, memory=0, rationale=mock_rationale, news=0)
+    # The estimate counts a comma before every moment in a segment, the first included.
+    assert 0 <= shortest.prompt_chars - _recorded_prompt_chars(graph, tmp_path) <= 1
