@@ -523,13 +523,12 @@ def _joint_errors(nodes: dict) -> list[str]:
 
 
 def _effect_items(graph: dict):
-    """Every condition branch and option, with where it is for error messages, and
-    whether it is an option."""
+    """Every condition branch and option, with where it is for error messages."""
     for nid, node in graph.get("nodes", {}).items():
         for i, branch in enumerate(node.get("branches", [])):
-            yield f"{nid}: branch {i}", branch, False
+            yield f"{nid}: branch {i}", branch
         for option in node.get("options", []):
-            yield f"{nid}/{option.get('id')}", option, True
+            yield f"{nid}/{option.get('id')}", option
 
 
 def _enrichment_errors(graph: dict) -> list[str]:
@@ -548,7 +547,7 @@ def _enrichment_errors(graph: dict) -> list[str]:
     # Every flag the story sets: at the start, on a condition branch, or by a choice.
     named = [("initial flag", graph.get("initial_flags") or {})]
     named += [
-        (f"{where}: flag", effect_flags(item)) for where, item, _ in _effect_items(graph)
+        (f"{where}: flag", effect_flags(item)) for where, item in _effect_items(graph)
     ]
     for where, flags in named:
         errors += [
@@ -556,10 +555,11 @@ def _enrichment_errors(graph: dict) -> list[str]:
             for flag in flags
             if not FLAG_NAME.fullmatch(flag)
         ]
-    for where, item, is_option in _effect_items(graph):
+    for where, item in _effect_items(graph):
         errors += _feedback_errors(where, item)
         effects = item.get("effects")
-        if not is_option or not isinstance(effects, dict):
+        # Taking an option or a branch makes its news public.
+        if not isinstance(effects, dict):
             continue
         for news in effects.get("news") or []:
             headline = news.get("headline") if isinstance(news, dict) else None

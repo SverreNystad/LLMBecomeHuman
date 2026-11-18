@@ -107,3 +107,21 @@ def test_validate_graph_rejects_bad_enrichment():
 def test_examples_without_enrichment_still_validate(path):
     graph = json.loads(path.read_text(encoding="utf-8"))
     assert validate_graph(graph)["valid"]
+
+
+def test_validate_graph_checks_the_news_a_condition_branch_makes_public():
+    graph = {
+        "start": "a",
+        "nodes": {
+            "a": {
+                "id": "a",
+                "type": "condition",
+                "branches": [
+                    {"next": "end", "effects": {"news": [{"headline": "Escape"}]}}
+                ],
+            },
+            "end": {"id": "end", "type": "ending"},
+        },
+    }
+    errors = validate_graph(graph)["errors"]
+    assert "a: branch 0: news item without wiki source" in errors
