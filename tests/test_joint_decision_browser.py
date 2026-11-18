@@ -2,12 +2,15 @@
 choice was made with both their memories (ADR 0005).
 
 Runs the real dashboard over the Aurora demo Runs in Chromium through Playwright; the
-first decision's story beat is made a Joint Decision in flight. Skips without a browser.
+first decision's story beat is made a Joint Decision in flight, worded as the server
+words one. Skips without a browser.
 """
 
 from __future__ import annotations
 
 import json
+
+from detroit_benchmark.run_timeline import decision_question
 
 JOINT = "Decided with Markus's and Connor's memories"
 
@@ -17,6 +20,7 @@ def _as_joint(route):
     decision = next(m for m in body["moments"] if m.get("type") == "decision")
     decision["deciders"] = ["Markus", "Connor"]
     decision["decided"] = JOINT
+    decision["question"] = decision_question(None, decision["deciders"])
     route.fulfill(content_type="application/json", body=json.dumps(body))
 
 
@@ -42,7 +46,12 @@ def test_a_joint_decision_card_says_whose_memories_decided(live_dashboard, open_
 def _as_markus_alone(route):
     body = route.fetch().json()
     decision = next(m for m in body["moments"] if m.get("type") == "decision")
-    decision.update(deciders=["Markus"], character="Markus", decided="Decided as Markus")
+    decision.update(
+        deciders=["Markus"],
+        character="Markus",
+        decided="Decided as Markus",
+        question=decision_question("Markus", ["Markus"]),
+    )
     route.fulfill(content_type="application/json", body=json.dumps(body))
 
 

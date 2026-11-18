@@ -192,9 +192,13 @@ def test_chapter_flowchart_browser_interactions(new_page):
         loop1: scene('loop1', 'loop2'), loop2: scene('loop2', 'loop1'),
       }};
       const chapter = buildChapterGraph('M');
-      const view = {detail: {events: ['a', 'b', 'c', 'pick', 'd', 'join', 'g', 'other'].map((node_id, index) => ({
-        index, node_id, chapter: node_id === 'other' ? 'N' : 'M',
-        type: node_id === 'pick' ? 'decision' : 'scene', choice_id: 'x'}))}};
+      const route = ['a', 'b', 'c', 'pick', 'd', 'join', 'g', 'other'];
+      const chapterOf = node_id => node_id === 'other' ? 'N' : 'M';
+      // As the server sends them: each event names where the Run went next.
+      const view = {detail: {events: route.map((node_id, index) => ({
+        index, node_id, chapter: chapterOf(node_id),
+        type: node_id === 'pick' ? 'decision' : 'scene', choice_id: 'x',
+        ...(route[index + 1] ? {next: route[index + 1], next_chapter: chapterOf(route[index + 1])} : {})}))}};
       const path = computePath(view, 'M', chapter);
       state.graph = saved;
       return {runs: [...chapter.nodes.values()].filter(n => n.members).map(n => n.members.map(m => m.id)),
