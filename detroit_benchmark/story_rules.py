@@ -124,6 +124,8 @@ class StoryRules:
             raise ValueError(f"{node_id} is a choice: ask which options it offers")
         if kind == "ending":
             return Step(None)
+        if kind not in ("route", "condition"):
+            return Step(node.get("next"))
         flags = {**self._initial, **facts.flags}
         if kind == "route":
             value = flags.get(node["flag"])
@@ -135,8 +137,6 @@ class StoryRules:
                 value=value,
                 assumed=assumed,
             )
-        if kind != "condition":
-            return Step(node.get("next"))
         if node.get("resolution") == QTE:
             return Step(*_qte_success(node))
         idx, values, unknown = _pick_branch(node, flags, facts.seen)

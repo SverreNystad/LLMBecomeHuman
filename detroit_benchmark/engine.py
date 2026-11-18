@@ -14,6 +14,8 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from .story_rules import Facts, Step, StoryRules
+
 SYSTEM_PROMPT = """You are in the place of a Character in a branching story: an android living through it.
 The scenes describe what happens to you. Decide as yourself; you are not asked to imitate the Character's personality.
 Select exactly ONE of the listed choice IDs; do not invent options or events.
@@ -1088,7 +1090,7 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
-        self.seen_targets = seen_targets(graph)
+        self.rules = StoryRules(graph)
         # On by default (CLI and Visitor Runs): options' relation_hints also become
         # Gauge Feedback, e.g. "Relationship with Hank: up sharply".
         self.show_relationships = show_relationships
@@ -1259,6 +1261,12 @@ class Runner:
             **{name: self.state["flags"][name] for name in item_adds(scores, item)},
         }
         return changed, unique_feedback(self._gauge_feedback(item) + moved)
+
+    def _facts(self) -> Facts:
+        return Facts(flags=self.state["flags"], seen=self.state["seen"])
+
+    def _resolve(self, node: dict) -> Step:
+        return self.rules.resolve(node["id"], self._facts())
 
     def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
         """A Fate decided at a condition (a death, an escape) is remembered for later
@@ -1551,18 +1559,11 @@ class Runner:
         return f"{previous}\n{line}".strip()
 
     def _choice(self, node: dict):
-        allopts = node["options"]
         offered = []
         notes = []
-        for opt in allopts:
+        for opt, unverified in self.rules.offered(node["id"], self._facts()):
             # Unknown prerequisites require an exploratory run; we annotate them.
-            prereqs = opt.get("requires", [])
-            results = [
-                evaluate_condition(x, self.state["flags"], self.state["seen"]) for x in prereqs
-            ]
-            if False in results:
-                continue
-            if None in results or opt.get("requirements_unverified"):
+            if unverified:
                 if not self.allow_unverified:
                     raise ValueError(
                         f"Unverified prerequisite at {node['id']}/{opt['id']}"
@@ -1576,10 +1577,6 @@ class Runner:
                     }
                 )
             offered.append(opt)
-        if not offered:
-            raise RuntimeError(
-                f"No available actions at {node['id']}. Check state predicates."
-            )
         payload = self._decision_payload(node, offered)
         response, model_meta = self._model_response(payload, offered)
         chosen = next((o for o in offered if o["id"] == response.choice_id), None)
@@ -1677,26 +1674,27 @@ class Runner:
         node = self.graph["nodes"][self.state["node"]]
         kind = node["type"]
         seen = self.state["seen"]
-        if node["id"] in self.seen_targets and node["id"] not in seen:
+        if self.rules.remembers(node["id"]) and node["id"] not in seen:
             seen.append(node["id"])
         if kind == "scene":
             scene = scene_record(node)
             if node.get("chapter") not in self.state["chapters_visited"]:
                 self.state["chapters_visited"].append(node.get("chapter"))
             self.state["segment_events"].append(scene)
-            self.state["node"] = node["next"]
+            self.state["node"] = self._resolve(node).next
             self._record("scene", node, {"visible_to_agent": scene})
         elif kind == "choice":
             self._choice(node)
         elif kind == "condition" and node.get("resolution") == QTE:
             # Quick-Time Events test reflexes, not judgement: always succeed.
-            idx, self.state["node"] = qte_success_target(node)
-            flags_set, feedback = self._take_branch_effects(node, idx)
+            taken = self._resolve(node)
+            self.state["node"] = taken.next
+            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
             self._record(
                 "condition",
                 node,
                 {
-                    "branch_index": idx,
+                    "branch_index": taken.branch_index,
                     "quick_time_event": "success",
                     "used_unverified_default": False,
                     "flags_set": flags_set,
@@ -1704,35 +1702,27 @@ class Runner:
                 },
             )
         elif kind == "condition":
-            idx, values, unknown = pick_branch(node, self.state["flags"], self.state["seen"])
-            if values.count(True) > 1:
-                matches = [i for i, v in enumerate(values) if v is True]
-                raise RuntimeError(f"Overlapping conditions at {node['id']}: {matches}")
-            if unknown:
+            taken = self._resolve(node)
+            if taken.assumed:
                 if not self.allow_unverified:
                     raise RuntimeError(f"Unknown condition at {node['id']}")
-                idx = node.get("default_branch", 0)
                 self.state["warnings"].append(
                     {
                         "node": node["id"],
                         "problem": "Unverified condition; picked default alternative",
-                        "picked": idx,
+                        "picked": taken.branch_index,
                     }
                 )
-            flags_set, feedback = self._take_branch_effects(node, idx)
-            self.state["node"] = (
-                node["branches"][idx]["next"] if idx is not None else node.get("next")
-            )
-            if self.state["node"] is None:
-                raise RuntimeError(f"Unconnected condition at {node['id']}")
+            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            self.state["node"] = taken.next
             self._record(
                 "condition",
                 node,
                 {
-                    "branch_index": idx,
+                    "branch_index": taken.branch_index,
                     "flags_set": flags_set,
-                    "condition_values": values,
-                    "used_unverified_default": unknown,
+                    "condition_values": list(taken.values),
+                    "used_unverified_default": taken.assumed,
                     **feedback,
                 },
             )
@@ -1743,30 +1733,29 @@ class Runner:
                 self._memory_update(node)
                 return
             self.state["memory_updated_at"] = None
-            self.state["node"] = node["next"]
-            self._record("chapter_exit", node, {"next": node["next"]})
+            self.state["node"] = self._resolve(node).next
+            self._record("chapter_exit", node, {"next": self.state["node"]})
         elif kind == "route":
             flag = node["flag"]
-            value = self.state["flags"].get(flag)
-            if value is None:
+            taken = self._resolve(node)
+            if taken.assumed:
                 if not self.allow_unverified:
                     raise RuntimeError(f"Unknown route flag {flag}")
-                value = node["default"]
                 self.state["warnings"].append(
                     {
                         "node": node["id"],
-                        "problem": f"Unverified final route: assumed {flag}={value}",
+                        "problem": f"Unverified final route: assumed {flag}={taken.value}",
                     }
                 )
-            self.state["node"] = node["if_true"] if value else node["if_false"]
+            self.state["node"] = taken.next
             self._record(
                 "route",
                 node,
                 {
                     "flag": flag,
-                    "value": value,
+                    "value": taken.value,
                     "next": self.state["node"],
-                    "assumed": flag not in self.state["flags"],
+                    "assumed": taken.assumed,
                 },
             )
         elif kind == "ending":
