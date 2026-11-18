@@ -4,8 +4,8 @@ import pytest
 
 from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES
 from detroit_benchmark.ending import ending_summary
-from detroit_benchmark.engine import _reachable, effect_flags, pick_branch
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, reachable, resolve
 from tests.test_night_of_the_soul import NOBODY_SAVES_MARKUS
 
 NODES = load_dataset()["nodes"]
@@ -13,7 +13,7 @@ GRAPH = load_dataset()
 
 
 def reach(start: str, **flags) -> set[str]:
-    return set(_reachable(NODES, start, flags))
+    return set(reachable(start, flags))
 
 
 def option(nid: str, label: str) -> dict:
@@ -21,9 +21,9 @@ def option(nid: str, label: str) -> dict:
 
 
 def branch_taken(nid: str, **flags) -> dict:
-    idx, _, unknown = pick_branch(NODES[nid], flags)
-    assert not unknown and idx is not None, (nid, flags)
-    return NODES[nid]["branches"][idx]
+    step = resolve(nid, flags)
+    assert not step.assumed and step.branch_index is not None, (nid, flags)
+    return NODES[nid]["branches"][step.branch_index]
 
 
 CAPTURED = {"ch30_1_00055": "SURRENDER", "ch30_1_00052": "OBEY"}

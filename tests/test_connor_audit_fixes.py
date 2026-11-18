@@ -3,8 +3,8 @@ they happen, and options appear only when the game offers them."""
 
 import pytest
 
-from detroit_benchmark.engine import pick_branch
-from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story
+from detroit_benchmark.story_rules import Facts, StoryRules
+from tests.dataset import load_dataset, play_story_with_hank_given_time as play_story, resolve
 
 
 MACHINE = {"ch30_2_00097": "REMAIN A MACHINE", "ch30_2_00124": "REMAIN A MACHINE"}
@@ -62,10 +62,11 @@ STAY_BACK = {"ch1_00005": "STAY BACK"}
 
 def death_ladder_at(graph: dict, nid: str) -> bool:
     """``nid`` adds one to Connor's Deaths, whatever the count was."""
-    node = graph["nodes"][nid]
+    node, rules = graph["nodes"][nid], StoryRules(graph)
     for deaths in range(7):
-        idx, _, _ = pick_branch(node, {"connor_deaths": deaths})
-        if idx is None:
+        step = rules.resolve(nid, Facts(flags={"connor_deaths": deaths}))
+        idx = step.branch_index
+        if step.assumed or idx is None:
             return False
         if node["branches"][idx]["effects"]["flags"]["connor_deaths"] != deaths + 1:
             return False
@@ -113,8 +114,9 @@ def test_the_cop_connor_saved_thanks_him_in_public_enemy(tmp_path, pick, saved):
 
 def test_daniel_who_shot_connor_remembers_it_in_last_chance():
     node = load_dataset()["nodes"][REACTIVATE_DANIEL]
-    idx, _, _ = pick_branch(node, {"connor_daniel_final_plea": "convince"})
-    assert node["branches"][idx]["condition_text"].startswith("Daniel killed Connor")
+    step = resolve(REACTIVATE_DANIEL, {"connor_daniel_final_plea": "convince"})
+    assert not step.assumed and step.branch_index is not None
+    assert node["branches"][step.branch_index]["condition_text"].startswith("Daniel killed Connor")
 
 
 # The Interrogation
@@ -148,8 +150,9 @@ def test_having_seen_coles_photo_connor_can_name_him(tmp_path):
 @pytest.mark.parametrize("deaths, line", [(1, "first time"), (2, "multiple"), (3, "multiple")])
 def test_hank_greets_connor_by_how_often_he_died(deaths, line):
     node = load_dataset()["nodes"][HANK_GREETS_A_RETURNING_CONNOR]
-    idx, _, _ = pick_branch(node, {"connor_deaths": deaths})
-    assert line in node["branches"][idx]["condition_text"]
+    step = resolve(HANK_GREETS_A_RETURNING_CONNOR, {"connor_deaths": deaths})
+    assert not step.assumed and step.branch_index is not None
+    assert line in node["branches"][step.branch_index]["condition_text"]
 
 
 # Hank quitting the force

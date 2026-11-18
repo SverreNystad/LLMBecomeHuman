@@ -10,12 +10,10 @@ import pytest
 from detroit_benchmark.dashboard import _flowchart_projection
 from detroit_benchmark.engine import (
     Runner,
-    _edges,
-    _reachable,
-    evaluate_condition,
     validate_graph,
 )
-from tests.dataset import DATASET, load_dataset
+from detroit_benchmark.story_rules import StoryRules
+from tests.dataset import DATASET, load_dataset, reachable
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = "https://detroit-become-human.fandom.com/wiki/The_Hostage#Flowchart"
@@ -222,32 +220,16 @@ def _exploration_paths(nodes, explore):
     rejoin = next(
         o["next"] for o in explore["options"] if o["effects"]["flags"][flag] == "rush"
     )
+    # The walk stops where the forks rejoin: there the story ends, for this walk.
+    until_rejoin = StoryRules(
+        {**load_dataset(), "nodes": {**nodes, rejoin: {"id": rejoin, "type": "ending"}}}
+    )
     paths = {}
     for option in explore["options"]:
         value = option["effects"]["flags"][flag]
-        scenes, seen, queue, rejoined = [], set(), [option["next"]], False
-        while queue:
-            nid = queue.pop(0)
-            if nid == rejoin:
-                rejoined = True
-                continue
-            if nid in seen:
-                continue
-            seen.add(nid)
-            node = nodes[nid]
-            if node["type"] == "scene":
-                scenes.append(nid)
-            dests = _edges(node)
-            if node["type"] == "condition":
-                hits = [
-                    evaluate_condition(b["when"], {flag: value})
-                    for b in node["branches"]
-                ]
-                if True in hits:
-                    dests = [node["branches"][hits.index(True)]["next"]]
-            queue.extend(dests)
-        assert rejoined, (explore["id"], value)
-        paths[value] = scenes
+        walk = until_rejoin.reachable(option["next"], {flag: value})
+        assert rejoin in walk, (explore["id"], value)
+        paths[value] = [n for n in walk if n != rejoin and nodes[n]["type"] == "scene"]
     return paths
 
 
@@ -321,7 +303,7 @@ def test_chapter_1_key_areas_show_the_tablets_and_body(dataset):
 
 def test_every_story_node_is_reachable(dataset):
     nodes = dataset["nodes"]
-    assert set(_reachable(nodes, dataset["start"])) == set(nodes)
+    assert set(reachable(dataset["start"])) == set(nodes)
 
 
 @pytest.mark.parametrize(

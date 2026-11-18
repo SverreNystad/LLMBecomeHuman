@@ -5,11 +5,11 @@ his demonstration (docs/adr/0004), and hidden scores are flag rules."""
 import pytest
 
 from detroit_benchmark.dashboard import DETROIT_CHAPTER_TITLES, _flowchart_projection
-from detroit_benchmark.engine import pick_branch
 from tests.dataset import (
     CONNOR_SHAKEN,
     load_dataset,
     play_story_with_hank_given_time as play_story,
+    resolve,
 )
 
 
@@ -305,7 +305,6 @@ def test_when_daniel_jumps_connor_chooses_whether_to_leap_for_emma(
 
 @pytest.mark.parametrize("killed, opening", [(True, "ch32_3_x0109"), (False, "ch32_3_00066")])
 def test_a_connor_markus_killed_is_replaced_in_the_zen_garden(killed, opening):
-    node = load_dataset()["nodes"]["ch32_3_x0110"]
-    idx, _, unknown = pick_branch(node, {"connor_killed_by_markus": killed})
-    assert not unknown
-    assert (node["branches"][idx]["next"] if idx is not None else node["next"]) == opening
+    step = resolve("ch32_3_x0110", {"connor_killed_by_markus": killed})
+    assert not step.assumed
+    assert step.next == opening

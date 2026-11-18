@@ -2,14 +2,14 @@
 
 import pytest
 
-from detroit_benchmark.engine import _reachable, effect_flags
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, reachable
 
 NODES = load_dataset()["nodes"]
 
 
 def reach(start: str, **flags) -> set[str]:
-    return set(_reachable(NODES, start, flags))
+    return set(reachable(start, flags))
 
 
 def option(nid: str, label: str) -> dict:

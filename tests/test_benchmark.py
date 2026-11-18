@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 from bs4 import BeautifulSoup
 
-from detroit_benchmark.engine import Runner, validate_graph, evaluate_condition
+from detroit_benchmark.engine import Runner, validate_graph
+from detroit_benchmark.story_rules import Facts, StoryRules
 from tests.dataset import read_events
 from detroit_benchmark.ingest import (
     Compiler,
@@ -164,13 +165,16 @@ def test_discover_repo_manifest(tmp_path):
 
 
 def test_condition_evaluator():
-    assert (
-        evaluate_condition(
-            {"all": [{"flag": "a"}, {"not": {"flag": "b"}}]}, {"a": True, "b": False}
-        )
-        is True
-    )
-    assert evaluate_condition({"flag": "missing"}, {}) is None
+    gate = {
+        "id": "gate",
+        "type": "condition",
+        "resolution": "rule",
+        "branches": [{"when": {"all": [{"flag": "a"}, {"not": {"flag": "b"}}]}, "next": "x"}],
+        "next": "y",
+    }
+    rules = StoryRules({"nodes": {"gate": gate}})
+    assert rules.resolve("gate", Facts(flags={"a": True, "b": False})).values == (True,)
+    assert rules.resolve("gate", Facts()).values == (None,)
 
 
 def test_full_chapter_routing_with_stub_transcripts(tmp_path):

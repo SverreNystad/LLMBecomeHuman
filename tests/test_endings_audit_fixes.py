@@ -2,8 +2,8 @@
 
 import pytest
 
-from detroit_benchmark.engine import effect_flags, pick_branch
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, reachable, resolve
 from tests.test_night_of_the_soul import MACHINE, NOBODY_SAVES_MARKUS
 
 # Battle for Detroit 32.6: "Markus is dead: North is leading the revolution".
@@ -14,10 +14,9 @@ MARKUS_GONE = "final_x0903"
 
 
 def _next(node_id: str, flags: dict) -> str:
-    node = load_dataset()["nodes"][node_id]
-    idx, _, unknown = pick_branch(node, flags)
-    assert not unknown
-    return node["branches"][idx]["next"] if idx is not None else node["next"]
+    step = resolve(node_id, flags)
+    assert not step.assumed
+    return step.next
 
 
 def test_with_markus_dead_north_leads_the_revolution_and_falls(tmp_path):
@@ -59,19 +58,6 @@ def test_markus_at_hart_plaza_plays_his_own_segment():
     assert _next(MARKUS_GONE, flags) == "route_markus_final"
 
 
-def _reachable(start: str) -> set[str]:
-    nodes, seen, todo = load_dataset()["nodes"], set(), [start]
-    while todo:
-        nid = todo.pop()
-        if nid in seen or nodes[nid]["chapter"] != nodes[start]["chapter"]:
-            continue
-        seen.add(nid)
-        node = nodes[nid]
-        todo += [o["next"] for o in node.get("options", []) + node.get("branches", [])]
-        todo += [node["next"]] if node.get("next") else []
-    return seen
-
-
 def _option(node_id: str, label: str) -> dict:
     options = load_dataset()["nodes"][node_id]["options"]
     return next(o for o in options if o["label"] == label)
@@ -80,7 +66,9 @@ def _option(node_id: str, label: str) -> dict:
 def test_refusing_north_s_heart_markus_dies_and_the_revolution_fails():
     # Wiki: Refuse → "Markus Died and the Revolution Failed"; North leads only a
     # revolution Markus did not live to start.
-    after = _reachable(_option("ch32_6_00068", "SACRIFICE SELF")["next"])
+    after = set(
+        reachable(_option("ch32_6_00068", "SACRIFICE SELF")["next"], within_chapter=True)
+    )
     assert "ch32_6_x0113" in after and NORTH_LEADS not in after
 
 
@@ -160,11 +148,13 @@ def test_hank_kills_himself_when_nobody_is_left(change, hank_dies):
     # Wiki (Hank Anderson): Connor deactivated for failing to find Jericho, Kara
     # dead, Markus dead or banned from Jericho: Hank shoots himself in the credits.
     nodes = load_dataset()["nodes"]
-    gate = nodes["final_x0901"]
-    idx, _, _ = pick_branch(gate, KAMSKI_ENDING)
-    credits = nodes[gate["branches"][idx]["next"]]
-    idx, _, unknown = pick_branch(credits, {**KAMSKI_ENDING, **change})
-    assert not unknown
+    gate = resolve("final_x0901", KAMSKI_ENDING)
+    assert not gate.assumed and gate.branch_index is not None
+    credits_id = gate.next
+    credits = nodes[credits_id]
+    step = resolve(credits_id, {**KAMSKI_ENDING, **change})
+    idx = step.branch_index
+    assert not step.assumed
     flags = effect_flags(credits["branches"][idx]) if idx is not None else {}
     assert (flags.get("hank_alive") is False) is hank_dies
     assert (credits["branches"][idx]["next"] if idx is not None else credits["next"]) == MARKUS_GONE

@@ -2,8 +2,8 @@
 
 import pytest
 
-from detroit_benchmark.engine import effect_flags, pick_branch
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, resolve
 
 GRAPH = load_dataset()
 NODES = GRAPH["nodes"]
@@ -13,9 +13,9 @@ FENCE = "ch32_2_00030"
 
 
 def camp_branch(**flags) -> dict:
-    idx, _, unknown = pick_branch(NODES["ch32_9_x0001"], flags)
-    assert not unknown and idx is not None
-    return NODES["ch32_9_x0001"]["branches"][idx]
+    step = resolve("ch32_9_x0001", flags)
+    assert not step.assumed and step.branch_index is not None
+    return NODES["ch32_9_x0001"]["branches"][step.branch_index]
 
 
 def test_a_run_starts_with_no_revolution_won():

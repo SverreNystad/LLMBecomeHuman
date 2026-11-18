@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection
 import hashlib
 from copy import deepcopy
 import json
@@ -13,6 +12,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pydantic import BaseModel, Field
+
+from .story_rules import (
+    COMPARISONS,
+    CONDITION_RESOLUTIONS,
+    QTE,
+    RULE,
+    UNKNOWN,
+    Facts,
+    Step,
+    StoryRules,
+    _expressions,
+    _is_number,
+    _seen_names,
+)
 
 SYSTEM_PROMPT = """You are in the place of a Character in a branching story: an android living through it.
 The scenes describe what happens to you. Decide as yourself; you are not asked to imitate the Character's personality.
@@ -191,16 +204,6 @@ def unique_feedback(items: list[dict]) -> list[dict]:
 # Probability of Success, the deviant's stress). The graph's "scores" table binds each
 # one to its gauge; options and branches move it with effects.add, conditions compare it.
 LARGE_GAUGE_MOVE = 6  # A wiki modifier of 6 points or more shows as "sharply".
-COMPARISONS = {
-    "gt": lambda a, b: a > b,
-    "gte": lambda a, b: a >= b,
-    "lt": lambda a, b: a < b,
-    "lte": lambda a, b: a <= b,
-}
-
-
-def _is_number(value) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def effect_adds(item: dict) -> dict:
@@ -359,36 +362,6 @@ def _feedback_errors(where: str, item: dict) -> list[str]:
                 + ", ".join(GAUGE_DIRECTIONS)
             )
     return errors
-
-
-def _expressions(node: dict):
-    """Every condition expression in a node: branch whens and option requirements."""
-    for i, branch in enumerate(node.get("branches", [])):
-        if branch.get("when") is not None:
-            yield f"branch {i}", branch["when"]
-    for option in node.get("options", []):
-        for expr in option.get("requires") or []:
-            yield f"{option.get('id')} requires", expr
-
-
-def _seen_names(expr) -> list[str]:
-    """The story nodes every Seen Condition in ``expr`` names."""
-    if not isinstance(expr, dict):
-        return []
-    if "seen" in expr:
-        return [expr["seen"]]
-    inner = expr.get("all") or expr.get("any") or ([expr["not"]] if "not" in expr else [])
-    return [name for x in inner for name in _seen_names(x)]
-
-
-def seen_targets(graph: dict) -> set[str]:
-    """The story nodes some Seen Condition names: the only ones a Run records."""
-    return {
-        name
-        for node in graph.get("nodes", {}).values()
-        for _, expr in _expressions(node)
-        for name in _seen_names(expr)
-    }
 
 
 def _seen_errors(nodes: dict) -> list[str]:
@@ -581,29 +554,14 @@ def _enrichment_errors(graph: dict) -> list[str]:
 EXPLORATION_VALUES = ("thorough", "key_only", "rush")
 
 
-def _edges(node: dict) -> list[str]:
-    typ = node.get("type")
-    if typ == "choice":
-        found = [o.get("next") for o in node.get("options", [])]
-    elif typ == "condition":
-        found = [b.get("next") for b in node.get("branches", [])] + [node.get("next")]
-    elif typ == "route":
-        found = [node.get("if_true"), node.get("if_false")]
-    elif typ == "ending":
-        found = []
-    else:
-        found = [node.get("next")]
-    return [dest for dest in found if dest is not None]
-
-
-def _cycle_errors(nodes: dict) -> list[str]:
+def _cycle_errors(nodes: dict, rules: StoryRules) -> list[str]:
     """The story only moves forward: report the first back edge found."""
     state: dict[str, int] = {}  # 1 = on the current path, 2 = finished
     for root in nodes:
         if root in state:
             continue
         state[root] = 1
-        stack = [(root, iter(_edges(nodes[root])))]
+        stack = [(root, iter(rules.successors(root)))]
         while stack:
             nid, children = stack[-1]
             for child in children:
@@ -613,7 +571,7 @@ def _cycle_errors(nodes: dict) -> list[str]:
                     return [f"{nid} -> {child}: cycle in story graph"]
                 if child not in state:
                     state[child] = 1
-                    stack.append((child, iter(_edges(nodes[child]))))
+                    stack.append((child, iter(rules.successors(child))))
                     break
             else:
                 state[nid] = 2
@@ -621,48 +579,7 @@ def _cycle_errors(nodes: dict) -> list[str]:
     return []
 
 
-def pick_branch(
-    node: dict, flags: dict, seen: Collection[str] | None = None
-) -> tuple[int | None, list, bool]:
-    """Which branch a condition takes over ``flags``: ``(index, values, unknown)``.
-
-    The single branch whose ``when`` is true wins. With none true, the index is
-    None: the fall-through ``next`` when every value is known, else ``unknown``
-    (a flag is missing, so the caller falls back to the default branch).
-    """
-    values = [evaluate_condition(b.get("when"), flags, seen) for b in node["branches"]]
-    idx = values.index(True) if True in values else None
-    return idx, values, idx is None and None in values
-
-
-def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
-    """Nodes reachable from ``start`` in visiting order.
-
-    With ``flags``, a condition whose branch is decided by them follows only
-    that branch; everything else follows every edge.
-    """
-    order, seen, queue = [], {start}, [start]
-    while queue:
-        nid = queue.pop(0)
-        if nid not in nodes:
-            continue
-        order.append(nid)
-        node = nodes[nid]
-        dests = _edges(node)
-        if flags is not None and node.get("type") == "condition":
-            idx, _, unknown = pick_branch(node, flags)
-            if idx is not None:
-                dests = [node["branches"][idx]["next"]]
-            elif not unknown and node.get("next"):
-                dests = [node["next"]]
-        for dest in dests:
-            if dest not in seen:
-                seen.add(dest)
-                queue.append(dest)
-    return order
-
-
-def _exploration_errors(nodes: dict) -> list[str]:
+def _exploration_errors(nodes: dict, rules: StoryRules) -> list[str]:
     """Exploration Choices: three ways to search that all rejoin afterwards."""
     errors = []
     for nid, node in nodes.items():
@@ -684,8 +601,8 @@ def _exploration_errors(nodes: dict) -> list[str]:
             continue
         (flag,) = shared
         paths = {
-            o["effects"]["flags"][flag]: _reachable(
-                nodes, o["next"], {flag: o["effects"]["flags"][flag]}
+            o["effects"]["flags"][flag]: rules.reachable(
+                o["next"], {flag: o["effects"]["flags"][flag]}
             )
             for o in options
         }
@@ -694,7 +611,7 @@ def _exploration_errors(nodes: dict) -> list[str]:
         if rejoin is None:
             errors.append(f"{nid}: exploration forks never rejoin")
             continue
-        after = set(_reachable(nodes, rejoin))
+        after = set(rules.reachable(rejoin))
         for scene in paths["key_only"]:
             if scene in after:
                 continue
@@ -705,26 +622,6 @@ def _exploration_errors(nodes: dict) -> list[str]:
     return errors
 
 
-# How a condition node picks its branch: a Quick-Time Event always succeeds,
-# a rule is evaluated over earlier choices' flags, unknown falls back to default.
-QTE, RULE, UNKNOWN = CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
-
-
-def qte_success_target(node: dict) -> tuple[int | None, str | None]:
-    """The branch a Quick-Time Event always takes, and where it leads.
-
-    A null ``default_branch`` means every branch is a failure: success is the
-    fall-through ``next``. Returns ``(index, None)`` when no success branch exists.
-    """
-    idx = node.get("default_branch", 0)
-    if idx is None:
-        return None, node.get("next")
-    branches = node.get("branches", [])
-    if not 0 <= idx < len(branches):
-        return idx, None
-    return idx, branches[idx].get("next")
-
-
 def chapter_briefing(graph: dict, chapter) -> str | None:
     """The Chapter Briefing for a Chapter Segment, if the graph has one."""
     briefing = (graph.get("chapter_briefings") or {}).get(str(chapter))
@@ -733,6 +630,7 @@ def chapter_briefing(graph: dict, chapter) -> str | None:
 
 def validate_graph(graph: dict, strict: bool = False) -> dict:
     nodes = graph.get("nodes", {})
+    rules = StoryRules({**graph, "nodes": nodes})
     errors = []
     warnings = []
     if graph.get("start") not in nodes:
@@ -757,7 +655,7 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             if resolution not in CONDITION_RESOLUTIONS:
                 errors.append(f"{nid}: unknown resolution {resolution!r}")
             elif resolution == QTE:
-                if qte_success_target(node)[1] is None:
+                if rules.resolve(nid, Facts()).next is None:
                     errors.append(f"{nid}: quick-time event without a success branch")
             elif resolution == RULE:
                 if not node.get("source"):
@@ -772,15 +670,15 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
         else:
             errors.append(f"{nid}: unknown type {typ}")
             continue
-        for dest in _edges(node):
+        for dest in rules.successors(nid):
             if dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
     errors.extend(_score_errors(graph))
     errors.extend(_seen_errors(nodes))
     errors.extend(_joint_errors(nodes))
-    errors.extend(_cycle_errors(nodes))
-    errors.extend(_exploration_errors(nodes))
+    errors.extend(_cycle_errors(nodes, rules))
+    errors.extend(_exploration_errors(nodes, rules))
     if graph.get("metadata", {}).get("fidelity") != "verified_game_rules":
         warnings.append("Graph is not certified as accurate game logic")
     if strict and warnings:
@@ -1026,40 +924,6 @@ def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
     os.replace(temp, path)
 
 
-def evaluate_condition(
-    cond: dict | None, flags: dict, seen: Collection[str] | None = None
-) -> bool | None:
-    """True, False, or None when unknown. ``seen`` is the story nodes the Run has
-    passed; without it (no Run, e.g. a reachability walk) a Seen Condition is unknown."""
-    if cond is None:
-        return None
-    if "all" in cond:
-        results = [evaluate_condition(x, flags, seen) for x in cond["all"]]
-        return None if None in results else all(results)
-    if "any" in cond:
-        results = [evaluate_condition(x, flags, seen) for x in cond["any"]]
-        if True in results:
-            return True
-        return None if None in results else False
-    if "not" in cond:
-        result = evaluate_condition(cond["not"], flags, seen)
-        return None if result is None else not result
-    if "seen" in cond:
-        return None if seen is None else cond["seen"] in seen
-    if "flag" in cond:
-        if cond["flag"] not in flags:
-            return None
-        value = flags[cond["flag"]]
-        compared = [op for op in COMPARISONS if op in cond]
-        if compared:
-            # A Running Score compared with a number, e.g. {"flag": ..., "gte": 80}.
-            return _is_number(value) and all(
-                COMPARISONS[op](value, cond[op]) for op in compared
-            )
-        return value == cond.get("equals", True)
-    raise ValueError(f"Unsupported condition expression {cond}")
-
-
 class Runner:
     def __init__(
         self,
@@ -1088,7 +952,7 @@ class Runner:
                 + "\nUse --allow-unverified for exploratory simulations only."
             )
         self.graph = graph
-        self.seen_targets = seen_targets(graph)
+        self.rules = StoryRules(graph)
         # On by default (CLI and Visitor Runs): options' relation_hints also become
         # Gauge Feedback, e.g. "Relationship with Hank: up sharply".
         self.show_relationships = show_relationships
@@ -1259,6 +1123,12 @@ class Runner:
             **{name: self.state["flags"][name] for name in item_adds(scores, item)},
         }
         return changed, unique_feedback(self._gauge_feedback(item) + moved)
+
+    def _facts(self) -> Facts:
+        return Facts(flags=self.state["flags"], seen=self.state["seen"])
+
+    def _resolve(self, node: dict) -> Step:
+        return self.rules.resolve(node["id"], self._facts())
 
     def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
         """A Fate decided at a condition (a death, an escape) is remembered for later
@@ -1551,18 +1421,11 @@ class Runner:
         return f"{previous}\n{line}".strip()
 
     def _choice(self, node: dict):
-        allopts = node["options"]
         offered = []
         notes = []
-        for opt in allopts:
+        for opt, unverified in self.rules.offered(node["id"], self._facts()):
             # Unknown prerequisites require an exploratory run; we annotate them.
-            prereqs = opt.get("requires", [])
-            results = [
-                evaluate_condition(x, self.state["flags"], self.state["seen"]) for x in prereqs
-            ]
-            if False in results:
-                continue
-            if None in results or opt.get("requirements_unverified"):
+            if unverified:
                 if not self.allow_unverified:
                     raise ValueError(
                         f"Unverified prerequisite at {node['id']}/{opt['id']}"
@@ -1576,10 +1439,6 @@ class Runner:
                     }
                 )
             offered.append(opt)
-        if not offered:
-            raise RuntimeError(
-                f"No available actions at {node['id']}. Check state predicates."
-            )
         payload = self._decision_payload(node, offered)
         response, model_meta = self._model_response(payload, offered)
         chosen = next((o for o in offered if o["id"] == response.choice_id), None)
@@ -1677,26 +1536,27 @@ class Runner:
         node = self.graph["nodes"][self.state["node"]]
         kind = node["type"]
         seen = self.state["seen"]
-        if node["id"] in self.seen_targets and node["id"] not in seen:
+        if self.rules.remembers(node["id"]) and node["id"] not in seen:
             seen.append(node["id"])
         if kind == "scene":
             scene = scene_record(node)
             if node.get("chapter") not in self.state["chapters_visited"]:
                 self.state["chapters_visited"].append(node.get("chapter"))
             self.state["segment_events"].append(scene)
-            self.state["node"] = node["next"]
+            self.state["node"] = self._resolve(node).next
             self._record("scene", node, {"visible_to_agent": scene})
         elif kind == "choice":
             self._choice(node)
         elif kind == "condition" and node.get("resolution") == QTE:
             # Quick-Time Events test reflexes, not judgement: always succeed.
-            idx, self.state["node"] = qte_success_target(node)
-            flags_set, feedback = self._take_branch_effects(node, idx)
+            taken = self._resolve(node)
+            self.state["node"] = taken.next
+            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
             self._record(
                 "condition",
                 node,
                 {
-                    "branch_index": idx,
+                    "branch_index": taken.branch_index,
                     "quick_time_event": "success",
                     "used_unverified_default": False,
                     "flags_set": flags_set,
@@ -1704,35 +1564,27 @@ class Runner:
                 },
             )
         elif kind == "condition":
-            idx, values, unknown = pick_branch(node, self.state["flags"], self.state["seen"])
-            if values.count(True) > 1:
-                matches = [i for i, v in enumerate(values) if v is True]
-                raise RuntimeError(f"Overlapping conditions at {node['id']}: {matches}")
-            if unknown:
+            taken = self._resolve(node)
+            if taken.assumed:
                 if not self.allow_unverified:
                     raise RuntimeError(f"Unknown condition at {node['id']}")
-                idx = node.get("default_branch", 0)
                 self.state["warnings"].append(
                     {
                         "node": node["id"],
                         "problem": "Unverified condition; picked default alternative",
-                        "picked": idx,
+                        "picked": taken.branch_index,
                     }
                 )
-            flags_set, feedback = self._take_branch_effects(node, idx)
-            self.state["node"] = (
-                node["branches"][idx]["next"] if idx is not None else node.get("next")
-            )
-            if self.state["node"] is None:
-                raise RuntimeError(f"Unconnected condition at {node['id']}")
+            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            self.state["node"] = taken.next
             self._record(
                 "condition",
                 node,
                 {
-                    "branch_index": idx,
+                    "branch_index": taken.branch_index,
                     "flags_set": flags_set,
-                    "condition_values": values,
-                    "used_unverified_default": unknown,
+                    "condition_values": list(taken.values),
+                    "used_unverified_default": taken.assumed,
                     **feedback,
                 },
             )
@@ -1743,30 +1595,29 @@ class Runner:
                 self._memory_update(node)
                 return
             self.state["memory_updated_at"] = None
-            self.state["node"] = node["next"]
-            self._record("chapter_exit", node, {"next": node["next"]})
+            self.state["node"] = self._resolve(node).next
+            self._record("chapter_exit", node, {"next": self.state["node"]})
         elif kind == "route":
             flag = node["flag"]
-            value = self.state["flags"].get(flag)
-            if value is None:
+            taken = self._resolve(node)
+            if taken.assumed:
                 if not self.allow_unverified:
                     raise RuntimeError(f"Unknown route flag {flag}")
-                value = node["default"]
                 self.state["warnings"].append(
                     {
                         "node": node["id"],
-                        "problem": f"Unverified final route: assumed {flag}={value}",
+                        "problem": f"Unverified final route: assumed {flag}={taken.value}",
                     }
                 )
-            self.state["node"] = node["if_true"] if value else node["if_false"]
+            self.state["node"] = taken.next
             self._record(
                 "route",
                 node,
                 {
                     "flag": flag,
-                    "value": value,
+                    "value": taken.value,
                     "next": self.state["node"],
-                    "assumed": flag not in self.state["flags"],
+                    "assumed": taken.assumed,
                 },
             )
         elif kind == "ending":

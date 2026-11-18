@@ -5,8 +5,8 @@ Luther, if he is in the camp, is freed with them. Alice's fear in the line is vi
 import pytest
 
 from detroit_benchmark.ending import ending_summary
-from detroit_benchmark.engine import effect_flags, pick_branch
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, resolve
 from tests.test_markus_endings import PEACEFUL, REFUSE_DEAL
 
 GRAPH = load_dataset()
@@ -23,9 +23,9 @@ LEFT_ALICE = {"ch32_2_00202": "VOLUNTEER", "ch32_2_x0210": "CLIMB INTO THE TRUCK
 
 
 def taken(nid: str, **flags) -> dict:
-    idx, _, unknown = pick_branch(NODES[nid], flags)
-    assert not unknown and idx is not None, (nid, flags)
-    return NODES[nid]["branches"][idx]
+    step = resolve(nid, flags)
+    assert not step.assumed and step.branch_index is not None, (nid, flags)
+    return NODES[nid]["branches"][step.branch_index]
 
 
 WAITING = ["ch32_2_00010", "ch32_2_x0105", "ch32_2_x0102", "ch32_2_x0211"]
