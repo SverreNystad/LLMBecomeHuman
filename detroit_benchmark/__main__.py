@@ -10,12 +10,9 @@ from .engine import (
     DEFAULT_MODELS,
     Runner,
     iter_events,
+    read_json,
     validate_graph,
 )
-
-
-def read_json(p):
-    return json.loads(Path(p).read_text(encoding="utf-8"))
 
 
 def main():

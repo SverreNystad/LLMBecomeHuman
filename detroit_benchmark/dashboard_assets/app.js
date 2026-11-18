@@ -652,11 +652,11 @@ function computePath(view, chapter, graph) {
       if (!byId.has(opt)) byId.set(opt,[]);
       byId.get(opt).push(ev);
       traversed.add(`${nid}\u0000${opt}`);
-      if (nextId) {traversed.add(`${opt}\u0000${nextId}`); if(nextId.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}}
+      if (nextId) traversed.add(`${opt}\u0000${nextId}`);
     } else if (nextId && nextId !== nid) {
       traversed.add(`${nid}\u0000${nextId}`);
-      if(nextId.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}
     }
+    if (nextId?.startsWith('PORTAL::')) {visited.add(nextId); byId.set(nextId,[ev]);}
   }
   return {visited,traversed,byId};
 }
@@ -739,7 +739,15 @@ function detourMarkup(x1, y1, x2, y2, between, offset) {
     + ` L ${xb-CORNER} ${lane} Q ${xb} ${lane} ${xb} ${lane+up}`
     + ` L ${xb} ${y2-up} Q ${xb} ${y2} ${xb+CORNER} ${y2} L ${x2} ${y2}`;
 }
-function edgeMarkup(e, graph, offset=0) {
+/* The nodes standing wholly between an edge's ends, which its curve may have to avoid. */
+function nodesBetween(e, graph) {
+  const a=graph.nodes.get(e.from),b=graph.nodes.get(e.to);
+  if (!a || !b) return [];
+  const x1=a.x+a.width, x2=b.x;
+  return [...graph.nodes.values()].filter(n=>n!==a&&n!==b&&n.x>=x1&&n.x+n.width<=x2);
+}
+/* `between` depends on the edge only, so the route overlays of one edge share it. */
+function edgeMarkup(e, graph, offset=0, between=nodesBetween(e, graph)) {
   const a=graph.nodes.get(e.from),b=graph.nodes.get(e.to);
   if (!a || !b) return '';
   const x1=a.x+a.width, y1=a.y+a.height/2+offset;
@@ -747,7 +755,6 @@ function edgeMarkup(e, graph, offset=0) {
   if (x2 >= x1) {
     const bend = Math.max(20, (x2-x1)*.52);
     const curve = `M ${x1} ${y1} C ${x1+bend} ${y1}, ${x2-bend} ${y2}, ${x2} ${y2}`;
-    const between = [...graph.nodes.values()].filter(n=>n!==a&&n!==b&&n.x>=x1&&n.x+n.width<=x2);
     if (!between.length || !curveHitsNodes([x1,y1,x1+bend,y1,x2-bend,y2,x2,y2], between)) return curve;
     return detourMarkup(x1, y1, x2, y2, between, offset);
   }
@@ -809,13 +816,13 @@ function drawGraph(graph, paths) {
   edgesEl.replaceChildren();nodesEl.replaceChildren();
   const logos=[];
   for(const edge of graph.edges) {
-    const d=edgeMarkup(edge,graph);
-    edgesEl.appendChild(svgPath(d,'edge-path'));
+    const between=nodesBetween(edge,graph);
+    edgesEl.appendChild(svgPath(edgeMarkup(edge,graph,0,between),'edge-path'));
     const users=paths.filter(x=>x.path.traversed.has(`${edge.from}\u0000${edge.to}`));
     const step=Math.min(3,Math.max(1.5,30/Math.max(1,users.length)));
     users.forEach((view,i)=>{
       const offset=(i-(users.length-1)/2)*step;
-      const path=svgPath(edgeMarkup(edge,graph,offset),'edge-path route-overlay');
+      const path=svgPath(edgeMarkup(edge,graph,offset,between),'edge-path route-overlay');
       path.style.stroke=routeColor(view.run);
       path.classList.add(`provider-${providerStyle(view.run)}`);
       path.setAttribute('data-run-id',view.run.id);
@@ -901,7 +908,6 @@ function renderFlowchart(fit=true){
  renderStoryToolbar(storyRun());
  const chapter=state.chapter, views=activeViews(), graph=buildChapterGraph(chapter);
  const paths=views.map(v=>({...v,path:computePath(v,chapter,graph)}));
- $('chapterSubtitle').textContent=chapterCharacter(chapter)||'';
  const notice=$('graphNotice');notice.classList.toggle('is-hidden',state.graph.complete);
  if(!state.graph.complete)notice.textContent='Story graph missing for this run.';
  const legend=$('canvasLegend');
@@ -1101,11 +1107,11 @@ async function inspect(nodeId,runId,{glide=false}={}){
  try{
   const raw=await api(`/api/runs/${encodeURIComponent(runId)}/events/${selectedEvent.index}`);
   if(state.selected!==marker)return;
-  if(raw.type==='decision')renderDecisionInspector(node,raw,runId,view);
-  else renderSceneInspector(node,raw,runId,view);
+  if(raw.type==='decision')renderDecisionInspector(node,raw,view);
+  else renderSceneInspector(node,raw,view);
  }catch(err){if(state.selected===marker)$('drawerContent').innerHTML=renderInspectorShell(node,view)+`<div class="nondecision-msg">${esc(err.message)}</div>`;}
 }
-function renderDecisionInspector(node,ev,runId,view){
+function renderDecisionInspector(node,ev,view){
  const input=ev.input||{},output=ev.output||{},history=input.entire_decision_history||[];
  const options=input.available_choices||[],selectedOption=options.find(o=>o.id===output.choice_id);
  const before=ev.flags_before||{},after=ev.flags_after||{};
@@ -1128,7 +1134,7 @@ function sceneScriptSection(node){
  const context={character:chapterCharacter(state.chapter)};
  return `<section class="inspect-section inspect-script">${items.map(item=>renderItem(item,context)).join('')}</section>`;
 }
-function renderSceneInspector(node,ev,runId,view){
+function renderSceneInspector(node,ev,view){
  const data=ev.visible_to_agent||{};
  const preceding=(view.detail?.decisions||[]).filter(d=>d.index<ev.index).at(-1);
  const prior=preceding?`<section class="inspect-section"><h3>Previous decision</h3><div class="selected-choice" style="border-left-color:${routeColor(view.run)}"><div class="selected-label">${esc(preceding.heading||'')}</div><strong>${esc(preceding.label||preceding.choice_id)}</strong></div><p class="rationale">${esc(preceding.rationale||'')}</p></section>`:'';
@@ -1216,5 +1222,5 @@ async function init(){
   state.view='flow';$('storyView').classList.add('is-hidden');$('viewerWrap').classList.remove('is-hidden');
   $('viewStory').setAttribute('aria-pressed','false');$('viewFlow').setAttribute('aria-pressed','true');
  }else document.querySelectorAll('.flow-only').forEach(el=>el.classList.add('is-hidden'));
- await refreshRuns({reselect:true});setInterval(()=>refreshRuns(),8000);}
+ await refreshRuns({reselect:true});setInterval(()=>{if(!document.hidden)refreshRuns();},8000);}
 init();

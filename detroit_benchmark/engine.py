@@ -527,6 +527,16 @@ def _joint_errors(nodes: dict) -> list[str]:
     return errors
 
 
+def _effect_items(graph: dict):
+    """Every condition branch and option, with where it is for error messages, and
+    whether it is an option."""
+    for nid, node in graph.get("nodes", {}).items():
+        for i, branch in enumerate(node.get("branches", [])):
+            yield f"{nid}: branch {i}", branch, False
+        for option in node.get("options", []):
+            yield f"{nid}/{option.get('id')}", option, True
+
+
 def _enrichment_errors(graph: dict) -> list[str]:
     """Check Chapter Briefings and Public News; graphs without them pass."""
     errors = []
@@ -542,42 +552,29 @@ def _enrichment_errors(graph: dict) -> list[str]:
                 )
     # Every flag the story sets: at the start, on a condition branch, or by a choice.
     named = [("initial flag", graph.get("initial_flags") or {})]
-    for nid, node in graph.get("nodes", {}).items():
-        named += [
-            (f"{nid}: branch flag", effect_flags(b)) for b in node.get("branches", [])
-        ]
-        named += [
-            (f"{nid}/{o.get('id')}: flag", effect_flags(o))
-            for o in node.get("options", [])
-        ]
+    named += [
+        (f"{where}: flag", effect_flags(item)) for where, item, _ in _effect_items(graph)
+    ]
     for where, flags in named:
         errors += [
             f"{where} {flag!r} is not snake_case"
             for flag in flags
             if not FLAG_NAME.fullmatch(flag)
         ]
-    for nid, node in graph.get("nodes", {}).items():
-        for i, branch in enumerate(node.get("branches", [])):
-            errors += _feedback_errors(f"{nid}: branch {i}", branch)
-        for option in node.get("options", []):
-            errors += _feedback_errors(f"{nid}/{option.get('id')}", option)
-            effects = option.get("effects")
-            if not isinstance(effects, dict):
-                continue
-            where = f"{nid}/{option.get('id')}"
-            for item in effects.get("news") or []:
-                headline = item.get("headline") if isinstance(item, dict) else None
-                source = item.get("source") if isinstance(item, dict) else None
-                if not isinstance(headline, str) or not headline.strip():
-                    errors.append(f"{where}: news item without headline")
-                elif len(headline) > HEADLINE_MAX_CHARS:
-                    errors.append(
-                        f"{where}: headline exceeds {HEADLINE_MAX_CHARS} chars"
-                    )
-                if not isinstance(source, str) or not source.startswith(
-                    NEWS_SOURCE_PREFIX
-                ):
-                    errors.append(f"{where}: news item without wiki source")
+    for where, item, is_option in _effect_items(graph):
+        errors += _feedback_errors(where, item)
+        effects = item.get("effects")
+        if not is_option or not isinstance(effects, dict):
+            continue
+        for news in effects.get("news") or []:
+            headline = news.get("headline") if isinstance(news, dict) else None
+            source = news.get("source") if isinstance(news, dict) else None
+            if not isinstance(headline, str) or not headline.strip():
+                errors.append(f"{where}: news item without headline")
+            elif len(headline) > HEADLINE_MAX_CHARS:
+                errors.append(f"{where}: headline exceeds {HEADLINE_MAX_CHARS} chars")
+            if not isinstance(source, str) or not source.startswith(NEWS_SOURCE_PREFIX):
+                errors.append(f"{where}: news item without wiki source")
     return errors
 
 
@@ -837,6 +834,15 @@ def reasoning_settings(provider: str, model_id: str | None) -> dict:
     return {}
 
 
+# Services with OpenAI-compatible chat endpoints: (base URL, API key environment variable).
+COMPATIBLE_PROVIDERS = {
+    "xai": ("https://api.x.ai/v1", "XAI_API_KEY"),
+    "deepseek": ("https://api.deepseek.com", "DEEPSEEK_API_KEY"),
+    "mistral": ("https://api.mistral.ai/v1", "MISTRAL_API_KEY"),
+    "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
+}
+
+
 def create_model(
     provider: str,
     model_id: str | None,
@@ -857,26 +863,18 @@ def create_model(
     """
     if provider == "mock":
         return None
-    if provider == "openai":
-        from langchain_openai import ChatOpenAI
-
-        chosen_model = model_id or DEFAULT_MODELS[provider]
-        return ChatOpenAI(
+    chosen_model = model_id or DEFAULT_MODELS.get(provider)
+    key_option = {"api_key": api_key} if api_key else {}
+    if provider in ("openai", "anthropic"):
+        if provider == "openai":
+            from langchain_openai import ChatOpenAI as Chat
+        else:
+            from langchain_anthropic import ChatAnthropic as Chat
+        return Chat(
             model=chosen_model,
             temperature=temperature,
             max_tokens=max_tokens,
-            **({"api_key": api_key} if api_key else {}),
-            **reasoning_settings(provider, chosen_model),
-        )
-    if provider == "anthropic":
-        from langchain_anthropic import ChatAnthropic
-
-        chosen_model = model_id or DEFAULT_MODELS[provider]
-        return ChatAnthropic(
-            model=chosen_model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            **({"api_key": api_key} if api_key else {}),
+            **key_option,
             **reasoning_settings(provider, chosen_model),
         )
     if provider == "google":
@@ -890,7 +888,6 @@ def create_model(
             raise RuntimeError("Set GOOGLE_API_KEY to run Google Gemini models")
         # This client rejects temperature=None, so omit it to use the provider default.
         options = {} if temperature is None else {"temperature": temperature}
-        chosen_model = model_id or DEFAULT_MODELS[provider]
         return ChatGoogleGenerativeAI(
             model=chosen_model,
             max_output_tokens=max_tokens,
@@ -898,21 +895,13 @@ def create_model(
             **options,
             **reasoning_settings(provider, chosen_model),
         )
-    # These services expose OpenAI-compatible chat completion endpoints.
-    compatible = {
-        "xai": ("https://api.x.ai/v1", "XAI_API_KEY"),
-        "deepseek": ("https://api.deepseek.com", "DEEPSEEK_API_KEY"),
-        "mistral": ("https://api.mistral.ai/v1", "MISTRAL_API_KEY"),
-        "openrouter": ("https://openrouter.ai/api/v1", "OPENROUTER_API_KEY"),
-    }
-    if provider in compatible:
+    if provider in COMPATIBLE_PROVIDERS:
         from langchain_openai import ChatOpenAI
 
-        base_url, env_key = compatible[provider]
+        base_url, env_key = COMPATIBLE_PROVIDERS[provider]
         key = api_key or os.environ.get(env_key)
         if not key:
             raise RuntimeError(f"Set {env_key} before running {provider} experiments")
-        chosen_model = model_id or DEFAULT_MODELS[provider]
         if not chosen_model:
             raise ValueError(f"--model is required for provider {provider}")
         return ChatOpenAI(
@@ -926,22 +915,97 @@ def create_model(
     raise ValueError(f"Unsupported provider {provider}")
 
 
-def iter_events(directory: Path):
-    """A Run's events in order, read line by line. A half-written last line (the Run
-    is still playing) and anything that is not an event object are skipped."""
+def _parse_event(line: bytes) -> dict | None:
     try:
-        with (directory / "events.jsonl").open(encoding="utf-8") as stream:
+        parsed = json.loads(line)
+    except ValueError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def iter_events_at(directory: Path):
+    """A Run's events in order, each with the byte offset of its line, read line by line.
+    A half-written last line (the Run is still playing) and anything that is not an
+    event object are skipped."""
+    try:
+        with (directory / "events.jsonl").open("rb") as stream:
+            offset = 0
             for line in stream:
-                if not line.strip():
-                    continue
-                try:
-                    parsed = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                if isinstance(parsed, dict):
-                    yield parsed
+                start, offset = offset, offset + len(line)
+                if line.strip() and (event := _parse_event(line)) is not None:
+                    yield start, event
     except OSError:
         return
+
+
+def iter_events(directory: Path):
+    """A Run's events in order; see :func:`iter_events_at`."""
+    return (event for _, event in iter_events_at(directory))
+
+
+def event_at(directory: Path, offset: int) -> dict | None:
+    """The event whose line starts at this byte offset (from :func:`iter_events_at`)."""
+    try:
+        with (directory / "events.jsonl").open("rb") as stream:
+            stream.seek(offset)
+            return _parse_event(stream.readline())
+    except OSError:
+        return None
+
+
+def prompt_message(payload: dict) -> str:
+    """A prompt payload as the model receives it: compact JSON after the system prompt."""
+    return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+
+
+def scene_view(node: dict) -> dict:
+    """The ``current_scene`` a decision prompt opens with."""
+    return {
+        "chapter": node.get("chapter"),
+        "character": node.get("character"),
+        "heading": node.get("heading"),
+        "description": node.get("description"),
+    }
+
+
+def scene_record(node: dict) -> dict:
+    """A scene as it joins the Chapter Segment every later prompt in it carries."""
+    return {
+        "scene_id": node["id"],
+        "chapter": node.get("chapter"),
+        "heading": node.get("heading"),
+        "description": node.get("description"),
+        "dialogue": node.get("dialogue", []),
+        "observations": node.get("observations", []),
+    }
+
+
+def memory_update_payload(
+    character: str, chapter, previous: str, segment: list, limit: int
+) -> dict:
+    """What a Memory Update sends the model at a chapter exit."""
+    return {
+        "instruction": MEMORY_UPDATE_INSTRUCTION.format(character=character, limit=limit),
+        "character": character,
+        "chapter": chapter,
+        "previous_memory": previous,
+        "chapter_segment": segment,
+        "max_characters": limit,
+    }
+
+
+def read_json(path: Path | str):
+    """The JSON in this file; raises when it is missing or malformed."""
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def file_stamp(path: Path) -> tuple[int, int] | None:
+    """A file's version, for caches: (modified time, size), or None if it is missing."""
+    try:
+        stat = path.stat()
+    except OSError:
+        return None
+    return stat.st_mtime_ns, stat.st_size
 
 
 def read_json_object(path: Path) -> dict | None:
@@ -1058,7 +1122,7 @@ class Runner:
         if resume:
             if not self.checkpoint_path.exists():
                 raise ValueError(f"No checkpoint at {self.checkpoint_path}")
-            payload = json.loads(self.checkpoint_path.read_text(encoding="utf-8"))
+            payload = read_json(self.checkpoint_path)
             if (
                 payload["graph_sha256"] != self.story_hash
                 or payload["provider"] != provider
@@ -1075,6 +1139,7 @@ class Runner:
             self.state.setdefault("segment_events", [])
             self.state.setdefault("news", [])
             self.state.setdefault("pending_moments", {})
+            self.state.setdefault("seen", [])
             self._save_story_snapshot()
             if self.state.get("status") == "complete":
                 raise ValueError("Run is already complete")
@@ -1157,7 +1222,7 @@ class Runner:
     def _save_story_snapshot(self):
         """Store the original graph beside each run so untaken branches remain visible."""
         if self.graph_path.exists():
-            existing = json.loads(self.graph_path.read_text(encoding="utf-8"))
+            existing = read_json(self.graph_path)
             if canonical_hash(existing) != self.story_hash:
                 raise ValueError(
                     "Existing story-graph.json does not match the run graph"
@@ -1297,7 +1362,7 @@ class Runner:
         """One model call with exactly one "answer briefly" retry for broken replies."""
         from langchain_core.messages import HumanMessage, SystemMessage
 
-        msg = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        msg = prompt_message(payload)
         if len(msg) > self.max_prompt_chars:
             raise ValueError(
                 f"Prompt {len(msg)} chars exceeds limit {self.max_prompt_chars}. Increase --max-prompt-chars or use a longer-context model."
@@ -1357,14 +1422,7 @@ class Runner:
         Flags stay internal for routing; other Characters' memories never appear.
         """
         character = node.get("character")
-        payload = {
-            "current_scene": {
-                "chapter": node["chapter"],
-                "character": character,
-                "heading": node.get("heading"),
-                "description": node.get("description"),
-            }
-        }
+        payload = {"current_scene": scene_view(node)}
         deciders = node.get("deciders")
         # A Cross-Segment Decision's decider sees its own this_moment, not the
         # segment's Chapter Briefing, which is the segment Character's side.
@@ -1432,16 +1490,9 @@ class Runner:
         character = node.get("character") or "Unknown"
         limit = self.memory_max_chars
         previous = self.state["character_memories"].get(character, "")
-        payload = {
-            "instruction": MEMORY_UPDATE_INSTRUCTION.format(
-                character=character, limit=limit
-            ),
-            "character": character,
-            "chapter": node.get("chapter"),
-            "previous_memory": previous,
-            "chapter_segment": self._segment_for(character),
-            "max_characters": limit,
-        }
+        payload = memory_update_payload(
+            character, node.get("chapter"), previous, self._segment_for(character), limit
+        )
         rewrite, model_meta = self._structured_call(
             MemoryRewrite,
             payload,
@@ -1625,18 +1676,11 @@ class Runner:
             )
         node = self.graph["nodes"][self.state["node"]]
         kind = node["type"]
-        seen = self.state.setdefault("seen", [])
+        seen = self.state["seen"]
         if node["id"] in self.seen_targets and node["id"] not in seen:
             seen.append(node["id"])
         if kind == "scene":
-            scene = {
-                "scene_id": node["id"],
-                "chapter": node.get("chapter"),
-                "heading": node.get("heading"),
-                "description": node.get("description"),
-                "dialogue": node.get("dialogue", []),
-                "observations": node.get("observations", []),
-            }
+            scene = scene_record(node)
             if node.get("chapter") not in self.state["chapters_visited"]:
                 self.state["chapters_visited"].append(node.get("chapter"))
             self.state["segment_events"].append(scene)
@@ -1769,4 +1813,4 @@ class Runner:
     def run(self):
         while self.state["status"] == "running":
             self.step()
-        return json.loads(self.summary_path.read_text(encoding="utf-8"))
+        return read_json(self.summary_path)

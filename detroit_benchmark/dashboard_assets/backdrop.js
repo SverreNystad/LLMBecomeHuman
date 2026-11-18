@@ -344,7 +344,11 @@
   }
   if (window.ResizeObserver) {const watch = new ResizeObserver(clipToView); views.forEach(el => watch.observe(el));}
   window.addEventListener('resize', clipToView);
-  window.addEventListener('scroll', clipToView, {passive: true, capture: true});
+  // Scrolling fires far more often than frames are drawn: clip once per frame.
+  let clipFrame = 0;
+  window.addEventListener('scroll', () => {
+    if (!clipFrame) clipFrame = requestAnimationFrame(() => {clipFrame = 0; clipToView();});
+  }, {passive: true, capture: true});
 
   resize();
   clipToView();

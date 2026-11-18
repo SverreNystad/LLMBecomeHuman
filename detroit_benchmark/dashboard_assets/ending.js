@@ -33,8 +33,7 @@ function endingColumn(run) {
 function endingSummaryCard(chapter) {
   const runs = chapter === ENDING_CHAPTER ? endingRuns() : [];
   if (!runs.length) return '';
-  const note = runs.map(run => state.details.get(run.id)?.ending_summary?.note).find(Boolean)
-    || "Outcomes come from this Run's recorded route, which is not verified game data.";
+  const note = runs.map(run => state.details.get(run.id)?.ending_summary?.note).find(Boolean) || '';
   return `<section class="ending-summary" aria-label="Ending" style="--ending-columns:${runs.length}">
     <header class="ending-head"><span class="ending-title">Ending</span></header>
     <div class="ending-columns">${runs.map(endingColumn).join('')}</div>

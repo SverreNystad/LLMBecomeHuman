@@ -11,6 +11,10 @@ from typing import Any
 
 UNKNOWN = None
 
+# Side characters' Fate texts. Alice's question is part of Kara's entry.
+FATE_TEXT = {True: "Alive", False: "Dead", None: "Unknown"}
+SIDE_CHARACTERS = ("Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl")
+
 # Outcome flag -> the question it answers (the Flowchart labels route nodes with it) and
 # the sentence for each recorded value; the `None` sentence is said when it is unknown.
 OUTCOMES: dict[str, dict[Any, str]] = {
@@ -105,6 +109,7 @@ OUTCOMES: dict[str, dict[Any, str]] = {
         True: "He lived to see its end.",
         False: "He died before it was over.",
         None: "Whether he survived is unknown.",
+        "before_final": "Markus died before the final battle.",
     },
     "markus_left_jericho": {
         "question": "Did Markus leave Jericho?",
@@ -114,13 +119,9 @@ OUTCOMES: dict[str, dict[Any, str]] = {
     },
     # Side characters' Fates
     **{
-        f"{name.lower()}_alive": {
-            "question": f"Is {name} alive?",
-            True: "Alive",
-            False: "Dead",
-            None: "Unknown",
-        }
-        for name in ("Hank", "Luther", "Simon", "North", "Josh", "Carl")
+        f"{name.lower()}_alive": {"question": f"Is {name} alive?", **FATE_TEXT}
+        for name in SIDE_CHARACTERS
+        if name != "Alice"
     },
     # The world
     "markus_dirty_bomb_detonated": {
@@ -138,9 +139,6 @@ OUTCOMES: dict[str, dict[Any, str]] = {
     },
 }
 
-# Fate texts for Alice, who also has a line in Kara's entry.
-FATE_TEXT = {True: "Alive", False: "Dead", None: "Unknown"}
-SIDE_CHARACTERS = ("Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl")
 HEADLINES = 3
 NOTE = "Outcomes come from this Run's recorded route, which is not verified game data."
 
@@ -274,7 +272,7 @@ def ending_summary(
     elif value("markus_left_jericho") is True:
         markus_line = _say("markus_left_jericho", True)
     elif markus_alive is False:
-        markus_line = "Markus died before the final battle."
+        markus_line = _say("markus_alive", "before_final")
     else:
         markus_line = _join(
             _say("markus_peaceful", None), _say("markus_alive", markus_alive)

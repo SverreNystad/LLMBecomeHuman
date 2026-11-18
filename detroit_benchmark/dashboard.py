@@ -28,8 +28,11 @@ from .engine import (
     canonical_hash,
     chapter_briefing,
     create_model,
-    iter_events,
     decision_text,
+    event_at,
+    file_stamp as _stamp,
+    iter_events,
+    iter_events_at,
     limit_sentences,
     read_json_object as _json_file,
 )
@@ -168,15 +171,6 @@ def _seconds_since_write(directory: Path) -> float:
         return float("inf")
 
 
-def _stamp(path: Path) -> tuple[int, int] | None:
-    """A file's version, for caches: (modified time, size), or None if it is missing."""
-    try:
-        stat = path.stat()
-    except OSError:
-        return None
-    return stat.st_mtime_ns, stat.st_size
-
-
 def _metadata(root: Path, directory: Path) -> dict[str, Any]:
     """The Run list is polled every few seconds; its files are re-read only when they change."""
     summary = directory / "summary.json"
@@ -203,8 +197,7 @@ def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
     root, directory = Path(root_s), Path(directory_s)
     exp = _json_file(directory / "experiment.json") or {}
     summary = _json_file(directory / "summary.json") or {}
-    checkpoint = {} if summary else _json_file(directory / "checkpoint.json") or {}
-    state = checkpoint.get("state", {})
+    state = {} if summary else _checkpoint_state(directory)
     status = summary.get("status") or state.get("status") or "unknown"
     chapters = summary.get("chapters_visited", state.get("chapters_visited", []))
     decisions = summary.get("number_of_choices", len(state.get("decisions", [])))
@@ -244,13 +237,30 @@ def _cached_metadata(root_s: str, directory_s: str, *_stamps) -> dict[str, Any]:
     }
 
 
+def _event_scene(event: dict[str, Any]) -> dict[str, Any]:
+    """The scene an event shows: a decision's prompt scene, else the scene the agent saw."""
+    return (
+        (event.get("input") or {}).get("current_scene")
+        or event.get("visible_to_agent")
+        or {}
+    )
+
+
+def _event_output(event: dict[str, Any]) -> dict[str, Any]:
+    return event.get("output") or {}
+
+
+def _chapter_of(event: dict[str, Any]) -> str:
+    return str(event.get("chapter") or "Unknown")
+
+
 def _short_event(event: dict[str, Any]) -> dict[str, Any]:
     kind = event.get("type")
     result = {
         k: event.get(k) for k in ("index", "timestamp", "type", "chapter", "node_id")
     }
     if kind == "scene":
-        scene = event.get("visible_to_agent") or {}
+        scene = _event_scene(event)
         result.update(
             heading=scene.get("heading"),
             description=scene.get("description"),
@@ -260,7 +270,8 @@ def _short_event(event: dict[str, Any]) -> dict[str, Any]:
         )
     elif kind == "decision":
         context = event.get("input") or {}
-        scene = context.get("current_scene") or {}
+        scene = _event_scene(event)
+        output = _event_output(event)
         result.update(
             heading=scene.get("heading"),
             description=scene.get("description"),
@@ -268,11 +279,9 @@ def _short_event(event: dict[str, Any]) -> dict[str, Any]:
             available_choices=context.get("available_choices", []),
             label=event.get("label"),
             choice_key=event.get("decision_key"),
-            choice_id=(event.get("output") or {}).get("choice_id"),
-            rationale=(event.get("output") or {}).get("rationale"),
-            relevant_prior_choices=(event.get("output") or {}).get(
-                "relevant_prior_choices", []
-            ),
+            choice_id=output.get("choice_id"),
+            rationale=output.get("rationale"),
+            relevant_prior_choices=output.get("relevant_prior_choices", []),
             flags_before=event.get("flags_before", {}),
             flags_after=event.get("flags_after", {}),
             prompt_history_count=len(context.get("entire_decision_history", [])),
@@ -311,7 +320,7 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
     beat = {k: event.get(k) for k in ("index", "type", "node_id")}
     beat["moment"] = _moment_id(event.get("node_id"))
     if kind == "scene":
-        scene = event.get("visible_to_agent") or {}
+        scene = _event_scene(event)
         beat.update(
             heading=scene.get("heading"),
             description=scene.get("description"),
@@ -322,13 +331,13 @@ def _story_beat(event: dict[str, Any]) -> dict[str, Any] | None:
             ],
         )
     elif kind == "decision":
-        scene = (event.get("input") or {}).get("current_scene") or {}
+        scene, output = _event_scene(event), _event_output(event)
         beat.update(
             heading=scene.get("heading"),
             character=scene.get("character"),
             available_choices=(event.get("input") or {}).get("available_choices", []),
-            choice_id=(event.get("output") or {}).get("choice_id"),
-            rationale=(event.get("output") or {}).get("rationale"),
+            choice_id=output.get("choice_id"),
+            rationale=output.get("rationale"),
         )
         deciders = event.get("deciders")
         if isinstance(deciders, list) and deciders:
@@ -382,13 +391,17 @@ def _capped_justification(event: dict[str, Any]) -> dict[str, Any]:
     return {**event, "output": {**output, "rationale": limit_sentences(rationale)}}
 
 
-def _parse_events(directory: str) -> tuple[list, dict]:
-    """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version once."""
+def _parse_events(directory: str) -> tuple[list, dict, dict]:
+    """Decision events repeat the whole prompt, so logs reach tens of MB; parse each version
+    once. Also returns where each event index starts in the log, so one event is read alone."""
     short: list[dict[str, Any]] = []
     story: dict[str, list[dict[str, Any]]] = {}
+    offsets: dict[Any, int] = {}
     visits: Counter = Counter()
     memories: dict[str, str] = {}
-    for event in map(_capped_justification, iter_events(Path(directory))):
+    for offset, raw in iter_events_at(Path(directory)):
+        offsets.setdefault(raw.get("index"), offset)
+        event = _capped_justification(raw)
         short.append(_short_event(event))
         beat = _story_beat(event)
         if beat is not None:
@@ -399,18 +412,18 @@ def _parse_events(directory: str) -> tuple[list, dict]:
             # A node can recur, so each pass through a Moment is numbered from the run's start.
             visits[beat["moment"]] += 1
             beat["visit"] = visits[beat["moment"]]
-            story.setdefault(str(event.get("chapter") or "Unknown"), []).append(beat)
-    return short, story
+            story.setdefault(_chapter_of(event), []).append(beat)
+    return short, story, offsets
 
 
 # Run directory -> (log version, parsed log). Only the latest version of a live Run is kept.
-_PARSED_LOGS: dict[str, tuple[tuple[int, int], tuple[list, dict]]] = {}
+_PARSED_LOGS: dict[str, tuple[tuple[int, int], tuple[list, dict, dict]]] = {}
 
 
-def _parsed_events(directory: Path) -> tuple[list, dict]:
+def _parsed_events(directory: Path) -> tuple[list, dict, dict]:
     stamp = _stamp(directory / "events.jsonl")
     if stamp is None:
-        return [], {}
+        return [], {}, {}
     cached = _PARSED_LOGS.get(str(directory))
     if cached is None or cached[0] != stamp:
         cached = _PARSED_LOGS[str(directory)] = (stamp, _parse_events(str(directory)))
@@ -423,10 +436,8 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
     decisions = [ev for ev in events if ev["type"] == "decision"]
     chapter_counts: Counter = Counter()
     for decision in decisions:
-        chapter_counts[str(decision.get("chapter") or "Unknown")] += 1
-    ordered_chapters = list(
-        dict.fromkeys(str(ev.get("chapter") or "Unknown") for ev in events)
-    )
+        chapter_counts[_chapter_of(decision)] += 1
+    ordered_chapters = list(dict.fromkeys(map(_chapter_of, events)))
     return {
         "run": meta,
         "events": events,
@@ -443,19 +454,21 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
     }
 
 
+def _checkpoint_state(directory: Path) -> dict[str, Any]:
+    """A Run's checkpointed state, parsed once per version of checkpoint.json. Read-only."""
+    path = directory / "checkpoint.json"
+    return _cached_checkpoint_state(str(path), _stamp(path))
+
+
+@lru_cache(maxsize=8)
+def _cached_checkpoint_state(path: str, _stamp) -> dict[str, Any]:
+    return (_json_file(Path(path)) or {}).get("state") or {}
+
+
 def _public_news(directory: Path) -> list[str]:
-    """Public News lives only in the checkpoint; it is re-read only when that changes."""
-    return list(
-        _cached_news(
-            str(directory / "checkpoint.json"), _stamp(directory / "checkpoint.json")
-        )
-    )
-
-
-@lru_cache(maxsize=64)
-def _cached_news(path: str, _stamp) -> tuple[str, ...]:
-    news = ((_json_file(Path(path)) or {}).get("state") or {}).get("news") or []
-    return tuple(str(item) for item in news if isinstance(item, str))
+    """Public News lives only in the checkpoint."""
+    news = _checkpoint_state(directory).get("news") or []
+    return [str(item) for item in news if isinstance(item, str)]
 
 
 def _compare(details: list[dict[str, Any]]) -> dict[str, Any]:
@@ -615,11 +628,7 @@ def _event_only_graph(directory: Path) -> dict:
         if not nid:
             continue
         typ = event.get("type")
-        scene = (
-            (event.get("input") or {}).get("current_scene")
-            or event.get("visible_to_agent")
-            or {}
-        )
+        scene = _event_scene(event)
         node = nodes.setdefault(
             nid, {"id": nid, "type": "scene", "chapter": event.get("chapter")}
         )
@@ -632,7 +641,7 @@ def _event_only_graph(directory: Path) -> dict:
         )
         next_id = events[i + 1].get("node_id") if i + 1 < len(events) else None
         if typ == "decision":
-            chosen = (event.get("output") or {}).get("choice_id")
+            chosen = _event_output(event).get("choice_id")
             node["options"] = [
                 {
                     "id": opt["id"],
@@ -805,18 +814,18 @@ def create_app(
         named = set(visitor_runs)
         # A Visitor Run is playing until its thread has ended and its publication is decided.
         still_playing = playing.playing_ids()
+        listed = (
+            path
+            for path in _discovered_runs(root)
+            if _run_id(root, path) in named or not _is_private(root, path)
+        )
         runs = (
             {**run, "status": "running"} if run["id"] in still_playing else run
-            for run in (_metadata(root, path) for path in _discovered_runs(root))
+            for run in (_metadata(root, path) for path in listed)
         )
         return {
             "runs": sorted(
-                (
-                    run
-                    for run in runs
-                    if not _is_private(root, Path(root, run["name"]))
-                    or run["id"] in named
-                ),
+                runs,
                 key=lambda run: run.get("started_at") or "",
                 reverse=True,
             )
@@ -862,10 +871,11 @@ def create_app(
         if event_index < 0:
             raise HTTPException(status_code=404, detail="Unknown event")
         directory = _resolve_run(root, run_id)
-        for event in iter_events(directory):
-            if event.get("index") == event_index:
-                return _capped_justification(event)
-        raise HTTPException(status_code=404, detail="Unknown event")
+        offset = _parsed_events(directory)[2].get(event_index)
+        event = None if offset is None else event_at(directory, offset)
+        if event is None:
+            raise HTTPException(status_code=404, detail="Unknown event")
+        return _capped_justification(event)
 
     @app.get("/api/runs/{run_id}/decisions.csv")
     def export_decisions(run_id: str):

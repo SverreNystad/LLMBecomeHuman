@@ -14,7 +14,7 @@
 (() => {
   'use strict';
   // The form is built once the config answers, after app.js has run, so app.js's globals
-  // (esc, modelName, autoFocus) are there to use.
+  // (esc, modelName, autoFocus, niceNum, api, runsPath) are there to use.
   const STORAGE_KEY = 'llmbh.visitorRuns';
 
   function storedIds() {
@@ -25,6 +25,14 @@
   }
   function remember(id) {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...new Set([...storedIds(), id])])); } catch (_) { /* private mode */ }
+  }
+  /* POSTs JSON; the reply, and its error detail should the server refuse. */
+  async function postJson(path, body) {
+    const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let reply = {};
+    try { reply = await res.json(); } catch (_) { /* not JSON */ }
+    const detail = typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`;
+    return { res, reply, detail };
   }
   window.visitorRunsQuery = () => {
     const ids = storedIds();
@@ -98,13 +106,11 @@
     error.classList.remove('is-notice');
     button.disabled = true;
     try {
-      const res = await fetch('/api/visitor-runs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      let reply = {};
-      try { reply = await res.json(); } catch (_) { /* not JSON */ }
+      const { res, reply, detail } = await postJson('/api/visitor-runs', body);
       if (!res.ok) {
         // Busy and already playing are refusals to read, not failures.
         error.classList.toggle('is-notice', res.status === 409 || res.status === 503);
-        throw new Error(typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`);
+        throw new Error(detail);
       }
       remember(reply.id);
       close();
@@ -153,15 +159,9 @@
     if (!key) { say('', ''); return; }
     say('loading', 'Listing models…');
     try {
-      const res = await fetch('/api/visitor-runs/models', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider: field('#visitorRunProvider').value, key }),
-      });
-      let reply = {};
-      try { reply = await res.json(); } catch (_) { /* not JSON */ }
+      const { res, reply, detail } = await postJson('/api/visitor-runs/models', { provider: field('#visitorRunProvider').value, key });
       if (request !== listRequest) return;
       if (!res.ok) {
-        const detail = typeof reply.detail === 'string' ? reply.detail : `${res.status} ${res.statusText}`;
         say(res.status === 401 ? 'rejected' : 'failed', detail);
         return;
       }
@@ -287,9 +287,7 @@
     let runs = [];
     if (ids.size) {
       try {
-        const res = await fetch('/api/runs' + window.visitorRunsQuery(), { cache: 'no-store' });
-        if (!res.ok) return;
-        runs = ((await res.json()).runs || []).filter(r => ids.has(r.id) && r.status === 'running');
+        runs = ((await api(runsPath())).runs || []).filter(r => ids.has(r.id) && r.status === 'running');
       } catch (_) { return; }
     }
     // Each playing Run's estimate, fetched once, sits next to its live token counts.
@@ -301,12 +299,11 @@
   }
 
   const playingEstimates = new Map();
-  const tokensSoFar = n => Number(n || 0).toLocaleString('en-US');
   function liveTokens(run) {
     const found = playingEstimates.get(run.id);
     return `<p class="visitor-run-live-run">
-      <span class="visitor-run-live-count" data-kind="input">${tokensSoFar(run.total_input_tokens)}</span> input and
-      <span class="visitor-run-live-count" data-kind="output">${tokensSoFar(run.total_output_tokens)}</span> output tokens so far${found
+      <span class="visitor-run-live-count" data-kind="input">${niceNum(run.total_input_tokens)}</span> input and
+      <span class="visitor-run-live-count" data-kind="output">${niceNum(run.total_output_tokens)}</span> output tokens so far${found
         ? `<small>Estimate: about ${tokenRange(found.input_tokens)} input and ${tokenRange(found.output_tokens)} output</small>` : ''}</p>`;
   }
 

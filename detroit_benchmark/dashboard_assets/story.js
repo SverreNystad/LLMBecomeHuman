@@ -24,14 +24,14 @@ function decisionsByVisit(view) {
   return result;
 }
 function compareDecision(key, tables) {
-  const byChoice = new Map(), missing = [];
+  const byChoice = new Map();
   for (const {run, table} of tables) {
     const decision = table.get(key);
-    if (!decision) {missing.push(run); continue;}
+    if (!decision) continue;
     if (!byChoice.has(decision.choice_id)) byChoice.set(decision.choice_id, []);
     byChoice.get(decision.choice_id).push({run, decision});
   }
-  return {byChoice, missing};
+  return {byChoice};
 }
 
 function buildStoryItems(records) {
@@ -236,15 +236,11 @@ function renderDecisionStrip(decisions) {
     ? decisions.map(({number, split, label}) => `<button type="button" class="${split ? 'is-split' : ''}" data-jump-decision="${number}" title="Decision ${number}: ${esc(label)}${split ? ' (models split)' : ''}" aria-label="Go to decision ${number}${split ? ', models split' : ''}">${number}</button>`).join('')
     : '';
 }
-function renderChapterSubtitle(chapter) {
-  $('chapterSubtitle').textContent = chapterCharacter(chapter) || '';
-}
 function renderUnvisitedChapter(run, chapter) {
   const visitors = activeRuns().filter(item => (item.chapters_visited || []).includes(chapter));
   const message = visitors.length ? `Reached by ${visitors.map(item => esc(item.model)).join(', ')}` : '';
   $('storyContent').innerHTML = `${endingCard(chapter)}<div class="story-empty"><strong>${esc(run.model)} never got here</strong>${message ? `<p>${message}</p>` : ''}</div>${chapterNavigation(run, chapter)}`;
   renderDecisionStrip([]);
-  renderChapterSubtitle(chapter);
 }
 /* `position` is a reading position to return to once the chapter is drawn (see readingPosition). */
 async function renderStory({keepScroll = false, position = null} = {}) {
@@ -292,7 +288,6 @@ async function renderStory({keepScroll = false, position = null} = {}) {
   const body = state.storyMode === 'key' ? renderCondensed(items, context) : items.map(item => renderItem(item, context)).join('');
   $('storyContent').innerHTML = caveatBanner(run) + endingCard(chapter) + briefingOpener(response.briefing) + body + chapterNavigation(run, chapter);
   renderDecisionStrip(summaries);
-  renderChapterSubtitle(chapter);
   if (state.pendingMoment) scrollToMoment(state.pendingMoment);
   else if (position) returnToReadingPosition(position);
   else if (!keepScroll) scrollStoryToTop();

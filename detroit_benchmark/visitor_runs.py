@@ -9,7 +9,6 @@ See ADR 0003.
 
 from __future__ import annotations
 
-import json
 import logging
 import secrets
 import threading
@@ -20,7 +19,14 @@ from pathlib import Path
 
 import httpx
 
-from .engine import DEFAULT_GOAL, Runner, _write_json_atomic, read_json_object
+from .engine import (
+    COMPATIBLE_PROVIDERS,
+    DEFAULT_GOAL,
+    Runner,
+    _write_json_atomic,
+    read_json,
+    read_json_object,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +53,7 @@ ModelFactory = Callable[..., object]
 
 _MODEL_LISTS = {
     "openai": "https://api.openai.com/v1/models",
-    "xai": "https://api.x.ai/v1/models",
-    "deepseek": "https://api.deepseek.com/models",
-    "mistral": "https://api.mistral.ai/v1/models",
-    "openrouter": "https://openrouter.ai/api/v1/models",
+    **{p: f"{base}/models" for p, (base, _) in COMPATIBLE_PROVIDERS.items()},
 }
 
 
@@ -175,7 +178,7 @@ def start_visitor_run(
     Setting ``stop_requested`` ends the Run after the model call under way; it is kept as a partial
     Run. A Run that fails is kept as partial too. ``on_end`` is called once it ends, however
     (the dashboard then decides whether a complete Run is public)."""
-    graph = json.loads(story.read_text(encoding="utf-8"))
+    graph = read_json(story)
     directory = root / VISITOR_FOLDER / secrets.token_urlsafe(18)
     runner = Runner(
         graph=graph,

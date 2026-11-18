@@ -4,10 +4,8 @@
  * story.js announces each chapter it opens with a 'storychapter' event on document.
  */
 'use strict';
-const portraitKey = characterKey;
-
 function portraitThumb(character) {
-  const key = portraitKey(character);
+  const key = characterKey(character);
   return `<span class="chapter-portrait" data-character="${key || 'none'}" aria-hidden="true">${key ? `<img src="/assets/portraits/${key}.webp" alt="" decoding="async">` : ''}</span>`;
 }
 
@@ -29,7 +27,7 @@ function portraitThumb(character) {
   }
   document.addEventListener('storychapter', event => {
     const {chapter, character, run} = event.detail || {};
-    const key = portraitKey(character), img = stage();
+    const key = characterKey(character), img = stage();
     if (!img) return;
     const id = `${run}\u0000${chapter}`;
     if (id === shown) return;  // a live refresh of the same chapter keeps the portrait still

@@ -12,7 +12,6 @@ It is an approximation, and only ever tokens, never a price. It is cached per st
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -22,13 +21,18 @@ from .engine import (
     DEFAULT_GOAL,
     DEFAULT_MEMORY_MAX_CHARS,
     HEADLINE_MAX_CHARS,
-    MEMORY_UPDATE_INSTRUCTION,
     MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
     PUBLIC_NEWS_LIMIT,
     SYSTEM_PROMPT,
     _edges,
     chapter_briefing,
+    file_stamp,
+    memory_update_payload,
     planned_feedback,
+    prompt_message,
+    read_json,
+    scene_record,
+    scene_view,
 )
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
@@ -77,13 +81,12 @@ def token_range(shortest: Route, longest: Route) -> dict:
 
 def story_estimate(story: Path) -> dict:
     """The token estimate for a story file, recomputed only when the file changes."""
-    stat = story.stat()
-    return _cached_estimate(str(story), stat.st_mtime_ns, stat.st_size)
+    return _cached_estimate(str(story), file_stamp(story))
 
 
 @lru_cache(maxsize=4)
-def _cached_estimate(story: str, *_stamp) -> dict:
-    graph = json.loads(Path(story).read_text(encoding="utf-8"))
+def _cached_estimate(story: str, _stamp) -> dict:
+    graph = read_json(Path(story))
     return token_range(*route_extremes(graph))
 
 
@@ -107,8 +110,7 @@ def route_extremes(graph: dict) -> tuple[Route, Route]:
 
 
 def _size(obj) -> int:
-    # The engine sends each prompt as compact JSON.
-    return len(json.dumps(obj, ensure_ascii=False, separators=(",", ":")))
+    return len(prompt_message(obj))
 
 
 def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) -> Route:
@@ -133,16 +135,13 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
         table: dict[int, tuple[int, int, int]] = {}
         if kind == "chapter_exit":
             prompt = len(SYSTEM_PROMPT) + _size(
-                {
-                    "instruction": MEMORY_UPDATE_INSTRUCTION.format(
-                        character=node.get("character"), limit=DEFAULT_MEMORY_MAX_CHARS
-                    ),
-                    "character": node.get("character"),
-                    "chapter": node.get("chapter"),
-                    "previous_memory": remembered,
-                    "chapter_segment": [],
-                    "max_characters": DEFAULT_MEMORY_MAX_CHARS,
-                }
+                memory_update_payload(
+                    node.get("character"),
+                    node.get("chapter"),
+                    remembered,
+                    [],
+                    DEFAULT_MEMORY_MAX_CHARS,
+                )
             )
             # The next segment's prompts don't carry this one.
             chars, decisions, updates = overall(best.get(node.get("next"), {}))
@@ -150,12 +149,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
         elif kind == "choice":
             prompt = len(SYSTEM_PROMPT) + _size(
                 {
-                    "current_scene": {
-                        "chapter": node.get("chapter"),
-                        "character": node.get("character"),
-                        "heading": node.get("heading"),
-                        "description": node.get("description"),
-                    },
+                    "current_scene": scene_view(node),
                     "chapter_briefing": chapter_briefing(graph, node.get("chapter")),
                     "news": headlines,
                     "character_memory": remembered,
@@ -192,16 +186,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
         else:
             scene = 0
             if kind == "scene":
-                scene = 1 + _size(
-                    {
-                        "scene_id": node_id,
-                        "chapter": node.get("chapter"),
-                        "heading": node.get("heading"),
-                        "description": node.get("description"),
-                        "dialogue": node.get("dialogue", []),
-                        "observations": node.get("observations", []),
-                    }
-                )
+                scene = 1 + _size(scene_record(node))
             # A condition branch's Gauge Feedback joins the segment as its own entry.
             flashed = {}
             if kind == "condition":

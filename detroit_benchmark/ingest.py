@@ -30,10 +30,6 @@ OBJECT_KEY = re.compile(
     r'translationService\.translateObject\(\s*["\']([^"\']+)["\']\s*(?:,\s*(\d+))?\s*(?:,\s*(\d+))?',
     re.S,
 )
-ANY_KEY = re.compile(
-    r'translationService\.translateObject\(\s*["\'][^"\']+["\'].*?\)|(?<!\w)t\(\s*["\'][^"\']+["\']\s*\)',
-    re.S,
-)
 
 
 def translation_map(data: dict) -> dict:

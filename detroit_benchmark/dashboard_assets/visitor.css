@@ -22,7 +22,6 @@
   width: 360px; max-width: calc(100vw - 32px); max-height: calc(100dvh - 96px); overflow-y: auto;
   padding: 16px; background: var(--surface-solid); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
-.visitor-run-panel.is-hidden { display: none; }
 .visitor-run-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .visitor-run-head h2 { margin: 0; font-size: 15px; font-weight: 500; }
 .visitor-run-close { width: 28px; height: 28px; font-size: 18px; color: var(--ink-muted); }
@@ -58,13 +57,11 @@
   margin: -6px 0 10px; padding: 2px 0; list-style: none; max-height: 180px; overflow-y: auto;
   border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-solid);
 }
-.visitor-run-models.is-hidden { display: none; }
 .visitor-run-models li { padding: 6px 10px; font-size: 13px; color: var(--ink); cursor: pointer; overflow-wrap: anywhere; }
 .visitor-run-models li:hover, .visitor-run-models li[aria-selected="true"] { background: var(--highlight-soft); }
 
 /* The token estimate: an approximation, never a price. */
 .visitor-run-estimate { margin: 0 0 12px; padding: 8px 10px; border-left: 2px solid var(--highlight); background: var(--surface-sunken); }
-.visitor-run-estimate.is-hidden { display: none; }
 .visitor-run-estimate p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--ink-soft); }
 .visitor-run-estimate strong { font-weight: 600; color: var(--ink); }
 .visitor-run-estimate .visitor-run-estimate-note { margin-top: 4px; color: var(--ink-muted); }
