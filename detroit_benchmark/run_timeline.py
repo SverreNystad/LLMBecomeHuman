@@ -28,7 +28,7 @@ def moment_id(node_id: Any) -> str | None:
 
 
 def event_scene(event: dict[str, Any]) -> dict[str, Any]:
-    """The scene an event shows: a decision's prompt scene, else the scene the agent saw."""
+    """The scene an event shows: a decision's prompt scene, else the scene the model saw."""
     return (
         (event.get("input") or {}).get("current_scene")
         or event.get("visible_to_agent")
@@ -126,11 +126,11 @@ def _summary(event: dict[str, Any]) -> dict[str, Any]:
 def _story_moment(event: dict[str, Any]) -> dict[str, Any] | None:
     """What a reader needs from one event, including the dialogue the summary leaves out."""
     kind = event.get("type")
-    beat = {k: event.get(k) for k in ("index", "type", "node_id")}
-    beat["moment"] = moment_id(event.get("node_id"))
+    moment = {k: event.get(k) for k in ("index", "type", "node_id")}
+    moment["moment"] = moment_id(event.get("node_id"))
     if kind == "scene":
         scene = event_scene(event)
-        beat.update(
+        moment.update(
             heading=scene.get("heading"),
             description=scene.get("description"),
             observations=scene.get("observations", []),
@@ -142,7 +142,7 @@ def _story_moment(event: dict[str, Any]) -> dict[str, Any] | None:
     elif kind == "decision":
         scene, output = event_scene(event), event_output(event)
         deciders = _deciders(event)
-        beat.update(
+        moment.update(
             heading=scene.get("heading"),
             character=scene.get("character"),
             question=decision_question(scene.get("character"), deciders),
@@ -152,25 +152,25 @@ def _story_moment(event: dict[str, Any]) -> dict[str, Any] | None:
         )
         if deciders:
             # A Joint Decision, or a Cross-Segment Decision by another Character alone.
-            beat.update(deciders=deciders, decided=decision_text(deciders))
+            moment.update(deciders=deciders, decided=decision_text(deciders))
     elif kind == "condition":
-        beat.update(
+        moment.update(
             branch_index=event.get("branch_index"),
             used_unverified_default=event.get("used_unverified_default", False),
         )
     elif kind == "route":
-        beat.update(
+        moment.update(
             flag=event.get("flag"),
             value=event.get("value"),
             assumed=event.get("assumed", False),
         )
-        if beat["assumed"]:
-            beat["text"] = assumed_route_text(event.get("flag"), event.get("value"))
+        if moment["assumed"]:
+            moment["text"] = assumed_route_text(event.get("flag"), event.get("value"))
     elif kind == "ending":
-        beat.update(description=event.get("description"))
+        moment.update(description=event.get("description"))
     elif kind == "memory_update":
         # A Memory Update closes a Chapter Segment; the timeline adds the previous memory.
-        beat.update(
+        moment.update(
             type="memory",
             character=event.get("character"),
             memory=event.get("memory") or "",
@@ -182,12 +182,12 @@ def _story_moment(event: dict[str, Any]) -> dict[str, Any] | None:
         return None
     if kind in ("decision", "condition") and isinstance(event.get("feedback"), list):
         # Gauge Feedback: what the game flashed on screen after this moment.
-        beat["feedback"] = [
+        moment["feedback"] = [
             item["text"]
             for item in event["feedback"]
             if isinstance(item, dict) and isinstance(item.get("text"), str)
         ]
-    return beat
+    return moment
 
 
 @dataclass(frozen=True)
@@ -242,20 +242,20 @@ def _read(folder: RunFolder) -> Timeline:
                 next=event.get("node_id"), next_chapter=event.get("chapter")
             )
         events.append(summary)
-        beat = _story_moment(event)
-        if beat is None:
+        moment = _story_moment(event)
+        if moment is None:
             continue
-        if beat["type"] == "memory":
+        if moment["type"] == "memory":
             # Each Character's memory is compared only with its own last one.
-            beat["previous"] = memories.get(beat["character"], "")
-            memories[beat["character"]] = beat["memory"]
+            moment["previous"] = memories.get(moment["character"], "")
+            memories[moment["character"]] = moment["memory"]
         # A node can recur, so each pass through a Moment is numbered from the Run's start.
-        visits[beat["moment"]] += 1
-        beat["visit"] = visits[beat["moment"]]
-        if beat["type"] == "decision":
-            beat["key"] = f"{beat['moment']}#{beat['visit']}"
-            summary.update(visit=beat["visit"], key=beat["key"])
-        story.setdefault(chapter_of(event), []).append(beat)
+        visits[moment["moment"]] += 1
+        moment["visit"] = visits[moment["moment"]]
+        if moment["type"] == "decision":
+            moment["key"] = f"{moment['moment']}#{moment['visit']}"
+            summary.update(visit=moment["visit"], key=moment["key"])
+        story.setdefault(chapter_of(event), []).append(moment)
     return Timeline(events, story, offsets)
 
 

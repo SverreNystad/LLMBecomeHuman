@@ -223,8 +223,7 @@ def _read_json(path: Path) -> dict:
 
 
 def _model_of(directory: Path) -> tuple[str, str]:
-    meta = RunFolder(directory).metadata()
-    return meta["provider"], meta["model"]
+    return RunFolder(directory).model()
 
 
 def _is_complete(directory: Path) -> bool:
@@ -400,5 +399,7 @@ class PlayingRuns:
 def mark_cut_off_runs(root: Path) -> None:
     """At start-up, a Visitor Run still marked in progress was cut off (by a redeploy, say)
     and can never resume, its key being gone: it is marked partial."""
-    for directory in _visitor_runs(root):
-        RunFolder(directory).stop(CUT_OFF)
+    folder = root / VISITOR_FOLDER
+    for directory in folder.iterdir() if folder.is_dir() else []:
+        if directory.is_dir():
+            RunFolder(directory).stop(CUT_OFF)

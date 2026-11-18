@@ -20,13 +20,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-EXPERIMENT = "experiment.json"
+SETTINGS = "experiment.json"
 STORY_GRAPH = "story-graph.json"
 EVENTS = "events.jsonl"
 CHECKPOINT = "checkpoint.json"
 SUMMARY = "summary.json"
 # A Run's own JSON files, which are never a story graph.
-NOT_STORY_GRAPHS = frozenset({EXPERIMENT, SUMMARY, CHECKPOINT})
+NOT_STORY_GRAPHS = frozenset({SETTINGS, SUMMARY, CHECKPOINT})
 
 
 def canonical_hash(obj) -> str:
@@ -76,7 +76,7 @@ def find_runs(root: Path) -> list[RunFolder]:
         return []
     folders = {
         file.parent.resolve()
-        for file in root.rglob(EXPERIMENT)
+        for file in root.rglob(SETTINGS)
         if file.parent.resolve().is_relative_to(root)
     }
     return [
@@ -97,7 +97,7 @@ class RunFolder:
 
     # --- Playing: the Runner ---------------------------------------------------------------
 
-    def begin(self, graph: dict, key: dict, experiment: dict, state: dict) -> None:
+    def begin(self, graph: dict, key: dict, settings: dict, state: dict) -> None:
         """Start a new Run here: its story snapshot, settings and first checkpoint.
         ``key`` is what a resume must match: graph_sha256, provider and model_id."""
         self.path.mkdir(parents=True, exist_ok=True)
@@ -107,8 +107,8 @@ class RunFolder:
             )
         self._key = dict(key)
         self._save_story_graph(graph)
-        self._file(EXPERIMENT).write_text(
-            json.dumps(experiment, indent=2), encoding="utf-8"
+        self._file(SETTINGS).write_text(
+            json.dumps(settings, indent=2), encoding="utf-8"
         )
         self.save(state)
 
@@ -120,11 +120,11 @@ class RunFolder:
         checkpoint = self._file(CHECKPOINT)
         if not checkpoint.exists():
             raise ValueError(f"No checkpoint at {checkpoint}")
-        payload = json.loads(checkpoint.read_text(encoding="utf-8"))
-        if any(payload[name] != value for name, value in key.items()):
+        saved = json.loads(checkpoint.read_text(encoding="utf-8"))
+        if any(saved[name] != value for name, value in key.items()):
             raise ValueError("Cannot resume with different graph, provider, or model")
         self._key = dict(key)
-        state = {**blank_state, **payload["state"]}
+        state = {**blank_state, **saved["state"]}
         self._save_story_graph(graph)
         if state.get("status") == "complete":
             raise ValueError("Run is already complete")
@@ -171,24 +171,29 @@ class RunFolder:
         """Keep a playing Run as partial, recording why. ``state`` is the state of the
         Run being played; without it, the saved Run (one no process plays any more,
         cut off by a restart, say) is marked, if it was still playing."""
-        if state is not None:
-            if state["status"] == "running":
-                state.update(status="partial", stop_reason=reason)
-                self.save(state)
+        if state is None:
+            if self._file(SUMMARY).exists():
+                return
+            saved = read_json_object(self._file(CHECKPOINT)) or {}
+            state = saved.get("state") or {}
+        if state.get("status") != "running":
             return
-        if self._file(SUMMARY).exists():
-            return
-        payload = read_json_object(self._file(CHECKPOINT))
-        saved = (payload or {}).get("state") or {}
-        if saved.get("status") == "running":
-            saved.update(status="partial", stop_reason=reason)
-            write_json_atomic(self._file(CHECKPOINT), payload)
+        state.update(status="partial", stop_reason=reason)
+        if self._key is not None:
+            self.save(state)
+        else:
+            write_json_atomic(self._file(CHECKPOINT), saved)
+
+    def model(self) -> tuple[str, str]:
+        """The provider and model id the Run was begun with, from its settings."""
+        settings = read_json_object(self._file(SETTINGS)) or {}
+        return settings.get("provider", ""), settings.get("model_id", "")
 
     # --- Reading: the dashboard, the Visitor Runs and the CLI -------------------------------
 
     def is_run(self) -> bool:
         """Whether a Run was begun here."""
-        return self._file(EXPERIMENT).is_file()
+        return self._file(SETTINGS).is_file()
 
     def has_events(self) -> bool:
         return self._file(EVENTS).is_file()
@@ -200,7 +205,7 @@ class RunFolder:
         return dict(
             _metadata(
                 str(self.path),
-                file_stamp(self._file(EXPERIMENT)),
+                file_stamp(self._file(SETTINGS)),
                 file_stamp(summary),
                 # A finished Run's summary has everything; the checkpoint only fills in live ones.
                 None if summary.exists() else file_stamp(self._file(CHECKPOINT)),
@@ -235,7 +240,7 @@ class RunFolder:
 
     def graph_sha256(self) -> str | None:
         """The hash of the story graph the Run played, from its settings."""
-        return (read_json_object(self._file(EXPERIMENT)) or {}).get("graph_sha256")
+        return (read_json_object(self._file(SETTINGS)) or {}).get("graph_sha256")
 
     def events_at(self):
         """The Run's events in order, each with the byte offset of its line, read line by
@@ -290,7 +295,7 @@ def _saved_state(directory: Path) -> dict[str, Any]:
 @lru_cache(maxsize=256)
 def _metadata(directory_s: str, *_stamps) -> dict[str, Any]:
     directory = Path(directory_s)
-    exp = read_json_object(directory / EXPERIMENT) or {}
+    exp = read_json_object(directory / SETTINGS) or {}
     summary = read_json_object(directory / SUMMARY) or {}
     state = {} if summary else _saved_state(directory)
     status = summary.get("status") or state.get("status") or "unknown"

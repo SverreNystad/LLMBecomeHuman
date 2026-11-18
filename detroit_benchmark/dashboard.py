@@ -183,8 +183,8 @@ def _metadata(root: Path, directory: Path) -> dict[str, Any]:
 
 def _detail(root: Path, directory: Path) -> dict[str, Any]:
     meta = _metadata(root, directory)
-    events = timeline(directory).events
-    decisions = timeline(directory).decisions
+    run = timeline(directory)
+    events, decisions = run.events, run.decisions
     chapter_counts: Counter = Counter()
     for decision in decisions:
         chapter_counts[chapter_of(decision)] += 1
@@ -636,7 +636,7 @@ def create_app(
             )
             changes = {
                 k: {"before": before.get(k), "after": after.get(k)}
-                for k in before.keys() | after.keys()
+                for k in sorted(before.keys() | after.keys())
                 if before.get(k) != after.get(k)
             }
             writer.writerow(
