@@ -23,12 +23,11 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from .decision_prompt import chapter_briefing, decision_text
 from .ending import assumed_route_text, ending_summary, route_question
 from .engine import (
     canonical_hash,
-    chapter_briefing,
     create_model,
-    decision_text,
     event_at,
     file_stamp as _stamp,
     iter_events,
