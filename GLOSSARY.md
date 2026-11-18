@@ -86,6 +86,10 @@ _Avoid_: compaction, summarization, consolidation
 A choice that belongs to two Characters at once: in the final fight, which of Markus and Connor to control. The model decides it with both Characters' memories, each with its own view of the moment, and the other Character learns the outcome at its next Memory Update (ADR 0005).
 _Avoid_: shared choice, merged memory
 
+**Decision Prompt**:
+Everything the model sees at a choice, and nothing else: the scene, the Chapter Briefing, Public News, the deciding Character's memory and what it has lived through since its last Memory Update, the goal, and the offered options. A Joint or Cross-Segment Decision shows each decider's own view instead (ADR 0005). Flags are never shown (ADR 0001).
+_Avoid_: payload, context, input
+
 **Cross-Segment Decision**:
 A choice made by one Character inside another Character's Chapter Segment, with only the deciding Character's memory and its own view of the moment (Markus reaching for the gun in Connor's Jericho segment; Connor fighting Markus once the player controls him). The segment's Character learns the outcome; the decider remembers its choice at its next Memory Update (ADR 0005).
 _Avoid_: borrowed choice, guest decision
