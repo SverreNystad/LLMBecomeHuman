@@ -63,8 +63,6 @@ def test_detail_reflects_saved_decisions():
     assert d["decisions"][0]["choice_id"] == "scan"
     assert d["decisions"][0]["flags_before"] == {}
     assert d["decisions"][0]["flags_after"]["scan_performed"] is True
-    assert d["decisions"][1]["prompt_history_count"] == 1
-    assert d["decisions"][5]["prompt_history_count"] == 5
     event = c.get(f"/api/runs/{first['id']}/events/{d['decisions'][5]['index']}").json()
     assert len(event["input"]["entire_decision_history"]) == 5
     assert all(x.get("rationale") for x in event["input"]["entire_decision_history"])
@@ -190,7 +188,8 @@ def test_flowchart_includes_unvisited_options_and_all_chapters():
 
 
 def test_new_runner_stores_full_graph_snapshot(tmp_path):
-    from detroit_benchmark.engine import Runner, canonical_hash
+    from detroit_benchmark.engine import Runner
+    from detroit_benchmark.run_folder import canonical_hash
 
     graph = json.loads((PROJECT / "examples" / "showcase_game.json").read_text())
     folder = tmp_path / "fresh"

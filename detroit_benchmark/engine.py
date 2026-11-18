@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 import re
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -19,6 +19,7 @@ from .decision_prompt import (
     feedback_moment,
     segment_for,
 )
+from .run_folder import RunFolder, canonical_hash
 from .story_rules import (
     COMPARISONS,
     CONDITION_RESOLUTIONS,
@@ -102,12 +103,6 @@ class MemoryRewrite(BaseModel):
 
 def now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def canonical_hash(obj) -> str:
-    return hashlib.sha256(
-        json.dumps(obj, sort_keys=True, ensure_ascii=False).encode()
-    ).hexdigest()
 
 
 BRIEFING_MAX_CHARS = 600
@@ -275,23 +270,51 @@ def score_move(score: dict, change, value) -> dict | None:
     return item
 
 
-def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
-    """Move the Running Scores an option or branch adds to (kept within their min and
-    max), then show the ones it names in effects.show. Returns the Gauge Feedback,
-    worded from the real change, so what the model reads is what decides."""
-    feedback = []
-    for name, delta in item_adds(scores, item).items():
+@dataclass(frozen=True)
+class Outcome:
+    """What taking an option or a condition branch does to a Run."""
+
+    # The Run's flags afterwards, its Running Scores' new values included.
+    flags: dict
+    # The flags the item set and the new values of the scores it moved.
+    changed: dict
+    # Its Gauge Feedback, each item worded: authored lines, then the scores' moves.
+    feedback: list[dict]
+    # The headlines it makes Public News.
+    news: list[str]
+
+
+def take(
+    graph: dict, item: dict | None, flags: dict, show_relationships: bool = True
+) -> Outcome:
+    """The Outcome of taking ``item`` (an option or a condition branch, or None when a
+    condition takes no branch) with the Run's ``flags``, which it leaves untouched.
+
+    It sets the item's flags, moves the Running Scores it adds to (kept within their
+    min and max), and words the Gauge Feedback from the real change, so what the model
+    reads is what decides; the scores named in effects.show then show their level.
+    """
+    if item is None:
+        return Outcome(dict(flags), {}, [], [])
+    scores = graph.get("scores") or {}
+    set_flags = effect_flags(item)
+    after = {**flags, **set_flags}
+    adds = item_adds(scores, item)
+    items = authored_feedback(item, scores, show_relationships)
+    for name, delta in adds.items():
         score = scores[name]
-        before = flags.get(name, 0)
-        value = min(max(before + delta, score["min"]), score["max"])
-        flags[name] = value
-        move = score_move(score, value - before, value)
+        before = after.get(name, 0)
+        after[name] = min(max(before + delta, score["min"]), score["max"])
+        move = score_move(score, after[name] - before, after[name])
         if move is not None:
-            feedback.append({**move, "text": gauge_text(move)})
-    for name in effect_shows(item):
-        level = score_level(scores[name], flags.get(name, 0))
-        feedback.append({**level, "text": gauge_text(level)})
-    return feedback
+            items.append(move)
+    items += [score_level(scores[name], after.get(name, 0)) for name in effect_shows(item)]
+    return Outcome(
+        flags=after,
+        changed={**set_flags, **{name: after[name] for name in adds}},
+        feedback=unique_feedback([{**entry, "text": gauge_text(entry)} for entry in items]),
+        news=[news["headline"] for news in (item.get("effects") or {}).get("news") or []],
+    )
 
 
 def authored_feedback(
@@ -494,13 +517,12 @@ def _joint_errors(nodes: dict) -> list[str]:
 
 
 def _effect_items(graph: dict):
-    """Every condition branch and option, with where it is for error messages, and
-    whether it is an option."""
+    """Every condition branch and option, with where it is for error messages."""
     for nid, node in graph.get("nodes", {}).items():
         for i, branch in enumerate(node.get("branches", [])):
-            yield f"{nid}: branch {i}", branch, False
+            yield f"{nid}: branch {i}", branch
         for option in node.get("options", []):
-            yield f"{nid}/{option.get('id')}", option, True
+            yield f"{nid}/{option.get('id')}", option
 
 
 def _enrichment_errors(graph: dict) -> list[str]:
@@ -519,7 +541,7 @@ def _enrichment_errors(graph: dict) -> list[str]:
     # Every flag the story sets: at the start, on a condition branch, or by a choice.
     named = [("initial flag", graph.get("initial_flags") or {})]
     named += [
-        (f"{where}: flag", effect_flags(item)) for where, item, _ in _effect_items(graph)
+        (f"{where}: flag", effect_flags(item)) for where, item in _effect_items(graph)
     ]
     for where, flags in named:
         errors += [
@@ -527,10 +549,11 @@ def _enrichment_errors(graph: dict) -> list[str]:
             for flag in flags
             if not FLAG_NAME.fullmatch(flag)
         ]
-    for where, item, is_option in _effect_items(graph):
+    for where, item in _effect_items(graph):
         errors += _feedback_errors(where, item)
         effects = item.get("effects")
-        if not is_option or not isinstance(effects, dict):
+        # Taking an option or a branch makes its news public.
+        if not isinstance(effects, dict):
             continue
         for news in effects.get("news") or []:
             headline = news.get("headline") if isinstance(news, dict) else None
@@ -800,44 +823,6 @@ def create_model(
     raise ValueError(f"Unsupported provider {provider}")
 
 
-def _parse_event(line: bytes) -> dict | None:
-    try:
-        parsed = json.loads(line)
-    except ValueError:
-        return None
-    return parsed if isinstance(parsed, dict) else None
-
-
-def iter_events_at(directory: Path):
-    """A Run's events in order, each with the byte offset of its line, read line by line.
-    A half-written last line (the Run is still playing) and anything that is not an
-    event object are skipped."""
-    try:
-        with (directory / "events.jsonl").open("rb") as stream:
-            offset = 0
-            for line in stream:
-                start, offset = offset, offset + len(line)
-                if line.strip() and (event := _parse_event(line)) is not None:
-                    yield start, event
-    except OSError:
-        return
-
-
-def iter_events(directory: Path):
-    """A Run's events in order; see :func:`iter_events_at`."""
-    return (event for _, event in iter_events_at(directory))
-
-
-def event_at(directory: Path, offset: int) -> dict | None:
-    """The event whose line starts at this byte offset (from :func:`iter_events_at`)."""
-    try:
-        with (directory / "events.jsonl").open("rb") as stream:
-            stream.seek(offset)
-            return _parse_event(stream.readline())
-    except OSError:
-        return None
-
-
 def prompt_message(payload: dict) -> str:
     """A prompt payload as the model receives it: compact JSON after the system prompt."""
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -872,33 +857,6 @@ def memory_update_payload(
 def read_json(path: Path | str):
     """The JSON in this file; raises when it is missing or malformed."""
     return json.loads(Path(path).read_text(encoding="utf-8"))
-
-
-def file_stamp(path: Path) -> tuple[int, int] | None:
-    """A file's version, for caches: (modified time, size), or None if it is missing."""
-    try:
-        stat = path.stat()
-    except OSError:
-        return None
-    return stat.st_mtime_ns, stat.st_size
-
-
-def read_json_object(path: Path) -> dict | None:
-    """The JSON object in this file, or None when it is missing, unreadable or not an object."""
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    return value if isinstance(value, dict) else None
-
-
-def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
-    """Write JSON so a crash never leaves a half-written file."""
-    temp = path.with_suffix(".tmp")
-    temp.write_text(
-        json.dumps(obj, ensure_ascii=False, indent=indent), encoding="utf-8"
-    )
-    os.replace(temp, path)
 
 
 class Runner:
@@ -944,13 +902,7 @@ class Runner:
         self.max_prompt_chars = max_prompt_chars
         self.temperature = temperature
         self.run_dir = Path(run_dir)
-        self.run_dir.mkdir(parents=True, exist_ok=True)
-        self.events_path = self.run_dir / "events.jsonl"
-        self.checkpoint_path = self.run_dir / "checkpoint.json"
-        self.summary_path = self.run_dir / "summary.json"
-        self.input_path = self.run_dir / "experiment.json"
-        # Immutable story snapshot enables end-of-chapter flowcharts (including untaken paths).
-        self.graph_path = self.run_dir / "story-graph.json"
+        self.folder = RunFolder(self.run_dir)
         self.story_hash = canonical_hash(graph)
         self._models = {}  # One backend per output-token limit.
         # Builds each backend; a backend of None plays the mock provider's policy.
@@ -960,146 +912,83 @@ class Runner:
         # Test option: raw replies the mock provider returns, in order, before
         # falling back to its default policy. Controls reply length and content.
         self.mock_replies = list(mock_replies or [])
-        if resume:
-            if not self.checkpoint_path.exists():
-                raise ValueError(f"No checkpoint at {self.checkpoint_path}")
-            payload = read_json(self.checkpoint_path)
-            if (
-                payload["graph_sha256"] != self.story_hash
-                or payload["provider"] != provider
-                or payload["model_id"] != self.model_id
-            ):
-                raise ValueError(
-                    "Cannot resume with different graph, provider, or model"
-                )
-            self.state = payload["state"]
-            # Checkpoints from before Character Memory start with empty memories.
-            self.state.setdefault(
-                "character_memories", {name: "" for name in CHARACTERS}
-            )
-            self.state.setdefault("segment_events", [])
-            self.state.setdefault("news", [])
-            self.state.setdefault("pending_moments", {})
-            self.state.setdefault("seen", [])
-            self._save_story_snapshot()
-            if self.state.get("status") == "complete":
-                raise ValueError("Run is already complete")
-            # Crash after append but before checkpoint: remove uncommitted events.
-            event_idx = self.state["event_idx"]
-            if self.events_path.exists():
-                lines = self.events_path.read_text(encoding="utf-8").splitlines()
-                self.events_path.write_text(
-                    "\n".join(lines[:event_idx]) + "\n" if event_idx else "",
-                    encoding="utf-8",
-                )
-        else:
-            if self.events_path.exists() or self.checkpoint_path.exists():
-                raise FileExistsError(
-                    "Run directory already contains a run. Choose a new folder or --resume."
-                )
-            self._save_story_snapshot()
-            self.state = {
-                "node": graph["start"],
-                "event_idx": 0,
-                "status": "running",
-                # The story's own starting facts (e.g. every side character alive),
-                # then any the caller adds.
-                "flags": {
-                    **(graph.get("initial_flags") or {}),
-                    **(initial_flags or {}),
-                },
-                "character_memories": {name: "" for name in CHARACTERS},
-                # The current Chapter Segment so far: scenes and the choices made.
-                "segment_events": [],
-                # Joint Decisions another Character's segment made for this one, until
-                # this Character's next Memory Update.
-                "pending_moments": {},
-                # Public News headlines, in the order they happened.
-                "news": [],
-                "decisions": [],
-                "chapters_visited": [],
-                # Story nodes a Seen Condition names, once the Run has passed them.
-                "seen": [],
-                "warnings": [],
-                "total_input_tokens": 0,
-                "total_output_tokens": 0,
-                "total_llm_latency_seconds": 0.0,
-                "started_at": now(),
-            }
-            self.input_path.write_text(
-                json.dumps(
-                    {
-                        "provider": provider,
-                        "model_id": self.model_id,
-                        "goal": goal,
-                        "temperature": temperature,
-                        "decision_limits": {
-                            "max_output_tokens": DECISION_MAX_OUTPUT_TOKENS,
-                            "rationale_max_sentences": RATIONALE_MAX_SENTENCES,
-                            "broken_reply_retries": 1,
-                            "reasoning": reasoning_settings(provider, self.model_id),
-                        },
-                        "character_memory": {
-                            "max_chars": memory_max_chars,
-                            "memory_update_max_output_tokens": MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
-                        },
-                        "graph_sha256": self.story_hash,
-                        "fidelity": graph.get("metadata", {}).get("fidelity"),
-                        "allow_unverified": allow_unverified,
-                        "show_relationships": show_relationships,
-                        "initial_flags": initial_flags or {},
-                        "story_title": graph.get("metadata", {}).get("title"),
-                        "synthetic": bool(
-                            graph.get("metadata", {}).get("synthetic", False)
-                        ),
-                        "started_at": self.state["started_at"],
-                    },
-                    indent=2,
-                ),
-                encoding="utf-8",
-            )
-            self._checkpoint()
-
-    def _save_story_snapshot(self):
-        """Store the original graph beside each run so untaken branches remain visible."""
-        if self.graph_path.exists():
-            existing = read_json(self.graph_path)
-            if canonical_hash(existing) != self.story_hash:
-                raise ValueError(
-                    "Existing story-graph.json does not match the run graph"
-                )
-            return
-        _write_json_atomic(self.graph_path, self.graph, indent=2)
-
-    def _checkpoint(self):
-        # Rewritten after every event, so kept compact.
-        _write_json_atomic(
-            self.checkpoint_path,
-            {
-                "graph_sha256": self.story_hash,
-                "provider": self.provider,
-                "model_id": self.model_id,
-                "state": self.state,
+        # A resume must match the story, provider and model the Run was played with.
+        key = {
+            "graph_sha256": self.story_hash,
+            "provider": provider,
+            "model_id": self.model_id,
+        }
+        blank = {
+            "node": graph["start"],
+            "event_idx": 0,
+            "status": "running",
+            # The story's own starting facts (e.g. every side character alive),
+            # then any the caller adds.
+            "flags": {
+                **(graph.get("initial_flags") or {}),
+                **(initial_flags or {}),
             },
+            "character_memories": {name: "" for name in CHARACTERS},
+            # The current Chapter Segment so far: scenes and the choices made.
+            "segment_events": [],
+            # Joint Decisions another Character's segment made for this one, until
+            # this Character's next Memory Update.
+            "pending_moments": {},
+            # Public News headlines, in the order they happened.
+            "news": [],
+            "decisions": [],
+            "chapters_visited": [],
+            # Story nodes a Seen Condition names, once the Run has passed them.
+            "seen": [],
+            "warnings": [],
+            "total_input_tokens": 0,
+            "total_output_tokens": 0,
+            "total_llm_latency_seconds": 0.0,
+            "started_at": now(),
+        }
+        if resume:
+            self.state = self.folder.resume(graph, key, blank)
+            return
+        self.state = blank
+        self.folder.begin(
+            graph,
+            key,
+            {
+                "provider": provider,
+                "model_id": self.model_id,
+                "goal": goal,
+                "temperature": temperature,
+                "decision_limits": {
+                    "max_output_tokens": DECISION_MAX_OUTPUT_TOKENS,
+                    "rationale_max_sentences": RATIONALE_MAX_SENTENCES,
+                    "broken_reply_retries": 1,
+                    "reasoning": reasoning_settings(provider, self.model_id),
+                },
+                "character_memory": {
+                    "max_chars": memory_max_chars,
+                    "memory_update_max_output_tokens": MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
+                },
+                "graph_sha256": self.story_hash,
+                "fidelity": graph.get("metadata", {}).get("fidelity"),
+                "allow_unverified": allow_unverified,
+                "show_relationships": show_relationships,
+                "initial_flags": initial_flags or {},
+                "story_title": graph.get("metadata", {}).get("title"),
+                "synthetic": bool(graph.get("metadata", {}).get("synthetic", False)),
+                "started_at": self.state["started_at"],
+            },
+            self.state,
         )
 
-    def _apply_effects(self, item: dict | None) -> tuple[dict, list[dict]]:
-        """Set a taken option's or branch's flags and move its Running Scores.
-
-        Returns what changed (flags and the scores' new values) and the Gauge Feedback
-        it causes, each item worded: authored feedback, then the scores' moves.
-        """
-        if item is None:
-            return {}, []
-        flags = effect_flags(item)
-        self.state["flags"].update(flags)
-        scores = self.graph.get("scores") or {}
-        moved = score_feedback(scores, self.state["flags"], item)
-        changed = {
-            **flags,
-            **{name: self.state["flags"][name] for name in item_adds(scores, item)},
-        }
-        return changed, unique_feedback(self._gauge_feedback(item) + moved)
+    def _take(self, item: dict | None) -> Outcome:
+        """Commit the Outcome of a taken option or branch: its flags and scores, and
+        its Public News."""
+        outcome = take(self.graph, item, self.state["flags"], self.show_relationships)
+        self.state["flags"] = outcome.flags
+        for headline in outcome.news:
+            if headline not in self.state["news"]:
+                self.state["news"].append(headline)
+        return outcome
 
     def _facts(self) -> Facts:
         return Facts(flags=self.state["flags"], seen=self.state["seen"])
@@ -1107,22 +996,12 @@ class Runner:
     def _resolve(self, node: dict) -> Step:
         return self.rules.resolve(node["id"], self._facts())
 
-    def _take_branch_effects(self, node: dict, idx: int | None) -> tuple[dict, dict]:
+    def _take_branch(self, node: dict, idx: int | None) -> tuple[dict, dict]:
         """A Fate decided at a condition (a death, an escape) is remembered for later
-        rules. Returns the flags set, so the event shows where it changed, and the
-        event's Gauge Feedback, which also joins the segment the model sees next."""
-        branch = node["branches"][idx] if idx is not None else None
-        changed, feedback = self._apply_effects(branch)
-        return changed, self._branch_feedback(node, feedback)
-
-    def _gauge_feedback(self, item: dict | None) -> list[dict]:
-        """Authored Gauge Feedback for a taken option or branch, each item worded."""
-        if item is None:
-            return []
-        feedback = authored_feedback(
-            item, self.graph.get("scores"), self.show_relationships
-        )
-        return [{**entry, "text": gauge_text(entry)} for entry in feedback]
+        rules. Returns what changed, so the event shows it, and the event's Gauge
+        Feedback, which also joins the segment the model sees next."""
+        outcome = self._take(node["branches"][idx] if idx is not None else None)
+        return outcome.changed, self._branch_feedback(node, outcome.feedback)
 
     def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
         """A branch's Gauge Feedback joins the segment the model sees next, and the event."""
@@ -1143,12 +1022,9 @@ class Runner:
             "chapter": node.get("chapter"),
             **info,
         }
-        with self.events_path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(event, ensure_ascii=False) + "\n")
-            f.flush()
-            os.fsync(f.fileno())
+        self.folder.append(event)
         self.state["event_idx"] += 1
-        self._checkpoint()
+        self.folder.save(self.state)
 
     def _mock_attempt(self, schema, default, max_tokens: int):
         """Mock backend. Scripted ``mock_replies`` (raw text) are used first.
@@ -1370,10 +1246,7 @@ class Runner:
         # Model only selects: authored graph/rules determine the outcome.
         before = dict(self.state["flags"])
         effects = chosen.get("effects") or {}
-        _, feedback = self._apply_effects(chosen)
-        for item in effects.get("news") or []:
-            if item["headline"] not in self.state["news"]:
-                self.state["news"].append(item["headline"])
+        feedback = self._take(chosen).feedback
         key = f"{node['id']}:{chosen['id']}"
         decision = {
             "choice_key": key,
@@ -1448,7 +1321,7 @@ class Runner:
             # Quick-Time Events test reflexes, not judgement: always succeed.
             taken = self._resolve(node)
             self.state["node"] = taken.next
-            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            flags_set, feedback = self._take_branch(node, taken.branch_index)
             self._record(
                 "condition",
                 node,
@@ -1472,7 +1345,7 @@ class Runner:
                         "picked": taken.branch_index,
                     }
                 )
-            flags_set, feedback = self._take_branch_effects(node, taken.branch_index)
+            flags_set, feedback = self._take_branch(node, taken.branch_index)
             self.state["node"] = taken.next
             self._record(
                 "condition",
@@ -1543,22 +1416,16 @@ class Runner:
                 "started_at": self.state["started_at"],
                 "completed_at": self.state["completed_at"],
             }
-            self.summary_path.write_text(
-                json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8"
-            )
+            self.folder.finish(summary)
         else:
             raise RuntimeError(f"Unsupported node type {kind}")
 
     def halt(self, reason: str):
         """Stops a playing Run where it is, recording why; it is kept as a partial Run
         with its events so far."""
-        if self.state["status"] != "running":
-            return
-        self.state["status"] = "partial"
-        self.state["stop_reason"] = reason
-        self._checkpoint()
+        self.folder.stop(reason, self.state)
 
     def run(self):
         while self.state["status"] == "running":
             self.step()
-        return read_json(self.summary_path)
+        return self.folder.summary()

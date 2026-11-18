@@ -9,10 +9,10 @@ from .engine import (
     DEFAULT_MEMORY_MAX_CHARS,
     DEFAULT_MODELS,
     Runner,
-    iter_events,
     read_json,
     validate_graph,
 )
+from .run_folder import RunFolder
 
 
 def main():
@@ -156,10 +156,13 @@ def main():
     elif args.command == "compare":
         results = []
         for d in args.run_dirs:
-            summary = read_json(d / "summary.json")
+            folder = RunFolder(d)
+            summary = folder.summary()
+            if summary is None:
+                raise SystemExit(f"{d}: the Run has not ended, so it has no summary")
             decisions = {
                 e["node_id"]: e.get("decision_key")
-                for e in iter_events(d)
+                for e in folder.events()
                 if e["type"] == "decision"
             }
             results.append(

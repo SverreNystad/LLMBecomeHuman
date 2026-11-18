@@ -637,15 +637,15 @@ function computePath(view, chapter, graph) {
   const groupId = id => graph.groupOf.get(id) || id;
   const visited = new Set(), traversed = new Set(), byId = new Map();
   const events = view?.detail?.events || [];
-  for (let i = 0; i < events.length; i++) {
-    const ev = events[i], nid = groupId(ev.node_id);
+  for (const ev of events) {
+    const nid = groupId(ev.node_id);
     if (ev.chapter !== chapter || !ev.node_id) continue;
     visited.add(nid);
     if (!byId.has(nid)) byId.set(nid,[]);
     byId.get(nid).push(ev);
-    const next = events[i+1];
-    const nextId = next?.chapter === chapter ? groupId(next.node_id) :
-      next?.node_id && state.graph?.nodes?.[next.node_id] ? `PORTAL::${next.node_id}` : null;
+    // The server names where the Run went next.
+    const nextId = ev.next == null ? null : ev.next_chapter === chapter ? groupId(ev.next) :
+      state.graph?.nodes?.[ev.next] ? `PORTAL::${ev.next}` : null;
     if (ev.type === 'decision') {
       const opt = optionId(nid, ev.choice_id);
       visited.add(opt);

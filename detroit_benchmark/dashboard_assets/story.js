@@ -13,15 +13,9 @@ function storyRun() {
 function chapterTitle(chapter) {return state.graph?.chapter_info?.[chapter]?.title || chapter;}
 function chapterCharacter(chapter) {return state.graph?.chapter_info?.[chapter]?.character || null;}
 
-/* The same node can be visited twice, so a decision is identified by node and visit number. */
-function decisionsByVisit(view) {
-  const seen = new Map(), result = new Map();
-  for (const decision of view.detail?.decisions || []) {
-    const visit = (seen.get(decision.node_id) || 0) + 1;
-    seen.set(decision.node_id, visit);
-    result.set(`${decision.node_id}#${visit}`, decision);
-  }
-  return result;
+/* The same node can be visited twice, so the server keys each decision by node and visit. */
+function decisionsByKey(view) {
+  return new Map((view.detail?.decisions || []).map(decision => [decision.key, decision]));
 }
 function compareDecision(key, tables) {
   const byChoice = new Map();
@@ -88,18 +82,10 @@ function renderFeedback(record, attrs = '') {
     ? `<p class="story-feedback" ${attrs} aria-label="On screen">${lines.map(line => `<span>${esc(line)}</span>`).join('')}</p>`
     : '';
 }
+/* A rule the story could not decide says what the Run assumed; the server words it. */
 function renderRule(item) {
   const record = item.record;
-  if (record.type === 'route') {
-    // The server words the assumption (ending.assumed_route_text).
-    if (!record.assumed || !record.text) return '';
-    return `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text)}</p>`;
-  }
-  const branches = state.graph?.nodes?.[record.node_id]?.branches || [];
-  const taken = branches[record.branch_index]?.condition_text;
-  const assumed = record.used_unverified_default && taken
-    ? `<p class="story-rule" ${momentAttrs(item)}>Assumed: ${esc(taken)}</p>`
-    : '';
+  const assumed = record.text ? `<p class="story-rule" ${momentAttrs(item)}>${esc(record.text)}</p>` : '';
   return assumed + renderFeedback(record, momentAttrs(item));
 }
 /* A model's logo beside the option it chose. Hovering names the model; clicking shows its
@@ -117,11 +103,6 @@ function agreementLabel(byChoice) {
 }
 function renderDecision(item, number, total, key, tables, run) {
   const record = item.record, {byChoice} = compareDecision(key, tables);
-  // A Joint Decision names every Character whose memory it was made with.
-  const deciders = Array.isArray(record.deciders) && record.deciders.length > 1 ? record.deciders : null;
-  const who = deciders
-    ? deciders.slice(0, -1).join(', ') + ' and ' + deciders[deciders.length - 1]
-    : record.character && record.character !== 'multiple' ? record.character : null;
   // Who decided, when it isn't simply the segment's Character: "Decided as Markus", or a
   // Joint Decision's "Decided with Markus's and Connor's memories".
   const joint = record.decided ? `<p class="story-deciders">${esc(record.decided)}</p>` : '';
@@ -137,7 +118,7 @@ function renderDecision(item, number, total, key, tables, run) {
     : `<span class="story-decision-count">Decision ${number} of ${total}</span>`;
   return `<article class="story-decision ${exploration ? 'is-exploration' : ''}" id="story-decision-${number}" ${momentAttrs(item)} style="--run-color:${routeColor(run)}">
     <header>${count}${agreementLabel(byChoice)}</header>
-    <h3>${who ? `What ${deciders ? 'do' : 'does'} ${esc(who)} do?` : 'What happens next?'}</h3>
+    <h3>${esc(record.question || 'What happens next?')}</h3>
     ${joint}<ul class="story-options">${options}</ul>
     ${renderFeedback(record)}
     <div class="story-why" aria-live="polite"><div class="story-why-label">${esc(run.model)}</div><p>${esc(record.rationale || '—')}</p></div>
@@ -268,18 +249,12 @@ async function renderStory({keepScroll = false, position = null} = {}) {
   if (!records.length) {renderUnvisitedChapter(run, chapter); if (!keepScroll) scrollStoryToTop(); return;}
 
   const items = buildStoryItems(records);
-  const tables = activeViews().map(view => ({run: view.run, table: decisionsByVisit(view)}));
-  const visits = new Map(), numbers = new Map(), keys = new Map();
-  // Visit numbers count from the run's start, because a node can recur across chapters.
-  for (const decision of detail?.decisions || []) {
-    if (decision.index < records[0].index) visits.set(decision.node_id, (visits.get(decision.node_id) || 0) + 1);
-  }
+  const tables = activeViews().map(view => ({run: view.run, table: decisionsByKey(view)}));
+  const numbers = new Map(), keys = new Map();
   const summaries = [];
   for (const item of items) {
     if (item.kind !== 'decision') continue;
-    const visit = (visits.get(item.record.node_id) || 0) + 1;
-    visits.set(item.record.node_id, visit);
-    const key = `${item.record.node_id}#${visit}`, number = summaries.length + 1;
+    const key = item.record.key, number = summaries.length + 1;
     numbers.set(item, number); keys.set(item, key);
     const chosen = (item.record.available_choices || []).find(option => option.id === item.record.choice_id);
     summaries.push({number, label: chosen?.label || item.record.choice_id, split: compareDecision(key, tables).byChoice.size > 1});

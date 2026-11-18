@@ -19,14 +19,8 @@ from pathlib import Path
 
 import httpx
 
-from .engine import (
-    COMPATIBLE_PROVIDERS,
-    DEFAULT_GOAL,
-    Runner,
-    _write_json_atomic,
-    read_json,
-    read_json_object,
-)
+from .engine import COMPATIBLE_PROVIDERS, DEFAULT_GOAL, Runner, read_json
+from .run_folder import RunFolder, find_runs, read_json_object, write_json_atomic
 
 logger = logging.getLogger(__name__)
 
@@ -229,12 +223,11 @@ def _read_json(path: Path) -> dict:
 
 
 def _model_of(directory: Path) -> tuple[str, str]:
-    experiment = _read_json(directory / "experiment.json")
-    return experiment.get("provider", ""), experiment.get("model_id", "")
+    return RunFolder(directory).model()
 
 
 def _is_complete(directory: Path) -> bool:
-    return _read_json(directory / "summary.json").get("status") == "complete"
+    return RunFolder(directory).is_complete()
 
 
 def is_public(directory: Path) -> bool:
@@ -246,15 +239,15 @@ def _visitor_runs(root: Path) -> list[Path]:
     folder = root / VISITOR_FOLDER
     if not folder.is_dir():
         return []
-    return [p for p in folder.iterdir() if (p / "experiment.json").is_file()]
+    return [p for p in folder.iterdir() if RunFolder(p).is_run()]
 
 
 def _baked_in_runs(root: Path) -> list[Path]:
-    visitors = root / VISITOR_FOLDER
+    visitors = (root / VISITOR_FOLDER).resolve()
     return [
-        file.parent
-        for file in root.rglob("experiment.json")
-        if not file.parent.is_relative_to(visitors)
+        folder.path
+        for folder in find_runs(root.resolve())
+        if not folder.path.is_relative_to(visitors)
     ]
 
 
@@ -285,11 +278,11 @@ class Publications:
                 if not (d / PUBLICATION_FILE).exists() and _is_complete(d)
             ]
             undecided.sort(
-                key=lambda d: _read_json(d / "summary.json").get("completed_at") or ""
+                key=lambda d: RunFolder(d).metadata()["completed_at"] or "",
             )
             for directory in undecided:
                 model = _model_of(directory)
-                _write_json_atomic(
+                write_json_atomic(
                     directory / PUBLICATION_FILE, {"public": model not in public}
                 )
                 public.add(model)
@@ -406,15 +399,7 @@ class PlayingRuns:
 def mark_cut_off_runs(root: Path) -> None:
     """At start-up, a Visitor Run still marked in progress was cut off (by a redeploy, say)
     and can never resume, its key being gone: it is marked partial."""
-    for checkpoint in (root / VISITOR_FOLDER).glob("*/checkpoint.json"):
-        if (checkpoint.parent / "summary.json").exists():
-            continue
-        saved = read_json_object(checkpoint)
-        if saved is None:
-            continue
-        state = saved.get("state") or {}
-        if state.get("status") != "running":
-            continue
-        state["status"] = "partial"
-        state["stop_reason"] = CUT_OFF
-        _write_json_atomic(checkpoint, saved)
+    folder = root / VISITOR_FOLDER
+    for directory in folder.iterdir() if folder.is_dir() else []:
+        if directory.is_dir():
+            RunFolder(directory).stop(CUT_OFF)
