@@ -60,6 +60,10 @@ _Avoid_: relationship meter, instability counter
 Short headlines about what the public knows of the Characters' actions so far. Every Character sees all of them. Private facts never become Public News.
 _Avoid_: world state, flags, broadcast
 
+**Story Rules**:
+What the story allows next, given what a Run has done so far (its flags over the story's starting flags, and the nodes it has passed): which options a choice offers, and where every other node leads. Outside a Run (walking the story to see what is reachable) a Seen Condition is unknown; inside one it never is.
+_Avoid_: game logic, branching, resolver
+
 ## Playing
 
 **Run**:
