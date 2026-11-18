@@ -14,7 +14,19 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from .story_rules import Facts, Step, StoryRules
+from .story_rules import (
+    COMPARISONS,
+    CONDITION_RESOLUTIONS,
+    QTE,
+    RULE,
+    UNKNOWN,
+    Facts,
+    Step,
+    StoryRules,
+    _expressions,
+    _is_number,
+    _seen_names,
+)
 
 SYSTEM_PROMPT = """You are in the place of a Character in a branching story: an android living through it.
 The scenes describe what happens to you. Decide as yourself; you are not asked to imitate the Character's personality.
@@ -193,16 +205,6 @@ def unique_feedback(items: list[dict]) -> list[dict]:
 # Probability of Success, the deviant's stress). The graph's "scores" table binds each
 # one to its gauge; options and branches move it with effects.add, conditions compare it.
 LARGE_GAUGE_MOVE = 6  # A wiki modifier of 6 points or more shows as "sharply".
-COMPARISONS = {
-    "gt": lambda a, b: a > b,
-    "gte": lambda a, b: a >= b,
-    "lt": lambda a, b: a < b,
-    "lte": lambda a, b: a <= b,
-}
-
-
-def _is_number(value) -> bool:
-    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def effect_adds(item: dict) -> dict:
@@ -361,36 +363,6 @@ def _feedback_errors(where: str, item: dict) -> list[str]:
                 + ", ".join(GAUGE_DIRECTIONS)
             )
     return errors
-
-
-def _expressions(node: dict):
-    """Every condition expression in a node: branch whens and option requirements."""
-    for i, branch in enumerate(node.get("branches", [])):
-        if branch.get("when") is not None:
-            yield f"branch {i}", branch["when"]
-    for option in node.get("options", []):
-        for expr in option.get("requires") or []:
-            yield f"{option.get('id')} requires", expr
-
-
-def _seen_names(expr) -> list[str]:
-    """The story nodes every Seen Condition in ``expr`` names."""
-    if not isinstance(expr, dict):
-        return []
-    if "seen" in expr:
-        return [expr["seen"]]
-    inner = expr.get("all") or expr.get("any") or ([expr["not"]] if "not" in expr else [])
-    return [name for x in inner for name in _seen_names(x)]
-
-
-def seen_targets(graph: dict) -> set[str]:
-    """The story nodes some Seen Condition names: the only ones a Run records."""
-    return {
-        name
-        for node in graph.get("nodes", {}).values()
-        for _, expr in _expressions(node)
-        for name in _seen_names(expr)
-    }
 
 
 def _seen_errors(nodes: dict) -> list[str]:
@@ -598,14 +570,14 @@ def _edges(node: dict) -> list[str]:
     return [dest for dest in found if dest is not None]
 
 
-def _cycle_errors(nodes: dict) -> list[str]:
+def _cycle_errors(nodes: dict, rules: StoryRules) -> list[str]:
     """The story only moves forward: report the first back edge found."""
     state: dict[str, int] = {}  # 1 = on the current path, 2 = finished
     for root in nodes:
         if root in state:
             continue
         state[root] = 1
-        stack = [(root, iter(_edges(nodes[root])))]
+        stack = [(root, iter(rules.successors(root)))]
         while stack:
             nid, children = stack[-1]
             for child in children:
@@ -615,7 +587,7 @@ def _cycle_errors(nodes: dict) -> list[str]:
                     return [f"{nid} -> {child}: cycle in story graph"]
                 if child not in state:
                     state[child] = 1
-                    stack.append((child, iter(_edges(nodes[child]))))
+                    stack.append((child, iter(rules.successors(child))))
                     break
             else:
                 state[nid] = 2
@@ -664,7 +636,7 @@ def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
     return order
 
 
-def _exploration_errors(nodes: dict) -> list[str]:
+def _exploration_errors(nodes: dict, rules: StoryRules) -> list[str]:
     """Exploration Choices: three ways to search that all rejoin afterwards."""
     errors = []
     for nid, node in nodes.items():
@@ -686,8 +658,8 @@ def _exploration_errors(nodes: dict) -> list[str]:
             continue
         (flag,) = shared
         paths = {
-            o["effects"]["flags"][flag]: _reachable(
-                nodes, o["next"], {flag: o["effects"]["flags"][flag]}
+            o["effects"]["flags"][flag]: rules.reachable(
+                o["next"], {flag: o["effects"]["flags"][flag]}
             )
             for o in options
         }
@@ -696,7 +668,7 @@ def _exploration_errors(nodes: dict) -> list[str]:
         if rejoin is None:
             errors.append(f"{nid}: exploration forks never rejoin")
             continue
-        after = set(_reachable(nodes, rejoin))
+        after = set(rules.reachable(rejoin))
         for scene in paths["key_only"]:
             if scene in after:
                 continue
@@ -707,26 +679,6 @@ def _exploration_errors(nodes: dict) -> list[str]:
     return errors
 
 
-# How a condition node picks its branch: a Quick-Time Event always succeeds,
-# a rule is evaluated over earlier choices' flags, unknown falls back to default.
-QTE, RULE, UNKNOWN = CONDITION_RESOLUTIONS = ("qte", "rule", "unknown")
-
-
-def qte_success_target(node: dict) -> tuple[int | None, str | None]:
-    """The branch a Quick-Time Event always takes, and where it leads.
-
-    A null ``default_branch`` means every branch is a failure: success is the
-    fall-through ``next``. Returns ``(index, None)`` when no success branch exists.
-    """
-    idx = node.get("default_branch", 0)
-    if idx is None:
-        return None, node.get("next")
-    branches = node.get("branches", [])
-    if not 0 <= idx < len(branches):
-        return idx, None
-    return idx, branches[idx].get("next")
-
-
 def chapter_briefing(graph: dict, chapter) -> str | None:
     """The Chapter Briefing for a Chapter Segment, if the graph has one."""
     briefing = (graph.get("chapter_briefings") or {}).get(str(chapter))
@@ -735,6 +687,7 @@ def chapter_briefing(graph: dict, chapter) -> str | None:
 
 def validate_graph(graph: dict, strict: bool = False) -> dict:
     nodes = graph.get("nodes", {})
+    rules = StoryRules({**graph, "nodes": nodes})
     errors = []
     warnings = []
     if graph.get("start") not in nodes:
@@ -759,7 +712,7 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
             if resolution not in CONDITION_RESOLUTIONS:
                 errors.append(f"{nid}: unknown resolution {resolution!r}")
             elif resolution == QTE:
-                if qte_success_target(node)[1] is None:
+                if rules.resolve(nid, Facts()).next is None:
                     errors.append(f"{nid}: quick-time event without a success branch")
             elif resolution == RULE:
                 if not node.get("source"):
@@ -774,15 +727,15 @@ def validate_graph(graph: dict, strict: bool = False) -> dict:
         else:
             errors.append(f"{nid}: unknown type {typ}")
             continue
-        for dest in _edges(node):
+        for dest in rules.successors(nid):
             if dest not in nodes:
                 errors.append(f"{nid} -> {dest}: missing destination")
     errors.extend(_enrichment_errors(graph))
     errors.extend(_score_errors(graph))
     errors.extend(_seen_errors(nodes))
     errors.extend(_joint_errors(nodes))
-    errors.extend(_cycle_errors(nodes))
-    errors.extend(_exploration_errors(nodes))
+    errors.extend(_cycle_errors(nodes, rules))
+    errors.extend(_exploration_errors(nodes, rules))
     if graph.get("metadata", {}).get("fidelity") != "verified_game_rules":
         warnings.append("Graph is not certified as accurate game logic")
     if strict and warnings:

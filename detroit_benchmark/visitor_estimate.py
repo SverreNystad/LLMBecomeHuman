@@ -24,7 +24,6 @@ from .engine import (
     MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
     PUBLIC_NEWS_LIMIT,
     SYSTEM_PROMPT,
-    _edges,
     chapter_briefing,
     file_stamp,
     memory_update_payload,
@@ -34,6 +33,7 @@ from .engine import (
     scene_record,
     scene_view,
 )
+from .story_rules import StoryRules
 
 # Characters per token: (the most tokens a provider counts, the fewest). The real Runs
 # measured 2.3 (Claude Sonnet and Haiku 5.5) to 3.9 (OpenAI, Claude Haiku 4.5).
@@ -119,6 +119,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     segment: each node keeps, per number of calls left in its segment, the best
     (characters, decisions, Memory Updates) from there to the ending."""
     nodes = graph["nodes"]
+    rules = StoryRules(graph)
     remembered = "x" * memory
     headlines = ["x" * HEADLINE_MAX_CHARS] * news
     best: dict[str, dict[int, tuple[int, int, int]]] = {}
@@ -130,7 +131,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     def overall(table):
         return pick(table.values(), key=lambda v: v[0]) if table else (0, 0, 0)
 
-    for node_id in _children_first(nodes, graph["start"]):
+    for node_id in _children_first(rules, nodes, graph["start"]):
         node, kind = nodes[node_id], nodes[node_id]["type"]
         table: dict[int, tuple[int, int, int]] = {}
         if kind == "chapter_exit":
@@ -195,7 +196,7 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                     if lines and branch.get("next"):
                         entry = 1 + _size({"at": node.get("heading"), "on_screen": lines})
                         flashed[branch["next"]] = max(flashed.get(branch["next"], 0), entry)
-            for child in _edges(node) or [None]:
+            for child in rules.successors(node_id) or [None]:
                 cost = scene + flashed.get(child, 0)
                 for calls, (chars, decisions, updates) in best.get(
                     child, {0: (0, 0, 0)}
@@ -205,17 +206,17 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     return Route(*overall(best[graph["start"]]))
 
 
-def _children_first(nodes: dict, start: str) -> list[str]:
+def _children_first(rules: StoryRules, nodes: dict, start: str) -> list[str]:
     """Every node reachable from ``start``, each after all the nodes it leads to (the
     story graph has no cycles)."""
     order, seen = [], {start}
-    stack = [(start, iter(_edges(nodes[start])))]
+    stack = [(start, iter(rules.successors(start)))]
     while stack:
         node_id, children = stack[-1]
         for child in children:
             if child in nodes and child not in seen:
                 seen.add(child)
-                stack.append((child, iter(_edges(nodes[child]))))
+                stack.append((child, iter(rules.successors(child))))
                 break
         else:
             order.append(node_id)
