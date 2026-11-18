@@ -90,6 +90,10 @@ _Avoid_: shared choice, merged memory
 A choice made by one Character inside another Character's Chapter Segment, with only the deciding Character's memory and its own view of the moment (Markus reaching for the gun in Connor's Jericho segment; Connor fighting Markus once the player controls him). The segment's Character learns the outcome; the decider remembers its choice at its next Memory Update (ADR 0005).
 _Avoid_: borrowed choice, guest decision
 
+**Decision Prompt**:
+Everything the model sees at a choice, and nothing else: the scene, the Chapter Briefing, Public News, the deciding Character's memory and what it has lived through since its last Memory Update, the goal, and the offered options. A Joint or Cross-Segment Decision shows each decider's own view instead (ADR 0005). Flags are never shown (ADR 0001).
+_Avoid_: payload, context, input
+
 ## Dashboard
 
 **Flowchart**:

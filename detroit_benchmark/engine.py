@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-from copy import deepcopy
 import json
 import os
 import re
@@ -13,6 +12,13 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from .decision_prompt import (
+    RunView,
+    choice_moments,
+    decision_prompt,
+    feedback_moment,
+    segment_for,
+)
 from .story_rules import (
     COMPARISONS,
     CONDITION_RESOLUTIONS,
@@ -288,13 +294,22 @@ def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
     return feedback
 
 
+def authored_feedback(
+    item: dict, scores: dict | None, show_relationships: bool = True
+) -> list[dict]:
+    """The Gauge Feedback an option or branch's authors wrote: its own feedback, then
+    its relationship arrows when they are shown. Score moves come after, from play."""
+    items = list(effect_feedback(item))
+    if show_relationships:
+        items += relation_feedback(item.get("relation_hints"), scores)
+    return items
+
+
 def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -> list[str]:
     """The Gauge Feedback lines an option or branch can flash, without playing it (for
     the token estimate): a percentage score is worded at its max, its longest value."""
     scores = graph.get("scores") or {}
-    items = list(effect_feedback(item))
-    if show_relationships:
-        items += relation_feedback(item.get("relation_hints"), scores)
+    items = authored_feedback(item, scores, show_relationships)
     for name, delta in item_adds(scores, item).items():
         move = score_move(scores[name], delta, scores[name]["max"])
         if move is not None:
@@ -306,28 +321,6 @@ def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -
 def effect_shows(item: dict) -> list:
     """The percentage scores an option or branch shows the level of (effects.show)."""
     return (item.get("effects") or {}).get("show") or []
-
-
-# A choice's "deciders" (ADR 0005). Two or more make a Joint Decision, made with all
-# their Character Memories and each one's view of the moment. One other than the
-# segment's Character makes a Cross-Segment Decision: that Character decides alone,
-# with its own memory, inside another Character's segment.
-JOINT_DECISION_INSTRUCTION = (
-    "This is a Joint Decision: it belongs to both {names}. Decide it with both points "
-    "of view: each Character's own memory and what each knows of this moment, given in "
-    "points_of_view. The outcome becomes part of both Characters' stories."
-)
-
-
-def _and(names: list[str]) -> str:
-    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
-
-
-def decision_text(deciders: list[str]) -> str:
-    """How the Story and the other Characters' memories word who decided."""
-    if len(deciders) == 1:
-        return f"Decided as {deciders[0]}"
-    return f"Decided with {_and([name + chr(39) + 's' for name in deciders])} memories"
 
 
 def relation_feedback(hints: list | None, scores: dict | None = None) -> list[dict]:
@@ -622,12 +615,6 @@ def _exploration_errors(nodes: dict, rules: StoryRules) -> list[str]:
     return errors
 
 
-def chapter_briefing(graph: dict, chapter) -> str | None:
-    """The Chapter Briefing for a Chapter Segment, if the graph has one."""
-    briefing = (graph.get("chapter_briefings") or {}).get(str(chapter))
-    return briefing if isinstance(briefing, str) else None
-
-
 def validate_graph(graph: dict, strict: bool = False) -> dict:
     nodes = graph.get("nodes", {})
     rules = StoryRules({**graph, "nodes": nodes})
@@ -854,16 +841,6 @@ def event_at(directory: Path, offset: int) -> dict | None:
 def prompt_message(payload: dict) -> str:
     """A prompt payload as the model receives it: compact JSON after the system prompt."""
     return json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-
-
-def scene_view(node: dict) -> dict:
-    """The ``current_scene`` a decision prompt opens with."""
-    return {
-        "chapter": node.get("chapter"),
-        "character": node.get("character"),
-        "heading": node.get("heading"),
-        "description": node.get("description"),
-    }
 
 
 def scene_record(node: dict) -> dict:
@@ -1142,9 +1119,9 @@ class Runner:
         """Authored Gauge Feedback for a taken option or branch, each item worded."""
         if item is None:
             return []
-        feedback = list(effect_feedback(item))
-        if self.show_relationships:
-            feedback += relation_feedback(item.get("relation_hints"), self.graph.get("scores"))
+        feedback = authored_feedback(
+            item, self.graph.get("scores"), self.show_relationships
+        )
         return [{**entry, "text": gauge_text(entry)} for entry in feedback]
 
     def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
@@ -1152,7 +1129,7 @@ class Runner:
         if not feedback:
             return {}
         self.state["segment_events"].append(
-            {"at": node.get("heading"), "on_screen": [f["text"] for f in feedback]}
+            feedback_moment(node, [f["text"] for f in feedback])
         )
         return {"feedback": feedback}
 
@@ -1282,78 +1259,16 @@ class Runner:
             ModelDecision, payload, DECISION_MAX_OUTPUT_TOKENS, default
         )
 
-    def _public_news(self) -> list | None:
-        """Public News: the latest headlines so far, seen by every Character."""
-        return self.state["news"][-PUBLIC_NEWS_LIMIT:] or None
-
-    def _decision_payload(self, node: dict, offered: list[dict]) -> dict:
-        """Everything the model sees at a choice, and nothing else (ADR 0001).
-
-        Flags stay internal for routing; other Characters' memories never appear.
-        """
-        character = node.get("character")
-        payload = {"current_scene": scene_view(node)}
-        deciders = node.get("deciders")
-        # A Cross-Segment Decision's decider sees its own this_moment, not the
-        # segment's Chapter Briefing, which is the segment Character's side.
-        cross_segment = bool(deciders) and len(deciders) == 1
-        briefing = chapter_briefing(self.graph, node.get("chapter"))
-        if briefing and not cross_segment:
-            payload["chapter_briefing"] = briefing
-        news = self._public_news()
-        if news:
-            payload["news"] = news
-        context = node.get("decider_context") or {}
-        if cross_segment:
-            # A Cross-Segment Decision (ADR 0005): the decider's memory and its own view
-            # of the moment; nothing of the segment's Character is shown.
-            (decider,) = deciders
-            payload["current_scene"]["character"] = decider
-            payload["character_memory"] = self.state["character_memories"].get(decider, "")
-            payload.update(self._other_view(decider, context.get(decider, "")))
-        elif deciders:
-            # A Joint Decision: both Characters' memories, each with its own view of the
-            # moment (ADR 0005). Nothing else of the other Character's is shown.
-            payload["current_scene"]["deciders"] = list(deciders)
-            payload["joint_decision"] = JOINT_DECISION_INSTRUCTION.format(
-                names=_and(list(deciders))
-            )
-            payload["points_of_view"] = {
-                name: {
-                    "character_memory": self.state["character_memories"].get(name, ""),
-                    **(
-                        {"chapter_segment_so_far": self._segment_for(name)}
-                        if name == character
-                        else self._other_view(name, context.get(name, ""))
-                    ),
-                }
-                for name in deciders
-            }
-        else:
-            payload["character_memory"] = self.state["character_memories"].get(
-                character, ""
-            )
-            payload["chapter_segment_so_far"] = self._segment_for(character)
-        payload["goal"] = self.goal
-        payload["available_choices"] = [
-            {"id": o["id"], "label": o["label"]} for o in offered
-        ]
-        return payload
-
-    def _segment_for(self, character) -> list:
-        """What a Character has lived through since its last Memory Update: Joint
-        Decisions made in another Character's segment, then the current segment."""
-        pending = self.state["pending_moments"].get(character) or []
-        return deepcopy(pending + self.state["segment_events"])
-
-    def _other_view(self, name: str, moment: str) -> dict:
-        """A decider's view of a moment in another Character's segment: what it knows
-        of it, after any earlier such decision of its own not yet in its memory."""
-        pending = self.state["pending_moments"].get(name) or []
-        return {
-            **({"since_last_memory": deepcopy(pending)} if pending else {}),
-            "this_moment": moment,
-        }
+    def _run_view(self) -> RunView:
+        """What this Run shows a model: its memories, pending moments, segment and the
+        latest Public News."""
+        return RunView(
+            memories=self.state["character_memories"],
+            pending=self.state["pending_moments"],
+            segment=self.state["segment_events"],
+            news=self.state["news"][-PUBLIC_NEWS_LIMIT:] or None,
+            goal=self.goal,
+        )
 
     def _memory_update(self, node: dict):
         """Memory Update at a chapter exit: fold the segment into that Character's memory."""
@@ -1361,7 +1276,11 @@ class Runner:
         limit = self.memory_max_chars
         previous = self.state["character_memories"].get(character, "")
         payload = memory_update_payload(
-            character, node.get("chapter"), previous, self._segment_for(character), limit
+            character,
+            node.get("chapter"),
+            previous,
+            segment_for(self._run_view(), character),
+            limit,
         )
         rewrite, model_meta = self._structured_call(
             MemoryRewrite,
@@ -1439,8 +1358,8 @@ class Runner:
                     }
                 )
             offered.append(opt)
-        payload = self._decision_payload(node, offered)
-        response, model_meta = self._model_response(payload, offered)
+        prompt = decision_prompt(self.graph, node, offered, self._run_view())
+        response, model_meta = self._model_response(prompt, offered)
         chosen = next((o for o in offered if o["id"] == response.choice_id), None)
         if chosen is None:
             raise RuntimeError(
@@ -1470,42 +1389,20 @@ class Runner:
             decision["deciders"] = list(deciders)
         self.state["decisions"].append(decision)
         # The model's own choice and rationale become part of the segment it remembers,
-        # with any gauge the game flashes on screen right after it. When another
-        # Character decided alone, the segment's Character only learns the outcome.
-        if deciders and node.get("character") not in deciders:
-            moment = {
-                "at": node.get("heading"),
-                "decided_by": deciders[0],
-                "outcome": chosen["label"],
-            }
-        else:
-            moment = {
-                "at": node.get("heading"),
-                "your_choice": chosen["label"],
-                "rationale": rationale,
-            }
-        if feedback:
-            moment["on_screen"] = [f["text"] for f in feedback]
+        # with any gauge the game flashes on screen right after it; a decider from
+        # outside the segment remembers it at its next Memory Update.
+        moment, remembered_by = choice_moments(
+            node, chosen, rationale, [f["text"] for f in feedback]
+        )
         self.state["segment_events"].append(moment)
-        for name in deciders or []:
-            if name != node.get("character"):
-                # A decider from outside the segment remembers its choice: it joins that
-                # Character's next segment and Memory Update.
-                self.state["pending_moments"].setdefault(name, []).append(
-                    {
-                        "chapter": node.get("chapter"),
-                        "at": node.get("heading"),
-                        "decided": decision_text(deciders),
-                        "your_choice": chosen["label"],
-                        "rationale": rationale,
-                    }
-                )
+        for name, remembered in remembered_by.items():
+            self.state["pending_moments"].setdefault(name, []).append(remembered)
         self.state["node"] = chosen["next"]
         self._record(
             "decision",
             node,
             {
-                "input": payload,
+                "input": prompt,
                 "output": {**response.model_dump(), "rationale": rationale},
                 **(
                     {"untrimmed_rationale": response.rationale}

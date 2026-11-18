@@ -1,8 +1,9 @@
 """The token estimate a visitor sees before starting a Visitor Run.
 
 It comes from the story itself: the prompts of every decision and Memory Update along the
-story's shortest and longest routes, measured in characters exactly as the engine builds
-them, then turned into tokens with a range of characters per token. The range and the
+story's shortest and longest routes, measured in characters as the engine builds them
+(the moments a Joint or Cross-Segment Decision leaves in another Character's memory are
+left out), then turned into tokens with a range of characters per token. The range and the
 per-call output tokens are calibrated against the maintainers' real Runs, which record both
 their prompts and the tokens their providers counted (tests/test_visitor_models_estimate.py
 checks every one of them still falls within CALIBRATION_TOLERANCE of the range).
@@ -24,14 +25,19 @@ from .engine import (
     MEMORY_UPDATE_MAX_OUTPUT_TOKENS,
     PUBLIC_NEWS_LIMIT,
     SYSTEM_PROMPT,
-    chapter_briefing,
     file_stamp,
     memory_update_payload,
     planned_feedback,
     prompt_message,
     read_json,
     scene_record,
-    scene_view,
+)
+from .decision_prompt import (
+    RunView,
+    choice_moments,
+    decision_prompt,
+    feedback_moment,
+    is_cross_segment,
 )
 from .story_rules import StoryRules
 
@@ -121,7 +127,17 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
     nodes = graph["nodes"]
     rules = StoryRules(graph)
     remembered = "x" * memory
-    headlines = ["x" * HEADLINE_MAX_CHARS] * news
+    # Every Character's memory is full (or empty); other segments' moments are left out.
+    characters = {n.get("character") for n in nodes.values()} | {
+        name for n in nodes.values() for name in n.get("deciders") or []
+    }
+    run = RunView(
+        memories={name: remembered for name in characters},
+        pending={},
+        segment=[],
+        news=["x" * HEADLINE_MAX_CHARS] * news,
+        goal=DEFAULT_GOAL,
+    )
     best: dict[str, dict[int, tuple[int, int, int]]] = {}
 
     def keep(table, calls, value):
@@ -149,39 +165,24 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
             table[1] = (prompt + chars, decisions, updates + 1)
         elif kind == "choice":
             prompt = len(SYSTEM_PROMPT) + _size(
-                {
-                    "current_scene": scene_view(node),
-                    "chapter_briefing": chapter_briefing(graph, node.get("chapter")),
-                    "news": headlines,
-                    "character_memory": remembered,
-                    "chapter_segment_so_far": [],
-                    "goal": DEFAULT_GOAL,
-                    "available_choices": [
-                        {"id": o["id"], "label": o["label"]} for o in node["options"]
-                    ],
-                }
+                decision_prompt(graph, node, node["options"], run)
             )
-            # A Joint Decision also carries the other deciders' memories.
-            prompt += len(remembered) * (len(node.get("deciders") or [None]) - 1)
+            # A Cross-Segment Decision's prompt doesn't carry the segment.
+            carries_segment = 0 if is_cross_segment(node) else 1
             for option in node["options"]:
                 # The choice joins the segment every later prompt in it carries,
-                # with any Gauge Feedback it caused.
-                moment = {
-                    "at": node.get("heading"),
-                    "your_choice": option["label"],
-                    "rationale": "x" * rationale,
-                }
-                # Relationship arrows are shown by default, as in CLI and Visitor Runs.
-                feedback = planned_feedback(graph, option)
-                if feedback:
-                    moment["on_screen"] = feedback
+                # with any Gauge Feedback it caused. Relationship arrows are shown
+                # by default, as in CLI and Visitor Runs.
+                moment, _ = choice_moments(
+                    node, option, "x" * rationale, planned_feedback(graph, option)
+                )
                 chosen = 1 + _size(moment)
                 for calls, (chars, decisions, updates) in best.get(
                     option.get("next"), {0: (0, 0, 0)}
                 ).items():
                     keep(
                         table,
-                        calls + 1,
+                        calls + carries_segment,
                         (prompt + chars + chosen * calls, decisions + 1, updates),
                     )
         else:
@@ -194,8 +195,10 @@ def _extreme_route(graph: dict, pick, memory: int, rationale: int, news: int) ->
                 for branch in node.get("branches", []):
                     lines = planned_feedback(graph, branch)
                     if lines and branch.get("next"):
-                        entry = 1 + _size({"at": node.get("heading"), "on_screen": lines})
-                        flashed[branch["next"]] = max(flashed.get(branch["next"], 0), entry)
+                        entry = 1 + _size(feedback_moment(node, lines))
+                        flashed[branch["next"]] = max(
+                            flashed.get(branch["next"], 0), entry
+                        )
             for child in rules.successors(node_id) or [None]:
                 cost = scene + flashed.get(child, 0)
                 for calls, (chars, decisions, updates) in best.get(
