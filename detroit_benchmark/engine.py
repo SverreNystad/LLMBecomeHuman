@@ -293,13 +293,22 @@ def score_feedback(scores: dict, flags: dict, item: dict) -> list[dict]:
     return feedback
 
 
+def authored_feedback(
+    item: dict, scores: dict | None, show_relationships: bool = True
+) -> list[dict]:
+    """The Gauge Feedback an option or branch's authors wrote: its own feedback, then
+    its relationship arrows when they are shown. Score moves come after, from play."""
+    items = list(effect_feedback(item))
+    if show_relationships:
+        items += relation_feedback(item.get("relation_hints"), scores)
+    return items
+
+
 def planned_feedback(graph: dict, item: dict, show_relationships: bool = True) -> list[str]:
     """The Gauge Feedback lines an option or branch can flash, without playing it (for
     the token estimate): a percentage score is worded at its max, its longest value."""
     scores = graph.get("scores") or {}
-    items = list(effect_feedback(item))
-    if show_relationships:
-        items += relation_feedback(item.get("relation_hints"), scores)
+    items = authored_feedback(item, scores, show_relationships)
     for name, delta in item_adds(scores, item).items():
         move = score_move(scores[name], delta, scores[name]["max"])
         if move is not None:
@@ -1109,9 +1118,9 @@ class Runner:
         """Authored Gauge Feedback for a taken option or branch, each item worded."""
         if item is None:
             return []
-        feedback = list(effect_feedback(item))
-        if self.show_relationships:
-            feedback += relation_feedback(item.get("relation_hints"), self.graph.get("scores"))
+        feedback = authored_feedback(
+            item, self.graph.get("scores"), self.show_relationships
+        )
         return [{**entry, "text": gauge_text(entry)} for entry in feedback]
 
     def _branch_feedback(self, node: dict, feedback: list[dict]) -> dict:
