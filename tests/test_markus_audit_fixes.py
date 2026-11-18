@@ -2,8 +2,7 @@
 
 import pytest
 
-from detroit_benchmark.engine import _reachable
-from tests.dataset import flags_in, load_dataset, play_story
+from tests.dataset import flags_in, load_dataset, play_story, reachable
 from tests.test_markus_endings import PEACEFUL
 
 # Capitol Park: tearing down the statue is the violent message, whatever comes after.
@@ -115,8 +114,8 @@ SUSPENSION_SPEECHES = {"ch32_5_00004", "ch32_5_00009", "ch32_5_00014"}
 @pytest.mark.parametrize("response", ["kiss", "sing"])
 def test_a_failed_demonstration_never_plays_the_suspension_speech(response):
     seen = set(
-        _reachable(
-            load_dataset()["nodes"], MEDIA_REACTS,
+        reachable(
+            MEDIA_REACTS,
             {"markus_barricade_response": response, "markus_public_opinion": "negative"},
         )
     )

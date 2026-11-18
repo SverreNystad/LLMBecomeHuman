@@ -2,8 +2,8 @@
 
 import pytest
 
-from detroit_benchmark.engine import _reachable, effect_flags, pick_branch
-from tests.dataset import load_dataset, play_story
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, play_story, reachable, resolve
 from tests.test_markus_endings import PEACEFUL, REFUSE_DEAL
 from tests.test_night_of_the_soul import MACHINE
 
@@ -19,10 +19,9 @@ def _option(nid: str, label: str) -> dict:
 
 
 def _next(nid: str, flags: dict) -> str:
-    node = _node(nid)
-    idx, _, unknown = pick_branch(node, flags)
-    assert not unknown, nid
-    return node["branches"][idx]["next"] if idx is not None else node["next"]
+    step = resolve(nid, flags)
+    assert not step.assumed, nid
+    return step.next
 
 
 # Night of the Soul: "If Markus decides to not trust Connor, he will ... [execute]
@@ -124,7 +123,7 @@ def test_staying_firm_keeps_public_opinion_positive(tmp_path):
 def test_a_failed_defence_without_north_kills_markus():
     after = {"markus_alive": True, "north_alive": False}
     dest = _next("ch32_5_x0107", after)
-    assert "ch32_5_00045" not in _reachable(load_dataset()["nodes"], dest, after)
+    assert "ch32_5_00045" not in reachable(dest, after)
 
 
 @pytest.mark.parametrize(

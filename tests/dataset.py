@@ -4,6 +4,7 @@ import json
 from functools import lru_cache
 
 from detroit_benchmark.engine import effect_flags
+from detroit_benchmark.story_rules import Facts, Step, StoryRules
 from pathlib import Path
 
 DATASET = Path(__file__).resolve().parents[1] / "data" / "detroit-unverified.json"
@@ -16,6 +17,24 @@ def _text() -> str:
 
 def load_dataset() -> dict:
     return json.loads(_text())
+
+
+@lru_cache(maxsize=1)
+def story_rules() -> StoryRules:
+    """The real story's Story Rules."""
+    return StoryRules(load_dataset())
+
+
+def resolve(nid: str, flags: dict | None = None, seen=()) -> Step:
+    """Where node ``nid`` leads in a Run with ``flags`` (over the story's starting
+    flags) that has passed the remembered nodes ``seen``."""
+    return story_rules().resolve(nid, Facts(flags=flags or {}, seen=frozenset(seen)))
+
+
+def reachable(start: str, flags: dict | None = None) -> list[str]:
+    """Every node reachable from ``start`` outside a Run, following only the branches
+    ``flags`` decide when given."""
+    return story_rules().reachable(start, flags)
 
 
 def flag_values(graph: dict) -> dict[str, set]:

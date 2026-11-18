@@ -3,7 +3,8 @@
 ``StoryRules(graph)`` answers which options a choice offers (``offered``) and where every
 other node leads (``resolve``), over ``Facts``: the Run's flags laid over the story's
 starting flags, and the nodes it has passed. Inside a Run a node never passed is simply
-not seen; only ``reachable``, a walk outside any Run, treats a Seen Condition as unknown.
+not seen; only ``reachable``, a walk outside any Run, treats a Seen Condition (and any
+flag it is not given) as unknown.
 """
 
 from __future__ import annotations
@@ -67,11 +68,12 @@ class StoryRules:
     def reachable(self, start: str, flags: Mapping | None = None) -> list[str]:
         """Nodes reachable from ``start`` in visiting order, outside any Run.
 
-        With ``flags`` (laid over the story's starting flags), a condition whose
-        branch they decide follows only that branch; everything else, a Seen
-        Condition included, follows every edge.
+        With ``flags``, a condition whose branch they decide follows only that
+        branch; everything else follows every edge. Being outside a Run, the walk
+        knows only the flags it is given, not the story's starting flags, and never
+        what the Run has seen: it shows every scene that could follow.
         """
-        known = None if flags is None else {**self._initial, **flags}
+        known = None if flags is None else dict(flags)
         order, visited, queue = [], {start}, [start]
         while queue:
             nid = queue.pop(0)

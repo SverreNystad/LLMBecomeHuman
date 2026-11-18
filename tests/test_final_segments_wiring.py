@@ -2,8 +2,8 @@
 
 import pytest
 
-from detroit_benchmark.engine import effect_flags, pick_branch
-from tests.dataset import load_dataset
+from detroit_benchmark.engine import effect_flags
+from tests.dataset import load_dataset, resolve
 
 NODES = load_dataset()["nodes"]
 
@@ -14,9 +14,9 @@ MACHINE_CONNOR_AT_THE_SPEECH = {
 
 
 def taken(nid: str, flags: dict) -> dict | None:
-    idx, _, unknown = pick_branch(NODES[nid], flags)
-    assert not unknown
-    return None if idx is None else NODES[nid]["branches"][idx]
+    step = resolve(nid, flags)
+    assert not step.assumed
+    return None if step.branch_index is None else NODES[nid]["branches"][step.branch_index]
 
 
 @pytest.mark.parametrize(

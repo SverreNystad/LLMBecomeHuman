@@ -5,9 +5,9 @@ API), and the game text of the Detroit Become Text transcript (press-dirty-bomb)
 
 import pytest
 
-from detroit_benchmark.engine import effect_flags, pick_branch
+from detroit_benchmark.engine import effect_flags
 from detroit_benchmark.ending import ending_summary
-from tests.dataset import load_dataset, play_story
+from tests.dataset import load_dataset, play_story, reachable, resolve
 from tests.test_night_of_the_soul import MACHINE
 
 # 32.5: the detonator at the barricade.
@@ -48,22 +48,6 @@ def _option(node_id: str, label: str) -> dict:
 
 def _labels(node_id: str) -> list[str]:
     return [o["label"] for o in _nodes()[node_id]["options"]]
-
-
-def _reachable(start: str) -> set[str]:
-    """Every node reachable from ``start`` inside its chapter, whatever the flags."""
-    nodes, seen, todo = _nodes(), set(), [start]
-    while todo:
-        nid = todo.pop()
-        if nid in seen or nid not in nodes:
-            continue
-        seen.add(nid)
-        node = nodes[nid]
-        if node["type"] == "chapter_exit":
-            continue
-        todo += [x["next"] for x in node.get("options", []) + node.get("branches", [])]
-        todo.append(node.get("next"))
-    return seen
 
 
 def _spoken(run, node_id: str) -> list[str]:
@@ -135,7 +119,7 @@ def test_a_deviant_connor_s_story_goes_on_after_the_bomb(tmp_path):
 @pytest.mark.parametrize("node_id, label", [(STORE_WITH_NORTH_PRESS, "PRESS"),
                                             (STORE_ALONE, "DIRTY BOMB")])
 def test_the_bomb_in_the_store_plays_the_same_ending(node_id, label):
-    after = _reachable(_option(node_id, label)["next"])
+    after = set(reachable(_option(node_id, label)["next"]))
     assert {"ch32_6_x0128", "ch32_6_x0133", STORE_WE_ARE_FREE} <= after
 
 
@@ -152,24 +136,21 @@ def test_putting_down_the_gun_does_not_end_the_story_alive():
     assert effect_flags(surrender)["markus_alive"] is False
     # Every way on from there ends the segment with a Fate or the bomb, never alive
     # in the store, and never back at the suicide choice.
-    after = _reachable(AFTER_PUTTING_DOWN_THE_GUN)
+    after = set(reachable(AFTER_PUTTING_DOWN_THE_GUN))
     assert STORE_SUICIDE not in after and AFTER_GIVING_UP_THE_BOMB not in after
     assert STORE_WE_ARE_FREE in after
 
 
 def test_a_decommissioned_connor_does_not_come_to_the_store():
-    node = _nodes()[STORE_WHO_IS_THERE]
     flags = {"north_alive": False, "connor_deviant": False, "connor_story_ended": True}
-    idx, _, _ = pick_branch(node, flags)
-    assert node["branches"][idx]["next"] == "ch32_6_00032"  # Markus alone
+    assert resolve(STORE_WHO_IS_THERE, flags).next == "ch32_6_00032"  # Markus alone
 
 
 def test_connor_sparing_markus_without_the_bomb_walks_away():
     # Wiki, Markus: "if Connor spares Markus he will walk away".
     assert _option(CONNOR_SHOOT_OR_SPARE, "SPARE")["next"] == AFTER_CONNOR
-    node = _nodes()[AFTER_CONNOR]
-    idx, _, _ = pick_branch(node, {"markus_took_detonator": False})
-    assert idx is None and node["next"] == CONNOR_WALKS_AWAY
+    step = resolve(AFTER_CONNOR, {"markus_took_detonator": False})
+    assert (step.next, step.branch_index, step.assumed) == (CONNOR_WALKS_AWAY, None, False)
     assert "walks away" in _nodes()[CONNOR_WALKS_AWAY]["description"]
 
 
@@ -297,8 +278,9 @@ def test_with_a_machine_connor_the_failed_assault_brings_him_to_the_store(tmp_pa
 )
 def test_falling_back_shoots_simon_only_when_north_is_dead(flags, deaths):
     node = _nodes()["ch32_6_x0148"]
-    idx, _, unknown = pick_branch(node, {"markus_barricade_kiss": False, **flags})
-    assert not unknown and idx is not None
+    step = resolve("ch32_6_x0148", {"markus_barricade_kiss": False, **flags})
+    idx = step.branch_index
+    assert not step.assumed and idx is not None
     assert (node["branches"][idx].get("effects") or {}).get("flags", {}) == deaths
 
 

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection
 import hashlib
 from copy import deepcopy
 import json
@@ -555,21 +554,6 @@ def _enrichment_errors(graph: dict) -> list[str]:
 EXPLORATION_VALUES = ("thorough", "key_only", "rush")
 
 
-def _edges(node: dict) -> list[str]:
-    typ = node.get("type")
-    if typ == "choice":
-        found = [o.get("next") for o in node.get("options", [])]
-    elif typ == "condition":
-        found = [b.get("next") for b in node.get("branches", [])] + [node.get("next")]
-    elif typ == "route":
-        found = [node.get("if_true"), node.get("if_false")]
-    elif typ == "ending":
-        found = []
-    else:
-        found = [node.get("next")]
-    return [dest for dest in found if dest is not None]
-
-
 def _cycle_errors(nodes: dict, rules: StoryRules) -> list[str]:
     """The story only moves forward: report the first back edge found."""
     state: dict[str, int] = {}  # 1 = on the current path, 2 = finished
@@ -593,47 +577,6 @@ def _cycle_errors(nodes: dict, rules: StoryRules) -> list[str]:
                 state[nid] = 2
                 stack.pop()
     return []
-
-
-def pick_branch(
-    node: dict, flags: dict, seen: Collection[str] | None = None
-) -> tuple[int | None, list, bool]:
-    """Which branch a condition takes over ``flags``: ``(index, values, unknown)``.
-
-    The single branch whose ``when`` is true wins. With none true, the index is
-    None: the fall-through ``next`` when every value is known, else ``unknown``
-    (a flag is missing, so the caller falls back to the default branch).
-    """
-    values = [evaluate_condition(b.get("when"), flags, seen) for b in node["branches"]]
-    idx = values.index(True) if True in values else None
-    return idx, values, idx is None and None in values
-
-
-def _reachable(nodes: dict, start: str, flags: dict | None = None) -> list[str]:
-    """Nodes reachable from ``start`` in visiting order.
-
-    With ``flags``, a condition whose branch is decided by them follows only
-    that branch; everything else follows every edge.
-    """
-    order, seen, queue = [], {start}, [start]
-    while queue:
-        nid = queue.pop(0)
-        if nid not in nodes:
-            continue
-        order.append(nid)
-        node = nodes[nid]
-        dests = _edges(node)
-        if flags is not None and node.get("type") == "condition":
-            idx, _, unknown = pick_branch(node, flags)
-            if idx is not None:
-                dests = [node["branches"][idx]["next"]]
-            elif not unknown and node.get("next"):
-                dests = [node["next"]]
-        for dest in dests:
-            if dest not in seen:
-                seen.add(dest)
-                queue.append(dest)
-    return order
 
 
 def _exploration_errors(nodes: dict, rules: StoryRules) -> list[str]:
@@ -979,40 +922,6 @@ def _write_json_atomic(path: Path, obj, indent: int | None = None) -> None:
         json.dumps(obj, ensure_ascii=False, indent=indent), encoding="utf-8"
     )
     os.replace(temp, path)
-
-
-def evaluate_condition(
-    cond: dict | None, flags: dict, seen: Collection[str] | None = None
-) -> bool | None:
-    """True, False, or None when unknown. ``seen`` is the story nodes the Run has
-    passed; without it (no Run, e.g. a reachability walk) a Seen Condition is unknown."""
-    if cond is None:
-        return None
-    if "all" in cond:
-        results = [evaluate_condition(x, flags, seen) for x in cond["all"]]
-        return None if None in results else all(results)
-    if "any" in cond:
-        results = [evaluate_condition(x, flags, seen) for x in cond["any"]]
-        if True in results:
-            return True
-        return None if None in results else False
-    if "not" in cond:
-        result = evaluate_condition(cond["not"], flags, seen)
-        return None if result is None else not result
-    if "seen" in cond:
-        return None if seen is None else cond["seen"] in seen
-    if "flag" in cond:
-        if cond["flag"] not in flags:
-            return None
-        value = flags[cond["flag"]]
-        compared = [op for op in COMPARISONS if op in cond]
-        if compared:
-            # A Running Score compared with a number, e.g. {"flag": ..., "gte": 80}.
-            return _is_number(value) and all(
-                COMPARISONS[op](value, cond[op]) for op in compared
-            )
-        return value == cond.get("equals", True)
-    raise ValueError(f"Unsupported condition expression {cond}")
 
 
 class Runner:

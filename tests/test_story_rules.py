@@ -224,10 +224,20 @@ def test_walking_the_story_with_flags_follows_only_the_branches_they_decide():
         scene("with_hank"),
         scene("alone"),
         END,
+    )
+    assert rules.reachable("gate", {"hank_alive": True}) == ["gate", "with_hank", "end"]
+    assert rules.reachable("gate", {"hank_alive": False}) == ["gate", "alone", "end"]
+
+
+def test_a_walk_knows_only_the_flags_it_is_given_not_the_starting_ones():
+    rules = story(
+        rule("gate", (HANK_ALIVE, "with_hank"), next="alone"),
+        scene("with_hank"),
+        scene("alone"),
+        END,
         initial_flags={"hank_alive": True},
     )
-    assert rules.reachable("gate", {}) == ["gate", "with_hank", "end"]
-    assert rules.reachable("gate", {"hank_alive": False}) == ["gate", "alone", "end"]
+    assert rules.reachable("gate", {}) == ["gate", "with_hank", "alone", "end"]
 
 
 def test_outside_a_run_a_seen_condition_is_unknown_so_the_walk_takes_both_ways():

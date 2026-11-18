@@ -12,12 +12,13 @@ from copy import deepcopy
 
 import pytest
 
-from detroit_benchmark.engine import Runner, pick_branch, validate_graph
+from detroit_benchmark.engine import Runner, validate_graph
 from detroit_benchmark.visitor_estimate import _extreme_route
 from tests.dataset import (
     load_dataset,
     play_story_with_hank_given_time as play_story,
     read_events,
+    resolve,
     story_moments,
 )
 from tests.test_crossroads import MACHINE_WITH_MARKUS
@@ -548,9 +549,8 @@ def test_relationships_are_shown_by_default(tmp_path):
 @pytest.mark.parametrize("stress, outcome", [(70, CHRIS), (71, SELF_DESTRUCT), (50, CHRIS)])
 def test_seventy_percent_is_optimal_and_chris_steps_in(stress, outcome):
     graph = load_dataset()
-    rule = graph["nodes"]["ch9_00041"]
-    idx, _, _ = pick_branch(rule, {STRESS: stress, "connor_pressured_four_times": False})
-    assert rule["branches"][idx]["next"] == outcome
+    step = resolve("ch9_00041", {STRESS: stress, "connor_pressured_four_times": False})
+    assert step.next == outcome
     band = "optimal" if stress <= 70 else "too high"
     assert next(b["name"] for b in graph["scores"][STRESS]["bands"] if stress <= b["max"]) == band
 

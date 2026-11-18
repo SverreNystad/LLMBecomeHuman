@@ -9,11 +9,10 @@ import pytest
 from detroit_benchmark.engine import (
     ModelDecision,
     Runner,
-    _reachable,
-    evaluate_condition,
     validate_graph,
 )
-from tests.dataset import HANK_GIVES_TIME, flag_values, flags_in, load_dataset
+from detroit_benchmark.story_rules import Facts, StoryRules
+from tests.dataset import HANK_GIVES_TIME, flag_values, flags_in, load_dataset, reachable
 
 
 def _scene(nid, nxt):
@@ -292,6 +291,7 @@ def test_dataset_rule_branches_never_overlap():
     graph = load_dataset()
     nodes = graph["nodes"]
     values = flag_values(graph)
+    rules = StoryRules(graph)
 
     for n in nodes.values():
         if n.get("resolution") != "rule":
@@ -299,8 +299,10 @@ def test_dataset_rule_branches_never_overlap():
         names = sorted(set().union(*(flags_in(b["when"]) for b in n["branches"])))
         for combo in itertools.product(*(set(values[f]) for f in names)):
             flags = dict(zip(names, combo))
-            hits = [evaluate_condition(b["when"], flags) for b in n["branches"]]
-            assert hits.count(True) <= 1, (n["id"], flags)
+            try:
+                rules.resolve(n["id"], Facts(flags=flags))
+            except RuntimeError as error:
+                assert "Overlapping" not in str(error), (n["id"], flags)
 
 
 def test_unknown_condition_keeps_default_and_warns(tmp_path):
@@ -389,7 +391,7 @@ def test_dataset_night_of_the_soul_plays_one_carl_scene(pushed_leo):
     graph = _dataset()
     nodes = graph["nodes"]
     entry = graph["chapter_entries"]["31.1"]
-    seen = _reachable(nodes, entry, {"markus_pushed_leo": pushed_leo})
+    seen = reachable(entry, {"markus_pushed_leo": pushed_leo})
     headings = {nodes[n].get("heading") for n in seen if nodes[n]["chapter"] == "31.1"}
     assert ("Carl is still alive" in headings) is pushed_leo
     assert ("Carl died in Broken" in headings) is not pushed_leo

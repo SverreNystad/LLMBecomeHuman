@@ -61,7 +61,7 @@ Short headlines about what the public knows of the Characters' actions so far. E
 _Avoid_: world state, flags, broadcast
 
 **Story Rules**:
-What the story allows next, given what a Run has done so far (its flags over the story's starting flags, and the nodes it has passed): which options a choice offers, and where every other node leads. Outside a Run (walking the story to see what is reachable) a Seen Condition is unknown; inside one it never is.
+What the story allows next, given what a Run has done so far (its flags over the story's starting flags, and the nodes it has passed): which options a choice offers, and where every other node leads. Outside a Run (walking the story to see every scene that could follow) a Seen Condition is unknown, and so is any flag the walk is not given; inside a Run neither ever is.
 _Avoid_: game logic, branching, resolver
 
 ## Playing
