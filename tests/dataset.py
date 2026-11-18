@@ -31,10 +31,12 @@ def resolve(nid: str, flags: dict | None = None, seen=()) -> Step:
     return story_rules().resolve(nid, Facts(flags=flags or {}, seen=frozenset(seen)))
 
 
-def reachable(start: str, flags: dict | None = None) -> list[str]:
+def reachable(
+    start: str, flags: dict | None = None, within_chapter: bool = False
+) -> list[str]:
     """Every node reachable from ``start`` outside a Run, following only the branches
-    ``flags`` decide when given."""
-    return story_rules().reachable(start, flags)
+    ``flags`` decide when given, and staying in ``start``'s chapter if asked."""
+    return story_rules().reachable(start, flags, within_chapter)
 
 
 def flag_values(graph: dict) -> dict[str, set]:

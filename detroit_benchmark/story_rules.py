@@ -65,13 +65,16 @@ class StoryRules:
         """Every node this one can lead to, whatever the Run has done."""
         return _edges(self._nodes[node_id])
 
-    def reachable(self, start: str, flags: Mapping | None = None) -> list[str]:
+    def reachable(
+        self, start: str, flags: Mapping | None = None, within_chapter: bool = False
+    ) -> list[str]:
         """Nodes reachable from ``start`` in visiting order, outside any Run.
 
         With ``flags``, a condition whose branch they decide follows only that
         branch; everything else follows every edge. Being outside a Run, the walk
         knows only the flags it is given, not the story's starting flags, and never
-        what the Run has seen: it shows every scene that could follow.
+        what the Run has seen: it shows every scene that could follow. With
+        ``within_chapter`` it stops where the story leaves ``start``'s chapter.
         """
         known = None if flags is None else dict(flags)
         order, visited, queue = [], {start}, [start]
@@ -89,6 +92,10 @@ class StoryRules:
                 elif not unknown and node.get("next"):
                     dests = [node["next"]]
             for dest in dests:
+                if within_chapter and self._nodes.get(dest, {}).get(
+                    "chapter"
+                ) != self._nodes[start].get("chapter"):
+                    continue
                 if dest not in visited:
                     visited.add(dest)
                     queue.append(dest)

@@ -550,6 +550,7 @@ def test_relationships_are_shown_by_default(tmp_path):
 def test_seventy_percent_is_optimal_and_chris_steps_in(stress, outcome):
     graph = load_dataset()
     step = resolve("ch9_00041", {STRESS: stress, "connor_pressured_four_times": False})
+    assert not step.assumed and step.branch_index is not None
     assert step.next == outcome
     band = "optimal" if stress <= 70 else "too high"
     assert next(b["name"] for b in graph["scores"][STRESS]["bands"] if stress <= b["max"]) == band

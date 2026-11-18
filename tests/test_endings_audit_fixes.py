@@ -66,7 +66,9 @@ def _option(node_id: str, label: str) -> dict:
 def test_refusing_north_s_heart_markus_dies_and_the_revolution_fails():
     # Wiki: Refuse → "Markus Died and the Revolution Failed"; North leads only a
     # revolution Markus did not live to start.
-    after = set(reachable(_option("ch32_6_00068", "SACRIFICE SELF")["next"]))
+    after = set(
+        reachable(_option("ch32_6_00068", "SACRIFICE SELF")["next"], within_chapter=True)
+    )
     assert "ch32_6_x0113" in after and NORTH_LEADS not in after
 
 
@@ -146,7 +148,9 @@ def test_hank_kills_himself_when_nobody_is_left(change, hank_dies):
     # Wiki (Hank Anderson): Connor deactivated for failing to find Jericho, Kara
     # dead, Markus dead or banned from Jericho: Hank shoots himself in the credits.
     nodes = load_dataset()["nodes"]
-    credits_id = resolve("final_x0901", KAMSKI_ENDING).next
+    gate = resolve("final_x0901", KAMSKI_ENDING)
+    assert not gate.assumed and gate.branch_index is not None
+    credits_id = gate.next
     credits = nodes[credits_id]
     step = resolve(credits_id, {**KAMSKI_ENDING, **change})
     idx = step.branch_index

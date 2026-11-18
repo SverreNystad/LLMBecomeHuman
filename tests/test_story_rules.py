@@ -260,3 +260,14 @@ def test_a_run_remembers_passing_only_the_nodes_a_seen_condition_names():
     )
     assert rules.remembers("register") and rules.remembers("desk")
     assert not rules.remembers("ask")
+
+
+def test_a_walk_can_stay_within_its_chapter():
+    rules = story(
+        {"id": "a", "type": "scene", "chapter": "1", "next": "exit"},
+        {"id": "exit", "type": "chapter_exit", "chapter": "1", "next": "b"},
+        {"id": "b", "type": "scene", "chapter": "2", "next": "end"},
+        {**END, "chapter": "2"},
+    )
+    assert rules.reachable("a", within_chapter=True) == ["a", "exit"]
+    assert rules.reachable("a") == ["a", "exit", "b", "end"]

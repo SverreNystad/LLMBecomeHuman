@@ -119,7 +119,7 @@ def test_a_deviant_connor_s_story_goes_on_after_the_bomb(tmp_path):
 @pytest.mark.parametrize("node_id, label", [(STORE_WITH_NORTH_PRESS, "PRESS"),
                                             (STORE_ALONE, "DIRTY BOMB")])
 def test_the_bomb_in_the_store_plays_the_same_ending(node_id, label):
-    after = set(reachable(_option(node_id, label)["next"]))
+    after = set(reachable(_option(node_id, label)["next"], within_chapter=True))
     assert {"ch32_6_x0128", "ch32_6_x0133", STORE_WE_ARE_FREE} <= after
 
 
@@ -136,14 +136,16 @@ def test_putting_down_the_gun_does_not_end_the_story_alive():
     assert effect_flags(surrender)["markus_alive"] is False
     # Every way on from there ends the segment with a Fate or the bomb, never alive
     # in the store, and never back at the suicide choice.
-    after = set(reachable(AFTER_PUTTING_DOWN_THE_GUN))
+    after = set(reachable(AFTER_PUTTING_DOWN_THE_GUN, within_chapter=True))
     assert STORE_SUICIDE not in after and AFTER_GIVING_UP_THE_BOMB not in after
     assert STORE_WE_ARE_FREE in after
 
 
 def test_a_decommissioned_connor_does_not_come_to_the_store():
     flags = {"north_alive": False, "connor_deviant": False, "connor_story_ended": True}
-    assert resolve(STORE_WHO_IS_THERE, flags).next == "ch32_6_00032"  # Markus alone
+    step = resolve(STORE_WHO_IS_THERE, flags)
+    assert not step.assumed and step.branch_index is not None
+    assert step.next == "ch32_6_00032"  # Markus alone
 
 
 def test_connor_sparing_markus_without_the_bomb_walks_away():
