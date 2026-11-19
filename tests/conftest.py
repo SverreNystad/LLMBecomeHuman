@@ -15,6 +15,18 @@ PHONE = {"width": 390, "height": 844}
 VIEWPORTS = {"desktop": DESKTOP, "phone": PHONE}
 
 
+@pytest.fixture(autouse=True)
+def _visitor_runs_finish(tmp_path):
+    """Waits for the Visitor Runs a test started before its tmp_path is removed (it
+    depends on tmp_path, so it is torn down first): a Run left playing would write into
+    a deleted folder, or into the next test's time."""
+    before = set(threading.enumerate())
+    yield
+    for thread in set(threading.enumerate()) - before:
+        if thread.name.startswith("visitor-run-"):
+            thread.join(timeout=60)
+
+
 @pytest.fixture
 def dataset() -> dict:
     """A fresh copy of the real story dataset; tests may change it freely."""
