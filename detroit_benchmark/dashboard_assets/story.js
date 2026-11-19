@@ -282,7 +282,7 @@ function scrollStoryBy(delta) {
     scroller.scrollTop = before + delta;
     delta -= scroller.scrollTop - before;
   }
-  window.phoneStoryScrolled?.();
+  window.phoneIgnoreStoryScroll?.();
 }
 /* What is being read is judged at the upper third of the pane. */
 function readingLine() {

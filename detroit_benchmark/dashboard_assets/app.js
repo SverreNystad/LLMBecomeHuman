@@ -636,28 +636,38 @@ function buildChapterGraph(chapter) {
   const sourceSteps = originals.reduce((sum,n)=>sum+1+(n.options||[]).length,0);
   return {nodes, edges:internal, chapter, groupOf, sourceSteps};
 }
-// A junction's label (styles.css .flow-node.kind-junction: 10px capitals, .1em apart,
-// 1.3 line height, at most 3 lines, 12px side and 10px top/bottom padding) is read in
-// full: the node grows taller for a second or third line, and wider past three.
-const JUNCTION_FONT_PX = 10, JUNCTION_LINE_PX = 13, JUNCTION_MAX_LINES = 3, JUNCTION_MAX_WIDTH = 235;
-let labelCanvas = null;
+// A junction's label is read in full: the node grows taller for each line of it, and
+// wider (up to a limit) once it would need more than three. The measures mirror
+// styles.css: .flow-node padding 10px 12px and 1px border; .kind-junction 10px capitals,
+// .1em apart, line height 1.3; its line clamp is set to the lines measured here.
+const NODE_PAD_X = 12, NODE_PAD_Y = 10, NODE_BORDER = 1;
+const JUNCTION_FONT_PX = 10, JUNCTION_LINE_PX = JUNCTION_FONT_PX * 1.3;
+const JUNCTION_WIDE_LINES = 3, JUNCTION_WIDEN_STEP = 20, JUNCTION_MAX_WIDTH = 235;
+let labelContext = null;
 function labelLines(text, width) {
-  labelCanvas ||= document.createElement('canvas').getContext('2d');
-  labelCanvas.font = `${JUNCTION_FONT_PX}px ${getComputedStyle(document.body).fontFamily}`;
-  labelCanvas.letterSpacing = `${JUNCTION_FONT_PX * .1}px`;
+  labelContext ||= document.createElement('canvas').getContext('2d');
+  labelContext.font = `${JUNCTION_FONT_PX}px ${getComputedStyle(document.body).fontFamily}`;
+  labelContext.letterSpacing = `${JUNCTION_FONT_PX * .1}px`;
+  const measure = s => labelContext.measureText(s).width;
   let lines = 1, line = '';
   for (const word of String(text).toUpperCase().split(/\s+/).filter(Boolean)) {
     const next = line ? `${line} ${word}` : word;
-    if (line && labelCanvas.measureText(next).width > width) { lines += 1; line = word; }
-    else line = next;
+    if (!line || measure(next) <= width) { line = next; continue; }
+    lines += 1; line = word;
   }
+  // A word wider than the line breaks anywhere (overflow-wrap: anywhere).
+  for (const word of String(text).toUpperCase().split(/\s+/)) lines += Math.max(0, Math.ceil(measure(word) / width) - 1);
   return lines;
 }
 function junctionSize(label, width, height) {
-  const room = w => w - 24 - 2;  // padding and border
-  while (labelLines(label, room(width)) > JUNCTION_MAX_LINES && width < JUNCTION_MAX_WIDTH) width += 20;
-  const lines = Math.min(JUNCTION_MAX_LINES, labelLines(label, room(width)));
-  return {width, height: Math.max(height, 20 + 2 + lines * JUNCTION_LINE_PX + 2)};
+  const room = w => w - 2 * (NODE_PAD_X + NODE_BORDER);
+  let lines = labelLines(label, room(width));
+  while (lines > JUNCTION_WIDE_LINES && width < JUNCTION_MAX_WIDTH) {
+    width = Math.min(JUNCTION_MAX_WIDTH, width + JUNCTION_WIDEN_STEP);
+    lines = labelLines(label, room(width));
+  }
+  const content = Math.ceil(lines * JUNCTION_LINE_PX);
+  return {width, labelLines: lines, height: Math.max(height, content + 2 * (NODE_PAD_Y + NODE_BORDER))};
 }
 function computePath(view, chapter, graph) {
   const groupId = id => graph.groupOf.get(id) || id;
@@ -879,6 +889,7 @@ function drawGraph(graph, paths) {
     n.dataset.visitedCount=String(users.length);
     n.setAttribute('aria-label',node.label);
     const label=document.createElement('span');label.className='node-label';label.textContent=node.label;n.appendChild(label);
+    if(node.labelLines)n.style.setProperty('--label-lines',node.labelLines);
     if(node.items?.length){
       const dialogue=document.createElement('div');dialogue.className='node-dialogue';
       dialogue.innerHTML=nodeDialogueMarkup(node.items);n.appendChild(dialogue);
@@ -1254,5 +1265,8 @@ async function init(){
   state.view='flow';$('storyView').classList.add('is-hidden');$('viewerWrap').classList.remove('is-hidden');
   $('viewStory').setAttribute('aria-pressed','false');$('viewFlow').setAttribute('aria-pressed','true');
  }else document.querySelectorAll('.flow-only').forEach(el=>el.classList.add('is-hidden'));
- await refreshRuns({reselect:true});setInterval(()=>{if(!document.hidden)refreshRuns();},8000);}
+ await refreshRuns({reselect:true});setInterval(()=>{if(!document.hidden)refreshRuns();},8000);
+ // Junction labels are measured with the page's font (junctionSize): once the web font has
+ // arrived, a Flowchart drawn with the fallback font is drawn again, where it is.
+ document.fonts?.ready.then(()=>{if(state.rendered)renderFlowchart(false);});}
 init();

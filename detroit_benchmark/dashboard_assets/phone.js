@@ -82,7 +82,7 @@
 
   /* A scroll the Story makes itself (keeping the reading position) is not the reader
    * scrolling, so it never hides or shows level 2. */
-  window.phoneStoryScrolled = () => {
+  window.phoneIgnoreStoryScroll = () => {
     lastY = document.getElementById('storyScroll')?.scrollTop || 0;
   };
 
