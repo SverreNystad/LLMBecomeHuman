@@ -242,9 +242,13 @@ def test_publication_is_settled_at_start_up_and_when_a_run_ends_not_per_request(
     assert len(scans) == 1
 
     run = play(client)
-    # The Run reads as finished a moment before its worker settles publication.
-    deadline = time.time() + 5
-    while public_ids(client) != [run["id"]] and time.time() < deadline:
+    # The Run reads as finished a moment before its worker settles publication, and is
+    # listed (its decision written) a moment before the cached answer is refreshed: wait
+    # for the cached answer, the last thing settling does.
+    deadline = time.time() + 30
+    while (
+        not public_run_exists(client, "openai", "gpt-test-1") and time.time() < deadline
+    ):
         time.sleep(0.02)
     assert len(scans) == 2  # When the Run ended.
     # The cached answer was refreshed then.
