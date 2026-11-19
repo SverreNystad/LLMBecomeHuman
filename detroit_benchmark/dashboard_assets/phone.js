@@ -80,6 +80,12 @@
     if (Math.abs(y - lastY) > Math.min(SCROLL_HIDE_PX, SCROLL_SHOW_PX)) lastY = y;
   }
 
+  /* A scroll the Story makes itself (keeping the reading position) is not the reader
+   * scrolling, so it never hides or shows level 2. */
+  window.phoneIgnoreStoryScroll = () => {
+    lastY = document.getElementById('storyScroll')?.scrollTop || 0;
+  };
+
   /* Swiping up or down on the bars (not the chart) hides or shows level 2. */
   function setupSwipe() {
     let start = null;
