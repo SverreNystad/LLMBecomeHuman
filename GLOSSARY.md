@@ -74,6 +74,10 @@ _Avoid_: playthrough, experiment, session
 A Run started from the dashboard by a visitor with their own API key, always under the default goal. It becomes public only if it is the first complete Run of its model; otherwise only the visitor who started it sees it.
 _Avoid_: own run, community run, user run
 
+**Synthetic Run**:
+A Run whose decisions, reasons and memories were written by a stand-in, not by the model it is shown as, and is listed under a model family only so the dashboard can be tried with every family. It is marked synthetic and never counts as a result.
+_Avoid_: fake run, mock run, demo run
+
 **Character Memory**:
 A size-limited record of everything one Character has experienced and chosen so far in a Run, written by the playing model in its own words. Each Character has its own; one Character never sees another's, except in a Joint Decision (a Cross-Segment Decision shows only the decider's own).
 _Avoid_: history, context, summary

@@ -9,7 +9,7 @@ uv sync
 uv run python -m detroit_benchmark dashboard --runs-dir tests/fixtures/runs/detroit
 ```
 
-Open **http://127.0.0.1:8000**. These three Detroit Runs, which the tests also use, are **synthetic, deterministic mock-agent runs**, not model API responses. `experiment.json` keeps `provider: mock`; `display_provider` changes only the logo, and the dashboard labels them as a synthetic preview.
+Open **http://127.0.0.1:8000**. These six Synthetic Runs, one per model family, which the tests also use, are **not model API responses**: a headless Claude Code (`scripts/synthetic_runs.py`) made every decision and Memory Update, playing a style per family and steered toward rarely played branches. `experiment.json` keeps `provider: mock`; `display_provider` changes only the logo, and the dashboard labels them as a synthetic preview. Run the script again to replay them (it uses your Claude Code login, never a provider API key).
 
 To visualize real benchmark experiments:
 

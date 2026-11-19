@@ -38,7 +38,7 @@ def dashboard(tmp_path, gate):
             images_dir=tmp_path / "images",
             allow_own_runs=True,
             model_factory=gate.factory,
-            visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
+            visitor_story=DETROIT_RUNS / "synthetic-anthropic" / "story-graph.json",
             **options,
         )
         server, thread, url = serve(app)

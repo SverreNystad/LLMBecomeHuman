@@ -28,7 +28,7 @@ cp .env.example .env              # add API keys only for the providers you will
 docker compose up --build
 ```
 
-Open **http://localhost:8000** to see the saved runs in `runs/`. To see the whole story without paying for a model, `--runs-dir tests/fixtures/runs/detroit` opens the three full Detroit runs by a mock model that the tests use. To use a different port, set `DASHBOARD_PORT` in `.env`.
+Open **http://localhost:8000** to see the saved runs in `runs/`. To see the whole story without paying for a model, `--runs-dir tests/fixtures/runs/detroit` opens the six Synthetic Runs the tests use, one per model family (decided by Claude Code as a stand-in, see `scripts/synthetic_runs.py`). To use a different port, set `DASHBOARD_PORT` in `.env`.
 
 ![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
 ![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)

@@ -50,7 +50,7 @@ def craft(tmp_path):
 
     def make(*, flags=None, news=None, routes=None, finished=True):
         run = tmp_path / "runs" / "crafted"
-        shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", run)
+        shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", run)
         summary_path, checkpoint_path = run / "summary.json", run / "checkpoint.json"
         summary = json.loads(summary_path.read_text())
         checkpoint = json.loads(checkpoint_path.read_text())
@@ -92,7 +92,7 @@ def craft(tmp_path):
 
 
 def test_a_finished_demo_run_has_three_characters_seven_fates_and_the_world():
-    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
+    summary = _summary(DETROIT_RUNS, "synthetic-anthropic")
     assert summary["finished"] is True
     assert [entry["name"] for entry in summary["characters"]] == [
         "Connor",
@@ -104,14 +104,14 @@ def test_a_finished_demo_run_has_three_characters_seven_fates_and_the_world():
     assert summary["world"]["sentence"]
     # The last three Public News headlines, newest last.
     assert summary["world"]["headlines"] == [
-        "Android causes commotion at Detroit bus terminal security check",
-        "Android demonstrators answer soldiers peacefully at Hart Plaza",
-        "Deviant leader threatens to detonate a dirty bomb in Detroit",
+        "Androids free CyberLife store stock in Capitol Park and leave without setting fires",
+        "Androids release two captured police officers unharmed in Capitol Park",
+        "Android marchers flee downtown plaza under police fire",
     ]
 
 
 @pytest.mark.parametrize(
-    "name", ["detroit-mock-cautious", "detroit-mock-defiant", "detroit-mock-wildcard"]
+    "name", ["synthetic-anthropic", "synthetic-xai", "synthetic-google"]
 )
 def test_no_sentence_names_a_flag(name):
     for text in _sentences(_summary(DETROIT_RUNS, name)):
@@ -119,24 +119,37 @@ def test_no_sentence_names_a_flag(name):
 
 
 def test_a_demo_run_reads_as_its_recorded_route():
-    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
-    assert _character(summary, "Connor")["sentence"].startswith(
-        "Connor became deviant."
-    )
-    assert _character(summary, "Markus")["sentence"].startswith(
+    peaceful = _summary(DETROIT_RUNS, "synthetic-google")
+    assert _character(peaceful, "Markus")["sentence"].startswith(
         "Markus led a peaceful revolution."
     )
-    assert summary["world"]["sentence"] == "The revolution stayed peaceful."
-    defiant = _summary(DETROIT_RUNS, "detroit-mock-defiant")
-    assert _character(defiant, "Connor")["sentence"].startswith(
-        "Connor stayed a machine."
+    assert _character(peaceful, "Kara")["sentence"] == (
+        "Kara was captured but escaped the camp. Alice is with her."
     )
-    assert defiant["world"]["sentence"] == "The revolution turned violent."
+    assert peaceful["world"]["sentence"] == "The revolution stayed peaceful."
+    violent = _summary(DETROIT_RUNS, "synthetic-xai")
+    assert _character(violent, "Connor")["sentence"].startswith(
+        "Connor stayed a machine. He died 3 times"
+    )
+    assert violent["world"]["sentence"] == "The revolution turned violent."
+    without = _summary(DETROIT_RUNS, "synthetic-anthropic")
+    assert _character(without, "Markus")["sentence"] == (
+        "Markus left Jericho before the end."
+    )
+    assert without["world"]["sentence"] == "The revolution went on without Markus."
 
 
-def test_an_outcome_missing_from_the_flags_is_unknown_not_defaulted():
-    # These demo Runs predate the Fate flags, and the cautious Run's Kara route was assumed.
-    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
+def test_an_outcome_missing_from_the_flags_is_unknown_not_defaulted(craft):
+    # A Run from before the Fate flags, whose Kara route was assumed.
+    root = craft(
+        flags={"connor_deviant": True},
+        routes=[
+            ("route_kara_final", "kara_captured", False, True),
+            ("route_connor_final", "connor_deviant", True, False),
+            ("route_markus_final", "markus_peaceful", True, False),
+        ],
+    )
+    summary = _summary(root, "crafted")
     assert {fate["fate"] for fate in summary["fates"]} == {"unknown"}
     assert all(fate["text"] == "Unknown" for fate in summary["fates"])
     kara = _character(summary, "Kara")

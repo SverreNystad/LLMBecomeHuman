@@ -13,8 +13,10 @@ from tests.dataset import load_dataset
 
 PROJECT = Path(__file__).resolve().parents[1]
 RUN_FIXTURES = PROJECT / "tests" / "fixtures" / "runs"
-# The three Detroit mock Runs the tests read.
+# The six Synthetic Runs the tests read, one per model family
+# (scripts/synthetic_runs.py plays them).
 DETROIT_RUNS = RUN_FIXTURES / "detroit"
+FAMILIES = ("anthropic", "openai", "google", "xai", "deepseek", "mistral")
 DESKTOP = {"width": 1440, "height": 900}
 PHONE = {"width": 390, "height": 844}
 VIEWPORTS = {"desktop": DESKTOP, "phone": PHONE}
@@ -50,32 +52,20 @@ def dataset() -> dict:
     return load_dataset()
 
 
-# Copies of the Detroit mock Runs under other model families: with the three originals
-# (anthropic, openai, google) every family has a Run, and a seventh Run is one too many
-# for the six the bar holds.
-MORE_FAMILIES = [
-    ("detroit-mock-cautious", "xai"),
-    ("detroit-mock-defiant", "deepseek"),
-    ("detroit-mock-wildcard", "mistral"),
-    ("detroit-mock-defiant", "anthropic"),
-]
-
-
 def runs_of_every_family(root: Path) -> Path:
-    """Seven Detroit mock Runs in `root`, at least one per model family. Files are
-    symlinks to the fixtures (tmp_path may be another filesystem), except each copy's own
-    experiment.json."""
+    """Seven Synthetic Runs in `root`: one per model family, plus a second anthropic Run,
+    one too many for the six the bar holds. Files are symlinks to the fixtures (tmp_path
+    may be another filesystem), except the copy's own experiment.json."""
     for source in sorted(DETROIT_RUNS.iterdir()):
         shutil.copytree(source, root / source.name, copy_function=os.symlink)
-    for name, family in MORE_FAMILIES:
-        copy = root / f"{name}-{family}"
-        shutil.copytree(DETROIT_RUNS / name, copy, copy_function=os.symlink)
-        experiment = copy / "experiment.json"
-        settings = json.loads(experiment.read_text(encoding="utf-8"))
-        experiment.unlink()
-        settings["display_provider"] = family
-        settings["model_id"] = settings["model_id"].replace("mock", f"{family} mock")
-        experiment.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+    copy = root / "synthetic-anthropic-second"
+    shutil.copytree(DETROIT_RUNS / "synthetic-deepseek", copy, copy_function=os.symlink)
+    experiment = copy / "experiment.json"
+    settings = json.loads(experiment.read_text(encoding="utf-8"))
+    experiment.unlink()
+    settings["display_provider"] = "anthropic"
+    settings["model_id"] = "claude-sonnet-5-5 [synthetic]"
+    experiment.write_text(json.dumps(settings, indent=2), encoding="utf-8")
     return root
 
 
@@ -101,7 +91,7 @@ def _serve(runs_dir: Path, images_dir: Path):
 
 @pytest.fixture
 def live_dashboard(tmp_path):
-    """The real dashboard over seven Detroit mock Runs, every model family, so pages have
+    """The real dashboard over seven Synthetic Runs, every model family, so pages have
     an origin (browser storage) and assets load. The images folder is empty: no title or
     scene art."""
     images = tmp_path / "images"
@@ -113,7 +103,7 @@ def live_dashboard(tmp_path):
 
 @pytest.fixture
 def detroit_dashboard(tmp_path):
-    """The real dashboard over the three Detroit mock Runs, with no art installed."""
+    """The real dashboard over the six Synthetic Runs, with no art installed."""
     yield from _serve(DETROIT_RUNS, tmp_path)
 
 
