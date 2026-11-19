@@ -23,8 +23,8 @@ from tests.test_visitor_runs import (
     visitor_client,
     wait_until_finished,
 )
+from tests.conftest import DETROIT_RUNS
 
-DETROIT = Path(__file__).resolve().parents[1] / "demo_runs" / "detroit"
 
 
 def public_ids(client):
@@ -56,7 +56,7 @@ def play(client, provider="openai", model="gpt-test-1"):
 def bake_in(root: Path, provider: str, model: str, status: str = "complete"):
     """A maintainers' Run of this model under the runs root (not a Visitor Run)."""
     directory = root / "runs" / f"{provider}-{model}"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", directory)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", directory)
     experiment = json.loads((directory / "experiment.json").read_text())
     experiment.update(provider=provider, model_id=model, synthetic=False)
     (directory / "experiment.json").write_text(json.dumps(experiment))

@@ -1,7 +1,7 @@
 """Gauge Feedback in the Story: the gauges the game flashed after the followed model's
 choice read as a short line in its decision card.
 
-Runs the real dashboard over the Aurora demo Runs in Chromium through Playwright; the
+Runs the real dashboard over the Detroit mock Runs in Chromium through Playwright; the
 first decision's story beat is given feedback in flight. Skips without a browser.
 """
 

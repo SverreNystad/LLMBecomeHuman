@@ -9,14 +9,14 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from detroit_benchmark.dashboard import create_app
+from tests.conftest import DETROIT_RUNS
 
 PROJECT = Path(__file__).resolve().parents[1]
-DEMO = PROJECT / "demo_runs" / "detroit"
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
 
 def _flowchart() -> dict:
-    client = TestClient(create_app(DEMO))
+    client = TestClient(create_app(DETROIT_RUNS))
     run_id = client.get("/api/runs").json()["runs"][0]["id"]
     response = client.get(f"/api/runs/{run_id}/flowchart")
     assert response.status_code == 200
@@ -58,7 +58,7 @@ def _final_story_beats(runs_dir: Path) -> list[dict]:
 
 def test_assumed_final_routes_read_as_sentences_in_the_story():
     """A route the Run never decided says, in words, what the story assumed."""
-    beats = [b for b in _final_story_beats(PROJECT / "runs") if b.get("type") == "route"]
+    beats = [b for b in _final_story_beats(DETROIT_RUNS) if b.get("type") == "route"]
     assumed = [b for b in beats if b.get("assumed")]
     assert assumed, "the saved Runs assume their Final Routes"
     for beat in assumed:

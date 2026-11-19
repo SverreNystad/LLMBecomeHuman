@@ -257,47 +257,28 @@ def test_the_estimate_says_whether_a_public_run_of_the_exact_model_exists(tmp_pa
 PROJECT = Path(__file__).resolve().parents[1]
 
 
-def recorded_route(directory: Path) -> Route:
-    """What a real Run sent its model, from its recorded prompts."""
-    lines = (directory / "events.jsonl").read_text(encoding="utf-8").splitlines()
-    calls = [json.loads(line) for line in lines]
-    calls = [e for e in calls if e["type"] in ("decision", "memory_update")]
-    chars = sum(
-        len(json.dumps(e["input"], ensure_ascii=False, separators=(",", ":")))
-        + len(e.get("system_prompt") or "")
-        for e in calls
+# What the maintainers' real Runs of the whole story sent their models, and what the
+# providers counted for it: the prompt characters, decisions and memory updates are
+# summed from each Run's recorded prompts, the tokens are from its summary.
+CALIBRATION = json.loads(
+    (PROJECT / "tests" / "fixtures" / "token_calibration.json").read_text(
+        encoding="utf-8"
     )
-    return Route(
-        chars,
-        sum(e["type"] == "decision" for e in calls),
-        sum(e["type"] == "memory_update" for e in calls),
-    )
-
-
-# The maintainers' real Runs of the whole story (not the one-scene smoke tests).
-REAL_RUNS = sorted(
-    summary.parent
-    for summary in (PROJECT / "runs").glob("*/summary.json")
-    if json.loads(summary.read_text(encoding="utf-8")).get("number_of_choices", 0)
-    >= 100
 )
 
 
 def test_there_are_real_runs_to_calibrate_against():
-    assert len(REAL_RUNS) >= 5
+    assert len(CALIBRATION) >= 5
 
 
-@pytest.mark.parametrize("directory", REAL_RUNS, ids=lambda d: d.name)
-def test_each_real_runs_recorded_tokens_fall_within_the_range_for_its_own_prompts(
-    directory,
-):
+@pytest.mark.parametrize("run", CALIBRATION, ids=lambda r: r["run"])
+def test_each_real_runs_recorded_tokens_fall_within_the_range_for_its_own_prompts(run):
     """The calibration: the characters-per-token range and per-call output tokens the
     estimate uses cover what the providers really counted, within the tolerance."""
-    summary = json.loads((directory / "summary.json").read_text(encoding="utf-8"))
-    route = recorded_route(directory)
+    route = Route(run["prompt_characters"], run["decisions"], run["memory_updates"])
     found = token_range(route, route)
     for kind in ("input_tokens", "output_tokens"):
-        recorded = summary[f"total_{kind}"]
+        recorded = run[kind]
         low, high = found[kind]["low"], found[kind]["high"]
         assert low * (1 - CALIBRATION_TOLERANCE) <= recorded, (kind, recorded, low)
         assert recorded <= high * (1 + CALIBRATION_TOLERANCE), (kind, recorded, high)

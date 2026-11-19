@@ -17,9 +17,9 @@ import pytest
 from detroit_benchmark.dashboard import create_app
 from detroit_benchmark.engine import create_model
 from tests.conftest import pass_title_screen
+from tests.conftest import DETROIT_RUNS
 
 PROJECT = Path(__file__).resolve().parents[1]
-DETROIT = PROJECT / "demo_runs" / "detroit"
 KEY = "sk-sentinel-browser-7c1e"
 
 
@@ -62,13 +62,13 @@ def gate():
 def own_runs_dashboard(tmp_path, gate):
     """The Detroit demo Runs with Visitor Runs on; Visitor Runs play the demos' story."""
     root = tmp_path / "runs"
-    shutil.copytree(DETROIT, root)
+    shutil.copytree(DETROIT_RUNS, root)
     app = create_app(
         root,
         images_dir=tmp_path / "images",
         allow_own_runs=True,
         model_factory=gate.factory,
-        visitor_story=DETROIT / "detroit-mock-cautious" / "story-graph.json",
+        visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
     )
     server, thread, url = serve(app)
     yield url

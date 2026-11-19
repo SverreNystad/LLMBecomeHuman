@@ -29,9 +29,7 @@ from .engine import (
     create_model,
 )
 from .run_folder import (
-    NOT_STORY_GRAPHS,
     RunFolder,
-    canonical_hash,
     file_stamp as _stamp,
     find_runs,
     read_json_object as _json_file,
@@ -388,33 +386,11 @@ def _event_only_graph(directory: Path) -> dict:
     }
 
 
-def _load_saved_graph(
-    directory: Path, extra_graphs_dir: Path | None
-) -> tuple[dict, bool, str]:
-    folder = RunFolder(directory)
-    expected = folder.graph_sha256()
-    # New benchmark runs always include their original full story graph.
-    snapshot = folder.story_graph()
+def _load_saved_graph(directory: Path) -> tuple[dict, bool, str]:
+    """A Run's own story graph, or what its event log shows when it saved none."""
+    snapshot = RunFolder(directory).story_graph()
     if snapshot is not None:
         return snapshot, True, "run_snapshot"
-    # Compatibility with older runs, and optionally a user-provided graph directory.
-    candidates = [Path(__file__).resolve().parent.parent / "examples"]
-    if extra_graphs_dir is not None:
-        candidates.insert(0, extra_graphs_dir)
-    for parent in candidates:
-        if not parent.is_dir():
-            continue
-        for path in parent.rglob("*.json"):
-            # Ignore experiment/checkpoint/summary files even if a graph dir is broad.
-            if path.name in NOT_STORY_GRAPHS:
-                continue
-            graph = _json_file(path)
-            if (
-                graph
-                and "nodes" in graph
-                and (not expected or canonical_hash(graph) == expected)
-            ):
-                return graph, True, "matched_local_graph"
     return _event_only_graph(directory), False, "event_log_only"
 
 
@@ -423,25 +399,23 @@ def _load_saved_graph(
 _STORIES: dict[tuple, tuple[dict, dict]] = {}
 
 
-def _story(directory: Path, extra_graphs_dir: Path | None) -> tuple[dict, dict]:
+def _story(directory: Path) -> tuple[dict, dict]:
     """A Run's story graph and its Flowchart projection."""
     folder = RunFolder(directory)
     expected = folder.graph_sha256()
-    key = (expected, folder.has_story_graph(), str(extra_graphs_dir))
+    key = (expected, folder.has_story_graph())
     if key in _STORIES:
         return _STORIES[key]
-    graph, complete, source = _load_saved_graph(directory, extra_graphs_dir)
+    graph, complete, source = _load_saved_graph(directory)
     story = graph, _flowchart_projection(graph, complete=complete, source=source)
     if complete and expected:
         _STORIES[key] = story
     return story
 
 
-def _chapter_briefing(
-    directory: Path, extra_graphs_dir: Path | None, chapter: str
-) -> str | None:
+def _chapter_briefing(directory: Path, chapter: str) -> str | None:
     """Graphs older than Chapter Briefings have none."""
-    return chapter_briefing(_story(directory, extra_graphs_dir)[0], chapter)
+    return chapter_briefing(_story(directory)[0], chapter)
 
 
 def _art_file(art_root: Path, relative: Any) -> Path | None:
@@ -497,7 +471,6 @@ def _scene_art_key(
 
 def create_app(
     runs_dir: str | Path = "runs",
-    graphs_dir: str | Path | None = None,
     images_dir: str | Path | None = None,
     art_manifest: str | Path | None = None,
     *,
@@ -517,9 +490,6 @@ def create_app(
     root = Path(runs_dir).expanduser().resolve()
     images_root = Path(images_dir).expanduser().resolve() if images_dir else IMAGES
     manifest_path = Path(art_manifest or SCENE_ART_MANIFEST).expanduser()
-    graph_root = (
-        Path(graphs_dir).expanduser().resolve() if graphs_dir is not None else None
-    )
     story_path = Path(visitor_story).expanduser().resolve()
     app = FastAPI(title="LLM: Become Human", version="0.3.0", docs_url="/api/docs")
     # Lists a provider's models for the Visitor Run form.
@@ -578,7 +548,7 @@ def create_app(
 
     @app.get("/api/runs/{run_id}/flowchart")
     def get_flowchart(run_id: str):
-        return _story(_resolve_run(root, run_id), graph_root)[1]
+        return _story(_resolve_run(root, run_id))[1]
 
     @app.get("/api/runs/{run_id}/story")
     def get_story(run_id: str, chapter: str):
@@ -590,12 +560,12 @@ def create_app(
             if moment.get("type") == "scene"
             else moment
             for moment in timeline(directory).chapter(
-                chapter, _story(directory, graph_root)[0]
+                chapter, _story(directory)[0]
             )
         ]
         return {
             "chapter": chapter,
-            "briefing": _chapter_briefing(directory, graph_root, chapter),
+            "briefing": _chapter_briefing(directory, chapter),
             "moments": moments,
         }
 

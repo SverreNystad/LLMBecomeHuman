@@ -18,31 +18,28 @@ from detroit_benchmark.dashboard import (
     create_app,
 )
 from detroit_benchmark.engine import Runner
-from tests.test_benchmark import three_segment_graph
+from tests.test_benchmark import graph, three_segment_graph
+from tests.conftest import DETROIT_RUNS
 
 PROJECT = Path(__file__).resolve().parents[1]
 
 
 def client():
-    return TestClient(create_app(PROJECT / "demo_runs" / "aurora"))
+    return TestClient(create_app(DETROIT_RUNS))
 
 
-def test_lists_demo_runs():
-    response = client().get("/api/runs")
-    assert response.status_code == 200
-    runs = response.json()["runs"]
-    assert len(runs) == 10
-    assert {run["status"] for run in runs} == {"complete"}
-    assert {run["choices"] for run in runs} == {6}
-    assert {run["provider"] for run in runs} == {"mock"}
-    assert all(run["synthetic"] for run in runs)
-    assert {"openai", "anthropic", "xai", "google", "deepseek", "mistral"} <= {
-        r["display_provider"] for r in runs
-    }
+def synthetic_client(tmp_path):
+    """A dashboard over one mock Run of the tiny synthetic story, played now."""
+    Runner(graph(), "mock", None, tmp_path / "runs" / "synthetic").run()
+    return TestClient(create_app(tmp_path / "runs"))
 
 
-def test_demo_runs_include_three_full_detroit_mock_runs():
-    runs = TestClient(create_app(PROJECT / "demo_runs" / "detroit")).get("/api/runs")
+def run_named(c, name):
+    return next(r for r in c.get("/api/runs").json()["runs"] if r["name"] == name)
+
+
+def test_lists_the_three_full_detroit_mock_runs():
+    runs = TestClient(create_app(DETROIT_RUNS)).get("/api/runs")
     runs = runs.json()["runs"]
     assert {r["name"] for r in runs} == {
         "detroit-mock-cautious",
@@ -50,54 +47,53 @@ def test_demo_runs_include_three_full_detroit_mock_runs():
         "detroit-mock-wildcard",
     }
     assert {r["status"] for r in runs} == {"complete"}
+    assert {r["provider"] for r in runs} == {"mock"}
     assert all(r["synthetic"] for r in runs)
     assert len({r["display_provider"] for r in runs}) == 3
 
 
-def test_detail_reflects_saved_decisions():
-    c = client()
-    runs = c.get("/api/runs").json()["runs"]
-    first = next(r for r in runs if "first" in r["name"])
-    d = c.get(f"/api/runs/{first['id']}").json()
-    assert len(d["decisions"]) == 6
-    assert d["decisions"][0]["choice_id"] == "scan"
+def test_detail_reflects_saved_decisions(tmp_path):
+    c = synthetic_client(tmp_path)
+    run = run_named(c, "synthetic")
+    d = c.get(f"/api/runs/{run['id']}").json()
+    assert len(d["decisions"]) == 1
+    assert d["decisions"][0]["choice_id"] == "inspect"
     assert d["decisions"][0]["flags_before"] == {}
-    assert d["decisions"][0]["flags_after"]["scan_performed"] is True
-    event = c.get(f"/api/runs/{first['id']}/events/{d['decisions'][5]['index']}").json()
-    assert len(event["input"]["entire_decision_history"]) == 5
-    assert all(x.get("rationale") for x in event["input"]["entire_decision_history"])
+    assert d["decisions"][0]["flags_after"]["sensor_inspected"] is True
+    event = c.get(f"/api/runs/{run['id']}/events/{d['decisions'][0]['index']}").json()
+    assert {c["id"] for c in event["input"]["available_choices"]} == {
+        "inspect",
+        "storage",
+    }
     assert "Select exactly ONE" in event["system_prompt"]
-    assert event["input"]["world_state"] != event["flags_after"]
 
 
 def test_compare_identifies_same_node_differences_not_path_absences():
     c = client()
-    runs = c.get("/api/runs").json()["runs"]
-    first = next(r for r in runs if r["name"] == "demo-first-option")
-    last = next(r for r in runs if r["name"] == "demo-last-option")
+    cautious = run_named(c, "detroit-mock-cautious")
+    defiant = run_named(c, "detroit-mock-defiant")
     result = c.get(
-        "/api/compare", params=[("run_ids", first["id"]), ("run_ids", last["id"])]
+        "/api/compare", params=[("run_ids", cautious["id"]), ("run_ids", defiant["id"])]
     )
     assert result.status_code == 200
     payload = result.json()
-    assert payload["shared"] == 6
-    assert payload["different"] == 6
-    assert payload["unshared"] == 0
-    assert payload["identical"] == 0
-    assert (
-        payload["rows"][0]["left"]["node_id"] == payload["rows"][0]["right"]["node_id"]
-    )
+    # Both Runs start at the same first choice and take different options there.
+    assert payload["shared"] == payload["different"] + payload["identical"]
+    assert payload["different"] > 0
+    assert payload["unshared"] > 0
+    first = payload["rows"][0]
+    assert first["left"]["node_id"] == first["right"]["node_id"]
 
 
 def test_csv_export_and_missing_event():
     c = client()
-    run = c.get("/api/runs").json()["runs"][0]
+    run = run_named(c, "detroit-mock-cautious")
     response = c.get(f"/api/runs/{run['id']}/decisions.csv")
     assert response.status_code == 200
     assert "text/csv" in response.headers["content-type"]
     assert "rationale" in response.text
-    assert len(response.text.splitlines()) == 7
-    assert c.get(f"/api/runs/{run['id']}/events/9999").status_code == 404
+    assert len(response.text.splitlines()) == run["choices"] + 1
+    assert c.get(f"/api/runs/{run['id']}/events/99999").status_code == 404
 
 
 def test_path_traversal_rejected():
@@ -108,7 +104,7 @@ def test_path_traversal_rejected():
 
 
 def test_in_progress_and_partially_written_jsonl(tmp_path):
-    source = PROJECT / "demo_runs" / "aurora" / "demo-first-option"
+    source = DETROIT_RUNS / "detroit-mock-cautious"
     target = tmp_path / "live"
     shutil.copytree(source, target)
     (target / "summary.json").unlink()
@@ -121,7 +117,9 @@ def test_in_progress_and_partially_written_jsonl(tmp_path):
     run = c.get("/api/runs").json()["runs"][0]
     assert run["status"] == "running"
     detail = c.get(f"/api/runs/{run['id']}").json()
-    assert len(detail["decisions"]) == 6
+    assert len(detail["decisions"]) == len(
+        [line for line in (source / "events.jsonl").open() if '"decision"' in line]
+    )
 
 
 def test_serves_frontend_and_assets():
@@ -174,66 +172,58 @@ def test_compare_requires_two_runs():
 
 def test_flowchart_includes_unvisited_options_and_all_chapters():
     c = client()
-    run = c.get("/api/runs").json()["runs"][0]
+    run = run_named(c, "detroit-mock-cautious")
     chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
     assert chart["complete"] is True
-    assert chart["source"] == "matched_local_graph"
-    assert chart["node_count"] == 22
-    assert len(chart["chapters"]) == 3
-    assert {"scan", "rush"} == {
-        o["id"] for o in chart["nodes"]["arrival_decision"]["options"]
-    }
-    assert chart["nodes"]["arrival_decision"]["options"][0]["next"] == "scan_result"
+    assert chart["source"] == "run_snapshot"
+    snapshot = json.loads(
+        (DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json").read_text()
+    )
+    nodes = snapshot["nodes"].values()
+    chapters = {str(n["chapter"]) for n in nodes if "chapter" in n}
+    assert {str(chapter) for chapter in chart["chapters"]} == chapters
+    first = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]
+    options = chart["nodes"][first["node_id"]]["options"]
+    # The option the Run never took is still drawn.
+    assert first["choice_id"] in {o["id"] for o in options} and len(options) >= 2
     assert "source_keys" not in json.dumps(chart)
 
 
 def test_new_runner_stores_full_graph_snapshot(tmp_path):
-    from detroit_benchmark.engine import Runner
     from detroit_benchmark.run_folder import canonical_hash
 
-    graph = json.loads((PROJECT / "examples" / "showcase_game.json").read_text())
+    story = graph()
     folder = tmp_path / "fresh"
-    Runner(graph, "mock", None, folder).run()
+    Runner(story, "mock", None, folder).run()
     saved = json.loads((folder / "story-graph.json").read_text())
-    assert canonical_hash(saved) == canonical_hash(graph)
+    assert canonical_hash(saved) == canonical_hash(story)
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     assert c.get(f"/api/runs/{run['id']}/flowchart").json()["source"] == "run_snapshot"
 
 
 def test_old_runs_without_graph_return_partial_not_invented_paths(tmp_path):
-    shutil.copytree(
-        PROJECT / "demo_runs" / "aurora" / "demo-first-option", tmp_path / "old"
-    )
+    Runner(graph(), "mock", None, tmp_path / "old").run()
+    # Runs played before Runs saved their story have no story-graph.json.
+    (tmp_path / "old" / "story-graph.json").unlink()
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
-    # The demo can be matched from the shipped example graph, so modify the hash
-    # to simulate a legacy story file that is no longer on disk.
-    exp = json.loads((tmp_path / "old" / "experiment.json").read_text())
-    exp["graph_sha256"] = "unavailable-story-graph"
-    (tmp_path / "old" / "experiment.json").write_text(json.dumps(exp))
     result = c.get(f"/api/runs/{run['id']}/flowchart").json()
     assert result["complete"] is False
     assert result["source"] == "event_log_only"
-    assert len(result["nodes"]["arrival_decision"]["options"]) == 2
-    assert (
-        next(
-            o
-            for o in result["nodes"]["arrival_decision"]["options"]
-            if o["id"] == "rush"
-        )["next"]
-        is None
-    )
+    options = result["nodes"]["first_decision"]["options"]
+    assert {o["id"] for o in options} == {"inspect", "storage"}
+    assert next(o for o in options if o["id"] == "storage")["next"] is None
 
 
 def test_demo_family_is_only_cosmetic_and_never_claims_real_model_usage(tmp_path):
-    source = PROJECT / "demo_runs" / "aurora" / "preview-grok-a"
-    target = tmp_path / "preview"
+    source = DETROIT_RUNS / "detroit-mock-cautious"
+    target = tmp_path / "mock"
     shutil.copytree(source, target)
     c = TestClient(create_app(tmp_path))
     item = c.get("/api/runs").json()["runs"][0]
     assert item["provider"] == "mock"
-    assert item["display_provider"] == "xai"
+    assert item["display_provider"] == "anthropic"
     assert item["synthetic"] is True
     exp = json.loads((target / "experiment.json").read_text())
     exp["synthetic"] = False
@@ -262,33 +252,35 @@ def test_story_endpoint_returns_readable_chapter_in_order():
 
 def test_story_and_flowchart_share_moment_ids():
     c = client()
-    run = next(
-        r for r in c.get("/api/runs").json()["runs"] if r["name"] == "demo-first-option"
-    )
+    run = run_named(c, "detroit-mock-cautious")
     chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
     flowchart_moments = {
         node["moment"]: node for node in chart["nodes"].values() if "moment" in node
     }
     assert len(flowchart_moments) == chart["node_count"]
+    seen = 0
     for chapter in chart["chapters"]:
         moments = c.get(
             f"/api/runs/{run['id']}/story", params={"chapter": chapter}
         ).json()["moments"]
-        assert moments
+        seen += len(moments)
         for moment in moments:
             node = flowchart_moments[moment["moment"]]
             assert node["chapter"] == chapter
-    # The first decision of the run is the arrival choice in both views.
-    first = c.get(
-        f"/api/runs/{run['id']}/story", params={"chapter": chart["chapters"][0]}
+    # A Run skips chapters its route never reaches, but it reads many Moments.
+    assert seen > run["choices"]
+    # The first decision of the run is the same node in both views.
+    first = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]
+    moments = c.get(
+        f"/api/runs/{run['id']}/story", params={"chapter": first["chapter"]}
     ).json()["moments"]
-    decision = next(b for b in first if b["type"] == "decision")
-    assert flowchart_moments[decision["moment"]]["id"] == "arrival_decision"
+    decision = next(b for b in moments if b["type"] == "decision")
+    assert flowchart_moments[decision["moment"]]["id"] == first["node_id"]
 
 
 def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     with (target / "events.jsonl").open("a") as f:
         for index in (9000, 9001):
             f.write(
@@ -314,7 +306,7 @@ def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     with (target / "events.jsonl").open("a") as f:
         f.write(
             json.dumps(
@@ -356,7 +348,7 @@ def test_story_for_unvisited_chapter_is_empty_not_an_error():
 
 def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     assert (
@@ -390,7 +382,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
 
 def test_run_without_recent_events_is_reported_as_stopped(tmp_path):
     target = tmp_path / "dead"
-    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     (target / "summary.json").unlink()
     checkpoint = json.loads((target / "checkpoint.json").read_text())
     checkpoint["state"]["status"] = "running"
@@ -516,9 +508,10 @@ def test_story_ends_each_chapter_segment_with_a_memory_snapshot(tmp_path):
     assert "Interrogation" in memory["memory"]
 
 
-def test_old_runs_have_no_briefing_and_no_memory():
-    c = client()
-    run = c.get("/api/runs").json()["runs"][0]
+def test_old_runs_have_no_briefing_and_no_memory(tmp_path):
+    """A story without Chapter Briefings, played without Character Memory."""
+    c = synthetic_client(tmp_path)
+    run = run_named(c, "synthetic")
     chapter = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]["chapter"]
     body = story(c, run, chapter)
     assert body["moments"]
@@ -546,7 +539,7 @@ def test_dashboard_mounts_are_not_nested_inside_a_read_only_mount():
 def test_title_art_served_when_installed(tmp_path):
     (tmp_path / "ui").mkdir()
     (tmp_path / "ui" / "title.webp").write_bytes(b"RIFF\x00\x00\x00\x00WEBPVP8 ")
-    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path))
+    c = TestClient(create_app(DETROIT_RUNS, images_dir=tmp_path))
     response = c.get("/api/art/title")
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/webp"
@@ -554,7 +547,7 @@ def test_title_art_served_when_installed(tmp_path):
 
 
 def test_title_art_missing_is_404(tmp_path):
-    c = TestClient(create_app(PROJECT / "demo_runs" / "aurora", images_dir=tmp_path))
+    c = TestClient(create_app(DETROIT_RUNS, images_dir=tmp_path))
     assert c.get("/api/art/title").status_code == 404
 
 
@@ -584,7 +577,7 @@ def _scene_art_app(tmp_path, installed=("ch01_installed",), runs=None):
     manifest.write_text(json.dumps({"title": "ui/title.webp", "scenes": scenes}))
     return TestClient(
         create_app(
-            runs or PROJECT / "demo_runs" / "aurora",
+            runs or DETROIT_RUNS,
             images_dir=images,
             art_manifest=manifest,
         )
@@ -622,7 +615,7 @@ def test_scene_art_rejects_path_traversal(tmp_path):
 def test_scene_art_without_images_or_manifest(tmp_path):
     c = TestClient(
         create_app(
-            PROJECT / "demo_runs" / "aurora",
+            DETROIT_RUNS,
             images_dir=tmp_path / "none",
             art_manifest=tmp_path / "none.json",
         )
@@ -657,7 +650,7 @@ def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
 def test_justifications_are_served_as_at_most_two_sentences(tmp_path):
     # Runs recorded before the engine capped justifications still hold long ones.
     target = tmp_path / "run"
-    shutil.copytree(PROJECT / "demo_runs" / "aurora" / "demo-first-option", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     long = "Wait… Hank is here. Saving him matters more. The mission can wait!"
     with (target / "events.jsonl").open("a") as f:
         f.write(

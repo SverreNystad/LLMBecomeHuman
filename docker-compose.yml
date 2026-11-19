@@ -13,8 +13,6 @@ services:
       - dashboard
       - --runs-dir
       - /app/saved_runs
-      - --graphs-dir
-      - /app/data
       - --host
       - 0.0.0.0
       - --port
@@ -26,8 +24,6 @@ services:
     volumes:
       # Sibling folders: a mount nested inside a read-only one fails on a fresh clone.
       - ./runs:/app/saved_runs/runs:ro
-      # Show bundled synthetic previews alongside real saved runs.
-      - ./demo_runs:/app/saved_runs/previews:ro
       # Visitor Runs: the one writable folder under the runs root (gitignored).
       - ./visitor_runs:/app/saved_runs/visitor-runs
       - ./data:/app/data:ro
@@ -36,7 +32,7 @@ services:
     restart: unless-stopped
 
   # On-demand worker/CLI, not automatically started by `up` (avoids accidental API bills).
-  # Example: docker compose run --rm runner play /app/examples/synthetic_game.json ...
+  # Example: docker compose run --rm runner play /app/data/detroit-unverified.json ...
   runner:
     image: llm-become-human:local
     build:

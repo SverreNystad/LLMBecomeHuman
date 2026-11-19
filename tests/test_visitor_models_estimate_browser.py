@@ -17,7 +17,8 @@ import pytest
 from detroit_benchmark.dashboard import create_app
 from detroit_benchmark.visitor_runs import ProviderAuthError, ProviderUnreachable
 from tests.test_visitor_models_estimate import CountingModel
-from tests.test_visitor_runs_browser import DETROIT, open_form, serve
+from tests.conftest import DETROIT_RUNS
+from tests.test_visitor_runs_browser import open_form, serve
 
 LISTED = ["gpt-alpha", "gpt-beta", "gpt-beta-mini", "o9-gamma"]
 
@@ -68,9 +69,9 @@ def model():
 def form_dashboard(tmp_path, model):
     """The Detroit demo Runs plus a complete public Run of openai gpt-beta."""
     root = tmp_path / "runs"
-    shutil.copytree(DETROIT, root)
+    shutil.copytree(DETROIT_RUNS, root)
     public = root / "public-gpt-beta"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", public)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", public)
     for name, fields in (
         ("experiment.json", {"provider": "openai", "model_id": "gpt-beta"}),
         ("summary.json", {"provider": "openai", "model": "gpt-beta"}),
@@ -84,7 +85,7 @@ def form_dashboard(tmp_path, model):
         allow_own_runs=True,
         model_lister=lister,
         model_factory=model,
-        visitor_story=DETROIT / "detroit-mock-cautious" / "story-graph.json",
+        visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
     )
     server, thread, url = serve(app)
     yield url
