@@ -4,7 +4,6 @@ Me and my girlfriend recently played through *Detroit: Become Human*. The game i
 
 LLM: Become Human is a research prototype that lets LLMs play through a text version of *Detroit: Become Human* as a branching story. At each choice point a model picks one option and gives a short justification. The engine, not the model, decides what happens next. Every step is logged. Its dashboard reads each Run as a Story and draws every chapter as a Flowchart, with the routes several models (GPT, Claude, Gemini, Grok, DeepSeek, Mistral and others) took drawn on top in the playing Character's colour.
 
-> **NOTE:** The imported Detroit graph is built from fan transcripts. Its game-state rules (unlock conditions, consequences, ending routes) are **unverified**, so these runs are exploratory, not validated benchmark results. The game script itself is not included in this repository.
 
 ## Prerequisites
 
