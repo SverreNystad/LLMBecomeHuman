@@ -405,8 +405,9 @@ body:not([data-character="none"]) .led-ring-glow { animation: led-breathe 3.2s e
 .node-socket.left { left: -2.5px; } .node-socket.right { right: -2.5px; }
 .flow-node.visited .node-socket { background: var(--node-accent, var(--accent)); }
 /* Models that reached a node: one vertical column at its right edge. */
-.flow-node.has-logos { padding-right: 34px; }
-.node-logos { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+/* Logos stack in columns of three (app.js sets --logo-rows and --logo-columns); each column takes 22px. */
+.flow-node.has-logos { padding-right: calc(12px + 22px * var(--logo-columns, 1)); }
+.node-logos { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--logo-rows, 1), 20px); justify-items: center; gap: 2px; }
 .node-model-button { width: 20px; height: 20px; display: grid; place-items: center; padding: 0; background: #fff; border: 1.5px solid var(--badge-color, var(--accent)); border-radius: 50%; pointer-events: auto; transition: transform .2s var(--ease), opacity .2s; }
 .node-model-button img { width: 11px; height: 11px; }
 .node-model-button .mock-icon { font-size: 9px; }

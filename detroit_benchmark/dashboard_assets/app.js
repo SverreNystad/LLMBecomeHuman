@@ -6,6 +6,9 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const svgNS = 'http://www.w3.org/2000/svg';
 const MIN_READABLE_FIT = 0.5, OPENING_ZOOM = 0.85;
 const SCENE_NODE_WIDTH = 240, NODE_LOGO_STEP = 22, NODE_LOGO_PADDING = 12;
+// Each logo column's extra right padding (styles.css .flow-node.has-logos). Logos wrap
+// into another column after three, so a node never grows taller than three logos.
+const NODE_LOGO_COLUMN = 22, NODE_LOGOS_PER_COLUMN = 3;
 // A chapter shows at most six Runs, one per shade of its Character's colour.
 const MAX_VISIBLE_RUNS = 6;
 /* Motion (motion.css): view switches, chapter slides and the picker closing. All skipped for
@@ -591,9 +594,9 @@ function buildChapterGraph(chapter) {
     const label = n.heading || ({choice:'CHOICE',condition:'CONDITION',route:'STORY BRANCH',chapter_exit:'CHAPTER COMPLETE',ending:'STORY END'}[n.type] || shortTitle(n.id,26));
     // A route node headed by its question needs room to read it in full.
     const small = n.type === 'condition' || (n.type === 'route' && !n.heading);
-    nodes.set(n.id, {id:n.id, parent:null, type, label, node:n,
-                     width: n.type === 'choice' ? 180 : small ? 135 : 190,
-                     height: small ? 39 : 60});
+    const size = type === 'junction' ? junctionSize(label, small ? 135 : 190, small ? 39 : 60)
+               : {width: n.type === 'choice' ? 180 : 190, height: 60};
+    nodes.set(n.id, {id:n.id, parent:null, type, label, node:n, ...size});
   }
   for (const n of originals) {
     if (n.type === 'scene') continue;
@@ -632,6 +635,29 @@ function buildChapterGraph(chapter) {
   const internal = edges.filter(e => nodes.has(e.from) && nodes.has(e.to));
   const sourceSteps = originals.reduce((sum,n)=>sum+1+(n.options||[]).length,0);
   return {nodes, edges:internal, chapter, groupOf, sourceSteps};
+}
+// A junction's label (styles.css .flow-node.kind-junction: 10px capitals, .1em apart,
+// 1.3 line height, at most 3 lines, 12px side and 10px top/bottom padding) is read in
+// full: the node grows taller for a second or third line, and wider past three.
+const JUNCTION_FONT_PX = 10, JUNCTION_LINE_PX = 13, JUNCTION_MAX_LINES = 3, JUNCTION_MAX_WIDTH = 235;
+let labelCanvas = null;
+function labelLines(text, width) {
+  labelCanvas ||= document.createElement('canvas').getContext('2d');
+  labelCanvas.font = `${JUNCTION_FONT_PX}px ${getComputedStyle(document.body).fontFamily}`;
+  labelCanvas.letterSpacing = `${JUNCTION_FONT_PX * .1}px`;
+  let lines = 1, line = '';
+  for (const word of String(text).toUpperCase().split(/\s+/).filter(Boolean)) {
+    const next = line ? `${line} ${word}` : word;
+    if (line && labelCanvas.measureText(next).width > width) { lines += 1; line = word; }
+    else line = next;
+  }
+  return lines;
+}
+function junctionSize(label, width, height) {
+  const room = w => w - 24 - 2;  // padding and border
+  while (labelLines(label, room(width)) > JUNCTION_MAX_LINES && width < JUNCTION_MAX_WIDTH) width += 20;
+  const lines = Math.min(JUNCTION_MAX_LINES, labelLines(label, room(width)));
+  return {width, height: Math.max(height, 20 + 2 + lines * JUNCTION_LINE_PX + 2)};
 }
 function computePath(view, chapter, graph) {
   const groupId = id => graph.groupOf.get(id) || id;
@@ -802,11 +828,16 @@ function routeLogo(path, run, shift=0) {
 }
 function drawGraph(graph, paths) {
   const world=$('graphWorld'), nodesEl=$('graphNodes'), edgesEl=$('graphEdges');
-  // Idle nodes show only their title; model logos stack in a column at the right edge,
-  // so a node grows just tall enough to keep every logo visible.
+  // Idle nodes show only their title; model logos stack in columns of three at the right
+  // edge, so a node grows just tall enough to keep every logo visible, and wide enough
+  // that its title keeps the room it has without logos.
   for(const node of graph.nodes.values()) {
     const count=paths.filter(x=>x.path.visited.has(node.id)).length;
-    node.height=Math.max(node.height, count*NODE_LOGO_STEP+NODE_LOGO_PADDING);
+    if(!count)continue;
+    node.logoRows=Math.min(count,NODE_LOGOS_PER_COLUMN);
+    node.logoColumns=Math.ceil(count/NODE_LOGOS_PER_COLUMN);
+    node.width+=node.logoColumns*NODE_LOGO_COLUMN;
+    node.height=Math.max(node.height, node.logoRows*NODE_LOGO_STEP+NODE_LOGO_PADDING);
   }
   const bounds=layoutGraph(graph);
   world.style.width=bounds.width+'px';world.style.height=bounds.height+'px';
@@ -862,6 +893,7 @@ function drawGraph(graph, paths) {
     }
     if(users.length){
       n.classList.add('has-logos');
+      n.style.setProperty('--logo-rows',node.logoRows);n.style.setProperty('--logo-columns',node.logoColumns);
       const logos=document.createElement('div');logos.className='node-logos';
       for(const view of users)logos.appendChild(createLogo(node,view));
       n.appendChild(logos);
