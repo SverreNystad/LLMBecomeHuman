@@ -12,7 +12,8 @@ import pytest
 
 from detroit_benchmark.dashboard import create_app
 from tests.test_visitor_lifecycle import Gate
-from tests.test_visitor_runs_browser import DETROIT, open_form, serve
+from tests.conftest import DETROIT_RUNS
+from tests.test_visitor_runs_browser import open_form, serve
 
 KEY = "sk-sentinel-lifecycle-browser-91ab"
 
@@ -31,13 +32,13 @@ def dashboard(tmp_path, gate):
 
     def make(**options):
         root = tmp_path / "runs"
-        shutil.copytree(DETROIT, root)
+        shutil.copytree(DETROIT_RUNS, root)
         app = create_app(
             root,
             images_dir=tmp_path / "images",
             allow_own_runs=True,
             model_factory=gate.factory,
-            visitor_story=DETROIT / "detroit-mock-cautious" / "story-graph.json",
+            visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
             **options,
         )
         server, thread, url = serve(app)

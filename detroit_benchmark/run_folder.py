@@ -25,8 +25,6 @@ STORY_GRAPH = "story-graph.json"
 EVENTS = "events.jsonl"
 CHECKPOINT = "checkpoint.json"
 SUMMARY = "summary.json"
-# A Run's own JSON files, which are never a story graph.
-NOT_STORY_GRAPHS = frozenset({SETTINGS, SUMMARY, CHECKPOINT})
 
 
 def canonical_hash(obj) -> str:

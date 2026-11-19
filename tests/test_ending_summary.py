@@ -12,9 +12,9 @@ import pytest
 from fastapi.testclient import TestClient
 
 from detroit_benchmark.dashboard import create_app
+from tests.conftest import DETROIT_RUNS
 
 PROJECT = Path(__file__).resolve().parents[1]
-DEMO = PROJECT / "tests" / "fixtures" / "runs" / "detroit"
 SIDE_CHARACTERS = ["Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl"]
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
@@ -50,7 +50,7 @@ def craft(tmp_path):
 
     def make(*, flags=None, news=None, routes=None, finished=True):
         run = tmp_path / "runs" / "crafted"
-        shutil.copytree(DEMO / "detroit-mock-cautious", run)
+        shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", run)
         summary_path, checkpoint_path = run / "summary.json", run / "checkpoint.json"
         summary = json.loads(summary_path.read_text())
         checkpoint = json.loads(checkpoint_path.read_text())
@@ -92,7 +92,7 @@ def craft(tmp_path):
 
 
 def test_a_finished_demo_run_has_three_characters_seven_fates_and_the_world():
-    summary = _summary(DEMO, "detroit-mock-cautious")
+    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
     assert summary["finished"] is True
     assert [entry["name"] for entry in summary["characters"]] == [
         "Connor",
@@ -114,12 +114,12 @@ def test_a_finished_demo_run_has_three_characters_seven_fates_and_the_world():
     "name", ["detroit-mock-cautious", "detroit-mock-defiant", "detroit-mock-wildcard"]
 )
 def test_no_sentence_names_a_flag(name):
-    for text in _sentences(_summary(DEMO, name)):
+    for text in _sentences(_summary(DETROIT_RUNS, name)):
         assert text and not SNAKE_CASE.search(text), text
 
 
 def test_a_demo_run_reads_as_its_recorded_route():
-    summary = _summary(DEMO, "detroit-mock-cautious")
+    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
     assert _character(summary, "Connor")["sentence"].startswith(
         "Connor became deviant."
     )
@@ -127,7 +127,7 @@ def test_a_demo_run_reads_as_its_recorded_route():
         "Markus led a peaceful revolution."
     )
     assert summary["world"]["sentence"] == "The revolution stayed peaceful."
-    defiant = _summary(DEMO, "detroit-mock-defiant")
+    defiant = _summary(DETROIT_RUNS, "detroit-mock-defiant")
     assert _character(defiant, "Connor")["sentence"].startswith(
         "Connor stayed a machine."
     )
@@ -136,7 +136,7 @@ def test_a_demo_run_reads_as_its_recorded_route():
 
 def test_an_outcome_missing_from_the_flags_is_unknown_not_defaulted():
     # These demo Runs predate the Fate flags, and the cautious Run's Kara route was assumed.
-    summary = _summary(DEMO, "detroit-mock-cautious")
+    summary = _summary(DETROIT_RUNS, "detroit-mock-cautious")
     assert {fate["fate"] for fate in summary["fates"]} == {"unknown"}
     assert all(fate["text"] == "Unknown" for fate in summary["fates"])
     kara = _character(summary, "Kara")

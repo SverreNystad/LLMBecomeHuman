@@ -13,6 +13,8 @@ from tests.dataset import load_dataset
 
 PROJECT = Path(__file__).resolve().parents[1]
 RUN_FIXTURES = PROJECT / "tests" / "fixtures" / "runs"
+# The three Detroit mock Runs the tests read.
+DETROIT_RUNS = RUN_FIXTURES / "detroit"
 DESKTOP = {"width": 1440, "height": 900}
 PHONE = {"width": 390, "height": 844}
 VIEWPORTS = {"desktop": DESKTOP, "phone": PHONE}
@@ -47,15 +49,15 @@ MORE_FAMILIES = [
 ]
 
 
-def six_families(root: Path) -> Path:
+def runs_of_every_family(root: Path) -> Path:
     """Seven Detroit mock Runs in `root`, at least one per model family. Files are
     symlinks to the fixtures (tmp_path may be another filesystem), except each copy's own
     experiment.json."""
-    for source in sorted((RUN_FIXTURES / "detroit").iterdir()):
+    for source in sorted(DETROIT_RUNS.iterdir()):
         shutil.copytree(source, root / source.name, copy_function=os.symlink)
     for name, family in MORE_FAMILIES:
         copy = root / f"{name}-{family}"
-        shutil.copytree(RUN_FIXTURES / "detroit" / name, copy, copy_function=os.symlink)
+        shutil.copytree(DETROIT_RUNS / name, copy, copy_function=os.symlink)
         experiment = copy / "experiment.json"
         settings = json.loads(experiment.read_text(encoding="utf-8"))
         experiment.unlink()
@@ -94,13 +96,13 @@ def live_dashboard(tmp_path):
     images.mkdir()
     runs = tmp_path / "runs"
     runs.mkdir()
-    yield from _serve(six_families(runs), images)
+    yield from _serve(runs_of_every_family(runs), images)
 
 
 @pytest.fixture
 def detroit_dashboard(tmp_path):
     """The real dashboard over the three Detroit mock Runs, with no art installed."""
-    yield from _serve(RUN_FIXTURES / "detroit", tmp_path)
+    yield from _serve(DETROIT_RUNS, tmp_path)
 
 
 @pytest.fixture

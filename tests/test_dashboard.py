@@ -19,13 +19,13 @@ from detroit_benchmark.dashboard import (
 )
 from detroit_benchmark.engine import Runner
 from tests.test_benchmark import graph, three_segment_graph
+from tests.conftest import DETROIT_RUNS
 
 PROJECT = Path(__file__).resolve().parents[1]
-DETROIT = PROJECT / "tests" / "fixtures" / "runs" / "detroit"
 
 
 def client():
-    return TestClient(create_app(DETROIT))
+    return TestClient(create_app(DETROIT_RUNS))
 
 
 def synthetic_client(tmp_path):
@@ -39,7 +39,7 @@ def run_named(c, name):
 
 
 def test_lists_the_three_full_detroit_mock_runs():
-    runs = TestClient(create_app(DETROIT)).get("/api/runs")
+    runs = TestClient(create_app(DETROIT_RUNS)).get("/api/runs")
     runs = runs.json()["runs"]
     assert {r["name"] for r in runs} == {
         "detroit-mock-cautious",
@@ -47,6 +47,7 @@ def test_lists_the_three_full_detroit_mock_runs():
         "detroit-mock-wildcard",
     }
     assert {r["status"] for r in runs} == {"complete"}
+    assert {r["provider"] for r in runs} == {"mock"}
     assert all(r["synthetic"] for r in runs)
     assert len({r["display_provider"] for r in runs}) == 3
 
@@ -103,7 +104,7 @@ def test_path_traversal_rejected():
 
 
 def test_in_progress_and_partially_written_jsonl(tmp_path):
-    source = DETROIT / "detroit-mock-cautious"
+    source = DETROIT_RUNS / "detroit-mock-cautious"
     target = tmp_path / "live"
     shutil.copytree(source, target)
     (target / "summary.json").unlink()
@@ -175,10 +176,11 @@ def test_flowchart_includes_unvisited_options_and_all_chapters():
     chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
     assert chart["complete"] is True
     assert chart["source"] == "run_snapshot"
-    graph = json.loads(
-        (DETROIT / "detroit-mock-cautious" / "story-graph.json").read_text()
+    snapshot = json.loads(
+        (DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json").read_text()
     )
-    chapters = {str(n["chapter"]) for n in graph["nodes"].values() if "chapter" in n}
+    nodes = snapshot["nodes"].values()
+    chapters = {str(n["chapter"]) for n in nodes if "chapter" in n}
     assert {str(chapter) for chapter in chart["chapters"]} == chapters
     first = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]
     options = chart["nodes"][first["node_id"]]["options"]
@@ -215,8 +217,8 @@ def test_old_runs_without_graph_return_partial_not_invented_paths(tmp_path):
 
 
 def test_demo_family_is_only_cosmetic_and_never_claims_real_model_usage(tmp_path):
-    source = DETROIT / "detroit-mock-cautious"
-    target = tmp_path / "preview"
+    source = DETROIT_RUNS / "detroit-mock-cautious"
+    target = tmp_path / "mock"
     shutil.copytree(source, target)
     c = TestClient(create_app(tmp_path))
     item = c.get("/api/runs").json()["runs"][0]
@@ -256,13 +258,17 @@ def test_story_and_flowchart_share_moment_ids():
         node["moment"]: node for node in chart["nodes"].values() if "moment" in node
     }
     assert len(flowchart_moments) == chart["node_count"]
+    seen = 0
     for chapter in chart["chapters"]:
         moments = c.get(
             f"/api/runs/{run['id']}/story", params={"chapter": chapter}
         ).json()["moments"]
+        seen += len(moments)
         for moment in moments:
             node = flowchart_moments[moment["moment"]]
             assert node["chapter"] == chapter
+    # A Run skips chapters its route never reaches, but it reads many Moments.
+    assert seen > run["choices"]
     # The first decision of the run is the same node in both views.
     first = c.get(f"/api/runs/{run['id']}").json()["decisions"][0]
     moments = c.get(
@@ -274,7 +280,7 @@ def test_story_and_flowchart_share_moment_ids():
 
 def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     with (target / "events.jsonl").open("a") as f:
         for index in (9000, 9001):
             f.write(
@@ -300,7 +306,7 @@ def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     with (target / "events.jsonl").open("a") as f:
         f.write(
             json.dumps(
@@ -342,7 +348,7 @@ def test_story_for_unvisited_chapter_is_empty_not_an_error():
 
 def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     assert (
@@ -376,7 +382,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
 
 def test_run_without_recent_events_is_reported_as_stopped(tmp_path):
     target = tmp_path / "dead"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     (target / "summary.json").unlink()
     checkpoint = json.loads((target / "checkpoint.json").read_text())
     checkpoint["state"]["status"] = "running"
@@ -533,7 +539,7 @@ def test_dashboard_mounts_are_not_nested_inside_a_read_only_mount():
 def test_title_art_served_when_installed(tmp_path):
     (tmp_path / "ui").mkdir()
     (tmp_path / "ui" / "title.webp").write_bytes(b"RIFF\x00\x00\x00\x00WEBPVP8 ")
-    c = TestClient(create_app(DETROIT, images_dir=tmp_path))
+    c = TestClient(create_app(DETROIT_RUNS, images_dir=tmp_path))
     response = c.get("/api/art/title")
     assert response.status_code == 200
     assert response.headers["content-type"] == "image/webp"
@@ -541,7 +547,7 @@ def test_title_art_served_when_installed(tmp_path):
 
 
 def test_title_art_missing_is_404(tmp_path):
-    c = TestClient(create_app(DETROIT, images_dir=tmp_path))
+    c = TestClient(create_app(DETROIT_RUNS, images_dir=tmp_path))
     assert c.get("/api/art/title").status_code == 404
 
 
@@ -571,7 +577,7 @@ def _scene_art_app(tmp_path, installed=("ch01_installed",), runs=None):
     manifest.write_text(json.dumps({"title": "ui/title.webp", "scenes": scenes}))
     return TestClient(
         create_app(
-            runs or DETROIT,
+            runs or DETROIT_RUNS,
             images_dir=images,
             art_manifest=manifest,
         )
@@ -609,7 +615,7 @@ def test_scene_art_rejects_path_traversal(tmp_path):
 def test_scene_art_without_images_or_manifest(tmp_path):
     c = TestClient(
         create_app(
-            DETROIT,
+            DETROIT_RUNS,
             images_dir=tmp_path / "none",
             art_manifest=tmp_path / "none.json",
         )
@@ -644,7 +650,7 @@ def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
 def test_justifications_are_served_as_at_most_two_sentences(tmp_path):
     # Runs recorded before the engine capped justifications still hold long ones.
     target = tmp_path / "run"
-    shutil.copytree(DETROIT / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
     long = "Wait… Hank is here. Saving him matters more. The mission can wait!"
     with (target / "events.jsonl").open("a") as f:
         f.write(

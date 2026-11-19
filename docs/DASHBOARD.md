@@ -9,7 +9,7 @@ uv sync
 uv run python -m detroit_benchmark dashboard --runs-dir tests/fixtures/runs/detroit
 ```
 
-Open **http://127.0.0.1:8000**. These three Detroit playthroughs, which the tests also use, are **synthetic, deterministic mock-agent runs**, not model API responses. `experiment.json` keeps `provider: mock`; `display_provider` changes only the logo, and the dashboard labels them as a synthetic preview.
+Open **http://127.0.0.1:8000**. These three Detroit Runs, which the tests also use, are **synthetic, deterministic mock-agent runs**, not model API responses. `experiment.json` keeps `provider: mock`; `display_provider` changes only the logo, and the dashboard labels them as a synthetic preview.
 
 To visualize real benchmark experiments:
 
@@ -166,16 +166,6 @@ Tablets and phones held sideways (wider than 760 px) keep the normal layout.
 ![Phone: Story mid-chapter](images/phone_story_scrolled.png)
 ![Phone: Flowchart around the current Moment](images/phone_flowchart_moment.png)
 ![Phone: details from the bottom](images/phone_details.png)
-
-## Visual previews
-
-These are from two **synthetic mock runs**, not genuine LLM responses or the actual game:
-
-![Chapter flowchart](docs/flowchart_overview.png)
-
-![Model justification panel](docs/flowchart_reasoning.png)
-
-![Two-run overlay](docs/flowchart_comparison.png)
 
 ## Development and security
 

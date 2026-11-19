@@ -10,7 +10,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 from detroit_benchmark.dashboard import create_app
-from tests.conftest import six_families
+from tests.conftest import runs_of_every_family
 
 PROJECT = Path(__file__).resolve().parents[1]
 ASSETS = PROJECT / "detroit_benchmark" / "dashboard_assets"
@@ -24,7 +24,7 @@ def _remove_chip(chip):
 
 
 def test_chapter_flowchart_browser_interactions(new_page, tmp_path):
-    c = TestClient(create_app(six_families(tmp_path)))
+    c = TestClient(create_app(runs_of_every_family(tmp_path)))
     # Answered on request: preloading every event of seven full Detroit Runs is too much
     # for the page.
     replies: dict[str, dict] = {}
@@ -64,7 +64,7 @@ def test_chapter_flowchart_browser_interactions(new_page, tmp_path):
     page.add_script_tag(content=js)
 
     # The story opens first: readable text, and each decision compared across runs.
-    # Loading six full Detroit Runs through the bridge takes a while.
+    # Loading seven full Detroit Runs through the bridge takes a while.
     page.locator(".story-decision").first.wait_for(timeout=30000)
     assert page.locator("#chapterTitle").inner_text() == "The Hostage"
     # At most six Runs are shown; each holds a distinct shade slot.
