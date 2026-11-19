@@ -48,6 +48,26 @@ def scroll_story(page, to):
     page.wait_for_timeout(350)
 
 
+def settle(page, element):
+    """Waits until `element` has held still for a few frames with no finite animation
+    running. Scrolling the Story folds level 2 away (a CSS transition) a frame after the
+    scroll, so a tap aimed before the fold ends lands on whatever moved under it."""
+    page.evaluate(
+        """async el => {
+          const busy = () => document.getAnimations().some(a => a.playState === 'running'
+            && a.effect?.getComputedTiming().endTime !== Infinity);
+          let last = '', still = 0;
+          while (still < 5) {
+            await new Promise(requestAnimationFrame);
+            const box = JSON.stringify(el.getBoundingClientRect());
+            still = !busy() && box === last ? still + 1 : 0;
+            last = box;
+          }
+        }""",
+        element,
+    )
+
+
 LEVEL1 = ["#chapterList", ".view-tabs", "#pickerToggle"]
 
 
@@ -197,9 +217,11 @@ def test_taps_stand_in_for_hovering_and_details_slide_up(phone, shots):
     # Story: tapping another model's logo names it and shows its reason.
     mark = page.locator('.story-mark[aria-pressed="false"]').first.element_handle()
     mark.scroll_into_view_if_needed()
+    settle(page, mark)
     mark.tap()
-    assert "is-named" in mark.get_attribute("class")
-    assert mark.get_attribute("aria-pressed") == "true"
+    page.wait_for_function(
+        "m => m.classList.contains('is-named') && m.ariaPressed === 'true'", arg=mark
+    )
     page.locator(".story-mark.is-named .story-mark-name").wait_for(state="visible")
 
     open_flowchart(page)
