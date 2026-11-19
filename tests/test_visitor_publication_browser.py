@@ -18,7 +18,7 @@ from detroit_benchmark.dashboard import create_app
 from detroit_benchmark.engine import create_model
 from tests.test_visitor_runs_browser import open_form, serve
 
-DETROIT = Path(__file__).resolve().parents[1] / "demo_runs" / "detroit"
+DETROIT = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "runs" / "detroit"
 STORY = DETROIT / "detroit-mock-cautious" / "story-graph.json"
 WARNING = "A public Run of this model already exists. Yours will be saved but only you will see it."
 

@@ -15,8 +15,6 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --locked --no-cache
 
 COPY detroit_benchmark/ ./detroit_benchmark/
-COPY examples/ ./examples/
-COPY demo_runs/ ./demo_runs/
 COPY tests/ ./tests/
 COPY pytest.ini ./
 
@@ -24,7 +22,6 @@ COPY pytest.ini ./
 # (Kubernetes). Same layout as docker-compose, which mounts over these read-only.
 COPY data/ ./data/
 COPY runs/ ./saved_runs/runs/
-COPY demo_runs/ ./saved_runs/previews/
 
 EXPOSE 8000
-CMD ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/saved_runs", "--graphs-dir", "/app/data", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/saved_runs", "--host", "0.0.0.0", "--port", "8000"]

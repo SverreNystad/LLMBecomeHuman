@@ -29,7 +29,7 @@ This will build the documentation and start a local server at [http://127.0.0.1:
 
 ## Docker Compose
 
-`docker compose up --build -d dashboard` serves the dashboard at [http://127.0.0.1:8000](http://127.0.0.1:8000). The saved Runs (`./runs`), the synthetic previews (`./demo_runs`) and the story data (`./data`) are mounted read-only. The one writable mount is `./visitor_runs` at `/app/saved_runs/visitor-runs`, the Visitor Run folder under the runs root. Docker creates it on first start and it is gitignored.
+`docker compose up --build -d dashboard` serves the dashboard at [http://127.0.0.1:8000](http://127.0.0.1:8000). The saved Runs (`./runs`) and the story data (`./data`) are mounted read-only. The one writable mount is `./visitor_runs` at `/app/saved_runs/visitor-runs`, the Visitor Run folder under the runs root. Docker creates it on first start and it is gitignored.
 
 ## Kubernetes (Helm)
 

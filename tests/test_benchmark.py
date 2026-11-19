@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 import pytest
 from bs4 import BeautifulSoup
 
@@ -13,11 +12,136 @@ from detroit_benchmark.ingest import (
     discover_chapters,
 )
 
-DATA = Path(__file__).resolve().parents[1] / "examples" / "synthetic_game.json"
+# A tiny made-up story (not the game): one choice whose flag a later condition reads.
+SYNTHETIC_STORY = {
+    "metadata": {
+        "title": "Synthetic choice benchmark (not the game)",
+        "fidelity": "verified_game_rules",
+    },
+    "start": "arrival",
+    "nodes": {
+        "arrival": {
+            "id": "arrival",
+            "type": "scene",
+            "chapter": "demo-1",
+            "character": "Investigator",
+            "heading": "Arrival",
+            "description": "You enter a locked laboratory and notice a damaged sensor.",
+            "dialogue": [
+                {
+                    "speaker": "Guard",
+                    "text": "The sensor may explain the alarm.",
+                    "source_keys": [],
+                }
+            ],
+            "observations": ["Sensor is damaged"],
+            "next": "first_decision",
+        },
+        "first_decision": {
+            "id": "first_decision",
+            "type": "choice",
+            "chapter": "demo-1",
+            "character": "Investigator",
+            "heading": "The laboratory",
+            "description": "You can investigate the sensor or enter the storage room.",
+            "options": [
+                {
+                    "id": "inspect",
+                    "label": "Inspect the sensor",
+                    "next": "sensor_outcome",
+                    "effects": {"flags": {"sensor_inspected": True}},
+                    "requirements_unverified": [],
+                },
+                {
+                    "id": "storage",
+                    "label": "Enter the storage room",
+                    "next": "storage_outcome",
+                    "effects": {"flags": {"sensor_inspected": False}},
+                    "requirements_unverified": [],
+                },
+            ],
+        },
+        "sensor_outcome": {
+            "id": "sensor_outcome",
+            "type": "scene",
+            "chapter": "demo-1",
+            "character": "Investigator",
+            "heading": "Investigation",
+            "description": "You find a maintenance code on the damaged sensor.",
+            "dialogue": [],
+            "observations": ["Maintenance code 204"],
+            "next": "ch2",
+        },
+        "storage_outcome": {
+            "id": "storage_outcome",
+            "type": "scene",
+            "chapter": "demo-1",
+            "character": "Investigator",
+            "heading": "Storage",
+            "description": "You find empty shelves, but not the maintenance code.",
+            "dialogue": [],
+            "observations": [],
+            "next": "ch2",
+        },
+        "ch2": {
+            "id": "ch2",
+            "type": "scene",
+            "chapter": "demo-2",
+            "character": "Investigator",
+            "heading": "Control room",
+            "description": "The security console requires evidence to unlock.",
+            "dialogue": [],
+            "observations": [],
+            "next": "gate",
+        },
+        "gate": {
+            "id": "gate",
+            "type": "condition",
+            "chapter": "demo-2",
+            "branches": [
+                {
+                    "condition_text": "Sensor was inspected",
+                    "when": {"flag": "sensor_inspected", "equals": True},
+                    "next": "has_code",
+                }
+            ],
+            "next": "no_code",
+        },
+        "has_code": {
+            "id": "has_code",
+            "type": "scene",
+            "chapter": "demo-2",
+            "character": "Investigator",
+            "heading": "Unlocked",
+            "description": "The maintenance code opens the console.",
+            "dialogue": [],
+            "observations": [],
+            "next": "end",
+        },
+        "no_code": {
+            "id": "no_code",
+            "type": "scene",
+            "chapter": "demo-2",
+            "character": "Investigator",
+            "heading": "Blocked",
+            "description": "You cannot open the console without the code.",
+            "dialogue": [],
+            "observations": [],
+            "next": "end",
+        },
+        "end": {
+            "id": "end",
+            "type": "ending",
+            "chapter": "demo-2",
+            "description": "Experiment complete",
+        },
+    },
+}
 
 
 def graph():
-    return json.loads(DATA.read_text())
+    """A fresh copy of the synthetic story; tests may change it freely."""
+    return json.loads(json.dumps(SYNTHETIC_STORY))
 
 
 def test_clean_graph_and_branches(tmp_path):
@@ -169,7 +293,9 @@ def test_condition_evaluator():
         "id": "gate",
         "type": "condition",
         "resolution": "rule",
-        "branches": [{"when": {"all": [{"flag": "a"}, {"not": {"flag": "b"}}]}, "next": "x"}],
+        "branches": [
+            {"when": {"all": [{"flag": "a"}, {"not": {"flag": "b"}}]}, "next": "x"}
+        ],
         "next": "y",
     }
     rules = StoryRules({"nodes": {"gate": gate}})

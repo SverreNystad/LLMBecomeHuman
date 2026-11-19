@@ -19,7 +19,7 @@ from detroit_benchmark.engine import create_model
 from tests.conftest import pass_title_screen
 
 PROJECT = Path(__file__).resolve().parents[1]
-DETROIT = PROJECT / "demo_runs" / "detroit"
+DETROIT = PROJECT / "tests" / "fixtures" / "runs" / "detroit"
 KEY = "sk-sentinel-browser-7c1e"
 
 

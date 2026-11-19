@@ -1,12 +1,12 @@
 """Dataset checks for Chapter Briefings and Public News."""
 
-import json
 import re
 from pathlib import Path
 
 import pytest
 
 from detroit_benchmark.engine import validate_graph
+from tests.test_benchmark import graph as synthetic_story, three_segment_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 WIKI = "https://detroit-become-human.fandom.com"
@@ -103,10 +103,10 @@ def test_validate_graph_rejects_bad_enrichment():
     assert any("without wiki source" in e for e in errors)
 
 
-@pytest.mark.parametrize("path", sorted((ROOT / "examples").glob("*_game.json")))
-def test_examples_without_enrichment_still_validate(path):
-    graph = json.loads(path.read_text(encoding="utf-8"))
-    assert validate_graph(graph)["valid"]
+def test_a_story_without_enrichment_still_validates():
+    """Briefings, news and wiki sources are checked only where a story has them."""
+    assert validate_graph(three_segment_graph())["valid"]
+    assert validate_graph(synthetic_story())["valid"]
 
 
 def test_validate_graph_checks_the_news_a_condition_branch_makes_public():

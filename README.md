@@ -29,7 +29,7 @@ cp .env.example .env              # add API keys only for the providers you will
 docker compose up --build
 ```
 
-Open **http://localhost:8000** to see the saved runs in `runs/` and the synthetic previews in `demo_runs/`: `aurora/` has small runs of a made-up story, and `detroit/` has three full Detroit runs by a mock model (always first option, always last option, seeded random), for seeing the whole story without paying for a model. Locally, `--runs-dir demo_runs/detroit` opens just those. To use a different port, set `DASHBOARD_PORT` in `.env`.
+Open **http://localhost:8000** to see the saved runs in `runs/`. To see the whole story without paying for a model, `--runs-dir tests/fixtures/runs/detroit` opens the three full Detroit runs by a mock model that the tests use. To use a different port, set `DASHBOARD_PORT` in `.env`.
 
 ![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
 ![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)
@@ -52,12 +52,12 @@ Missing files are simply skipped, and with no art at all the network is the whol
 
 ### Making a new agent playthrough
 
-To conduct a new agent playthrough, run the `runner` service with a JSON story file. The `examples/` folder has a small synthetic game for testing, and the `data/` folder has the Detroit transcript.
+To conduct a new agent playthrough, run the `runner` service with a JSON story file. The `data/` folder has the Detroit transcript.
 
 ```bash
 # Offline, no API key: always picks the first option
-docker compose run --rm runner play /app/examples/synthetic_game.json \
-  --provider mock --run-dir /app/runs/synthetic-mock
+docker compose run --rm runner play /app/data/detroit-unverified.json \
+  --provider mock --run-dir /app/runs/detroit-mock --allow-unverified
 ```
 
 To run the real Detroit transcript, you need an API key for at least one provider. The following example uses Anthropic's Claude model:
@@ -77,7 +77,7 @@ Give each run its own `--run-dir`. Add `--resume` to continue an interrupted run
 docker compose run --rm --build --entrypoint pytest runner -q
 ```
 
-Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs --graphs-dir data`.
+Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs`.
 
 The browser tests in `tests/test_frontend_browser.py` are skipped unless Playwright and Chromium are installed.
 

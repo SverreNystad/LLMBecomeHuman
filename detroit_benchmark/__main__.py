@@ -81,11 +81,6 @@ def main():
     )
     dashboard.add_argument("--runs-dir", type=Path, default=Path("runs"))
     dashboard.add_argument(
-        "--graphs-dir",
-        type=Path,
-        help="Optional folder containing story graph JSON files for older runs",
-    )
-    dashboard.add_argument(
         "--images-dir",
         type=Path,
         help="Folder with local game art (default: the repository's images/ folder)",
@@ -106,7 +101,6 @@ def main():
         uvicorn.run(
             create_app(
                 args.runs_dir,
-                args.graphs_dir,
                 args.images_dir,
                 allow_own_runs=args.allow_own_runs,
             ),

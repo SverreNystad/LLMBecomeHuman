@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from detroit_benchmark.dashboard import create_app
 
 PROJECT = Path(__file__).resolve().parents[1]
-DEMO = PROJECT / "demo_runs" / "detroit"
+DEMO = PROJECT / "tests" / "fixtures" / "runs" / "detroit"
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
 
@@ -58,7 +58,7 @@ def _final_story_beats(runs_dir: Path) -> list[dict]:
 
 def test_assumed_final_routes_read_as_sentences_in_the_story():
     """A route the Run never decided says, in words, what the story assumed."""
-    beats = [b for b in _final_story_beats(PROJECT / "runs") if b.get("type") == "route"]
+    beats = [b for b in _final_story_beats(DEMO) if b.get("type") == "route"]
     assumed = [b for b in beats if b.get("assumed")]
     assert assumed, "the saved Runs assume their Final Routes"
     for beat in assumed:

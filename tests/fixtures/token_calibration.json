@@ -1,0 +1,82 @@
+[
+  {
+    "run": "detroit-claude-haiku-4-5-01",
+    "prompt_characters": 54918275,
+    "decisions": 278,
+    "memory_updates": 0,
+    "input_tokens": 14035982,
+    "output_tokens": 113432
+  },
+  {
+    "run": "detroit-claude-haiku-5-5-01",
+    "prompt_characters": 29919782,
+    "decisions": 279,
+    "memory_updates": 0,
+    "input_tokens": 12396060,
+    "output_tokens": 80391
+  },
+  {
+    "run": "detroit-claude-sonnet-5-5-01",
+    "prompt_characters": 20128541,
+    "decisions": 279,
+    "memory_updates": 0,
+    "input_tokens": 8770921,
+    "output_tokens": 67845
+  },
+  {
+    "run": "detroit-deepseek-chat-01",
+    "prompt_characters": 26064983,
+    "decisions": 280,
+    "memory_updates": 0,
+    "input_tokens": 7024811,
+    "output_tokens": 51756
+  },
+  {
+    "run": "detroit-gpt-4.1-mini-01",
+    "prompt_characters": 22168402,
+    "decisions": 280,
+    "memory_updates": 0,
+    "input_tokens": 5770160,
+    "output_tokens": 28801
+  },
+  {
+    "run": "detroit-gpt-5.6-luna-01",
+    "prompt_characters": 16835109,
+    "decisions": 276,
+    "memory_updates": 0,
+    "input_tokens": 4529827,
+    "output_tokens": 60687
+  },
+  {
+    "run": "detroit-gpt-6-luna-01",
+    "prompt_characters": 16190234,
+    "decisions": 278,
+    "memory_updates": 0,
+    "input_tokens": 4334370,
+    "output_tokens": 79753
+  },
+  {
+    "run": "detroit-gpt-6.1-sol-01",
+    "prompt_characters": 16610277,
+    "decisions": 278,
+    "memory_updates": 0,
+    "input_tokens": 4313643,
+    "output_tokens": 20874
+  },
+  {
+    "run": "detroit-gpt-6.1-terra-01",
+    "prompt_characters": 15697109,
+    "decisions": 279,
+    "memory_updates": 0,
+    "input_tokens": 4238922,
+    "output_tokens": 27118
+  },
+  {
+    "run": "detroit-grok-4-01",
+    "prompt_characters": 17640982,
+    "decisions": 277,
+    "memory_updates": 0,
+    "input_tokens": 4867633,
+    "output_tokens": 24229
+  }
+]

@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 from detroit_benchmark.dashboard import create_app
 
 PROJECT = Path(__file__).resolve().parents[1]
-DEMO = PROJECT / "demo_runs" / "detroit"
+DEMO = PROJECT / "tests" / "fixtures" / "runs" / "detroit"
 SIDE_CHARACTERS = ["Hank", "Alice", "Luther", "Simon", "North", "Josh", "Carl"]
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
@@ -266,13 +266,9 @@ def test_an_unfinished_run_is_marked_not_finished(craft):
     assert summary["fates"][1] == {"name": "Alice", "fate": "alive", "text": "Alive"}
 
 
-def test_a_run_that_recorded_no_outcomes_says_so():
+def test_a_run_that_recorded_no_outcomes_says_so(craft):
     """Runs played before the story tracked Fates finish with every outcome unknown; the
     summary says no outcome was recorded instead of listing unknowns."""
-    root = Path(__file__).resolve().parents[1] / "runs"
-    client = TestClient(create_app(root))
-    runs = client.get("/api/runs").json()["runs"]
-    run_id = next(r["id"] for r in runs if r.get("model") == "claude-sonnet-5-5")
-    summary = client.get(f"/api/runs/{run_id}").json()["ending_summary"]
+    summary = _summary(craft(flags={}, news=[], routes=[]), "crafted")
     assert summary["finished"] is True
     assert summary["recorded"] is False

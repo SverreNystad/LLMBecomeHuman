@@ -168,7 +168,7 @@ volumeMounts: []
 
 # Visitor Runs: a persistent volume mounted at the Visitor Run folder under the
 # dashboard's runs root (--runs-dir /app/saved_runs), so Visitor Runs survive redeploys.
-# It is separate from the Runs baked into the image (/app/saved_runs/runs and /previews).
+# It is separate from the Runs baked into the image (/app/saved_runs/runs).
 # When enabled, the Deployment uses the Recreate strategy so two pods never share the
 # volume, and the chart refuses to render with more than one replica or with autoscaling.
 visitorRuns:

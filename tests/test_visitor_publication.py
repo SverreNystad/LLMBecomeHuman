@@ -24,7 +24,7 @@ from tests.test_visitor_runs import (
     wait_until_finished,
 )
 
-DETROIT = Path(__file__).resolve().parents[1] / "demo_runs" / "detroit"
+DETROIT = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "runs" / "detroit"
 
 
 def public_ids(client):
