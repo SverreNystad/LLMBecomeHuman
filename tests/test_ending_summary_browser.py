@@ -1,6 +1,6 @@
 """The Ending Summary card at the top of Final Routes in the Story (#82).
 
-Runs the real dashboard over the Detroit demo Runs in Chromium through Playwright; skips
+Runs the real dashboard over the Synthetic Runs in Chromium through Playwright; skips
 without a browser. Screenshots go to the test's temporary folder
 (docs/images/ending_summary_*.png with UPDATE_DOC_SCREENSHOTS=1).
 """
@@ -35,12 +35,12 @@ def test_desktop_card_opens_final_routes_with_a_column_per_shown_run(
     assert "ending-summary" in first
 
     shown = page.evaluate("activeRuns().map(run => run.id)")
-    assert len(shown) == 3
+    assert len(shown) == 6
     columns = card.locator(".ending-run")
-    assert [columns.nth(i).get_attribute("data-run-id") for i in range(3)] == shown
+    assert [columns.nth(i).get_attribute("data-run-id") for i in range(6)] == shown
     # Side by side, in the Shown Runs' order.
-    lefts = [columns.nth(i).bounding_box()["x"] for i in range(3)]
-    assert lefts == sorted(lefts) and len(set(lefts)) == 3
+    lefts = [columns.nth(i).bounding_box()["x"] for i in range(6)]
+    assert lefts == sorted(lefts) and len(set(lefts)) == 6
 
     first_column = columns.first
     assert first_column.locator(".ending-character dt").all_text_contents() == [

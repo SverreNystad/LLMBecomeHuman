@@ -18,7 +18,7 @@ from detroit_benchmark.engine import create_model
 from tests.test_visitor_runs_browser import open_form, serve
 from tests.conftest import DETROIT_RUNS
 
-STORY = DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json"
+STORY = DETROIT_RUNS / "synthetic-anthropic" / "story-graph.json"
 WARNING = "A public Run of this model already exists. Yours will be saved but only you will see it."
 
 
@@ -28,11 +28,11 @@ def mock_factory(provider, model_id, temperature=0, max_tokens=400, api_key=None
 
 @pytest.fixture
 def publishing_dashboard(tmp_path):
-    """The Detroit demo Runs, plus a maintainers' Run of openai/gpt-baked-1, with Visitor Runs on."""
+    """The Synthetic Runs, plus a maintainers' Run of openai/gpt-baked-1, with Visitor Runs on."""
     root = tmp_path / "runs"
     shutil.copytree(DETROIT_RUNS, root)
     baked = root / "maintainers" / "gpt-baked-1"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", baked)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", baked)
     experiment = json.loads((baked / "experiment.json").read_text())
     experiment.update(provider="openai", model_id="gpt-baked-1", synthetic=False)
     (baked / "experiment.json").write_text(json.dumps(experiment))

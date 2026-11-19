@@ -60,7 +60,7 @@ def gate():
 
 @pytest.fixture
 def own_runs_dashboard(tmp_path, gate):
-    """The Detroit demo Runs with Visitor Runs on; Visitor Runs play the demos' story."""
+    """The Synthetic Runs with Visitor Runs on; Visitor Runs play the demos' story."""
     root = tmp_path / "runs"
     shutil.copytree(DETROIT_RUNS, root)
     app = create_app(
@@ -68,7 +68,7 @@ def own_runs_dashboard(tmp_path, gate):
         images_dir=tmp_path / "images",
         allow_own_runs=True,
         model_factory=gate.factory,
-        visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
+        visitor_story=DETROIT_RUNS / "synthetic-anthropic" / "story-graph.json",
     )
     server, thread, url = serve(app)
     yield url

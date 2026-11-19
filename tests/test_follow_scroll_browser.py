@@ -1,11 +1,12 @@
 """Switching the Followed Run keeps the Story's reading position (#65).
 
-Drives the real dashboard over the Detroit demo runs, on a desktop and on a phone.
+Drives the real dashboard over the Synthetic Runs, on a desktop and on a phone.
 Needs Playwright and a Chromium executable on PATH, like test_frontend_browser.py.
 
-In chapter 1 the cautious run reaches every scene; the wildcard run shares its later
-decisions but skips the kitchen; the defiant run goes straight from the investigation to
-going outside. Only the cautious run reached chapter 32.4.
+In chapter 1 the anthropic run (followed first) and the google run reach the same scenes
+and share the decision at the wounded cop; the xai run goes straight from the
+investigation to going outside, never into the living room. The google run never
+reached chapter 32.1.
 """
 
 from __future__ import annotations
@@ -16,10 +17,10 @@ import pytest
 
 
 def run_id(name):
-    return base64.b64encode(f"detroit-mock-{name}".encode()).decode().rstrip("=")
+    return base64.b64encode(f"synthetic-{name}".encode()).decode().rstrip("=")
 
 
-CAUTIOUS, WILDCARD, DEFIANT = run_id("cautious"), run_id("wildcard"), run_id("defiant")
+FOLLOWED, SHARING, SKIPPER = run_id("anthropic"), run_id("google"), run_id("xai")
 
 
 @pytest.fixture
@@ -36,7 +37,7 @@ def phone(open_dashboard, detroit_dashboard):
 
 def _ready(page):
     page.locator(".story-decision").first.wait_for()
-    assert page.evaluate("storyRun().id") == CAUTIOUS
+    assert page.evaluate("storyRun().id") == FOLLOWED
     return page
 
 
@@ -93,7 +94,7 @@ def heading(text):
 
 def follow_by_chip(page, run):
     version = page.evaluate("storyVersion")
-    page.locator(f'.run-chip[data-focus-id="{run}"] .run-chip-label').click()
+    page.locator(f'.run-chip[data-focus-id="{run}"]').click()
     settle(page, run, version)
 
 
@@ -110,7 +111,7 @@ def test_following_another_run_keeps_the_decision_being_read(desktop):
     read_at(page, decision("ch1_00063"))
     before = reading(page)
     assert before["name"] == "ch1_00063"
-    follow_by_chip(page, WILDCARD)
+    follow_by_chip(page, SHARING)
     after = reading(page)
     assert after["name"] == "ch1_00063"
     assert abs(after["top"] - before["top"]) <= 2
@@ -121,11 +122,11 @@ def test_a_run_that_skipped_the_scene_lands_on_the_nearest_earlier_one_it_reache
     desktop,
 ):
     page = desktop
-    read_at(page, heading("In the kitchen"))
+    read_at(page, heading("Coming into the living room"))
     before = reading(page)
-    assert before["name"] == "In the kitchen"
-    follow_by_chip(page, DEFIANT)
-    # The defiant run never went into the house; its last shared step is the investigation.
+    assert before["name"] == "Coming into the living room"
+    follow_by_chip(page, SKIPPER)
+    # The xai run never went into the house; its last shared step is the investigation.
     after = reading(page)
     assert after["name"] == "ch1_x0001"
     assert abs(after["top"] - before["top"]) <= 2
@@ -138,7 +139,7 @@ def test_clicking_the_followed_chip_keeps_the_scroll_position(desktop):
     read_at(page, decision("ch1_00063"))
     before = scroll_offsets(page)
     assert before[0] > 0
-    page.locator(f'.run-chip[data-focus-id="{CAUTIOUS}"] .run-chip-label').click()
+    page.locator(f'.run-chip[data-focus-id="{FOLLOWED}"] .run-chip-label').click()
     page.wait_for_timeout(400)
     assert scroll_offsets(page) == before
     assert reading(page)["name"] == "ch1_00063"
@@ -147,7 +148,7 @@ def test_clicking_the_followed_chip_keeps_the_scroll_position(desktop):
 
 def test_changing_chapter_still_opens_at_its_top(desktop):
     page = desktop
-    follow_by_chip(page, WILDCARD)
+    follow_by_chip(page, SHARING)
     read_at(page, decision("ch1_00063"))
     assert scroll_offsets(page)[0] > 0
     page.locator('#chapterList [data-chapter="3"]').click()
@@ -160,13 +161,13 @@ def test_changing_chapter_still_opens_at_its_top(desktop):
 
 def test_a_run_that_never_reached_the_chapter_says_so(desktop):
     page = desktop
-    page.locator('#chapterList [data-chapter="32.4"]').click()
-    page.wait_for_function("state.chapter === '32.4'")
+    page.locator('#chapterList [data-chapter="32.1"]').click()
+    page.wait_for_function("state.chapter === '32.1'")
     page.locator("#storyContent .story-decision").first.wait_for()
     page.wait_for_timeout(400)
     read_at(page, "#storyContent .story-decision")
     assert scroll_offsets(page)[0] > 0
-    follow_by_chip(page, WILDCARD)
+    follow_by_chip(page, SHARING)
     empty = page.locator("#storyContent .story-empty")
     assert "never got here" in empty.inner_text()
     assert scroll_offsets(page) == [0, 0]
@@ -187,8 +188,8 @@ def test_phone_following_menu_keeps_the_decision_being_read(phone):
     page.locator("#storyRun").tap()
     menu = page.locator("#storyRunMenu")
     menu.wait_for(state="visible")
-    menu.locator(f'[data-run-id="{WILDCARD}"]').tap()
-    settle(page, WILDCARD, version)
+    menu.locator(f'[data-run-id="{SHARING}"]').tap()
+    settle(page, SHARING, version)
     after = reading(page)
     assert after["name"] == "ch1_00063"
     assert abs(after["top"] - before["top"]) <= 2

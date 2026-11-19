@@ -875,6 +875,7 @@ class Runner:
         resume: bool = False,
         memory_max_chars: int = DEFAULT_MEMORY_MAX_CHARS,
         mock_replies: list[str] | None = None,
+        stand_in=None,
         model_factory=create_model,
         api_key: str | None = None,
         show_relationships: bool = True,
@@ -912,6 +913,10 @@ class Runner:
         # Test option: raw replies the mock provider returns, in order, before
         # falling back to its default policy. Controls reply length and content.
         self.mock_replies = list(mock_replies or [])
+        # Synthetic Runs only: replaces the mock provider's default policy. Called as
+        # stand_in(schema, payload, max_tokens) -> (parsed reply, model info); it may
+        # raise BrokenReply like a real model.
+        self.stand_in = stand_in
         # A resume must match the story, provider and model the Run was played with.
         key = {
             "graph_sha256": self.story_hash,
@@ -1026,13 +1031,16 @@ class Runner:
         self.state["event_idx"] += 1
         self.folder.save(self.state)
 
-    def _mock_attempt(self, schema, default, max_tokens: int):
-        """Mock backend. Scripted ``mock_replies`` (raw text) are used first.
+    def _mock_attempt(self, schema, default, max_tokens: int, payload: dict):
+        """Mock backend. Scripted ``mock_replies`` (raw text) are used first, then the
+        ``stand_in`` when there is one, else ``default``.
 
         A scripted reply longer than ``max_tokens`` (estimated at four characters
         per token) counts as cut off, exactly like a real truncated reply.
         """
         if not self.mock_replies:
+            if self.stand_in is not None:
+                return self.stand_in(schema, payload, max_tokens)
             return default, {"mock": True}
         raw = self.mock_replies.pop(0)
         if (len(raw) + 3) // 4 > max_tokens:
@@ -1096,7 +1104,9 @@ class Runner:
             try:
                 backend = self._model_for(max_tokens)
                 if backend is None:
-                    parsed, meta = self._mock_attempt(schema, mock_default, max_tokens)
+                    parsed, meta = self._mock_attempt(
+                        schema, mock_default, max_tokens, payload
+                    )
                 else:
                     parsed, meta = self._real_attempt(
                         backend, schema, messages, max_tokens

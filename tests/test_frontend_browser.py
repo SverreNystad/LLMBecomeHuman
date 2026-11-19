@@ -297,7 +297,7 @@ def test_chapter_flowchart_browser_interactions(new_page, tmp_path):
         ".flow-node.kind-option .node-model-button.provider-xai"
     ).first.click(force=True)
     page.locator(".rationale").wait_for()
-    assert "xai mock" in page.locator("#drawerContent").inner_text()
+    assert "grok-5 [synthetic]" in page.locator("#drawerContent").inner_text()
     page.locator("#closeDrawer").click()
     # Removing only one run doesn't change complete graph.
     _remove_chip(page.locator(".run-chip").first)

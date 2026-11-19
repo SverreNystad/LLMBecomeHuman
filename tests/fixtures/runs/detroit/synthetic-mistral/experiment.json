@@ -1,7 +1,7 @@
 {
   "provider": "mock",
-  "model_id": "Wildcard mock [synthetic]",
-  "goal": "SYNTHETIC MOCK: preview the dashboard",
+  "model_id": "mistral-large-3 [synthetic]",
+  "goal": "SYNTHETIC: Act on impulse, act first and never look back.",
   "temperature": 0,
   "decision_limits": {
     "max_output_tokens": 400,
@@ -13,12 +13,17 @@
     "max_chars": 6000,
     "memory_update_max_output_tokens": 2500
   },
-  "graph_sha256": "4f324b833d41d2c56a4aa890bfa7695bc7a8adf27d932132e5a742cd74fc5a06",
+  "graph_sha256": "edf0bc35f2f254c96e251675b336245f6ea2f55093aa494a4f1e2efe3fe1cc11",
   "fidelity": "unverified_transcript_approximation",
   "allow_unverified": true,
+  "show_relationships": true,
   "initial_flags": {},
   "story_title": "Detroit: Become Human transcript-derived benchmark",
   "synthetic": true,
-  "started_at": "2026-11-11T14:34:09.415371+00:00",
-  "display_provider": "google"
+  "started_at": "2026-11-19T20:33:33.364729+00:00",
+  "display_provider": "mistral",
+  "stand_in": {
+    "tool": "claude-code",
+    "model": "haiku"
+  }
 }
