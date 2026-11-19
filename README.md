@@ -79,7 +79,7 @@ docker compose run --rm --build --entrypoint pytest runner -q
 
 Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs`.
 
-The browser tests in `tests/test_frontend_browser.py` are skipped unless Playwright and Chromium are installed.
+The browser tests in `tests/test_frontend_browser.py` are skipped unless Playwright and Chromium are installed. Their screenshots go to each test's temporary folder; run them with `UPDATE_DOC_SCREENSHOTS=1` to refresh the ones in `docs/images/`.
 
 ## What the model gets as context
 

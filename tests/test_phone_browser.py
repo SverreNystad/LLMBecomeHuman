@@ -1,7 +1,8 @@
 """The real dashboard on a phone (390x844, touch): the three-level layout (#36).
 
 Needs Playwright and a Chromium executable on PATH, like test_frontend_browser.py.
-Screenshots are written to docs/images/phone_*.png.
+Screenshots go to the test's temporary folder (docs/images/phone_*.png with
+UPDATE_DOC_SCREENSHOTS=1).
 """
 
 from __future__ import annotations
@@ -11,7 +12,6 @@ from pathlib import Path
 import pytest
 
 PROJECT = Path(__file__).resolve().parents[1]
-SHOTS = PROJECT / "docs" / "images"
 PHONE = {"width": 390, "height": 844}
 
 
@@ -51,7 +51,7 @@ def scroll_story(page, to):
 LEVEL1 = ["#chapterList", ".view-tabs", "#pickerToggle"]
 
 
-def test_phone_story_keeps_level_one_on_screen_and_hides_level_two(phone):
+def test_phone_story_keeps_level_one_on_screen_and_hides_level_two(phone, shots):
     page = phone
     assert page.evaluate("document.body.classList.contains('is-phone')")
     assert not page.locator("#selectedRunChips").is_visible()
@@ -65,13 +65,12 @@ def test_phone_story_keeps_level_one_on_screen_and_hides_level_two(phone):
     for selector in LEVEL1:
         assert on_screen(page, selector), selector
     assert not page.locator(".phone-l2 .story-toolbar").is_visible()
-    SHOTS.mkdir(parents=True, exist_ok=True)
-    page.screenshot(path=str(SHOTS / "phone_story_scrolled.png"))
+    page.screenshot(path=str(shots / "phone_story_scrolled.png"))
     # A small scroll up brings level 2 back; level 3 only returns at the top.
     scroll_story(page, middle - 40)
     assert not page.evaluate("document.body.classList.contains('phone-l2-hidden')")
     assert page.evaluate("document.body.classList.contains('phone-scrolled')")
-    page.screenshot(path=str(SHOTS / "phone_story_level2.png"))
+    page.screenshot(path=str(shots / "phone_story_level2.png"))
     scroll_story(page, 0)
     assert not page.evaluate("document.body.classList.contains('phone-scrolled')")
     assert not page.errors
@@ -96,7 +95,7 @@ def test_phone_chapter_row_swipes_and_changes_chapter(phone):
     assert not page.errors
 
 
-def test_phone_flowchart_fills_the_screen_and_swiping_the_bars_grows_it(phone):
+def test_phone_flowchart_fills_the_screen_and_swiping_the_bars_grows_it(phone, shots):
     page = phone
     page.locator("#viewFlow").tap()
     page.locator(".flow-node").first.wait_for()
@@ -111,7 +110,7 @@ def test_phone_flowchart_fills_the_screen_and_swiping_the_bars_grows_it(phone):
     assert taller["height"] > chart["height"] + 20
     for selector in LEVEL1:
         assert on_screen(page, selector), selector
-    page.screenshot(path=str(SHOTS / "phone_flowchart.png"))
+    page.screenshot(path=str(shots / "phone_flowchart.png"))
     swipe(page, "#phoneBar", 60)
     page.wait_for_timeout(450)
     assert not page.evaluate("document.body.classList.contains('phone-l2-hidden')")
@@ -155,7 +154,7 @@ def open_flowchart(page):
     page.wait_for_timeout(500)
 
 
-def test_phone_flowchart_opens_around_the_current_moment(phone):
+def test_phone_flowchart_opens_around_the_current_moment(phone, shots):
     page = phone
     open_flowchart(page)
     shown = page.evaluate(
@@ -171,7 +170,7 @@ def test_phone_flowchart_opens_around_the_current_moment(phone):
         }"""
     )
     assert len(shown) >= 2 and all(shown)
-    page.screenshot(path=str(SHOTS / "phone_flowchart_moment.png"))
+    page.screenshot(path=str(shots / "phone_flowchart_moment.png"))
     assert not page.errors
 
 
@@ -193,7 +192,7 @@ def test_two_fingers_pinch_the_flowchart(phone):
     assert not page.errors
 
 
-def test_taps_stand_in_for_hovering_and_details_slide_up(phone):
+def test_taps_stand_in_for_hovering_and_details_slide_up(phone, shots):
     page = phone
     # Story: tapping another model's logo names it and shows its reason.
     mark = page.locator('.story-mark[aria-pressed="false"]').first.element_handle()
@@ -221,7 +220,7 @@ def test_taps_stand_in_for_hovering_and_details_slide_up(phone):
     sheet = drawer.bounding_box()
     assert abs(sheet["y"] + sheet["height"] - PHONE["height"]) <= 2
     assert sheet["height"] <= PHONE["height"] * 0.7 + 2
-    page.screenshot(path=str(SHOTS / "phone_details.png"))
+    page.screenshot(path=str(shots / "phone_details.png"))
     # Dragging the grip down closes it.
     page.evaluate(
         """() => {

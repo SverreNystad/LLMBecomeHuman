@@ -33,6 +33,18 @@ def _visitor_runs_finish(tmp_path):
 
 
 @pytest.fixture
+def shots(tmp_path) -> Path:
+    """Where a browser test saves its screenshots: the test's own temporary folder, so a
+    test run never rewrites the docs. With UPDATE_DOC_SCREENSHOTS=1 they replace the
+    ones in docs/images."""
+    if os.environ.get("UPDATE_DOC_SCREENSHOTS") == "1":
+        return PROJECT / "docs" / "images"
+    folder = tmp_path / "shots"
+    folder.mkdir()
+    return folder
+
+
+@pytest.fixture
 def dataset() -> dict:
     """A fresh copy of the real story dataset; tests may change it freely."""
     return load_dataset()
