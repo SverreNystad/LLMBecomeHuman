@@ -1,15 +1,14 @@
 """The Ending Summary card at the top of Final Routes in the Story (#82).
 
 Runs the real dashboard over the Detroit demo Runs in Chromium through Playwright; skips
-without a browser. Screenshots go to docs/images/ending_summary_*.png.
+without a browser. Screenshots go to the test's temporary folder
+(docs/images/ending_summary_*.png with UPDATE_DOC_SCREENSHOTS=1).
 """
 
 from __future__ import annotations
 
 import re
-from pathlib import Path
 
-SHOTS = Path(__file__).resolve().parents[1] / "docs" / "images"
 SNAKE_CASE = re.compile(r"\b[a-z0-9]+_[a-z0-9_]+\b")
 
 
@@ -22,7 +21,7 @@ def _open_final_routes(page):
 
 
 def test_desktop_card_opens_final_routes_with_a_column_per_shown_run(
-    detroit_dashboard, open_dashboard
+    detroit_dashboard, open_dashboard, shots
 ):
     # Tall enough for the whole card to fit in the Story pane, for the screenshot.
     page = open_dashboard(detroit_dashboard, {"width": 1440, "height": 1300})
@@ -56,7 +55,7 @@ def test_desktop_card_opens_final_routes_with_a_column_per_shown_run(
     text = card.inner_text()
     assert not SNAKE_CASE.search(text), SNAKE_CASE.search(text)
     assert not page.errors
-    card.screenshot(path=str(SHOTS / "ending_summary_desktop.png"))
+    card.screenshot(path=str(shots / "ending_summary_desktop.png"))
 
 
 def test_an_unfinished_run_says_story_not_finished(detroit_dashboard, open_dashboard):
@@ -76,7 +75,9 @@ def test_an_unfinished_run_says_story_not_finished(detroit_dashboard, open_dashb
     assert column.locator(".ending-character").count() == 0
 
 
-def test_phone_card_shows_only_the_followed_run(detroit_dashboard, open_dashboard):
+def test_phone_card_shows_only_the_followed_run(
+    detroit_dashboard, open_dashboard, shots
+):
     page = open_dashboard(detroit_dashboard, "phone")
     card = _open_final_routes(page)
     assert page.evaluate("document.body.classList.contains('is-phone')")
@@ -87,7 +88,7 @@ def test_phone_card_shows_only_the_followed_run(detroit_dashboard, open_dashboar
     assert box["x"] >= 0 and box["x"] + box["width"] <= width
     assert not SNAKE_CASE.search(card.inner_text())
     assert "recorded route" in card.locator(".ending-note").inner_text()
-    page.screenshot(path=str(SHOTS / "ending_summary_phone.png"))
+    page.screenshot(path=str(shots / "ending_summary_phone.png"))
 
 
 def test_other_chapters_have_no_card(detroit_dashboard, open_dashboard):
