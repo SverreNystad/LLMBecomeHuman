@@ -679,9 +679,9 @@ langchain-google-genai==3.2.0 \
     --hash=sha256:1fa620ea9c655a37537e95438857c423e1a3599b5a665b8dd87064c76ee95b72 \
     --hash=sha256:689fc159d4623a184678e24771f6d52373e983a8fc8d342e44352aaf28e9445d
     # via llm-become-human
-langchain-openai==1.7.4 \
-    --hash=sha256:8fd90e41588526d990f32262447adf8e130d7ce28ed66cefa315e64cc9dd12ce \
-    --hash=sha256:aaee93369765bac7ebf640aab62f8ae16df403ed982737ae51f88f6a24a151ab
+langchain-openai==1.8.3 \
+    --hash=sha256:3cac299d8df107a9b106d8e28ea35791be1e7836dcaf4d857ea3510b027f1b36 \
+    --hash=sha256:e383c2c2f53ec2b4985fb90504f56005310df1d56a758387fe6459b7775fafbf
     # via llm-become-human
 langchain-protocol==0.0.21 \
     --hash=sha256:04b3e80852233a8db39b39d3ad2438d892531dc0ecd41459e857a139ee0e601c \
