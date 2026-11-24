@@ -8,9 +8,9 @@ annotated-types==0.8.0 \
     --hash=sha256:13b2beaad985e05e2d6407ee4c4f35590b11f8d693a258a561055cac8f64cab7 \
     --hash=sha256:f072f4d804ea359e4eaf198b1af7a8b0943881a87f31bb764f8bf219bb9419e0
     # via pydantic
-anthropic==2.6.0 \
-    --hash=sha256:4325cdf9346fa29183674b6ee6289ebad5b2b0a935758f7350fa504032da1d9b \
-    --hash=sha256:a38d8698258a4cb33a9bc9d2f0ced1d96b71010870e5ed703807d21021a0da24
+anthropic==2.11.0 \
+    --hash=sha256:205711189d0bdbee78e5bb45b97944e7b42af3e2dce33ce8dacbf80f9492dc00 \
+    --hash=sha256:9ee1e89ef947b2cedddcbe44694f3d58b3463473bdc7bb98e84942459ad4fefb
     # via langchain-anthropic
 anyio==4.16.0 \
     --hash=sha256:59bb03251907983d1603d27c3087ddb1e93299ea2163adcdba37899a4fb12ffb \
@@ -428,13 +428,13 @@ execnet==2.1.2 \
     --hash=sha256:63d83bfdd9a23e35b9c6a3261412324f964c2ec8dcd8d3c6916ee9373e0befcd \
     --hash=sha256:67fba928dd5a544b783f6056f449e5e3931a5c378b128bc18501f7ea79e296ec
     # via pytest-xdist
-fastapi==0.162.5 \
-    --hash=sha256:1ca37f64f61c99cebd38636e67525fb721c5e8c1169f07f2a35d73b0a63265d4 \
-    --hash=sha256:5303c67415fde762889ca337db79d27b755b8bd09cef314fa7a4340bb30bfd2b
+fastapi==0.165.0 \
+    --hash=sha256:896f48462042bb4f162147eb8fac7e858753dc1f486765709baf105d70e4fc5b \
+    --hash=sha256:dd94d4128319c1e1d50535ab023ab698f850a4d2822f0e181747b46f4ff3c0ab
     # via llm-become-human
-filelock==4.2.10 \
-    --hash=sha256:9479aaeb4db20b5a53e3da28493edd24720b66b8a0b84030aa56ccdf243d6857 \
-    --hash=sha256:fcc3c0cb8bfe7f4b3bb0e231c04b15dbad068cb3c2515f343d8fde4dce93bd5d
+filelock==4.2.12 \
+    --hash=sha256:21decfec02f116ed4c954433cdb31f28c3b346b784543177b6d7059da2702ee9 \
+    --hash=sha256:7e7da24d3ac39268b0f156e56870001de44886318f092f9d851e692f7114d6dd
     # via
     #   python-discovery
     #   virtualenv
@@ -679,9 +679,9 @@ langchain-google-genai==3.2.0 \
     --hash=sha256:1fa620ea9c655a37537e95438857c423e1a3599b5a665b8dd87064c76ee95b72 \
     --hash=sha256:689fc159d4623a184678e24771f6d52373e983a8fc8d342e44352aaf28e9445d
     # via llm-become-human
-langchain-openai==1.7.4 \
-    --hash=sha256:8fd90e41588526d990f32262447adf8e130d7ce28ed66cefa315e64cc9dd12ce \
-    --hash=sha256:aaee93369765bac7ebf640aab62f8ae16df403ed982737ae51f88f6a24a151ab
+langchain-openai==1.8.3 \
+    --hash=sha256:3cac299d8df107a9b106d8e28ea35791be1e7836dcaf4d857ea3510b027f1b36 \
+    --hash=sha256:e383c2c2f53ec2b4985fb90504f56005310df1d56a758387fe6459b7775fafbf
     # via llm-become-human
 langchain-protocol==0.0.21 \
     --hash=sha256:04b3e80852233a8db39b39d3ad2438d892531dc0ecd41459e857a139ee0e601c \
