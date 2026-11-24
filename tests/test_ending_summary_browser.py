@@ -97,12 +97,13 @@ def test_columns_scroll_sideways_instead_of_overlapping_when_the_pane_is_narrow(
     # (overlay scrollbars draw inside the row, over its bottom edge).
     gap = row.evaluate(
         """row => {
-          const bottom = row.getBoundingClientRect().bottom - row.clientTop;
+          // The inner edge: a scrollbar that takes up layout space doesn't count.
+          const bottom = row.getBoundingClientRect().top + row.clientTop + row.clientHeight;
           const texts = [...row.querySelectorAll('.ending-run *')].filter(el => el.textContent.trim());
           return bottom - Math.max(...texts.map(el => el.getBoundingClientRect().bottom));
         }"""
     )
-    assert gap >= 14, gap
+    assert gap >= 15, gap  # 16px, less clientHeight's rounding
 
 
 def test_phone_card_stacks_every_shown_run_with_the_followed_run_first(
