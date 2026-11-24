@@ -120,11 +120,11 @@ def test_no_sentence_names_a_flag(name):
 
 def test_a_demo_run_reads_as_its_recorded_route():
     peaceful = _summary(DETROIT_RUNS, "synthetic-google")
-    assert _character(peaceful, "Markus")["sentence"].startswith(
-        "Markus led a peaceful revolution."
+    assert _character(peaceful, "Markus")["sentence"] == (
+        "Markus led a peaceful demonstration and died with his people."
     )
     assert _character(peaceful, "Kara")["sentence"] == (
-        "Kara was captured but escaped the camp. Alice is with her."
+        "Kara and Alice escaped the camp on a truck."
     )
     assert peaceful["world"]["sentence"] == "The revolution stayed peaceful."
     violent = _summary(DETROIT_RUNS, "synthetic-xai")
@@ -134,7 +134,7 @@ def test_a_demo_run_reads_as_its_recorded_route():
     assert violent["world"]["sentence"] == "The revolution turned violent."
     without = _summary(DETROIT_RUNS, "synthetic-anthropic")
     assert _character(without, "Markus")["sentence"] == (
-        "Markus left Jericho before the end."
+        "Markus walked away from Jericho and left his people to North."
     )
     assert without["world"]["sentence"] == "The revolution went on without Markus."
 
@@ -192,7 +192,7 @@ def test_a_crafted_ending_says_who_lived_and_how(craft):
     summary = _summary(root, "crafted")
     assert _character(summary, "Connor")["sentence"] == (
         "Connor became deviant. He died twice, and CyberLife sent a new body each time."
-        " His story went on to the end."
+        " His story went on to the end. Connor woke the androids at CyberLife Tower."
     )
     kara = _character(summary, "Kara")
     assert kara["sentence"] == "Kara reached freedom. Alice is with her."
@@ -210,8 +210,7 @@ def test_a_crafted_ending_says_who_lived_and_how(craft):
         "unknown",  # Carl: this crafted Run never decided him
     ]
     assert summary["world"] == {
-        "sentence": "The revolution turned violent."
-        " Connor woke the androids at CyberLife Tower.",
+        "sentence": "The revolution turned violent.",
         "headlines": ["Two", "Three", "Four"],
     }
 

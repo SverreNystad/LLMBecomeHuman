@@ -196,7 +196,7 @@ def _detail(root: Path, directory: Path) -> dict[str, Any]:
         ],
         "ending_summary": ending_summary(
             meta["final_flags"] or {},
-            [ev for ev in events if ev["type"] == "route"],
+            events,
             RunFolder(directory).news(),
             finished=meta["status"] == "complete",
         ),
