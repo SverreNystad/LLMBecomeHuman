@@ -273,19 +273,24 @@ def test_chapter_flowchart_browser_interactions(new_page, tmp_path):
     assert page.locator(".flow-node.visited .node-model-button").count() >= 6
     # Same-hue routes differ by provider line style.
     assert page.locator(".route-overlay.provider-xai").count() > 0
-    # Several models' logos stack in one column; labels remain visible.
+    # Several models' logos stack beside the label; labels remain visible.
     assert (
         page.locator(".flow-node.visited .node-label").first.bounding_box()[
             "height"
         ]
         > 0
     )
-    assert (
-        page.locator(".flow-node.visited .node-logos").first.evaluate(
-            "el => getComputedStyle(el).flexDirection"
-        )
-        == "column"
+    # Logos stack top to bottom, three to a column; a fourth starts a new column.
+    stacks = page.locator(".flow-node.visited .node-logos").evaluate_all(
+        """els => els.filter(el => el.children.length >= 4).slice(0, 1).map(el =>
+             [...el.children].slice(0, 4).map(c => {
+               const r = c.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top)];
+             }))"""
     )
+    assert stacks, "a node with four or more logos"
+    first, second, third, fourth = stacks[0]
+    assert first[0] == second[0] == third[0] and first[1] < second[1] < third[1]
+    assert fourth[0] > first[0] and fourth[1] == first[1]
     colors = page.locator(".route-overlay").evaluate_all(
         "els => [...new Set(els.map(e => e.style.stroke))]"
     )

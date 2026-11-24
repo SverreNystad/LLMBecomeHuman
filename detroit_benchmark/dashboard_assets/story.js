@@ -277,11 +277,12 @@ function scrollStoryToTop() {
  * so whatever the story pane cannot take is passed on to the panel. */
 function scrollStoryBy(delta) {
   for (const scroller of [$('storyScroll'), document.querySelector('.main-panel')]) {
-    if (Math.abs(delta) < 1) return;
+    if (Math.abs(delta) < 1) break;
     const before = scroller.scrollTop;
     scroller.scrollTop = before + delta;
     delta -= scroller.scrollTop - before;
   }
+  window.phoneIgnoreStoryScroll?.();
 }
 /* What is being read is judged at the upper third of the pane. */
 function readingLine() {
