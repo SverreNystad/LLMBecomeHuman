@@ -121,7 +121,7 @@ def test_no_sentence_names_a_flag(name):
 def test_a_demo_run_reads_as_its_recorded_route():
     peaceful = _summary(DETROIT_RUNS, "synthetic-google")
     assert _character(peaceful, "Markus")["sentence"] == (
-        "Markus led a peaceful demonstration and died with his people."
+        "Markus led a peaceful demonstration and sacrificed himself for his people."
     )
     assert _character(peaceful, "Kara")["sentence"] == (
         "Kara and Alice escaped the camp on a truck."

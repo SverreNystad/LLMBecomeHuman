@@ -410,6 +410,11 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
         ),
         # The demonstration
         Ending(
+            ("ch32_5_00022", 1),
+            "Markus led a peaceful demonstration and sacrificed himself for his people.",
+            _PEACEFUL_DEAD,
+        ),
+        Ending(
             ("ch32_5_00022", 0),
             "Markus led a peaceful demonstration, and it won.",
             {"markus_peaceful": True, "markus_alive": True},
@@ -420,7 +425,7 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
                 "Markus led a peaceful demonstration and died with his people.",
                 _PEACEFUL_DEAD,
             )
-            for branch in (1, 2, 4)
+            for branch in (2, 4)
         ),
         Ending(
             ("ch32_5_00022", 3),
@@ -441,7 +446,7 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
             Ending(
                 key,
                 "Markus's demonstration won, but Connor shot him during his speech.",
-                _PEACEFUL_DEAD,
+                {**_PEACEFUL_DEAD, "markus_demonstration_outcome": "won"},
             )
             for key in (
                 ("ch32_3_00008", "SHOOT"),
@@ -449,11 +454,16 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
                 ("ch32_7_00035", None),
             )
         ),
+        Ending(
+            ("ch32_7_00035", None),
+            "Markus detonated the dirty bomb, and Connor shot him during his speech.",
+            {**_MARKUS_DEAD, "markus_dirty_bomb_detonated": True},
+        ),
         # The revolution
         Ending(
             ("ch32_7_00035", None),
             "Markus's revolution won, but Connor shot him during his speech.",
-            _VIOLENT_DEAD,
+            {**_VIOLENT_DEAD, "markus_revolution_won": True},
         ),
         Ending(
             ("ch32_6_x0125", 0),
@@ -597,7 +607,7 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
         ),
         Ending(
             ("ch32_3_x0108", None),
-            "Hank fell to his death fighting him on the roof.",
+            "Hank charged him on the roof and fell to his death.",
             {"hank_alive": False},
         ),
         Ending(
@@ -605,7 +615,18 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
             "He killed Hank on the roof.",
             {"hank_alive": False},
         ),
+        Ending(("ch32_3_00020", "LEAVE"), "He walked away from Hank on the roof."),
+        Ending(
+            ("ch32_3_00050", "WIN THE FIGHT"),
+            "He fought his way past Captain Allen's team on the roof.",
+        ),
         # The revolution and the demonstration
+        Ending(
+            ("ch32_6_00024", "DO NOT DETONATE"),
+            "He spared Markus after the assault failed, but Markus did not survive.",
+            _MARKUS_DEAD,
+            after=("ch32_6_00026", "SPARE"),
+        ),
         Ending(
             ("ch32_6_x0120", None),
             "He killed Markus and stopped the revolution.",
@@ -642,12 +663,12 @@ ENDINGS: dict[str, tuple[Ending, ...]] = {
         ),
         Ending(
             ("ch32_5_x0125", 0),
-            "His mission failed and his story ended.",
+            "His mission failed when Markus detonated the dirty bomb, and his story ended.",
             _MISSION_FAILED,
         ),
         Ending(
             ("ch32_6_x0140", 0),
-            "His mission failed and his story ended.",
+            "His mission failed when Markus detonated the dirty bomb, and his story ended.",
             _MISSION_FAILED,
         ),
         Ending(

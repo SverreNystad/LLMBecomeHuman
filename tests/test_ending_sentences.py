@@ -113,7 +113,11 @@ def test_kara_s_sentence_says_what_happened_and_where(flags, events, sentence):
             "Markus died during the freedom march.",
         ),
         (
-            {"markus_peaceful": True, "markus_alive": False},
+            {
+                "markus_peaceful": True,
+                "markus_alive": False,
+                "markus_demonstration_outcome": "won",
+            },
             [_branch("ch32_5_00022", 0), _scene("ch32_3_x0103")],
             "Markus's demonstration won, but Connor shot him during his speech.",
         ),
@@ -213,3 +217,87 @@ def test_every_ending_is_told_by_the_event_and_outcomes_it_names():
                 node, choice = row.after
                 events.insert(0, _chose(node, choice))
             assert row.text in _sentence(name, dict(row.needs), *events), row.key
+
+
+SHOT_IN_SPEECH = _scene("ch32_7_00035")
+
+
+@pytest.mark.parametrize(
+    ("name", "flags", "events", "sentence"),
+    [
+        *(
+            (
+                "Markus",
+                {"markus_alive": False, "markus_dirty_bomb_detonated": True, **flags},
+                [SHOT_IN_SPEECH],
+                "Markus detonated the dirty bomb, and Connor shot him during his speech.",
+            )
+            for flags in (
+                {
+                    "markus_peaceful": True,
+                    "markus_demonstration_outcome": "free_in_the_debris",
+                },
+                {"markus_peaceful": False, "markus_revolution_won": False},
+            )
+        ),
+        (
+            "Markus",
+            {
+                "markus_peaceful": False,
+                "markus_alive": False,
+                "markus_revolution_won": True,
+            },
+            [SHOT_IN_SPEECH],
+            "Markus's revolution won, but Connor shot him during his speech.",
+        ),
+        (
+            "Markus",
+            {"markus_peaceful": True, "markus_alive": False},
+            [_branch("ch32_5_00022", 1)],
+            "Markus led a peaceful demonstration and sacrificed himself for his people.",
+        ),
+        (
+            "Connor",
+            {"connor_deviant": False, "connor_deaths": 1, "markus_alive": False},
+            [
+                _branch("ch32_3_x0105", 0),
+                _chose("ch32_6_00026", "SPARE"),
+                _chose("ch32_6_00024", "DO NOT DETONATE"),
+            ],
+            (
+                "Connor stayed a machine. He died once."
+                " He spared Markus after the assault failed, but Markus did not survive."
+            ),
+        ),
+        (
+            "Connor",
+            {
+                "connor_deviant": False,
+                "connor_deaths": 0,
+                "connor_mission_failed": True,
+            },
+            [_branch("ch32_5_x0125", 0)],
+            (
+                "Connor stayed a machine."
+                " His mission failed when Markus detonated the dirty bomb, and his story ended."
+            ),
+        ),
+        (
+            "Connor",
+            {
+                "connor_deviant": False,
+                "connor_deaths": 1,
+                "connor_killed_by_markus": True,
+            },
+            [_branch("ch31_1_x0107", 0), _chose("ch32_3_00050", "WIN THE FIGHT")],
+            (
+                "Connor stayed a machine. He died once."
+                " He fought his way past Captain Allen's team on the roof."
+            ),
+        ),
+    ],
+)
+def test_a_later_event_never_leaves_a_false_or_stale_sentence(
+    name, flags, events, sentence
+):
+    assert _sentence(name, flags, *events) == sentence
