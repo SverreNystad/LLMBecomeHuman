@@ -75,15 +75,41 @@ def test_an_unfinished_run_says_story_not_finished(detroit_dashboard, open_dashb
     assert column.locator(".ending-character").count() == 0
 
 
-def test_phone_card_shows_only_the_followed_run(
+def test_columns_scroll_sideways_instead_of_overlapping_when_the_pane_is_narrow(
+    detroit_dashboard, open_dashboard
+):
+    page = open_dashboard(detroit_dashboard, {"width": 1024, "height": 900})
+    card = _open_final_routes(page)
+    columns = card.locator(".ending-run")
+    boxes = [columns.nth(i).bounding_box() for i in range(columns.count())]
+    assert len(boxes) == 6
+    # Each column keeps its width and starts after the previous one ends.
+    assert all(box["width"] >= 280 for box in boxes)
+    assert all(b["x"] >= a["x"] + a["width"] for a, b in zip(boxes, boxes[1:]))
+    # The row of columns scrolls inside the card; the card stays within the window.
+    row = card.locator(".ending-columns")
+    assert row.evaluate("el => el.scrollWidth > el.clientWidth")
+    assert row.evaluate("el => getComputedStyle(el).overflowX") == "auto"
+    box = card.bounding_box()
+    assert box["x"] >= 0 and box["x"] + box["width"] <= page.viewport_size["width"]
+    assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+
+
+def test_phone_card_stacks_every_shown_run_with_the_followed_run_first(
     detroit_dashboard, open_dashboard, shots
 ):
     page = open_dashboard(detroit_dashboard, "phone")
     card = _open_final_routes(page)
     assert page.evaluate("document.body.classList.contains('is-phone')")
+    shown = page.evaluate("activeRuns().map(run => run.id)")
+    followed = page.evaluate("storyRun().id")
     columns = card.locator(".ending-run")
-    assert columns.count() == 1
-    assert columns.first.get_attribute("data-run-id") == page.evaluate("storyRun().id")
+    ids = [columns.nth(i).get_attribute("data-run-id") for i in range(columns.count())]
+    assert ids == [followed] + [run_id for run_id in shown if run_id != followed]
+    # One above the other, each the card's full width.
+    boxes = [columns.nth(i).bounding_box() for i in range(len(ids))]
+    assert all(b["y"] >= a["y"] + a["height"] for a, b in zip(boxes, boxes[1:]))
+    assert len({round(box["x"]) for box in boxes}) == 1
     box, width = card.bounding_box(), page.viewport_size["width"]
     assert box["x"] >= 0 and box["x"] + box["width"] <= width
     assert not SNAKE_CASE.search(card.inner_text())

@@ -1,13 +1,15 @@
 /* Ending Summary: the card that opens the Final Routes chapter in the Story. Each Run's
  * summary is written on the server (ending.py); this only lays it out, one column per
- * Shown Run, or the Followed Run alone on a phone. Uses app.js helpers at call time.
+ * Shown Run, or stacked with the Followed Run first on a phone. Uses app.js helpers at call time.
  */
 'use strict';
 const ENDING_CHAPTER = 'final';
 
 function endingRuns() {
-  if (document.body.classList.contains('is-phone')) return [storyRun()].filter(Boolean);
-  return activeRuns();
+  const runs = activeRuns();
+  if (!document.body.classList.contains('is-phone')) return runs;
+  const followed = storyRun();
+  return followed ? [followed, ...runs.filter(run => run.id !== followed.id)] : runs;
 }
 function endingColumn(run) {
   const summary = state.details.get(run.id)?.ending_summary;
