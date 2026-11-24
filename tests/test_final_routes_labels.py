@@ -3,7 +3,9 @@ route flag answers, from the Ending Summary's mapping table, instead of the flag
 
 from __future__ import annotations
 
+import json
 import re
+import shutil
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -56,9 +58,22 @@ def _final_story_beats(runs_dir: Path) -> list[dict]:
     return beats
 
 
-def test_assumed_final_routes_read_as_sentences_in_the_story():
+def _run_with_assumed_routes(root: Path) -> Path:
+    """A copy of a Synthetic Run whose Final Routes were all assumed."""
+    run = root / "assumed"
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", run)
+    events = [json.loads(line) for line in (run / "events.jsonl").open()]
+    for event in events:
+        if event["type"] == "route":
+            event["assumed"] = True
+    (run / "events.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+    return root
+
+
+def test_assumed_final_routes_read_as_sentences_in_the_story(tmp_path):
     """A route the Run never decided says, in words, what the story assumed."""
-    beats = [b for b in _final_story_beats(DETROIT_RUNS) if b.get("type") == "route"]
+    runs = _run_with_assumed_routes(tmp_path)
+    beats = [b for b in _final_story_beats(runs) if b.get("type") == "route"]
     assumed = [b for b in beats if b.get("assumed")]
     assert assumed, "the saved Runs assume their Final Routes"
     for beat in assumed:

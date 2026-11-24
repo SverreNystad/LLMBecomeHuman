@@ -412,6 +412,27 @@ def test_second_broken_reply_stops_the_run(tmp_path):
     assert not [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
 
 
+def test_a_stand_in_answers_in_place_of_the_mock_policy(tmp_path):
+    asked = []
+
+    def stand_in(schema, payload, max_tokens):
+        asked.append(schema.__name__)
+        if schema.__name__ == "ModelDecision":
+            ids = [c["id"] for c in payload["available_choices"]]
+            reply = {"choice_id": ids[-1], "rationale": "The stand-in chose."}
+        else:
+            reply = {"memory": "Remembered by the stand-in."}
+        return schema.model_validate(reply), {"token_usage": {"input_tokens": 7}}
+
+    run = Runner(graph(), "mock", None, tmp_path / "run", stand_in=stand_in)
+    run.run()
+    [decision] = [e for e in read_events(tmp_path / "run") if e["type"] == "decision"]
+    assert decision["output"]["rationale"] == "The stand-in chose."
+    assert decision["output"]["choice_id"] == decision["input"]["available_choices"][-1]["id"]
+    assert "ModelDecision" in asked
+    assert run.state["total_input_tokens"] >= 7
+
+
 def three_segment_graph():
     """Connor (chapter 1), Kara (chapter 2), Connor again (chapter 3)."""
 

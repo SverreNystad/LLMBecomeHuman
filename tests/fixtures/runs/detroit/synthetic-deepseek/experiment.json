@@ -1,0 +1,29 @@
+{
+  "provider": "mock",
+  "model_id": "deepseek-v4 [synthetic]",
+  "goal": "SYNTHETIC: Be a cold utilitarian: the greatest good by the numbers, whatever the cost to individuals.",
+  "temperature": 0,
+  "decision_limits": {
+    "max_output_tokens": 400,
+    "rationale_max_sentences": 2,
+    "broken_reply_retries": 1,
+    "reasoning": {}
+  },
+  "character_memory": {
+    "max_chars": 6000,
+    "memory_update_max_output_tokens": 2500
+  },
+  "graph_sha256": "edf0bc35f2f254c96e251675b336245f6ea2f55093aa494a4f1e2efe3fe1cc11",
+  "fidelity": "unverified_transcript_approximation",
+  "allow_unverified": true,
+  "show_relationships": true,
+  "initial_flags": {},
+  "story_title": "Detroit: Become Human transcript-derived benchmark",
+  "synthetic": true,
+  "started_at": "2026-11-19T20:33:33.766538+00:00",
+  "display_provider": "deepseek",
+  "stand_in": {
+    "tool": "claude-code",
+    "model": "haiku"
+  }
+}

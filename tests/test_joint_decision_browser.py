@@ -1,7 +1,7 @@
 """A Joint Decision in the Story: the decision card names both Characters and says the
 choice was made with both their memories (ADR 0005).
 
-Runs the real dashboard over the Detroit mock Runs in Chromium through Playwright; the
+Runs the real dashboard over the Synthetic Runs in Chromium through Playwright; the
 first decision's story beat is made a Joint Decision in flight, worded as the server
 words one. Skips without a browser.
 """

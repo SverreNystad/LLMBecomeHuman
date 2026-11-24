@@ -19,7 +19,7 @@ from detroit_benchmark.dashboard import (
 )
 from detroit_benchmark.engine import Runner
 from tests.test_benchmark import graph, three_segment_graph
-from tests.conftest import DETROIT_RUNS
+from tests.conftest import DETROIT_RUNS, FAMILIES
 
 PROJECT = Path(__file__).resolve().parents[1]
 
@@ -38,18 +38,14 @@ def run_named(c, name):
     return next(r for r in c.get("/api/runs").json()["runs"] if r["name"] == name)
 
 
-def test_lists_the_three_full_detroit_mock_runs():
+def test_lists_the_six_synthetic_runs():
     runs = TestClient(create_app(DETROIT_RUNS)).get("/api/runs")
     runs = runs.json()["runs"]
-    assert {r["name"] for r in runs} == {
-        "detroit-mock-cautious",
-        "detroit-mock-defiant",
-        "detroit-mock-wildcard",
-    }
+    assert {r["name"] for r in runs} == {f"synthetic-{f}" for f in FAMILIES}
     assert {r["status"] for r in runs} == {"complete"}
     assert {r["provider"] for r in runs} == {"mock"}
     assert all(r["synthetic"] for r in runs)
-    assert len({r["display_provider"] for r in runs}) == 3
+    assert {r["display_provider"] for r in runs} == set(FAMILIES)
 
 
 def test_detail_reflects_saved_decisions(tmp_path):
@@ -70,8 +66,8 @@ def test_detail_reflects_saved_decisions(tmp_path):
 
 def test_compare_identifies_same_node_differences_not_path_absences():
     c = client()
-    cautious = run_named(c, "detroit-mock-cautious")
-    defiant = run_named(c, "detroit-mock-defiant")
+    cautious = run_named(c, "synthetic-anthropic")
+    defiant = run_named(c, "synthetic-xai")
     result = c.get(
         "/api/compare", params=[("run_ids", cautious["id"]), ("run_ids", defiant["id"])]
     )
@@ -87,7 +83,7 @@ def test_compare_identifies_same_node_differences_not_path_absences():
 
 def test_csv_export_and_missing_event():
     c = client()
-    run = run_named(c, "detroit-mock-cautious")
+    run = run_named(c, "synthetic-anthropic")
     response = c.get(f"/api/runs/{run['id']}/decisions.csv")
     assert response.status_code == 200
     assert "text/csv" in response.headers["content-type"]
@@ -104,7 +100,7 @@ def test_path_traversal_rejected():
 
 
 def test_in_progress_and_partially_written_jsonl(tmp_path):
-    source = DETROIT_RUNS / "detroit-mock-cautious"
+    source = DETROIT_RUNS / "synthetic-anthropic"
     target = tmp_path / "live"
     shutil.copytree(source, target)
     (target / "summary.json").unlink()
@@ -172,12 +168,12 @@ def test_compare_requires_two_runs():
 
 def test_flowchart_includes_unvisited_options_and_all_chapters():
     c = client()
-    run = run_named(c, "detroit-mock-cautious")
+    run = run_named(c, "synthetic-anthropic")
     chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
     assert chart["complete"] is True
     assert chart["source"] == "run_snapshot"
     snapshot = json.loads(
-        (DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json").read_text()
+        (DETROIT_RUNS / "synthetic-anthropic" / "story-graph.json").read_text()
     )
     nodes = snapshot["nodes"].values()
     chapters = {str(n["chapter"]) for n in nodes if "chapter" in n}
@@ -217,7 +213,7 @@ def test_old_runs_without_graph_return_partial_not_invented_paths(tmp_path):
 
 
 def test_demo_family_is_only_cosmetic_and_never_claims_real_model_usage(tmp_path):
-    source = DETROIT_RUNS / "detroit-mock-cautious"
+    source = DETROIT_RUNS / "synthetic-anthropic"
     target = tmp_path / "mock"
     shutil.copytree(source, target)
     c = TestClient(create_app(tmp_path))
@@ -252,7 +248,7 @@ def test_story_endpoint_returns_readable_chapter_in_order():
 
 def test_story_and_flowchart_share_moment_ids():
     c = client()
-    run = run_named(c, "detroit-mock-cautious")
+    run = run_named(c, "synthetic-anthropic")
     chart = c.get(f"/api/runs/{run['id']}/flowchart").json()
     flowchart_moments = {
         node["moment"]: node for node in chart["nodes"].values() if "moment" in node
@@ -280,7 +276,7 @@ def test_story_and_flowchart_share_moment_ids():
 
 def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", target)
     with (target / "events.jsonl").open("a") as f:
         for index in (9000, 9001):
             f.write(
@@ -306,7 +302,7 @@ def test_story_moments_stay_distinct_when_a_scene_is_revisited(tmp_path):
 
 def test_story_endpoint_exposes_dialogue_and_clues(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", target)
     with (target / "events.jsonl").open("a") as f:
         f.write(
             json.dumps(
@@ -348,7 +344,7 @@ def test_story_for_unvisited_chapter_is_empty_not_an_error():
 
 def test_story_sees_new_events_written_to_a_live_run(tmp_path):
     target = tmp_path / "run"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", target)
     c = TestClient(create_app(tmp_path))
     run = c.get("/api/runs").json()["runs"][0]
     assert (
@@ -382,7 +378,7 @@ def test_story_sees_new_events_written_to_a_live_run(tmp_path):
 
 def test_run_without_recent_events_is_reported_as_stopped(tmp_path):
     target = tmp_path / "dead"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", target)
     (target / "summary.json").unlink()
     checkpoint = json.loads((target / "checkpoint.json").read_text())
     checkpoint["state"]["status"] = "running"
@@ -650,7 +646,7 @@ def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
 def test_justifications_are_served_as_at_most_two_sentences(tmp_path):
     # Runs recorded before the engine capped justifications still hold long ones.
     target = tmp_path / "run"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", target)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", target)
     long = "Wait… Hank is here. Saving him matters more. The mission can wait!"
     with (target / "events.jsonl").open("a") as f:
         f.write(

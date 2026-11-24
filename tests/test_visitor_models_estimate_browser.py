@@ -67,11 +67,11 @@ def model():
 
 @pytest.fixture
 def form_dashboard(tmp_path, model):
-    """The Detroit demo Runs plus a complete public Run of openai gpt-beta."""
+    """The Synthetic Runs plus a complete public Run of openai gpt-beta."""
     root = tmp_path / "runs"
     shutil.copytree(DETROIT_RUNS, root)
     public = root / "public-gpt-beta"
-    shutil.copytree(DETROIT_RUNS / "detroit-mock-cautious", public)
+    shutil.copytree(DETROIT_RUNS / "synthetic-anthropic", public)
     for name, fields in (
         ("experiment.json", {"provider": "openai", "model_id": "gpt-beta"}),
         ("summary.json", {"provider": "openai", "model": "gpt-beta"}),
@@ -85,7 +85,7 @@ def form_dashboard(tmp_path, model):
         allow_own_runs=True,
         model_lister=lister,
         model_factory=model,
-        visitor_story=DETROIT_RUNS / "detroit-mock-cautious" / "story-graph.json",
+        visitor_story=DETROIT_RUNS / "synthetic-anthropic" / "story-graph.json",
     )
     server, thread, url = serve(app)
     yield url
