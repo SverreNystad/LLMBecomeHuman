@@ -18,6 +18,7 @@
   display: grid; grid-template-columns: repeat(var(--ending-columns, 1), minmax(280px, 1fr));
   grid-template-rows: repeat(4, auto); column-gap: 26px;
   overflow-x: auto; overscroll-behavior-x: contain;
+  padding-bottom: 16px; /* the scrollbar's own strip, so it never covers text */
 }
 .ending-run { grid-row: span 4; display: grid; grid-template-rows: subgrid; row-gap: 14px; min-width: 0; }
 .ending-run.is-unfinished { grid-template-rows: auto 1fr; }
@@ -55,6 +56,6 @@
 
 body.is-phone .ending-summary { left: auto; width: auto; transform: none; padding: 16px 16px 12px; }
 /* On a phone the Runs stack, one under the other, and the Story scrolls down through them. */
-body.is-phone .ending-columns { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 22px; overflow-x: visible; }
+body.is-phone .ending-columns { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: 22px; overflow-x: visible; padding-bottom: 0; }
 body.is-phone .ending-run { grid-row: auto; grid-template-rows: none; }
 body.is-phone .ending-run + .ending-run { padding-top: 18px; border-top: 1px solid var(--ending-line); }
