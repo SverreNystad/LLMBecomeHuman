@@ -27,6 +27,31 @@ uv run mkdocs serve
 
 This will build the documentation and start a local server at [http://127.0.0.1:8000/](http://127.0.0.1:8000/) where you can browse the docs and API reference. Get the documentation according to the latest commit on main by viewing the `gh-pages` branch on GitHub: [https://sverrenystad.github.io/LLMBecomeHuman/](sverrenystad.github.io/LLMBecomeHuman/).
 
+### Run the Tests
+
+```bash
+docker compose run --rm --build --entrypoint pytest runner -q
+```
+
+Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs`.
+
+The browser tests (`tests/test_*_browser.py`) are skipped unless Playwright and Chromium are installed. They use a `chromium` on PATH if there is one, else the one Playwright downloads:
+
+```bash
+uv run --group browser playwright install chromium
+uv run --group browser pytest -q -k browser
+```
+
+### Refresh the Doc Screenshots
+
+The screenshots in `docs/images/` come from the browser tests. A normal run saves them to each test's temporary folder; with `UPDATE_DOC_SCREENSHOTS=1` they replace the ones in `docs/images/`:
+
+```bash
+UPDATE_DOC_SCREENSHOTS=1 uv run --group browser pytest -q -k browser
+```
+
+The README's Flowchart and Story come from `tests/test_readme_screenshots_browser.py`, over the six Synthetic Runs with the Synthetic Scene Art in `images/`.
+
 ## Docker Compose
 
 `docker compose up --build -d dashboard` serves the dashboard at [http://127.0.0.1:8000](http://127.0.0.1:8000). The saved Runs (`./runs`) and the story data (`./data`) are mounted read-only. The one writable mount is `./visitor_runs` at `/app/saved_runs/visitor-runs`, the Visitor Run folder under the runs root. Docker creates it on first start and it is gitignored.
