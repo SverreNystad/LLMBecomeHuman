@@ -93,6 +93,17 @@ def test_columns_scroll_sideways_instead_of_overlapping_when_the_pane_is_narrow(
     box = card.bounding_box()
     assert box["x"] >= 0 and box["x"] + box["width"] <= page.viewport_size["width"]
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    # The scrollbar gets its own strip below the columns, so it never covers text
+    # (overlay scrollbars draw inside the row, over its bottom edge).
+    gap = row.evaluate(
+        """row => {
+          // The inner edge: a scrollbar that takes up layout space doesn't count.
+          const bottom = row.getBoundingClientRect().top + row.clientTop + row.clientHeight;
+          const texts = [...row.querySelectorAll('.ending-run *')].filter(el => el.textContent.trim());
+          return bottom - Math.max(...texts.map(el => el.getBoundingClientRect().bottom));
+        }"""
+    )
+    assert gap >= 15, gap  # 16px, less clientHeight's rounding
 
 
 def test_phone_card_stacks_every_shown_run_with_the_followed_run_first(
