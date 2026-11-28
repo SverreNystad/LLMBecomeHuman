@@ -6,6 +6,7 @@ The model factory is built on the engine's `mock` provider, so a whole Run plays
 
 from __future__ import annotations
 
+import pytest
 import json
 import shutil
 import threading
@@ -26,7 +27,6 @@ from tests.test_visitor_runs import (
 from tests.conftest import DETROIT_RUNS
 
 
-
 def public_ids(client):
     return [run["id"] for run in listing(client)]
 
@@ -42,7 +42,9 @@ def public_run_exists(client, provider, model):
 def start_when_free(client, provider="openai", model="gpt-test-1"):
     """Starts a Run once this visitor's last one has freed its slot (just after it ends)."""
     deadline = time.time() + 10
-    while (response := start(client, provider=provider, model=model)).status_code == 409:
+    while (
+        response := start(client, provider=provider, model=model)
+    ).status_code == 409:
         assert time.time() < deadline, "the last Run never freed its slot"
         time.sleep(0.05)
     assert response.status_code == 200, response.text
@@ -66,6 +68,7 @@ def bake_in(root: Path, provider: str, model: str, status: str = "complete"):
     return directory
 
 
+@pytest.mark.slow
 def test_the_first_complete_visitor_run_of_a_model_is_listed_for_everyone(tmp_path):
     client = visitor_client(tmp_path)
     assert public_run_exists(client, "openai", "gpt-test-1") is False
@@ -77,6 +80,7 @@ def test_the_first_complete_visitor_run_of_a_model_is_listed_for_everyone(tmp_pa
     assert public_run_exists(client, "openai", "gpt-test-1") is True
 
 
+@pytest.mark.slow
 def test_a_second_complete_run_of_the_same_model_stays_private(tmp_path):
     client = visitor_client(tmp_path)
     first = play(client)
@@ -87,6 +91,7 @@ def test_a_second_complete_run_of_the_same_model_stays_private(tmp_path):
     assert second["id"] in [run["id"] for run in listing(client, second["id"])]
 
 
+@pytest.mark.slow
 def test_models_are_told_apart_by_exact_provider_and_model_id(tmp_path):
     client = visitor_client(tmp_path)
     first = play(client, "openai", "gpt-test-1")
@@ -97,6 +102,7 @@ def test_models_are_told_apart_by_exact_provider_and_model_id(tmp_path):
     assert public_run_exists(client, "openrouter", "gpt-test-1-2026-01-01") is False
 
 
+@pytest.mark.slow
 def test_a_model_with_a_baked_in_run_is_never_made_public(tmp_path):
     baked = bake_in(tmp_path, "anthropic", "claude-test-9")
     client = visitor_client(tmp_path)
@@ -110,6 +116,7 @@ def test_a_model_with_a_baked_in_run_is_never_made_public(tmp_path):
     ]
 
 
+@pytest.mark.slow
 def test_a_partial_baked_in_run_does_not_count(tmp_path):
     bake_in(tmp_path, "anthropic", "claude-test-9", status="partial")
     client = visitor_client(tmp_path)
@@ -148,6 +155,7 @@ def test_a_stopped_visitor_run_stays_private_and_does_not_count(tmp_path):
     assert public_run_exists(client, "openai", "gpt-test-1") is False
 
 
+@pytest.mark.slow
 def test_a_playing_visitor_run_is_not_public(tmp_path):
     gate = threading.Event()
 
@@ -167,6 +175,7 @@ def test_a_playing_visitor_run_is_not_public(tmp_path):
     assert public_ids(client) == [run_id]
 
 
+@pytest.mark.slow
 def test_concurrent_completions_of_the_same_model_give_exactly_one_public_run(
     tmp_path,
 ):
@@ -195,6 +204,7 @@ def test_concurrent_completions_of_the_same_model_give_exactly_one_public_run(
     assert len(public) == 1 and public[0] in ids
 
 
+@pytest.mark.slow
 def test_the_public_run_stays_public_and_the_rest_private_after_a_restart(tmp_path):
     client = visitor_client(tmp_path)
     first = play(client)
@@ -207,6 +217,7 @@ def test_the_public_run_stays_public_and_the_rest_private_after_a_restart(tmp_pa
     assert second["id"] not in public_ids(restarted)
 
 
+@pytest.mark.slow
 def test_without_the_flag_public_visitor_runs_are_still_listed_but_the_check_is_absent(
     tmp_path,
 ):
@@ -221,6 +232,7 @@ def test_without_the_flag_public_visitor_runs_are_still_listed_but_the_check_is_
     )
 
 
+@pytest.mark.slow
 def test_publication_is_settled_at_start_up_and_when_a_run_ends_not_per_request(
     tmp_path, monkeypatch
 ):

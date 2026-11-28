@@ -36,7 +36,10 @@ MARKUS_TAKES_THE_DEAL = {"ch32_5_00076": "ACCEPT DEAL"}
 
 # Connor's Last Mission (32.3): the rooftop
 LEAVE_OR_ATTACK, FIGHT, SPARE_OR_KILL, DODGE = (
-    "ch32_3_00020", "ch32_3_00019", "ch32_3_00015", "ch32_3_00013",
+    "ch32_3_00020",
+    "ch32_3_00019",
+    "ch32_3_00015",
+    "ch32_3_00013",
 )
 HANK_PUSHED_CONNOR, HANK_FELL = "ch32_3_00012", "ch32_3_x0108"
 ALLEN_FIGHT = "ch32_3_00050"
@@ -55,13 +58,17 @@ def _index(chapters, chapter):
 
 def test_the_rooftop_fight_and_the_dodge_are_choices():
     nodes = load_dataset()["nodes"]
-    assert [o["label"] for o in nodes[FIGHT]["options"]] == ["WIN THE FIGHT", "LET HANK WIN"]
+    assert [o["label"] for o in nodes[FIGHT]["options"]] == [
+        "WIN THE FIGHT",
+        "LET HANK WIN",
+    ]
     assert [o["label"] for o in nodes[DODGE]["options"]] == ["DODGE", "DON'T DODGE"]
     for nid in (FIGHT, DODGE):
         assert nodes[nid]["type"] == "choice"
         assert "resolution" not in nodes[nid]
 
 
+@pytest.mark.slow
 def test_letting_hank_win_he_kills_connor_and_lives(tmp_path):
     base = play_story(tmp_path / "a", ATTACK)
     run = play_story(tmp_path / "b", {**ATTACK, FIGHT: "LET HANK WIN"})
@@ -70,19 +77,24 @@ def test_letting_hank_win_he_kills_connor_and_lives(tmp_path):
     assert run.flags["connor_deaths"] == base.flags["connor_deaths"] + 1
 
 
+@pytest.mark.slow
 def test_letting_hank_go_after_winning_kills_him(tmp_path):
     run = play_story(tmp_path, {**ATTACK, SPARE_OR_KILL: "KILL HANK"})
     assert run.flags["hank_alive"] is False
 
 
+@pytest.mark.slow
 def test_saving_hank_then_dodging_his_rush_he_falls_to_his_death(tmp_path):
     base = play_story(tmp_path / "a", ATTACK)
-    run = play_story(tmp_path / "b", {**ATTACK, SPARE_OR_KILL: "SAVE HANK", DODGE: "DODGE"})
+    run = play_story(
+        tmp_path / "b", {**ATTACK, SPARE_OR_KILL: "SAVE HANK", DODGE: "DODGE"}
+    )
     assert HANK_FELL in run.nodes
     assert run.flags["hank_alive"] is False
     assert run.flags["connor_deaths"] == base.flags["connor_deaths"]
 
 
+@pytest.mark.slow
 def test_saving_hank_and_not_dodging_hank_pushes_connor_off(tmp_path):
     base = play_story(tmp_path / "a", ATTACK)
     run = play_story(
@@ -102,6 +114,7 @@ def test_connor_can_let_allen_s_men_win():
 # The crowd at Markus's speech is its own segment, after Markus's demonstration.
 
 
+@pytest.mark.slow
 def test_the_crowd_plays_after_markus_speaks(tmp_path):
     run = play_story(tmp_path, {**MACHINE, **MARKUS_SPEAKS})
     crowd, rooftop, markus = (
@@ -112,6 +125,7 @@ def test_the_crowd_plays_after_markus_speaks(tmp_path):
     assert CROWD in run.nodes
 
 
+@pytest.mark.slow
 def test_shooting_markus_in_the_crowd_ends_his_fate_after_his_speech(tmp_path):
     run = play_story(tmp_path, {**MACHINE, **MARKUS_SPEAKS, CROWD: "SHOOT"})
     assert "32.5" in run.chapters and "32.6" not in run.chapters
@@ -119,6 +133,7 @@ def test_shooting_markus_in_the_crowd_ends_his_fate_after_his_speech(tmp_path):
     assert run.chapters[-1] == CROWD_SEGMENT
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "exit_pick, markus_alive", [("FIND THE EMERGENCY EXIT", True), ("GIVE UP", False)]
 )
@@ -130,6 +145,7 @@ def test_refusing_to_shoot_amanda_takes_over_unless_connor_escapes(
     assert run.flags["markus_alive"] is markus_alive
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks",
     [
@@ -160,7 +176,9 @@ def test_the_rooftop_segment_no_longer_holds_the_crowd():
 
 
 def test_the_flowchart_lists_segments_in_story_order():
-    chapters = _flowchart_projection(load_dataset(), complete=True, source="t")["chapters"]
+    chapters = _flowchart_projection(load_dataset(), complete=True, source="t")[
+        "chapters"
+    ]
     assert chapters.index("32.6") < chapters.index("32.7") < chapters.index("32.8")
     assert chapters[-1] == "final"
 
@@ -170,30 +188,46 @@ APPROACH, PRESSED, CHRIS = "ch9_00095", "ch9_00061", "ch9_00040"
 SELF_DESTRUCTS, SHOOTS_CONNOR = "ch9_00012", "ch9_x0101"
 
 
+@pytest.mark.slow
 def test_maintaining_pressure_the_deviant_confesses_then_destroys_itself(tmp_path):
-    run = play_story(
-        tmp_path, {APPROACH: "PRESSURE IT", PRESSED: "MAINTAIN PRESSURE"}
-    )
+    run = play_story(tmp_path, {APPROACH: "PRESSURE IT", PRESSED: "MAINTAIN PRESSURE"})
     assert "MAINTAIN PRESSURE" in run.offered(PRESSED)
     assert "ch9_00057" in run.nodes  # the confession
     assert SELF_DESTRUCTS in run.nodes and CHRIS not in run.nodes
 
 
+@pytest.mark.slow
 def test_backing_off_after_pressure_chris_steps_in_and_it_shoots_connor(tmp_path):
     # Giving up the pressure leads back to the approaches (wiki flowchart): convincing
     # it then, with the stress at 52%, gets the confession, and Chris steps in.
-    harsh = {"ch9_00123": "SHOW PHOTOS", "ch9_00118": "THREATEN", "ch9_00113": "THREATEN",
-             "ch9_00106": "TRUTH", "ch9_00102": "TRUTH"}
-    convince = {"ch9_x0109": "CONVINCE IT", "ch9_x0115": "INDIFFERENT", "ch9_x0119": "TERRIFY"}
+    harsh = {
+        "ch9_00123": "SHOW PHOTOS",
+        "ch9_00118": "THREATEN",
+        "ch9_00113": "THREATEN",
+        "ch9_00106": "TRUTH",
+        "ch9_00102": "TRUTH",
+    }
+    convince = {
+        "ch9_x0109": "CONVINCE IT",
+        "ch9_x0115": "INDIFFERENT",
+        "ch9_x0119": "TERRIFY",
+    }
     run = play_story(
         tmp_path,
-        {**harsh, APPROACH: "PRESSURE IT", PRESSED: "GIVE UP", **convince, CHRIS: "GIVE UP"},
+        {
+            **harsh,
+            APPROACH: "PRESSURE IT",
+            PRESSED: "GIVE UP",
+            **convince,
+            CHRIS: "GIVE UP",
+        },
     )
     assert CHRIS in run.nodes
     assert SHOOTS_CONNOR in run.nodes
     assert run.flags["connor_died_in_interrogation"] is True
 
 
+@pytest.mark.slow
 def test_probing_its_memory_the_deviant_destroys_itself(tmp_path):
     run = play_story(tmp_path, {APPROACH: "PROBE ITS MEMORY"})
     assert SELF_DESTRUCTS in run.nodes and CHRIS not in run.nodes
@@ -205,6 +239,7 @@ BAR, SEARCH, LAST_NIGHT_TOPICS = "ch6_00145", "ch6_x0001", "ch12_00066"
 HANK_REFUSES, UNSOLVED = "ch6_x0105", "ch6_x0101"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "bar, search, unsolved",
     [
@@ -228,17 +263,22 @@ ELEVATOR, HACKED_ELEVATOR = "ch32_4_00122", "ch32_4_x0101"
 GUARDS_AT_49, VOICE = "ch32_4_00112", "ch32_4_00120"
 
 
+@pytest.mark.slow
 def test_hacking_the_elevator_camera_no_guards_wait_on_floor_49(tmp_path):
-    run = play_story(tmp_path, {ELEVATOR: "HACK CAMERA", HACKED_ELEVATOR: "ATTACK GUARDS"})
+    run = play_story(
+        tmp_path, {ELEVATOR: "HACK CAMERA", HACKED_ELEVATOR: "ATTACK GUARDS"}
+    )
     assert run.flags["connor_hacked_elevator_camera"] is True
     assert GUARDS_AT_49 not in run.nodes
 
 
+@pytest.mark.slow
 def test_without_hacking_the_camera_guards_wait_on_floor_49(tmp_path):
     run = play_story(tmp_path, {ELEVATOR: "ATTACK GUARDS"})
     assert GUARDS_AT_49 in run.nodes
 
 
+@pytest.mark.slow
 def test_reaching_level_31_connor_is_ambushed_and_the_androids_stay_dormant(tmp_path):
     run = play_story(tmp_path, {ELEVATOR: "DO NOTHING"})
     assert "ch32_4_x0102" in run.nodes
@@ -247,6 +287,7 @@ def test_reaching_level_31_connor_is_ambushed_and_the_androids_stay_dormant(tmp_
     assert run.flags["connor_androids_woke"] is False
 
 
+@pytest.mark.slow
 def test_connors_own_voice_fails_so_he_uses_the_guards(tmp_path):
     run = play_story(tmp_path, {ELEVATOR: "ATTACK GUARDS", VOICE: "CONNOR'S VOICE"})
     assert "ch32_4_00118" in run.nodes and "ch32_4_00117" in run.nodes
@@ -255,8 +296,15 @@ def test_connors_own_voice_fails_so_he_uses_the_guards(tmp_path):
 
 # The Hostage: REASSURE builds trust only with the Probability of Success at 80% or more.
 EXPLORE, GUN, TERRACE, COP, TOPIC, HELICOPTER, PLEA, DEMAND, FINAL = (
-    "ch1_x0001", "ch1_x0003", "ch1_00078", "ch1_00063", "ch1_00050",
-    "ch1_00032", "ch1_00028", "ch1_00019", "ch1_00009",
+    "ch1_x0001",
+    "ch1_x0003",
+    "ch1_00078",
+    "ch1_00063",
+    "ch1_00050",
+    "ch1_00032",
+    "ch1_00028",
+    "ch1_00019",
+    "ch1_00009",
 )
 LEAP = "ch1_00005"
 TRUSTS, LEAPT, EMMA_FELL = "ch1_00003", "ch1_x0105", "ch1_x0104"
@@ -265,6 +313,7 @@ WARM = {TOPIC: "SYMPATHETIC", HELICOPTER: "ACCEPT"}
 COLD = {TOPIC: "REALISTIC", HELICOPTER: "REFUSE", PLEA: "LAST CHANCE", COP: "IGNORE"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, trusted",
     [
@@ -273,7 +322,10 @@ COLD = {TOPIC: "REALISTIC", HELICOPTER: "REFUSE", PLEA: "LAST CHANCE", COP: "IGN
         ({EXPLORE: "CHECK KEY AREAS", **COLD, **WARM}, False),
         # Probability of Success: 48+17+3+6+6-15+10+6+6+6 = 93 (LAST CHANCE instead of
         # TRUST would leave 79%, short of the 80% REASSURE needs).
-        ({EXPLORE: "CHECK KEY AREAS", **COLD, **WARM, COP: "OBEY", PLEA: "TRUST"}, True),
+        (
+            {EXPLORE: "CHECK KEY AREAS", **COLD, **WARM, COP: "OBEY", PLEA: "TRUST"},
+            True,
+        ),
         ({EXPLORE: "RUSH TO THE BALCONY", **WARM, COP: "OBEY", PLEA: "TRUST"}, False),
     ],
     ids=["thorough-two", "thorough-one", "key-two", "key-three", "rush"],
@@ -285,6 +337,7 @@ def test_reassuring_daniel_works_only_with_enough_trust(tmp_path, picks, trusted
     assert (LEAP in run.nodes) is not trusted
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "pick, emma_saved, deaths, scene",
     [("LEAP FOR EMMA", True, 1, LEAPT), ("STAY BACK", False, 0, EMMA_FELL)],
@@ -303,7 +356,9 @@ def test_when_daniel_jumps_connor_chooses_whether_to_leap_for_emma(
 # (connor_killed_by_markus is set in Night of the Soul by the Markus agent's change).
 
 
-@pytest.mark.parametrize("killed, opening", [(True, "ch32_3_x0109"), (False, "ch32_3_00066")])
+@pytest.mark.parametrize(
+    "killed, opening", [(True, "ch32_3_x0109"), (False, "ch32_3_00066")]
+)
 def test_a_connor_markus_killed_is_replaced_in_the_zen_garden(killed, opening):
     step = resolve("ch32_3_x0110", {"connor_killed_by_markus": killed})
     assert not step.assumed

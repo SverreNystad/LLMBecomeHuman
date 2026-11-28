@@ -33,7 +33,9 @@ WAITING = ["ch32_2_00010", "ch32_2_x0105", "ch32_2_x0102", "ch32_2_x0211"]
 
 @pytest.mark.parametrize("nid", WAITING)
 def test_32_2_waits_for_a_peaceful_markus_in_jericho(nid):
-    peaceful = taken(nid, markus_peaceful=True, markus_alive=True, markus_left_jericho=False)
+    peaceful = taken(
+        nid, markus_peaceful=True, markus_alive=True, markus_left_jericho=False
+    )
     assert "kara_awaiting_markus" in effect_flags(peaceful)
     gone = taken(nid, markus_peaceful=True, markus_alive=True, markus_left_jericho=True)
     assert "kara_awaiting_markus" not in effect_flags(gone)
@@ -45,6 +47,7 @@ def test_32_5_hands_over_to_kara_s_32_9_before_connor_s_last_segments():
     assert NODES["ch32_9_x0009"]["next"] == "final_x0902"
 
 
+@pytest.mark.slow
 def test_a_won_demonstration_frees_kara_and_alice(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, **WIN, FENCE: "WAIT"})
     chapters = list(dict.fromkeys(run.chapters))
@@ -59,7 +62,9 @@ def test_a_won_demonstration_frees_kara_and_alice(tmp_path):
     assert run.flags["kara_freed_by_markus"] is True
     kara = ending_summary(run.flags, [], [], finished=True)["characters"][1]
     assert kara["outcome"] == "escaped" and kara["alice_with_her"] is True
-    assert "demonstration" in kara["sentence"] and "androids freed" not in kara["sentence"]
+    assert (
+        "demonstration" in kara["sentence"] and "androids freed" not in kara["sentence"]
+    )
 
 
 def test_the_peaceful_freeing_is_heard_from_the_distance_and_nobody_is_destroyed():
@@ -68,6 +73,7 @@ def test_the_peaceful_freeing_is_heard_from_the_distance_and_nobody_is_destroyed
     assert "storm" not in text
 
 
+@pytest.mark.slow
 def test_a_lost_demonstration_frees_nobody(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, **LOSE, FENCE: "WAIT"})
     chapters = list(dict.fromkeys(run.chapters))
@@ -78,15 +84,29 @@ def test_a_lost_demonstration_frees_nobody(tmp_path):
 
 @pytest.mark.parametrize(
     "outcome, freed",
-    [("won", True), ("died_with_his_people", False), ("betrayed", False),
-     ("died_protecting_his_people", False), ("free_in_the_debris", False)],
+    [
+        ("won", True),
+        ("died_with_his_people", False),
+        ("betrayed", False),
+        ("died_protecting_his_people", False),
+        ("free_in_the_debris", False),
+    ],
 )
-@pytest.mark.parametrize("waiting", ["together", "left_alice", "kara_died", "alice_died"])
-def test_32_9_frees_the_camp_only_when_the_demonstration_is_won(waiting, outcome, freed):
-    flags = {"kara_awaiting_markus": waiting, "markus_peaceful": True,
-             "markus_alive": outcome in ("won", "free_in_the_debris"),
-             "markus_revolution_won": False, "markus_demonstration_outcome": outcome,
-             "kara_alive": waiting != "kara_died", "alice_alive": waiting != "alice_died"}
+@pytest.mark.parametrize(
+    "waiting", ["together", "left_alice", "kara_died", "alice_died"]
+)
+def test_32_9_frees_the_camp_only_when_the_demonstration_is_won(
+    waiting, outcome, freed
+):
+    flags = {
+        "kara_awaiting_markus": waiting,
+        "markus_peaceful": True,
+        "markus_alive": outcome in ("won", "free_in_the_debris"),
+        "markus_revolution_won": False,
+        "markus_demonstration_outcome": outcome,
+        "kara_alive": waiting != "kara_died",
+        "alice_alive": waiting != "alice_died",
+    }
     branch = taken(CAMP_OUTCOME, **flags)
     flags |= effect_flags(branch)
     alice = waiting != "alice_died" and freed
@@ -99,9 +119,14 @@ def test_32_9_frees_the_camp_only_when_the_demonstration_is_won(waiting, outcome
         assert "storm" not in (NODES[branch["next"]].get("description") or "")
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("violent", [True, False])
 def test_luther_in_the_camp_is_freed_with_them(tmp_path, violent):
-    picks = {**CAPTURED, **LEFT_ALICE, **({"ch31_1_00006": "REVOLUTION"} if violent else WIN)}
+    picks = {
+        **CAPTURED,
+        **LEFT_ALICE,
+        **({"ch31_1_00006": "REVOLUTION"} if violent else WIN),
+    }
     run = play_story(tmp_path, picks)
     assert run.flags["kara_awaiting_markus"] == "left_alice"
     assert run.flags["alice_alive"] is True and run.flags["luther_alive"] is True
@@ -117,9 +142,17 @@ def test_a_dead_luther_is_not_freed():
 
 # Alice's fear: the rule stays (two discouraging answers make her panic), and the
 # scene after each answer shows how she takes it.
-FRIGHTENING = [("ch32_2_00075", "TRUTH"), ("ch32_2_00069", "ORDER"), ("ch32_2_00065", "POWERLESS")]
-SOOTHING = [("ch32_2_00075", "LIE"), ("ch32_2_00069", "CALM DOWN"),
-            ("ch32_2_00065", "REASSURING"), ("ch32_2_00065", "OPTIMISTIC")]
+FRIGHTENING = [
+    ("ch32_2_00075", "TRUTH"),
+    ("ch32_2_00069", "ORDER"),
+    ("ch32_2_00065", "POWERLESS"),
+]
+SOOTHING = [
+    ("ch32_2_00075", "LIE"),
+    ("ch32_2_00069", "CALM DOWN"),
+    ("ch32_2_00065", "REASSURING"),
+    ("ch32_2_00065", "OPTIMISTIC"),
+]
 
 
 def alice_s_reaction(choice: str, label: str) -> str:
@@ -175,6 +208,7 @@ def test_a_camp_nobody_frees_kills_luther(nid):
     assert taken(rule, luther_alive=False)["next"] == "ch32_9_x0009"
 
 
+@pytest.mark.slow
 def test_luther_dies_when_the_demonstration_is_lost(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, **LEFT_ALICE, **LOSE})
     assert run.flags["kara_awaiting_markus"] == "left_alice"

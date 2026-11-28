@@ -20,6 +20,7 @@ def outcome(run):
     )
 
 
+@pytest.mark.slow
 def test_hank_knows_his_partner_and_the_androids_wake(tmp_path):
     run = play_story(tmp_path, {})
     assert FIGHT in run.nodes
@@ -27,21 +28,25 @@ def test_hank_knows_his_partner_and_the_androids_wake(tmp_path):
     assert run.flags["hank_alive"] is True
 
 
+@pytest.mark.slow
 def test_the_wrong_son_hank_kills_connor_and_the_androids_stay_dormant(tmp_path):
     run = play_story(tmp_path, {SON: "ANTHONY"})
     assert outcome(run) == (False, True, False)
 
 
+@pytest.mark.slow
 def test_doing_nothing_the_new_connor_kills_connor(tmp_path):
     run = play_story(tmp_path, {AFTER_SAVING: "DO NOTHING"})
     assert outcome(run) == (False, True, False)
 
 
+@pytest.mark.slow
 def test_interposing_starts_the_fight(tmp_path):
     run = play_story(tmp_path, {AFTER_SAVING: "INTERPOSE"})
     assert FIGHT in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "label, connor_dies", [("TRANSFER", False), ("STAND UP", True), ("SHOOT", True)]
 )
@@ -53,13 +58,17 @@ def test_sacrificing_hank_the_androids_wake_whatever_happens_to_connor(
     assert outcome(run) == (True, connor_dies, not connor_dies)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("label, woke", [("TRANSFER", True), ("STAND UP", False)])
-def test_without_hank_only_swapping_bodies_finishes_the_conversion(tmp_path, label, woke):
+def test_without_hank_only_swapping_bodies_finishes_the_conversion(
+    tmp_path, label, woke
+):
     run = play_story(tmp_path, {**HOSTILE_HANK, HANK_DEAD_CHOICE: label})
     assert HOSTAGE not in run.nodes
     assert outcome(run) == (woke, not woke, woke)
 
 
+@pytest.mark.slow
 def test_the_media_credit_connor_only_if_the_androids_woke(tmp_path):
     peaceful_markus_succeeds = {
         **CONNOR_SHAKEN,  # a deviant Connor at the tower

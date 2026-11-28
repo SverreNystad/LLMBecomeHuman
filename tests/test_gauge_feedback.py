@@ -25,26 +25,50 @@ def _graph(option_feedback=None, branch_feedback=None, hints=None) -> dict:
         "start": "first",
         "nodes": {
             "first": {
-                "id": "first", "type": "choice", "chapter": "1", "character": "Connor",
-                "heading": "On the terrace", "description": "Daniel waits.",
+                "id": "first",
+                "type": "choice",
+                "chapter": "1",
+                "character": "Connor",
+                "heading": "On the terrace",
+                "description": "Daniel waits.",
                 "options": [
-                    {"id": "calm", "label": "CALM", "next": "rule", "effects": first,
-                     "relation_hints": hints or []},
+                    {
+                        "id": "calm",
+                        "label": "CALM",
+                        "next": "rule",
+                        "effects": first,
+                        "relation_hints": hints or [],
+                    },
                 ],
             },
             "rule": {
-                "id": "rule", "type": "condition", "chapter": "1", "character": "Connor",
-                "heading": "The deviant listens", "resolution": "rule",
+                "id": "rule",
+                "type": "condition",
+                "chapter": "1",
+                "character": "Connor",
+                "heading": "The deviant listens",
+                "resolution": "rule",
                 "source": "https://detroit-become-human.fandom.com/wiki/The_Hostage",
-                "branches": [branch], "next": "second",
+                "branches": [branch],
+                "next": "second",
             },
             "second": {
-                "id": "second", "type": "choice", "chapter": "1", "character": "Connor",
-                "heading": "Final plea", "description": "What now?",
-                "options": [{"id": "go", "label": "GO", "next": "end",
-                             "effects": {"flags": {}}}],
+                "id": "second",
+                "type": "choice",
+                "chapter": "1",
+                "character": "Connor",
+                "heading": "Final plea",
+                "description": "What now?",
+                "options": [
+                    {"id": "go", "label": "GO", "next": "end", "effects": {"flags": {}}}
+                ],
             },
-            "end": {"id": "end", "type": "ending", "chapter": "1", "description": "Done."},
+            "end": {
+                "id": "end",
+                "type": "ending",
+                "chapter": "1",
+                "description": "Done.",
+            },
         },
     }
 
@@ -97,7 +121,10 @@ def test_relationship_hints_can_be_hidden(tmp_path):
 
 def test_relationship_hints_can_be_shown_through_the_same_feedback(tmp_path):
     Runner(
-        _graph(option_feedback=[UP], hints=HANK_UP), "mock", None, tmp_path / "run",
+        _graph(option_feedback=[UP], hints=HANK_UP),
+        "mock",
+        None,
+        tmp_path / "run",
         show_relationships=True,
     ).run()
     second = _decisions(tmp_path / "run")[1]
@@ -128,17 +155,24 @@ def test_well_formed_feedback_validates():
 
 def test_the_dashboard_story_carries_the_feedback_text(tmp_path):
     Runner(_graph(option_feedback=[UP]), "mock", None, tmp_path / "runs" / "r").run()
-    first, second = [m for m in story_moments(tmp_path / "runs", "1") if m["type"] == "decision"]
+    first, second = [
+        m for m in story_moments(tmp_path / "runs", "1") if m["type"] == "decision"
+    ]
     assert first["feedback"] == ["Probability of success: up"]
     assert "feedback" not in second
 
 
-SOFTWARE_UP = {"name": "RelationName.SoftwareInstability", "direction": "RelationType.SmallUp"}
+SOFTWARE_UP = {
+    "name": "RelationName.SoftwareInstability",
+    "direction": "RelationType.SmallUp",
+}
 
 
 def test_a_repeated_hint_flashes_once(tmp_path):
     hints = [SOFTWARE_UP, SOFTWARE_UP, *HANK_UP, SOFTWARE_UP]
-    Runner(_graph(option_feedback=[UP, UP], hints=hints), "mock", None, tmp_path / "r").run()
+    Runner(
+        _graph(option_feedback=[UP, UP], hints=hints), "mock", None, tmp_path / "r"
+    ).run()
     first = _decisions(tmp_path / "r")[0]
     assert [f["text"] for f in first["feedback"]] == [
         "Probability of success: up",
@@ -147,9 +181,12 @@ def test_a_repeated_hint_flashes_once(tmp_path):
     ]
 
 
+@pytest.mark.slow
 def test_use_gun_shows_software_instability_once(tmp_path):
     # USE GUN carries three identical arrows in the transcript data.
-    run = play_story(tmp_path, {"ch1_x0003": "TAKE GUN", "ch1_00058": "LIE", "ch1_00019": "USE GUN"})
+    run = play_story(
+        tmp_path, {"ch1_x0003": "TAKE GUN", "ch1_00058": "LIE", "ch1_00019": "USE GUN"}
+    )
     used = next(e for e in run.events if e.get("decision_key") == "ch1_00019:option_0")
     texts = [f["text"] for f in used["feedback"]]
     assert texts.count("Software instability: up") == 1
@@ -203,7 +240,10 @@ STRESS_GAUGE = {
     ("ch9_00102", "LIE"): "down",
     ("ch9_00102", "TRUTH"): "up",
     ("ch9_00095", "PRESSURE IT"): "large_up",
-    ("ch9_x0107", "PRESSURE IT"): "large_up",  # The second approach, after convincing fails.
+    (
+        "ch9_x0107",
+        "PRESSURE IT",
+    ): "large_up",  # The second approach, after convincing fails.
     ("ch9_00061", "MAINTAIN PRESSURE"): "large_up",
     ("ch9_00061", "GIVE UP"): "large_down",
     ("ch9_00093", "UNDERSTANDING"): "large_down",
@@ -232,7 +272,9 @@ def _gauge_moves(gauge: str, chapter: str) -> dict:
             for name, delta in effect_adds(option).items():
                 score = graph["scores"][name]
                 if score["gauge"] == gauge:
-                    moves[(nid, option["label"])] = score_move(score, delta, 0)["direction"]
+                    moves[(nid, option["label"])] = score_move(score, delta, 0)[
+                        "direction"
+                    ]
     return moves
 
 
@@ -241,19 +283,30 @@ def test_the_hostage_shows_the_wikis_probability_of_success_moves():
 
 
 def test_the_interrogation_shows_the_wikis_stress_moves():
-    copies = {"ch9_00093": "ch9_x0111", "ch9_00089": "ch9_x0115", "ch9_00085": "ch9_x0119"}
+    copies = {
+        "ch9_00093": "ch9_x0111",
+        "ch9_00089": "ch9_x0115",
+        "ch9_00085": "ch9_x0119",
+    }
     second_convince = {
-        (copies[nid], label): move for (nid, label), move in STRESS_GAUGE.items() if nid in copies
+        (copies[nid], label): move
+        for (nid, label), move in STRESS_GAUGE.items()
+        if nid in copies
     }
     assert _gauge_moves("deviant_stress", "9") == {**STRESS_GAUGE, **second_convince}
 
 
+@pytest.mark.slow
 def test_a_played_hostage_prompt_shows_the_probability_moving(tmp_path):
     run = play_story(tmp_path, {"ch1_00078": "CALM"})
     decisions = [e for e in run.events if e["type"] == "decision"]
     calm_at = next(i for i, e in enumerate(decisions) if e["node_id"] == "ch1_00078")
     after = decisions[calm_at + 1]
-    calm = [e for e in after["input"]["chapter_segment_so_far"] if e.get("your_choice") == "CALM"]
+    calm = [
+        e
+        for e in after["input"]["chapter_segment_so_far"]
+        if e.get("your_choice") == "CALM"
+    ]
     assert calm[-1]["on_screen"] == ["Probability of success: up"]
 
 
@@ -263,6 +316,7 @@ BAR, LAST_NIGHT_TOPICS = "ch6_00145", "ch12_00066"
 WRONG_ANSWER = {"ch6_00025": "…WITH THE BAT."}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("bar", ["BUY HIM ANOTHER DRINK", "WAIT OUTSIDE"])
 def test_without_a_spilled_drink_hank_goes_to_the_house(tmp_path, bar):
     run = play_story(tmp_path, {BAR: bar})
@@ -271,6 +325,7 @@ def test_without_a_spilled_drink_hank_goes_to_the_house(tmp_path, bar):
     assert "LAST NIGHT" not in run.offered(LAST_NIGHT_TOPICS)
 
 
+@pytest.mark.slow
 def test_the_default_run_spills_the_drink_and_leaves_the_crime_unsolved(tmp_path):
     run = play_story(tmp_path, {})
     assert run.labels[BAR] == "SPILL HIS DRINK"
@@ -278,6 +333,7 @@ def test_the_default_run_spills_the_drink_and_leaves_the_crime_unsolved(tmp_path
     assert "ch9_00095" not in run.nodes
 
 
+@pytest.mark.slow
 def test_last_night_needs_a_spilled_drink_and_an_unsolved_case(tmp_path):
     spilled = play_story(tmp_path / "a", {BAR: "SPILL HIS DRINK", **WRONG_ANSWER})
     bought = play_story(tmp_path / "b", {BAR: "BUY HIM ANOTHER DRINK", **WRONG_ANSWER})
@@ -288,8 +344,12 @@ def test_last_night_needs_a_spilled_drink_and_an_unsolved_case(tmp_path):
 
 def test_the_drink_keeps_its_effect_on_hank():
     options = {o["label"]: o for o in load_dataset()["nodes"][BAR]["options"]}
-    assert options["SPILL HIS DRINK"]["relation_hints"][0]["direction"].endswith("LargeDown")
-    assert options["BUY HIM ANOTHER DRINK"]["relation_hints"][0]["direction"].endswith("LargeUp")
+    assert options["SPILL HIS DRINK"]["relation_hints"][0]["direction"].endswith(
+        "LargeDown"
+    )
+    assert options["BUY HIM ANOTHER DRINK"]["relation_hints"][0]["direction"].endswith(
+        "LargeUp"
+    )
 
 
 # Connor at the CyberLife Tower: the elevator climbs to level 31; the androids are on -49.

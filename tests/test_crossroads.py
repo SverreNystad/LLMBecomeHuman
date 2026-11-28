@@ -24,6 +24,7 @@ OUSTED, ROOFTOP, LEFT_JERICHO = "ch30_3_00208", "ch30_3_x0110", "ch30_3_x0108"
 FLED_THE_MARCH = {"ch28_00044": "DISPERSE", "ch28_00041": "DISPERSE"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("found", [True, False])
 def test_jericho_is_raided_only_if_connor_found_it(tmp_path, found):
     run = play_story(tmp_path, {} if found else NO_CLUES)
@@ -32,6 +33,7 @@ def test_jericho_is_raided_only_if_connor_found_it(tmp_path, found):
     assert (CORRIDOR in run.nodes, MARKUS_ALONE in run.nodes) == (found, not found)
 
 
+@pytest.mark.slow
 def test_with_markus_dead_north_holds_the_cabin(tmp_path):
     nobody_saves_markus = {
         "ch19_00081": "REFUSE",
@@ -49,6 +51,7 @@ def test_with_markus_dead_north_holds_the_cabin(tmp_path):
     assert CORRIDOR not in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "label, left", [("LEAVE FOREVER", True), ("GO BACK TO JERICHO", False)]
 )
@@ -62,6 +65,7 @@ def test_a_voted_out_markus_chooses_to_leave_or_go_back(tmp_path, label, left):
     assert (CORRIDOR in run.nodes) is not left
 
 
+@pytest.mark.slow
 def test_voted_out_without_a_raid_markus_simply_leaves(tmp_path):
     run = play_story(tmp_path, {**FLED_THE_MARCH, **NO_CLUES})
     assert LEFT_JERICHO in run.nodes
@@ -98,6 +102,7 @@ MARKUS_DIES_IN_THE_MARCH = {
 }
 
 
+@pytest.mark.slow
 def test_a_deviant_connor_who_finds_markus_warns_him_and_lives(tmp_path):
     run = play_story(tmp_path, {})
     assert MARKUS_CABIN_30_2 in run.nodes
@@ -106,6 +111,7 @@ def test_a_deviant_connor_who_finds_markus_warns_him_and_lives(tmp_path):
     assert run.flags["connor_died_in_crossroads"] is False
 
 
+@pytest.mark.slow
 def test_with_markus_gone_a_deviant_connor_blows_up_jericho_and_escapes(tmp_path):
     run = play_story(tmp_path, MARKUS_DIES_IN_THE_MARCH)
     assert NORTH_CABIN_30_2 in run.nodes and DEVIANT_CORRIDOR in run.nodes
@@ -118,28 +124,41 @@ def test_with_markus_gone_a_deviant_connor_blows_up_jericho_and_escapes(tmp_path
 THIN_ICE = "ch31_2_00051"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("markus_here", [True, False])
 def test_a_machine_connor_is_destroyed_in_the_hold(tmp_path, markus_here):
-    picks = MACHINE_WITH_MARKUS if markus_here else {
-        **MARKUS_DIES_IN_THE_MARCH,
-        NORTH_CONFRONTS_CONNOR: "REMAIN A MACHINE",
-    }
+    picks = (
+        MACHINE_WITH_MARKUS
+        if markus_here
+        else {
+            **MARKUS_DIES_IN_THE_MARCH,
+            NORTH_CONFRONTS_CONNOR: "REMAIN A MACHINE",
+        }
+    )
     run = play_story(tmp_path / "machine", picks)
-    deviant = play_story(tmp_path / "deviant", {} if markus_here else MARKUS_DIES_IN_THE_MARCH)
+    deviant = play_story(
+        tmp_path / "deviant", {} if markus_here else MARKUS_DIES_IN_THE_MARCH
+    )
     assert CARGO_HALL in run.nodes and DEVIANT_CORRIDOR not in run.nodes
     assert run.flags["connor_died_in_crossroads"] is True
     assert run.flags["connor_deaths"] == deviant.flags["connor_deaths"] + 1
     assert THIN_ICE in run.nodes
 
 
+@pytest.mark.slow
 def test_running_from_the_soldier_gets_connor_shot(tmp_path):
     run = play_story(tmp_path, {**MACHINE_WITH_MARKUS, CARGO_HALL_CHOICE: "RUN"})
     assert run.flags["connor_died_in_crossroads"] is True
     assert IN_THE_HOLD not in run.nodes
 
 
-def test_a_voted_out_markus_who_goes_back_finds_connor_s_bomb_already_gone_off(tmp_path):
-    run = play_story(tmp_path, {**FLED_THE_MARCH, **CONNOR_SHAKEN, ROOFTOP: "GO BACK TO JERICHO"})
+@pytest.mark.slow
+def test_a_voted_out_markus_who_goes_back_finds_connor_s_bomb_already_gone_off(
+    tmp_path,
+):
+    run = play_story(
+        tmp_path, {**FLED_THE_MARCH, **CONNOR_SHAKEN, ROOFTOP: "GO BACK TO JERICHO"}
+    )
     assert CONNOR_ESCAPED in run.nodes
     assert MARKUS_SETS_THE_CHARGES not in run.nodes
     assert BOMB_WENT_OFF in run.nodes

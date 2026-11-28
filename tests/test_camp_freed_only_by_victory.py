@@ -22,6 +22,7 @@ def test_a_run_starts_with_no_revolution_won():
     assert GRAPH["initial_flags"]["markus_revolution_won"] is False
 
 
+@pytest.mark.slow
 def test_winning_the_assault_records_the_victory(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, **REVOLUTION, FENCE: "WAIT"})
     assert "ch32_6_00039" in run.nodes  # "Assault successful"
@@ -29,9 +30,15 @@ def test_winning_the_assault_records_the_victory(tmp_path):
     assert run.flags["kara_freed_by_markus"] is True
 
 
-@pytest.mark.parametrize("waiting", ["together", "left_alice", "kara_died", "alice_died"])
+@pytest.mark.parametrize(
+    "waiting", ["together", "left_alice", "kara_died", "alice_died"]
+)
 def test_a_markus_who_survives_a_failed_assault_frees_nobody(waiting):
-    taken = camp_branch(kara_awaiting_markus=waiting, markus_alive=True, markus_revolution_won=False,
-                        markus_demonstration_outcome="none")
+    taken = camp_branch(
+        kara_awaiting_markus=waiting,
+        markus_alive=True,
+        markus_revolution_won=False,
+        markus_demonstration_outcome="none",
+    )
     assert not effect_flags(taken).get("kara_freed_by_markus")
     assert "nobody" in taken["condition_text"]

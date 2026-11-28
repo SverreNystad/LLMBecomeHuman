@@ -30,6 +30,7 @@ I_REMEMBER_YOU, YOU_MUST_BE_MISTAKEN = "ch24_00092", "ch24_00094"
 EVERY_TIME_YOU_DIED = "ch31_2_00036"
 
 
+@pytest.mark.slow
 def test_shooting_daniel_plays_the_shot_and_never_negotiates_again(tmp_path):
     run = play_story(tmp_path, EXECUTE)
     assert CONNOR_SHOT_DANIEL in run.nodes
@@ -37,6 +38,7 @@ def test_shooting_daniel_plays_the_shot_and_never_negotiates_again(tmp_path):
     assert run.flags["connor_died_in_hostage"] is False
 
 
+@pytest.mark.slow
 def test_persuading_daniel_at_gunpoint_gets_connor_shot(tmp_path):
     run = play_story(tmp_path, {"ch1_00016": "INTIMIDATE", "ch1_00013": "CONVINCE"})
     assert DANIEL_SHOT_CONNOR in run.nodes
@@ -44,6 +46,7 @@ def test_persuading_daniel_at_gunpoint_gets_connor_shot(tmp_path):
     assert run.flags["connor_died_in_hostage"] is True
 
 
+@pytest.mark.slow
 def test_sacrificing_himself_connor_dies_protecting_emma(tmp_path):
     run = play_story(tmp_path, {"ch1_00019": "SACRIFICE SELF"})
     assert DIED_PROTECTING_EMMA in run.nodes
@@ -51,6 +54,7 @@ def test_sacrificing_himself_connor_dies_protecting_emma(tmp_path):
     assert run.flags["connor_died_in_hostage"] is True
 
 
+@pytest.mark.slow
 def test_a_connor_who_never_died_is_remembered_as_alive(tmp_path):
     run = play_story(tmp_path, {**EXECUTE, **LET_IT_SELF_DESTRUCT})
     assert PREVIOUS_CONNOR not in run.nodes
@@ -58,6 +62,7 @@ def test_a_connor_who_never_died_is_remembered_as_alive(tmp_path):
     assert I_REMEMBER_YOU in run.nodes and YOU_MUST_BE_MISTAKEN not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_path):
     # Shot by Daniel in The Hostage, then by the deviant in The Interrogation. Only a
     # machine Connor whose Hank quit the force visits Hank in Night of the Soul.
@@ -72,9 +77,12 @@ def test_a_connor_who_died_twice_is_remembered_by_amanda_hank_and_the_cop(tmp_pa
     assert EVERY_TIME_YOU_DIED in run.nodes
 
 
+@pytest.mark.slow
 def test_each_way_connor_dies_adds_one(tmp_path):
     # A shaken Connor deviates at Crossroads, so no Run dies there as a machine.
-    never = play_story(tmp_path / "a", {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT})
+    never = play_story(
+        tmp_path / "a", {**CONNOR_SHAKEN, **EXECUTE, **LET_IT_SELF_DESTRUCT}
+    )
     hostage = play_story(tmp_path / "b", {**CONNOR_SHAKEN, **LET_IT_SELF_DESTRUCT})
     both = play_story(tmp_path / "c", CONNOR_SHAKEN)
     saving_hank = play_story(
@@ -87,6 +95,7 @@ def test_each_way_connor_dies_adds_one(tmp_path):
     assert saving_hank.flags["connor_deaths"] == base + 1
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("hostile", [True, False])
 def test_a_hostile_hank_shoots_connor_on_the_bridge(tmp_path, hostile):
     picks = {**EXECUTE, **LET_IT_SELF_DESTRUCT} | (HOSTILE_HANK if hostile else {})

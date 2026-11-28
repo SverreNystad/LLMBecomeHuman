@@ -12,7 +12,13 @@ from detroit_benchmark.engine import (
     validate_graph,
 )
 from detroit_benchmark.story_rules import Facts, StoryRules
-from tests.dataset import HANK_GIVES_TIME, flag_values, flags_in, load_dataset, reachable
+from tests.dataset import (
+    HANK_GIVES_TIME,
+    flag_values,
+    flags_in,
+    load_dataset,
+    reachable,
+)
 
 
 def _scene(nid, nxt):
@@ -462,6 +468,7 @@ SHELTERS = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("shelter", sorted(SHELTERS))
 def test_kara_spends_one_night_in_one_shelter_and_wakes_up_there(tmp_path, shelter):
     picks, night = SHELTERS[shelter]
@@ -489,6 +496,7 @@ def test_shelter_choices_record_where_kara_slept():
 KARA_LATER = {"10", "13", "17", "21", "25", "30.1", "32.1", "32.2"}
 
 
+@pytest.mark.slow
 def test_kara_standing_still_lets_todd_kill_alice_and_ends_her_story(tmp_path):
     seen = _play_story(tmp_path, {"ch7_00092": "STAND STILL"})
     assert not KARA_LATER & set(seen)
@@ -497,6 +505,7 @@ def test_kara_standing_still_lets_todd_kill_alice_and_ends_her_story(tmp_path):
     assert {"11", "12", "14", "32.3", "32.4"} & set(seen)
 
 
+@pytest.mark.slow
 def test_kara_acting_after_breaking_her_programming_keeps_her_story(tmp_path):
     seen = _play_story(tmp_path, {"ch7_00092": "GO UPSTAIRS"})
     assert {"10", "13", "17"} <= set(seen)
@@ -548,6 +557,7 @@ REFUSE_PERKINS = {
 }
 
 
+@pytest.mark.slow
 def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
     # Connor's Zen Garden ending plays after Markus's, so Markus must survive his.
     # Kara persuades Todd, and Adam takes her to the river.
@@ -565,6 +575,7 @@ def test_each_character_ending_shows_the_version_their_choices_led_to(tmp_path):
     assert chosen["ch32_5_00105"] == 1
 
 
+@pytest.mark.slow
 def test_endgame_rules_never_fall_back_to_a_default(tmp_path):
     nodes = load_dataset()["nodes"]
     taken = _endgame_branches(tmp_path, {**SPARE_LUTHER, **LEAVE_NORTH})
@@ -615,12 +626,14 @@ TRUTH_IS_INSIDE = {
 }
 
 
+@pytest.mark.slow
 def test_kamskis_key_takes_connor_to_jericho_without_the_evidence_room(tmp_path):
     seen = _play_story(tmp_path, KAMSKIS_KEY)
     assert EVIDENCE_ROOM not in seen["29"]
     assert "30.2" in seen
 
 
+@pytest.mark.slow
 def test_without_any_clue_connor_is_decommissioned_and_his_story_ends(tmp_path):
     seen = _play_story(tmp_path, NO_CLUES)
     assert FAILED in seen["29"]
@@ -630,6 +643,7 @@ def test_without_any_clue_connor_is_decommissioned_and_his_story_ends(tmp_path):
     assert {"30.1", "30.3", "32.5"} & set(seen)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "approach, found", [("IMITATE MARKUS' VOICE", True), ("THREATEN", False)]
 )
@@ -664,6 +678,7 @@ def test_reactivating_an_android_needs_a_compatible_part():
     assert wrong["next"] != simon["DANIEL'S BIOCOMPONENT"]["next"]
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("good_interrogation", [True, False])
 def test_the_truth_is_inside_only_after_a_good_interrogation(
     tmp_path, good_interrogation
@@ -677,6 +692,7 @@ def test_the_truth_is_inside_only_after_a_good_interrogation(
     assert (LOCATED in seen["29"]) == good_interrogation
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "diversion, found", [("FREE THE PRISONER", True), ("GIVE UP", False)]
 )
@@ -711,6 +727,7 @@ HANK_RESIGNS, TALK_WITH_HANK = "ch29_00224", "ch29_00175"
 HOSTILE_HANK = {"ch6_00134": "FIRM", "ch15_00018": "Chase Deviant"}  # firm, never saved
 
 
+@pytest.mark.slow
 def test_a_hostile_hank_resigns_and_leaves_connor_to_free_the_prisoner(tmp_path):
     visited = _nodes_visited(
         tmp_path,
@@ -726,6 +743,7 @@ def test_a_hostile_hank_resigns_and_leaves_connor_to_free_the_prisoner(tmp_path)
     assert TALK_WITH_HANK not in visited
 
 
+@pytest.mark.slow
 def test_hank_does_not_resign_when_connor_has_kamskis_key(tmp_path):
     visited = _nodes_visited(tmp_path, {**HOSTILE_HANK, **KAMSKIS_KEY})
     assert HANK_RESIGNS not in visited
@@ -759,6 +777,7 @@ def _play_ending(tmp_path, picks):
     return nodes, chapters, run.state["flags"]
 
 
+@pytest.mark.slow
 def test_connors_zen_garden_ending_plays_last_after_markus(tmp_path):
     nodes, chapters, _ = _play_ending(tmp_path, {})
     assert chapters[-1] == ZEN_GARDEN
@@ -782,6 +801,7 @@ def test_a_machine_connor_has_no_zen_garden_ending():
     assert route["if_false"] == "game_complete"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, memory, reached, markus_alive",
     [

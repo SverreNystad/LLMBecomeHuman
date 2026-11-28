@@ -4,7 +4,6 @@ Me and my girlfriend recently played through *Detroit: Become Human*. The game i
 
 LLM: Become Human is a research prototype that lets LLMs play through a text version of *Detroit: Become Human* as a branching story. At each choice point a model picks one option and gives a short justification. The engine, not the model, decides what happens next. Every step is logged. Its dashboard reads each Run as a Story and draws every chapter as a Flowchart, with the routes several models (GPT, Claude, Gemini, Grok, DeepSeek, Mistral and others) took drawn on top in the playing Character's colour.
 
-
 ## Prerequisites
 
 - **Git**: Ensure that git is installed on your machine. To be able to get the repository, you need git installed. [Download Git](https://git-scm.com/downloads)
@@ -76,6 +75,8 @@ Give each run its own `--run-dir`. Add `--resume` to continue an interrupted run
 docker compose run --rm --build --entrypoint pytest runner -q
 ```
 
+About 400 tests play the whole story (or a Visitor Run) and take a second or more each; they are marked `slow` and make up nearly all of the suite's time. For a quick loop while working, skip them with `uv run pytest -m "not slow"`; CI runs everything.
+
 Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs`.
 
 The browser tests in `tests/test_frontend_browser.py` are skipped unless Playwright and Chromium are installed. Their screenshots go to each test's temporary folder; run them with `UPDATE_DOC_SCREENSHOTS=1` to refresh the ones in `docs/images/`.
@@ -98,15 +99,15 @@ Do not predict hidden endings or assume that unseen scenes have happened."""
 
 **User message at a choice:** a JSON object with only:
 
-| Key                             | Contents                                                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `current_scene`                 | Chapter, Character, heading and description of the choice point                                                                       |
-| `chapter_briefing`              | A short, player-visible description of the current Chapter Segment: setting, who is present, their mood, what is at stake |
-| `news`                          | Public News: the latest 12 headlines the public knows, from all three Characters' choices (omitted while empty) |
-| `character_memory`              | This Character's memory, and never another Character's (empty until its first Chapter Segment ends)                                  |
+| Key                      | Contents                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `current_scene`          | Chapter, Character, heading and description of the choice point                                                                                                                                                                                                                                                                                                                                                                |
+| `chapter_briefing`       | A short, player-visible description of the current Chapter Segment: setting, who is present, their mood, what is at stake                                                                                                                                                                                                                                                                                                      |
+| `news`                   | Public News: the latest 12 headlines the public knows, from all three Characters' choices (omitted while empty)                                                                                                                                                                                                                                                                                                                |
+| `character_memory`       | This Character's memory, and never another Character's (empty until its first Chapter Segment ends)                                                                                                                                                                                                                                                                                                                            |
 | `chapter_segment_so_far` | The current Chapter Segment so far: every scene with full dialogue and observations, plus the model's earlier choices and rationales in this segment, each with any Gauge Feedback it caused as `on_screen` (e.g. `["Probability of success: up", "Relationship with Hank: up sharply"]`). It starts with any choice this Character made in another's segment (a Joint or Cross-Segment Decision) since its last Memory Update |
-| `goal`                          | The run's goal                                                                                                                        |
-| `available_choices`             | Only the options that are currently unlocked, as `{id, label}`                                                                        |
+| `goal`                   | The run's goal                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `available_choices`      | Only the options that are currently unlocked, as `{id, label}`                                                                                                                                                                                                                                                                                                                                                                 |
 
 Story flags stay internal: they decide routing and unlocked options but are not shown. Gauge Feedback is the exception the game itself makes: an option or condition branch may carry `effects.feedback: [{"gauge": "probability_of_success", "direction": "up"}]` (directions `up`, `down`, `large_up`, `large_down`; gauges and wording in `GAUGES` in `engine.py`), and the model then reads which way the gauge moved. Options' `relation_hints` (the game's relationship arrows) are shown the same way, e.g. "Relationship with Hank: up sharply"; `play --hide-relationships` (or `Runner(..., show_relationships=False)`) turns them off. CLI Runs and Visitor Runs show them.
 
@@ -122,13 +123,13 @@ The exact input and output of every call are stored in the run's `events.jsonl`.
 
 ## Output per run
 
-| File               | Contents                                                              |
-| ------------------ | --------------------------------------------------------------------- |
+| File               | Contents                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------- |
 | `experiment.json`  | Provider, model, goal, temperature, decision token and reasoning limits, graph hash |
-| `events.jsonl`     | Every scene shown, model input and output, and state before and after |
-| `checkpoint.json`  | Resumable state                                                       |
-| `summary.json`     | Ending, number of choices, final flags, token usage, latency          |
-| `story-graph.json` | The full story graph, so the dashboard can show untaken branches      |
+| `events.jsonl`     | Every scene shown, model input and output, and state before and after               |
+| `checkpoint.json`  | Resumable state                                                                     |
+| `summary.json`     | Ending, number of choices, final flags, token usage, latency                        |
+| `story-graph.json` | The full story graph, so the dashboard can show untaken branches                    |
 
 See [DASHBOARD.md](docs/DASHBOARD.md) for dashboard controls and API routes.
 

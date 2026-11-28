@@ -19,6 +19,7 @@ def _next(node_id: str, flags: dict) -> str:
     return step.next
 
 
+@pytest.mark.slow
 def test_with_markus_dead_north_leads_the_revolution_and_falls(tmp_path):
     run = play_story(tmp_path, NOBODY_SAVES_MARKUS)
     assert run.flags["markus_alive"] is False
@@ -29,6 +30,7 @@ def test_with_markus_dead_north_leads_the_revolution_and_falls(tmp_path):
     assert run.flags["north_alive"] is False
 
 
+@pytest.mark.slow
 def test_with_markus_dead_a_machine_connor_faces_north(tmp_path):
     run = play_story(tmp_path, {**MACHINE, **NOBODY_SAVES_MARKUS})
     assert NORTH_LEADS in run.nodes
@@ -45,8 +47,13 @@ def test_with_markus_dead_a_machine_connor_faces_north(tmp_path):
 def test_north_leads_whenever_markus_is_gone_and_she_lives(flags):
     # 32.6 opens on its own entry rule, which sends North to lead the revolution.
     assert _next(MARKUS_GONE, {**flags, "north_alive": True}) == "ch32_6_x0118"
-    entry = {**flags, "north_alive": True, "markus_peaceful": False,
-             "markus_demonstration_outcome": "none", "connor_shot_deviant_leader": False}
+    entry = {
+        **flags,
+        "north_alive": True,
+        "markus_peaceful": False,
+        "markus_demonstration_outcome": "none",
+        "connor_shot_deviant_leader": False,
+    }
     assert _next("ch32_6_x0118", entry) == NORTH_LEADS
     # Kara's 32.9 gate comes first: her camp outcome may still wait for Markus.
     assert _next(MARKUS_GONE, {**flags, "north_alive": False}) == "final_x0920"
@@ -67,7 +74,9 @@ def test_refusing_north_s_heart_markus_dies_and_the_revolution_fails():
     # Wiki: Refuse → "Markus Died and the Revolution Failed"; North leads only a
     # revolution Markus did not live to start.
     after = set(
-        reachable(_option("ch32_6_00068", "SACRIFICE SELF")["next"], within_chapter=True)
+        reachable(
+            _option("ch32_6_00068", "SACRIFICE SELF")["next"], within_chapter=True
+        )
     )
     assert "ch32_6_x0113" in after and NORTH_LEADS not in after
 
@@ -95,6 +104,7 @@ PEACEFUL_WITH_DETONATOR = {
 }
 
 
+@pytest.mark.slow
 def test_the_bomb_at_the_demonstration_goes_off(tmp_path):
     run = play_story(tmp_path, PEACEFUL_WITH_DETONATOR)
     assert run.labels.get("ch32_5_00045") == "DIRTY BOMB"
@@ -103,6 +113,7 @@ def test_the_bomb_at_the_demonstration_goes_off(tmp_path):
 
 # Night of the Soul: "killed by Markus by choosing Don't Trust"; CyberLife sends
 # another Connor.
+@pytest.mark.slow
 def test_markus_killing_connor_counts_as_one_of_his_deaths(tmp_path):
     trusted = play_story(tmp_path / "trust", {"ch31_1_00041": "TRUST"})
     killed = play_story(tmp_path / "kill", {"ch31_1_00041": "DON'T TRUST"})
@@ -115,6 +126,7 @@ CAPTURED = {"ch30_1_00055": "SURRENDER", "ch30_1_00052": "OBEY"}
 FENCE = "ch32_2_00030"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks",
     [{FENCE: "PROTECT ALICE"}, {FENCE: "WAIT", "ch31_1_00006": "REVOLUTION"}],
@@ -157,7 +169,9 @@ def test_hank_kills_himself_when_nobody_is_left(change, hank_dies):
     assert not step.assumed
     flags = effect_flags(credits["branches"][idx]) if idx is not None else {}
     assert (flags.get("hank_alive") is False) is hank_dies
-    assert (credits["branches"][idx]["next"] if idx is not None else credits["next"]) == MARKUS_GONE
+    assert (
+        credits["branches"][idx]["next"] if idx is not None else credits["next"]
+    ) == MARKUS_GONE
 
 
 def test_kara_s_skip_gates_say_her_story_ended_not_how():
@@ -168,6 +182,7 @@ def test_kara_s_skip_gates_say_her_story_ended_not_how():
                 assert "Todd killed Alice" not in branch["condition_text"], nid
 
 
+@pytest.mark.slow
 def test_kara_recycled_in_the_camp_did_not_escape(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, FENCE: "WAIT"})
     assert run.flags["kara_alive"] is False
