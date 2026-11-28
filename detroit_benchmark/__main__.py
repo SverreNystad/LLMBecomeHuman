@@ -83,7 +83,7 @@ def main():
     dashboard.add_argument(
         "--images-dir",
         type=Path,
-        help="Folder with local game art (default: the repository's images/ folder)",
+        help="Folder with the Synthetic Scene Art and Synthetic Title Art (default: the repository's images/ folder)",
     )
     dashboard.add_argument(
         "--allow-own-runs",

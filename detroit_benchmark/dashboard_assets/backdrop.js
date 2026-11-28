@@ -355,7 +355,7 @@
   schedule();
 })();
 
-/* Scene art: the current scene's concept art, if installed locally, under the network.
+/* Scene art: the current scene's Synthetic Scene Art, if installed, under the network.
  *
  * Listens for `scenechange` ({chapter, heading, headings, art}) from the Story and Flowchart.
  * An `art` key named by the Story wins, then a heading listed for that chapter in the

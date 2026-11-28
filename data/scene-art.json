@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Images are local-only (gitignored); see README.",
+  "note": "Synthetic Scene Art, committed under images/ (ADR 0008); see README.",
   "title": "ui/title.webp",
   "scenes": [
     {
@@ -271,6 +271,24 @@
       ],
       "chapter_main": false,
       "caption": "Connor searching the attic for the deviant"
+    },
+    {
+      "key": "ch07_stormy_night",
+      "file": "scenes/ch07_stormy_night.webp",
+      "chapter": "7",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Todd turns on Alice at the dinner table during the storm"
+    },
+    {
+      "key": "ch08_broken",
+      "file": "scenes/ch08_broken.webp",
+      "chapter": "8",
+      "character": "Markus",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Leo confronts Markus in Carl's studio"
     },
     {
       "key": "ch09_observation_room",
@@ -1570,6 +1588,15 @@
       "caption": "Jericho's busy hold"
     },
     {
+      "key": "ch30_connor_jericho",
+      "file": "scenes/ch30_connor_jericho.webp",
+      "chapter": "30.2",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Connor moving through Jericho among unsuspecting androids"
+    },
+    {
       "key": "ch30_hold",
       "file": "scenes/ch30_hold.webp",
       "chapter": "30.3",
@@ -1650,6 +1677,42 @@
       "caption": "Markus with Carl one last time"
     },
     {
+      "key": "ch31_connor_hanks_house",
+      "file": "scenes/ch31_connor_hanks_house.webp",
+      "chapter": "31.2",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Connor and Hank at Hank's house after Jericho"
+    },
+    {
+      "key": "ch32_curfew_checkpoint",
+      "file": "scenes/ch32_curfew_checkpoint.webp",
+      "chapter": "32.1",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Kara and Alice at an army checkpoint under curfew"
+    },
+    {
+      "key": "ch32_recycling_camp",
+      "file": "scenes/ch32_recycling_camp.webp",
+      "chapter": "32.2",
+      "character": "Kara",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Kara and Alice in the recycling camp"
+    },
+    {
+      "key": "ch32_rooftop_sniper",
+      "file": "scenes/ch32_rooftop_sniper.webp",
+      "chapter": "32.3",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Connor on a rooftop above the demonstration"
+    },
+    {
       "key": "ch32_barricade",
       "file": "scenes/ch32_barricade.webp",
       "chapter": "32.5",
@@ -1681,6 +1744,15 @@
       ],
       "chapter_main": false,
       "caption": "Assault"
+    },
+    {
+      "key": "ch32_connor_speech",
+      "file": "scenes/ch32_connor_speech.webp",
+      "chapter": "32.7",
+      "character": "Connor",
+      "headings": [],
+      "chapter_main": true,
+      "caption": "Connor stands before the androids he woke"
     },
     {
       "key": "ch32_cyberlife_front",

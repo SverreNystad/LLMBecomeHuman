@@ -22,6 +22,8 @@ COPY pytest.ini ./
 # (Kubernetes). Same layout as docker-compose, which mounts over these read-only.
 COPY data/ ./data/
 COPY runs/ ./saved_runs/runs/
+# Synthetic Scene Art and Synthetic Title Art (ADR 0008).
+COPY images/ ./images/
 
 EXPOSE 8000
 CMD ["python", "-m", "detroit_benchmark", "dashboard", "--runs-dir", "/app/saved_runs", "--host", "0.0.0.0", "--port", "8000"]

@@ -629,6 +629,38 @@ def test_committed_scene_art_manifest_is_well_formed():
         assert isinstance(scene["headings"], list)
 
 
+def _webp_width(path: Path) -> int:
+    """Width of a WebP file, read from its header (lossy, lossless or extended)."""
+    head = path.read_bytes()[:30]
+    assert head[:4] == b"RIFF" and head[8:12] == b"WEBP", f"{path.name} is not WebP"
+    chunk = head[12:16]
+    if chunk == b"VP8 ":
+        return int.from_bytes(head[26:28], "little") & 0x3FFF
+    if chunk == b"VP8L":
+        return (int.from_bytes(head[21:25], "little") & 0x3FFF) + 1
+    assert chunk == b"VP8X", f"{path.name} has an unknown WebP chunk {chunk!r}"
+    return int.from_bytes(head[24:27], "little") + 1
+
+
+def test_committed_scene_art_ships_every_image_in_the_manifest():
+    # ADR 0008: the art is versioned with the manifest, one size for everyone.
+    manifest = json.loads((PROJECT / "data" / "scene-art.json").read_text())
+    images = PROJECT / "images"
+    named = [manifest["title"]] + [scene["file"] for scene in manifest["scenes"]]
+    shipped = {
+        path.relative_to(images).as_posix()
+        for folder in ("scenes", "ui")
+        for path in (images / folder).glob("*")
+    }
+    assert shipped == set(named), "images/ holds only the files the manifest names"
+    for name in named:
+        path = images / name
+        assert path.is_file(), f"{name} is named in the manifest but not shipped"
+        width = _webp_width(path)
+        if name.startswith("scenes/"):
+            assert width <= 1280, f"{name} is {width} px wide"
+
+
 def test_story_scenes_carry_their_installed_scene_image_key(tmp_path):
     Runner(three_segment_graph(), "mock", None, tmp_path / "runs" / "r1").run()
     c = _scene_art_app(tmp_path, runs=tmp_path / "runs")

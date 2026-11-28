@@ -254,6 +254,12 @@ htmlcov/
 # MkDocs build output
 site/
 
-# Game art is copyrighted: keep local. The Character portraits are committed once,
-# under detroit_benchmark/dashboard_assets/portraits/.
+# Synthetic Scene Art ships in git and the image (ADR 0008); only the WebP files the
+# manifest names, never raw generations.
 images/*
+!images/scenes/
+!images/ui/
+images/scenes/*
+images/ui/*
+!images/scenes/*.webp
+!images/ui/*.webp
