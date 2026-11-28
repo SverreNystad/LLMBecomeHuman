@@ -12,4 +12,6 @@ __pycache__
 upstream-detroit
 docs
 *.zip
-images
+images/*
+!images/scenes/*.webp
+!images/ui/*.webp

@@ -4,7 +4,6 @@ Me and my girlfriend recently played through *Detroit: Become Human*. The game i
 
 LLM: Become Human is a research prototype that lets LLMs play through a text version of *Detroit: Become Human* as a branching story. At each choice point a model picks one option and gives a short justification. The engine, not the model, decides what happens next. Every step is logged. Its dashboard reads each Run as a Story and draws every chapter as a Flowchart, with the routes several models (GPT, Claude, Gemini, Grok, DeepSeek, Mistral and others) took drawn on top in the playing Character's colour.
 
-
 ## Prerequisites
 
 - **Git**: Ensure that git is installed on your machine. To be able to get the repository, you need git installed. [Download Git](https://git-scm.com/downloads)
@@ -33,11 +32,11 @@ Open **http://localhost:8000** to see the saved runs in `runs/`. To see the whol
 ![LLM: Become Human Flowchart](docs/images/decision_atlas_flowchart.png)
 ![LLM: Become Human Story with several models](docs/images/decision_atlas_story.png)
 
-### Concept art (optional, local only)
+### Synthetic Scene Art
 
-Behind the dashboard a slow node network moves in the style of the chapter's Character. If you have the game's concept art, the dashboard can also show the current scene's image behind it, faded so the text stays readable. The art is copyrighted and is **not distributed** with this repository: `images/` is gitignored (only the three Character portraits are committed) and the Docker image never includes it.
+Behind the dashboard a slow node network moves in the style of the chapter's Character. Under it, the current scene's Synthetic Scene Art shows faded so the text stays readable, and the title screen has its own Synthetic Title Art. Both are made by an image model, not taken from the game, and ship with the repository and the Docker image (see [ADR 0008](docs/adr/0008-synthetic-scene-art-ships-in-the-docker-image.md)).
 
-[`data/scene-art.json`](data/scene-art.json) lists every scene image: its file, chapter, Character, the scene headings it belongs to, and whether it is the chapter's main image. To install the art, put your own WebP files at the paths it names, relative to `images/`:
+[`data/scene-art.json`](data/scene-art.json) lists every piece of Synthetic Scene Art: its file, chapter, Character, the scene headings it belongs to, and whether it is the chapter's main art. The files sit at the paths it names, relative to `images/`:
 
 ```text
 images/
@@ -47,7 +46,7 @@ images/
   ...
 ```
 
-Missing files are simply skipped, and with no art at all the network is the whole background. `docker compose` mounts `images/` read-only; locally, `--images-dir` points the dashboard at another folder. While reading a Story the background follows the scene you are reading; in the Flowchart it follows the node you hover or select, else the chapter's main image.
+Scenes are WebP at 1280 px wide, quality 65: the art is always shown blurred, so more pixels would only add bytes. Raw generations are never committed; convert them and save only the files the manifest names. A missing file is simply skipped, and the network fills its place. `--images-dir` points the dashboard at another folder. While reading a Story the background follows the scene you are reading; in the Flowchart it follows the node you hover or select, else the chapter's main art.
 
 ### Making a new agent playthrough
 
@@ -98,15 +97,15 @@ Do not predict hidden endings or assume that unseen scenes have happened."""
 
 **User message at a choice:** a JSON object with only:
 
-| Key                             | Contents                                                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `current_scene`                 | Chapter, Character, heading and description of the choice point                                                                       |
-| `chapter_briefing`              | A short, player-visible description of the current Chapter Segment: setting, who is present, their mood, what is at stake |
-| `news`                          | Public News: the latest 12 headlines the public knows, from all three Characters' choices (omitted while empty) |
-| `character_memory`              | This Character's memory, and never another Character's (empty until its first Chapter Segment ends)                                  |
+| Key                      | Contents                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `current_scene`          | Chapter, Character, heading and description of the choice point                                                                                                                                                                                                                                                                                                                                                                |
+| `chapter_briefing`       | A short, player-visible description of the current Chapter Segment: setting, who is present, their mood, what is at stake                                                                                                                                                                                                                                                                                                      |
+| `news`                   | Public News: the latest 12 headlines the public knows, from all three Characters' choices (omitted while empty)                                                                                                                                                                                                                                                                                                                |
+| `character_memory`       | This Character's memory, and never another Character's (empty until its first Chapter Segment ends)                                                                                                                                                                                                                                                                                                                            |
 | `chapter_segment_so_far` | The current Chapter Segment so far: every scene with full dialogue and observations, plus the model's earlier choices and rationales in this segment, each with any Gauge Feedback it caused as `on_screen` (e.g. `["Probability of success: up", "Relationship with Hank: up sharply"]`). It starts with any choice this Character made in another's segment (a Joint or Cross-Segment Decision) since its last Memory Update |
-| `goal`                          | The run's goal                                                                                                                        |
-| `available_choices`             | Only the options that are currently unlocked, as `{id, label}`                                                                        |
+| `goal`                   | The run's goal                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `available_choices`      | Only the options that are currently unlocked, as `{id, label}`                                                                                                                                                                                                                                                                                                                                                                 |
 
 Story flags stay internal: they decide routing and unlocked options but are not shown. Gauge Feedback is the exception the game itself makes: an option or condition branch may carry `effects.feedback: [{"gauge": "probability_of_success", "direction": "up"}]` (directions `up`, `down`, `large_up`, `large_down`; gauges and wording in `GAUGES` in `engine.py`), and the model then reads which way the gauge moved. Options' `relation_hints` (the game's relationship arrows) are shown the same way, e.g. "Relationship with Hank: up sharply"; `play --hide-relationships` (or `Runner(..., show_relationships=False)`) turns them off. CLI Runs and Visitor Runs show them.
 
@@ -122,13 +121,13 @@ The exact input and output of every call are stored in the run's `events.jsonl`.
 
 ## Output per run
 
-| File               | Contents                                                              |
-| ------------------ | --------------------------------------------------------------------- |
+| File               | Contents                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------- |
 | `experiment.json`  | Provider, model, goal, temperature, decision token and reasoning limits, graph hash |
-| `events.jsonl`     | Every scene shown, model input and output, and state before and after |
-| `checkpoint.json`  | Resumable state                                                       |
-| `summary.json`     | Ending, number of choices, final flags, token usage, latency          |
-| `story-graph.json` | The full story graph, so the dashboard can show untaken branches      |
+| `events.jsonl`     | Every scene shown, model input and output, and state before and after               |
+| `checkpoint.json`  | Resumable state                                                                     |
+| `summary.json`     | Ending, number of choices, final flags, token usage, latency                        |
+| `story-graph.json` | The full story graph, so the dashboard can show untaken branches                    |
 
 See [DASHBOARD.md](docs/DASHBOARD.md) for dashboard controls and API routes.
 

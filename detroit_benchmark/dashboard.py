@@ -66,7 +66,7 @@ from .visitor_runs import (
 
 ASSETS = Path(__file__).parent / "dashboard_assets"
 ART_RECHECK_SECONDS = 30
-# Game art is copyrighted, so it stays local (gitignored) and every view works without it.
+# Synthetic Scene Art ships in images/ (ADR 0008); every view still works without it.
 IMAGES = Path(__file__).resolve().parents[1] / "images"
 # The scene-art manifest is committed; the images it names live under the images folder.
 SCENE_ART_MANIFEST = Path(__file__).resolve().parents[1] / "data" / "scene-art.json"
@@ -137,11 +137,7 @@ def _resolve_run(root: Path, run_id: str) -> Path:
         path = (root / rel).resolve()
     except (ValueError, UnicodeDecodeError) as exc:
         raise HTTPException(status_code=404, detail="Unknown run") from exc
-    if (
-        path == root
-        or not path.is_relative_to(root)
-        or not RunFolder(path).is_run()
-    ):
+    if path == root or not path.is_relative_to(root) or not RunFolder(path).is_run():
         raise HTTPException(status_code=404, detail="Unknown run")
     return path
 
@@ -559,9 +555,7 @@ def create_app(
             {**moment, "art": _scene_art_key(scenes, chapter, moment.get("heading"))}
             if moment.get("type") == "scene"
             else moment
-            for moment in timeline(directory).chapter(
-                chapter, _story(directory)[0]
-            )
+            for moment in timeline(directory).chapter(chapter, _story(directory)[0])
         ]
         return {
             "chapter": chapter,
@@ -760,7 +754,9 @@ def _add_visitor_run_routes(
         return {
             **story_estimate(story_path),
             "approximate": True,
-            "public_run_exists": publications.public_run_exists(provider, model.strip()),
+            "public_run_exists": publications.public_run_exists(
+                provider, model.strip()
+            ),
         }
 
     @app.get("/api/visitor-runs/public")

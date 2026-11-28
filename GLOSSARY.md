@@ -123,3 +123,11 @@ _Avoid_: final flags, final routes, results
 **Moment**:
 A single point in a Run that both the Story and the Flowchart can show; clicking it in one view opens it in the other.
 _Avoid_: event, step, node (in user-facing language)
+
+**Synthetic Scene Art**:
+The picture shown faded behind the Story and the Flowchart for the scene being read or selected, made by an image model as a stand-in for the game's own art. Each Chapter Segment has a main one, and some scenes have their own.
+_Avoid_: concept art, background, backdrop, scene image
+
+**Synthetic Title Art**:
+The picture behind the title screen, made by an image model like the Synthetic Scene Art but shown sharp and not tied to any scene.
+_Avoid_: title image, key art, splash
