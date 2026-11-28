@@ -32,6 +32,7 @@ CONTINUE_INVESTIGATION = "ch12_00202"
 TWO_FAILURES, ONE_FAILURE = "ch18_00091", "ch18_00092"
 
 
+@pytest.mark.slow
 def test_a_correct_reconstruction_finds_the_deviant(tmp_path):
     run = play_story(tmp_path, CORRECT)
     assert SEARCH_THE_ATTIC in run.nodes
@@ -40,11 +41,13 @@ def test_a_correct_reconstruction_finds_the_deviant(tmp_path):
     assert DEBRIEF in run.nodes and DISAPPOINTED not in run.nodes
 
 
+@pytest.mark.slow
 def test_hank_forgives_a_first_wrong_guess_about_where_it_started(tmp_path):
     run = play_story(tmp_path, {**CORRECT, WHERE: "…IN THE BATHROOM"})
     assert SEARCH_THE_ATTIC in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "wrong", [{KILLED: "…WITH THE BAT."}, {WHAT: "THE ANDROID THREW THE CHAIR."}]
 )
@@ -59,6 +62,7 @@ def test_wrong_answers_leave_the_crime_unsolved(tmp_path, wrong):
     assert CONTINUE_INVESTIGATION in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("found", [True, False])
 def test_amanda_in_russian_roulette_remembers_partners(tmp_path, found):
     wrong = {} if found else {KILLED: "…WITH THE BAT."}
@@ -72,6 +76,7 @@ def test_amanda_in_russian_roulette_remembers_partners(tmp_path, found):
 HANKS_LEAD_KARA_ALIVE, HANKS_LEAD_KARA_DEAD = "ch12_00005", "ch12_00007"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("kara_dies", [True, False])
 def test_hanks_lead_follows_whether_kara_died(tmp_path, kara_dies):
     picks = {"ch7_00092": "STAND STILL"} if kara_dies else {}
@@ -87,6 +92,7 @@ PURSUIT = "ch13_00009"
 KARA_UNDISCOVERED = "ch13_00083"
 
 
+@pytest.mark.slow
 def test_at_the_squat_connor_can_leave_without_finding_kara(tmp_path):
     run = play_story(tmp_path, {**SQUAT, SEARCH_SQUAT: "LEAVE"})
     assert KARA_UNDISCOVERED in run.nodes
@@ -94,12 +100,14 @@ def test_at_the_squat_connor_can_leave_without_finding_kara(tmp_path):
     assert run.flags["connor_highway_pursuit"] is False
 
 
+@pytest.mark.slow
 def test_searching_under_the_stairs_connor_finds_kara_and_pursues(tmp_path):
     run = play_story(tmp_path, {**SQUAT, SEARCH_SQUAT: "CHECK UNDER THE STAIRS"})
     assert PURSUIT in run.nodes
     assert KARA_UNDISCOVERED not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_threatened_ralph_informs_and_connor_pursues(tmp_path):
     run = play_story(tmp_path, {**SQUAT, "ch13_00136": "THREATEN"})
     assert SEARCH_SQUAT not in run.nodes
@@ -109,7 +117,14 @@ def test_a_threatened_ralph_informs_and_connor_pursues(tmp_path):
 
 @pytest.mark.parametrize(
     "nid",
-    ["ch12_00241", "ch12_00008", "ch18_00093", "ch12_00203", "ch12_00127", "ch12_00153"],
+    [
+        "ch12_00241",
+        "ch12_00008",
+        "ch18_00093",
+        "ch12_00203",
+        "ch12_00127",
+        "ch12_00153",
+    ],
 )
 def test_lines_about_partners_and_kara_follow_a_rule(nid):
     assert load_dataset()["nodes"][nid]["resolution"] == "rule"

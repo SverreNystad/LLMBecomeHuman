@@ -338,6 +338,7 @@ def test_chapter_1_dataset_still_validates(dataset):
     assert report["valid"], report["errors"][:10]
 
 
+@pytest.mark.slow
 def test_chapter_1_flowchart_builds_for_a_fresh_mock_run(dataset, tmp_path):
     subprocess.run(
         [

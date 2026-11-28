@@ -75,6 +75,8 @@ Give each run its own `--run-dir`. Add `--resume` to continue an interrupted run
 docker compose run --rm --build --entrypoint pytest runner -q
 ```
 
+About 400 tests play the whole story (or a Visitor Run) and take a second or more each; they are marked `slow` and make up nearly all of the suite's time. For a quick loop while working, skip them with `uv run pytest -m "not slow"`; CI runs everything.
+
 Any CLI command also runs locally through uv, for example `uv run python -m detroit_benchmark dashboard --runs-dir runs`.
 
 The browser tests in `tests/test_frontend_browser.py` are skipped unless Playwright and Chromium are installed. Their screenshots go to each test's temporary folder; run them with `UPDATE_DOC_SCREENSHOTS=1` to refresh the ones in `docs/images/`.

@@ -321,6 +321,7 @@ def listed(client, run_id):
     return next(r for r in runs if r["id"] == run_id)
 
 
+@pytest.mark.slow
 def test_a_run_of_the_story_uses_tokens_within_the_estimate_and_its_counts_rise_as_it_plays(
     tmp_path,
 ):

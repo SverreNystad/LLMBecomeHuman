@@ -6,6 +6,7 @@ first model call until the test opens it.
 
 from __future__ import annotations
 
+import pytest
 import json
 import threading
 import time
@@ -90,6 +91,7 @@ def test_stop_ends_a_playing_run_after_the_current_model_call_and_keeps_it_parti
     assert detail["events"]
 
 
+@pytest.mark.slow
 def test_only_a_playing_visitor_run_can_be_stopped(tmp_path):
     gate = Gate()
     gate.open.set()
@@ -112,6 +114,7 @@ def test_a_run_that_fails_ends_partial_with_a_readable_reason_and_no_key(tmp_pat
     assert KEY not in run["stop_reason"]
 
 
+@pytest.mark.slow
 def test_on_start_up_a_visitor_run_left_in_progress_is_reported_partial(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate)
@@ -140,6 +143,7 @@ def test_a_non_visitor_run_in_progress_is_left_alone_on_start_up(tmp_path):
 # Play limits (#75)
 
 
+@pytest.mark.slow
 def test_a_third_concurrent_start_is_refused_as_busy(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate)
@@ -152,6 +156,7 @@ def test_a_third_concurrent_start_is_refused_as_busy(tmp_path):
     gate.open.set()
 
 
+@pytest.mark.slow
 def test_a_second_start_from_the_same_visitor_is_refused_as_already_playing(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate)
@@ -164,6 +169,7 @@ def test_a_second_start_from_the_same_visitor_is_refused_as_already_playing(tmp_
     gate.open.set()
 
 
+@pytest.mark.slow
 def test_without_the_cloudflare_header_the_socket_peer_identifies_the_visitor(
     tmp_path,
 ):
@@ -176,6 +182,7 @@ def test_without_the_cloudflare_header_the_socket_peer_identifies_the_visitor(
     gate.open.set()
 
 
+@pytest.mark.slow
 def test_the_limits_are_constructor_parameters(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate, max_playing=1, max_playing_per_visitor=2)
@@ -203,6 +210,7 @@ def _fill_both_slots(client, gate):
     return first, second
 
 
+@pytest.mark.slow
 def test_a_slot_frees_when_a_run_completes(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate)
@@ -214,6 +222,7 @@ def test_a_slot_frees_when_a_run_completes(tmp_path):
     assert starts_soon(client, "192.0.2.1") == 200
 
 
+@pytest.mark.slow
 def test_a_slot_frees_when_a_run_is_stopped(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate)
@@ -224,6 +233,7 @@ def test_a_slot_frees_when_a_run_is_stopped(tmp_path):
     assert starts_soon(client, "192.0.2.1") == 200
 
 
+@pytest.mark.slow
 def test_a_slot_frees_when_a_run_fails(tmp_path):
     gate = Gate()
     client = visitor_client(tmp_path, gate, max_playing=1)

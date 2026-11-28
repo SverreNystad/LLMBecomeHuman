@@ -66,9 +66,10 @@ def test_the_detonator_asks_press_or_give_up():
         _option(BARRICADE, "DIRTY BOMB")
     )
     assert _labels(PRESS_OR_GIVE_UP) == ["PRESS", "GIVE UP"]
-    assert effect_flags(_option(PRESS_OR_GIVE_UP, "PRESS"))[
-        "markus_dirty_bomb_detonated"
-    ] is True
+    assert (
+        effect_flags(_option(PRESS_OR_GIVE_UP, "PRESS"))["markus_dirty_bomb_detonated"]
+        is True
+    )
     give_up = _option(PRESS_OR_GIVE_UP, "GIVE UP")
     assert give_up["next"] == BARRICADE_WITHOUT_BOMB
     assert _labels(BARRICADE_WITHOUT_BOMB) == [
@@ -76,6 +77,7 @@ def test_the_detonator_asks_press_or_give_up():
     ]
 
 
+@pytest.mark.slow
 def test_the_bomb_ending_plays_the_news_warren_and_we_are_free(tmp_path):
     run = play_story(tmp_path, WITH_DETONATOR)
     assert run.labels[PRESS_OR_GIVE_UP] == "PRESS"
@@ -95,6 +97,7 @@ def test_the_bomb_ending_plays_the_news_warren_and_we_are_free(tmp_path):
     assert "face" in face and "flag" in face
 
 
+@pytest.mark.slow
 def test_with_a_machine_connor_the_bomb_ends_his_story_with_his_mission_failed(
     tmp_path,
 ):
@@ -107,6 +110,7 @@ def test_with_a_machine_connor_the_bomb_ends_his_story_with_his_mission_failed(
     assert "32.8" not in run.chapters
 
 
+@pytest.mark.slow
 def test_a_deviant_connor_s_story_goes_on_after_the_bomb(tmp_path):
     run = play_story(tmp_path, WITH_DETONATOR)
     assert run.flags["connor_deviant"] is True
@@ -116,8 +120,9 @@ def test_a_deviant_connor_s_story_goes_on_after_the_bomb(tmp_path):
 # --- The failed assault's store (32.6) ---
 
 
-@pytest.mark.parametrize("node_id, label", [(STORE_WITH_NORTH_PRESS, "PRESS"),
-                                            (STORE_ALONE, "DIRTY BOMB")])
+@pytest.mark.parametrize(
+    "node_id, label", [(STORE_WITH_NORTH_PRESS, "PRESS"), (STORE_ALONE, "DIRTY BOMB")]
+)
 def test_the_bomb_in_the_store_plays_the_same_ending(node_id, label):
     after = set(reachable(_option(node_id, label)["next"], within_chapter=True))
     assert {"ch32_6_x0128", "ch32_6_x0133", STORE_WE_ARE_FREE} <= after
@@ -152,7 +157,11 @@ def test_connor_sparing_markus_without_the_bomb_walks_away():
     # Wiki, Markus: "if Connor spares Markus he will walk away".
     assert _option(CONNOR_SHOOT_OR_SPARE, "SPARE")["next"] == AFTER_CONNOR
     step = resolve(AFTER_CONNOR, {"markus_took_detonator": False})
-    assert (step.next, step.branch_index, step.assumed) == (CONNOR_WALKS_AWAY, None, False)
+    assert (step.next, step.branch_index, step.assumed) == (
+        CONNOR_WALKS_AWAY,
+        None,
+        False,
+    )
     assert "walks away" in _nodes()[CONNOR_WALKS_AWAY]["description"]
 
 
@@ -163,16 +172,19 @@ def test_carl_starts_alive():
     assert load_dataset()["initial_flags"]["carl_alive"] is True
 
 
+@pytest.mark.slow
 def test_enduring_leo_kills_carl(tmp_path):
     run = play_story(tmp_path, {BROKEN: "ENDURE"})
     assert run.flags["carl_alive"] is False
 
 
+@pytest.mark.slow
 def test_pushing_leo_keeps_carl_alive(tmp_path):
     run = play_story(tmp_path, {BROKEN: "PUSH LEO"})
     assert run.flags["carl_alive"] is True
 
 
+@pytest.mark.slow
 def test_persistent_anger_in_night_of_the_soul_kills_carl(tmp_path):
     # Wiki, Carl Manfred: "If Markus persists in this behavior, then Carl will die of a
     # heart attack."
@@ -232,6 +244,7 @@ def test_coordinating_the_attack_is_a_choice_at_the_machine_gun():
     assert effect_flags(send)["north_alive"] is False
 
 
+@pytest.mark.slow
 def test_covering_the_charge_wins_the_assault(tmp_path):
     run = play_story(tmp_path, REVOLUTION)
     assert run.labels[COORDINATE] == "COVER FIRE"
@@ -239,12 +252,14 @@ def test_covering_the_charge_wins_the_assault(tmp_path):
     assert run.flags["markus_revolution_won"] is True
 
 
+@pytest.mark.slow
 def test_sending_north_in_without_cover_kills_her(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, COORDINATE: "SEND NORTH'S GROUP"})
     assert run.flags["north_alive"] is False
     assert run.flags["markus_revolution_won"] is True
 
 
+@pytest.mark.slow
 def test_falling_back_fails_the_assault_and_reaches_the_store(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, COORDINATE: "FALL BACK"})
     assert ASSAULT_FAILED in run.nodes
@@ -261,6 +276,7 @@ def test_falling_back_fails_the_assault_and_reaches_the_store(tmp_path):
     assert summary["world"]["sentence"].startswith("The revolution turned violent.")
 
 
+@pytest.mark.slow
 def test_with_a_machine_connor_the_failed_assault_brings_him_to_the_store(tmp_path):
     run = play_story(tmp_path, {**MACHINE, **REVOLUTION, COORDINATE: "FALL BACK"})
     assert run.flags["north_alive"] is False  # not his lover: shot falling back
@@ -292,8 +308,10 @@ def test_detonating_in_front_of_connor_fails_his_mission():
     assert flags["connor_mission_failed"] is True
 
 
-@pytest.mark.parametrize("nid", ["ch32_5_x0117", "ch32_5_x0121", "ch32_6_x0130",
-                                 "ch32_6_x0134", "ch32_6_x0136"])
+@pytest.mark.parametrize(
+    "nid",
+    ["ch32_5_x0117", "ch32_5_x0121", "ch32_6_x0130", "ch32_6_x0134", "ch32_6_x0136"],
+)
 def test_the_new_rule_nodes_say_what_they_approximate(nid):
     assert _nodes()[nid].get("note")
 
@@ -305,11 +323,17 @@ def test_the_second_detonator_choice_has_its_own_description():
 
 # Kara's camp, freed by a won demonstration: the Summary says so only for a won one.
 def test_the_summary_names_the_demonstration_only_when_it_was_won():
-    base = {"kara_alive": True, "kara_captured": True, "kara_escaped_camp": True,
-            "kara_freed_by_markus": True}
-    won = _summary({**base, "markus_peaceful": False,
-                    "markus_demonstration_outcome": "won"})["characters"][1]
-    revolution = _summary({**base, "markus_peaceful": True,
-                           "markus_demonstration_outcome": "none"})["characters"][1]
+    base = {
+        "kara_alive": True,
+        "kara_captured": True,
+        "kara_escaped_camp": True,
+        "kara_freed_by_markus": True,
+    }
+    won = _summary(
+        {**base, "markus_peaceful": False, "markus_demonstration_outcome": "won"}
+    )["characters"][1]
+    revolution = _summary(
+        {**base, "markus_peaceful": True, "markus_demonstration_outcome": "none"}
+    )["characters"][1]
     assert "demonstration" in won["sentence"]
     assert "Markus's androids freed her" in revolution["sentence"]

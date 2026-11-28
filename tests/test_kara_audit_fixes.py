@@ -22,11 +22,16 @@ MOTEL_SEARCH = "ch13_x0301"
 # Fugitives choices that send Kara to each shelter (see test_condition_resolution).
 SHELTER_PICKS = {
     "motel": {},
-    "car": {"ch10_00109": "DON'T STEAL", "ch10_00039": "LEAVE", "ch10_00013": "STAY HERE"},
+    "car": {
+        "ch10_00109": "DON'T STEAL",
+        "ch10_00039": "LEAVE",
+        "ch10_00013": "STAY HERE",
+    },
 }
 SQUAT = {"ch10_00109": "DON'T STEAL", "ch10_00039": "STAY"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("shelter", sorted(SHELTER_PICKS))
 def test_sneaking_past_the_police_kara_reaches_the_train_unseen(tmp_path, shelter):
     run = play_story(tmp_path, SHELTER_PICKS[shelter])
@@ -43,6 +48,7 @@ def test_the_kara_model_never_decides_connor_s_motel_search():
     assert TRAIN_REACHED in reach(MOTEL_SEARCH, kara_ch10_shelter="motel")
 
 
+@pytest.mark.slow
 def test_kara_who_threatened_ralph_is_found_and_chased(tmp_path):
     run = play_story(tmp_path, {**SQUAT, "ch13_00136": "THREATEN"})
     assert PURSUIT in run.nodes and TRAIN_REACHED not in run.nodes
@@ -68,7 +74,11 @@ def test_the_chase_newsflash_plays_only_after_a_chase(chased):
 
 @pytest.mark.parametrize(
     "robbed, clothes, news",
-    [(False, False, None), (True, False, ROBBERY_UNIFORM), (True, True, ROBBERY_CLOTHES)],
+    [
+        (False, False, None),
+        (True, False, ROBBERY_UNIFORM),
+        (True, True, ROBBERY_CLOTHES),
+    ],
 )
 def test_the_robbery_newsflash_follows_the_store_robbery(robbed, clothes, news):
     seen = reach("ch17_00078", kara_robbed_store=robbed, kara_stole_clothes=clothes)
@@ -76,7 +86,10 @@ def test_the_robbery_newsflash_follows_the_store_robbery(robbed, clothes, news):
 
 
 def test_robbing_the_store_at_gunpoint_is_remembered_and_reported():
-    for nid, label in [("ch10_00132", "GUN"), ("ch10_00188", "THREATEN THE CLERK WITH THE GUN")]:
+    for nid, label in [
+        ("ch10_00132", "GUN"),
+        ("ch10_00188", "THREATEN THE CLERK WITH THE GUN"),
+    ]:
         chosen = option(nid, label)
         assert effect_flags(chosen)["kara_robbed_store"] is True
         assert chosen["effects"]["news"]
@@ -160,10 +173,15 @@ def test_kara_can_cast_luther_overboard_only_if_his_body_is_aboard():
         {"flag": "luther_body_on_boat", "equals": True}
     ]
     for label in ("Accelerate", "Protect Alice", "Hide", "Plunge"):
-        assert effect_flags(option("ch32_1_00167", label))["luther_body_on_boat"] is False
+        assert (
+            effect_flags(option("ch32_1_00167", label))["luther_body_on_boat"] is False
+        )
     for nid in ("ch32_1_00143", "ch32_1_00148", "ch32_1_00156"):
         (dies,) = NODES[nid]["branches"]
-        assert effect_flags(dies) == {"luther_alive": False, "luther_body_on_boat": True}
+        assert effect_flags(dies) == {
+            "luther_alive": False,
+            "luther_body_on_boat": True,
+        }
 
 
 def test_luther_shooting_at_the_checkpoint_is_public_news():
@@ -208,6 +226,7 @@ VOLUNTEER = {"ch32_2_00202": "VOLUNTEER"}
 REVOLUTION = {"ch31_1_00006": "REVOLUTION"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("revolution", [True, False])
 def test_kara_can_leave_the_camp_on_the_truck_without_alice(tmp_path, revolution):
     picks = {**CAPTURED, **VOLUNTEER, "ch32_2_x0210": "CLIMB INTO THE TRUCK"}
@@ -218,6 +237,7 @@ def test_kara_can_leave_the_camp_on_the_truck_without_alice(tmp_path, revolution
     assert "ch32_2_00188" not in run.nodes
 
 
+@pytest.mark.slow
 def test_going_back_after_carrying_the_body_kara_returns_to_the_enclosure(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, **VOLUNTEER, "ch32_2_x0210": "GO BACK"})
     assert "ch32_2_00188" in run.nodes

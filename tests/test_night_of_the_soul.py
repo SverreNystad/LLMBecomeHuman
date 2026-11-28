@@ -38,17 +38,20 @@ HANK_SUICIDE = "ch31_2_x0103"
 NORTH_CALLS_MARKUS_DEAD = "ch31_2_00004"
 
 
+@pytest.mark.slow
 def test_a_dead_simon_never_speaks(tmp_path):
     run = play_story(tmp_path, SIMON_LEFT_ON_THE_ROOF)
     assert CHURCH in run.nodes
     assert SIMON_TALKS not in run.nodes and "ch31_1_00061" not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_machine_connor_is_never_offered_trust(tmp_path):
     run = play_story(tmp_path, MACHINE)
     assert CONNOR_TRUST not in run.nodes
 
 
+@pytest.mark.slow
 def test_with_markus_dead_north_calls_the_androids_to_arms(tmp_path):
     run = play_story(tmp_path, NOBODY_SAVES_MARKUS)
     assert "31.1" not in run.chapters
@@ -59,12 +62,14 @@ def test_with_markus_dead_north_calls_the_androids_to_arms(tmp_path):
     assert NORTH_CALLS_MARKUS_DEAD in run.nodes
 
 
+@pytest.mark.slow
 def test_a_machine_connor_reports_to_amanda_not_to_the_church(tmp_path):
     run = play_story(tmp_path, {**MACHINE, **NOBODY_SAVES_MARKUS})
     assert set(AMANDA) & set(run.nodes)
     assert CONNOR_CHURCH not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_deviant_connor_meets_markus_in_his_own_segment(tmp_path):
     run = play_story(tmp_path, {})
     assert CONNOR_TRUST in run.nodes
@@ -72,6 +77,7 @@ def test_a_deviant_connor_meets_markus_in_his_own_segment(tmp_path):
     assert CONNOR_CHURCH not in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("hostile", [True, False])
 def test_hank_quits_and_kills_himself_only_if_hostile(tmp_path, hostile):
     picks = {**MACHINE} | (HOSTILE_HANK if hostile else {})
@@ -81,12 +87,14 @@ def test_hank_quits_and_kills_himself_only_if_hostile(tmp_path, hostile):
     assert (HANK_SUICIDE in run.nodes) is hostile
 
 
+@pytest.mark.slow
 def test_without_a_raid_markus_speaks_to_the_people_not_in_the_church(tmp_path):
     run = play_story(tmp_path, NO_CLUES)
     assert CHURCH not in run.nodes
     assert SPEECH in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("hostile", [True, False])
 def test_a_deviant_connor_also_visits_a_hank_who_quit(tmp_path, hostile):
     run = play_story(tmp_path, HOSTILE_HANK if hostile else {})
@@ -96,6 +104,7 @@ def test_a_deviant_connor_also_visits_a_hank_who_quit(tmp_path, hostile):
     assert run.flags["hank_alive"] is not hostile
 
 
+@pytest.mark.slow
 def test_with_markus_gone_a_deviant_connor_goes_on_to_the_church_after_hank(tmp_path):
     run = play_story(tmp_path, {**HOSTILE_HANK, **NOBODY_SAVES_MARKUS})
     assert run.nodes.index(HANKS_HOUSE) < run.nodes.index(CONNOR_CHURCH)

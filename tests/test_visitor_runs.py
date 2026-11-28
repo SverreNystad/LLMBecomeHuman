@@ -57,6 +57,7 @@ def test_with_the_flag_off_every_visitor_run_endpoint_is_absent(tmp_path):
     assert list(tmp_path.iterdir()) == []
 
 
+@pytest.mark.slow
 def test_a_started_visitor_run_plays_to_completion_and_is_listed(
     tmp_path,
 ):
@@ -108,6 +109,7 @@ def test_a_backend_takes_a_key_passed_in_without_touching_the_environment(
     assert dict(os.environ) == before
 
 
+@pytest.mark.slow
 def test_the_key_never_reaches_the_runs_folder_or_the_logs_even_on_errors(
     tmp_path, caplog
 ):

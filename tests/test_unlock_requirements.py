@@ -20,6 +20,7 @@ SIMON_LEFT_BEHIND = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("simon_dead", [False, True])
 def test_markus_asks_simon_only_if_simon_is_alive(tmp_path, simon_dead):
     run = play_story(tmp_path, SIMON_LEFT_BEHIND if simon_dead else {})
@@ -34,6 +35,7 @@ ROOF_TOPICS = "ch28_00157"
 FREE_THE_ANDROIDS = {"ch26_00146": "HIDE"}  # not "Abandon Mission" at the police car
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, topic",
     [
@@ -64,6 +66,7 @@ NO_DEATHS = {
 }
 
 
+@pytest.mark.slow
 def test_by_default_connor_recalls_his_deaths_but_no_rescue_or_mercy(tmp_path):
     # The default run chases Rupert, shoots a Traci and dies twice.
     run = play_story(tmp_path, {})
@@ -73,12 +76,14 @@ def test_by_default_connor_recalls_his_deaths_but_no_rescue_or_mercy(tmp_path):
     assert "SINCERE" not in run.offered(AMANDA_PE_TONE)
 
 
+@pytest.mark.slow
 def test_a_gentle_connor_recalls_saving_hank_and_sparing_the_tracis(tmp_path):
     run = play_story(tmp_path, GENTLE)
     assert "SAVING HANK" in run.offered(AMANDA_RR)
     assert "SINCERE" in run.offered(AMANDA_PE_TONE)
 
 
+@pytest.mark.slow
 def test_a_connor_who_never_died_has_no_death_to_recall(tmp_path):
     run = play_story(tmp_path, NO_DEATHS)
     assert "CONNOR’S DEATH" not in run.offered(AMANDA_RR)
@@ -104,6 +109,7 @@ MARKUS_LEAVES = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("picks, dead", [(MARKUS_DIES, True), (MARKUS_LEAVES, False)])
 def test_connor_asks_north_about_markus_only_if_he_died(tmp_path, picks, dead):
     run = play_story(tmp_path, picks)
@@ -123,6 +129,7 @@ KEY_EVIDENCE_ONLY = {"ch6_x0001": "CHECK KEY EVIDENCE"}
 DEVIANT_SAVED = TRUTH_IS_INSIDE
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("thorough", [True, False])
 def test_the_bathroom_clues_need_a_thorough_search_in_partners(tmp_path, thorough):
     picks = DEVIANT_SAVED if thorough else {**DEVIANT_SAVED, **KEY_EVIDENCE_ONLY}
@@ -134,6 +141,7 @@ def test_the_bathroom_clues_need_a_thorough_search_in_partners(tmp_path, thoroug
     assert "rA9" in run.offered(SAVED_DEVIANT_TALK)
 
 
+@pytest.mark.slow
 def test_connor_shows_the_photos_only_if_he_looked_at_the_files(tmp_path):
     rushed = play_story(tmp_path, {"ch9_x0001": "START THE INTERROGATION"})
     assert "SHOW PHOTOS" not in rushed.offered("ch9_00123")
@@ -150,6 +158,7 @@ FORGOT_THE_GUN = {"ch13_x0213": "FORGET THE GUN"}
 FENCE, RALPH_TALK = "ch10_00047", "ch13_00151"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, gun, check_gun",
     [
@@ -172,6 +181,7 @@ def test_kara_s_gun_topics_follow_what_she_did_with_it(tmp_path, picks, gun, che
 AMANDA_NEST_CLUES = "ch18_00085"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "search, clues",
     [
@@ -193,6 +203,7 @@ def test_connor_tells_amanda_only_what_he_found_in_the_nest(tmp_path, search, cl
 PRESIDENT = "ch32_5_00203"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("found", [True, False])
 def test_the_president_mentions_the_jericho_assault_only_after_one(tmp_path, found):
     run = play_story(tmp_path, {} if found else NO_CLUES)
@@ -208,6 +219,7 @@ HANK_ARRIVES, HANK_TOPICS = "ch12_00060", "ch12_00055"
 FILES = "ch12_00044"  # "243 files… The first dates back nine months…"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("picks", [{}, DEVIANT_SAVED])
 def test_thanks_is_locked_and_start_working_leads_to_the_files(tmp_path, picks):
     run = play_story(tmp_path, {**picks, HANK_TOPICS: "START WORKING"})
@@ -228,6 +240,7 @@ HOLD_UP = {
 RESUME_HOLD_UP, CLERK_GRABS_A_GUN = "ch10_00158", "ch10_00155"
 
 
+@pytest.mark.slow
 def test_opening_the_register_makes_the_clerk_grab_a_gun(tmp_path):
     run = play_story(tmp_path, {**HOLD_UP, RESUME_HOLD_UP: "OPEN THE REGISTER!"})
     assert run.offered(RESUME_HOLD_UP) == [
@@ -238,6 +251,7 @@ def test_opening_the_register_makes_the_clerk_grab_a_gun(tmp_path):
     assert run.offered(CLERK_GRABS_A_GUN) == ["CONVINCE", "GIVE UP"]
 
 
+@pytest.mark.slow
 def test_saying_don_t_move_kara_takes_the_money(tmp_path):
     run = play_story(tmp_path, {**HOLD_UP, RESUME_HOLD_UP: "BACK OFF!"})
     assert CLERK_GRABS_A_GUN not in run.nodes
@@ -253,6 +267,7 @@ ALICE_TOY, ALICE_CHOCOLATE = "ch10_00068", "ch10_00069"
 CCTV_WIRE_CUTTERS = "ch13_00164"
 
 
+@pytest.mark.slow
 def test_by_default_kara_takes_nothing_and_is_not_spotted(tmp_path):
     run = play_story(tmp_path, {})
     assert run.offered(AISLES)[0] == "TAKE NOTHING"
@@ -260,6 +275,7 @@ def test_by_default_kara_takes_nothing_and_is_not_spotted(tmp_path):
     assert ALICE_TOY not in run.nodes and ALICE_CHOCOLATE not in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "item, alice_talk",
     [
@@ -277,6 +293,7 @@ def test_one_stolen_thing_goes_unnoticed_and_matters_later(tmp_path, item, alice
     assert (CCTV_WIRE_CUTTERS in squat.nodes) is (item == "TAKE THE WIRE CUTTERS")
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("gun", [True, False])
 def test_taking_everything_kara_is_spotted_and_keeps_it_only_with_the_gun(
     tmp_path, gun
@@ -314,6 +331,7 @@ FOLLOW_UPS = [
 ]
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("picks, menu, first, follow_menu, follow_up", FOLLOW_UPS)
 def test_a_follow_up_question_comes_after_the_question_it_follows(
     tmp_path, picks, menu, first, follow_menu, follow_up
@@ -329,6 +347,7 @@ BRIDGE_TOPICS = "ch22_00073"
 NO_RA9_CLUES = {"ch6_x0001": "CHECK KEY EVIDENCE", "ch15_x0001": "CHECK THE EXITS"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("picks, ra9", [({}, True), (NO_RA9_CLUES, False)])
 def test_connor_mentions_ra9_on_the_bridge_only_after_seeing_it(tmp_path, picks, ra9):
     offered = play_story(tmp_path, picks).offered(BRIDGE_TOPICS)
@@ -347,6 +366,7 @@ NO_DEATHS_BEFORE = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("saved_hank", [False, True])
 def test_connor_asks_about_chris_only_after_arriving_apart(tmp_path, saved_hank):
     # Capitol Park: the police patrol arrives and Markus faces Chris.
@@ -358,7 +378,9 @@ def test_connor_asks_about_chris_only_after_arriving_apart(tmp_path, saved_hank)
         "ch26_00030": "REVENGE",
     }
     picks = (
-        {**NO_DEATHS_BEFORE, **met_chris, "ch24_00031": "SAVE HANK"} if saved_hank else {}
+        {**NO_DEATHS_BEFORE, **met_chris, "ch24_00031": "SAVE HANK"}
+        if saved_hank
+        else {}
     )
     offered = play_story(tmp_path, picks).offered(KAMSKI_OUTSIDE)
     assert ("CHRIS" in offered) is saved_hank
@@ -371,12 +393,14 @@ def test_connor_asks_about_chris_only_after_arriving_apart(tmp_path, saved_hank)
 NORTH_PAST = "ch28_00137"
 
 
+@pytest.mark.slow
 def test_markus_can_always_ask_about_north_s_past(tmp_path):
     for study in ("STUDY THE PLAZA", "SCAN AS YOU MOVE"):
         run = play_story(tmp_path / study, {"ch26_x0001": study})
         assert "NORTH’S PAST" in run.offered(NORTH_PAST)
 
 
+@pytest.mark.slow
 def test_hank_s_desk_and_the_chicken_feed_topics_follow_what_connor_looked_at(tmp_path):
     # Connor always inspects Hank's desk and listens to his music, and scans the meal,
     # Pedro and Gary; the topics stay tied to those scenes (Seen Conditions).
@@ -395,6 +419,7 @@ TOPICS, PLEA, DEMAND, FINAL = "ch1_00050", "ch1_00028", "ch1_00019", "ch1_00009"
 GUN_AND_LIE = {"ch1_x0003": "TAKE GUN", "ch1_00058": "LIE"}
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("close", [True, False])
 def test_up_close_connor_can_bluff_sacrifice_himself_or_shoot(tmp_path, close):
     picks = {**GUN_AND_LIE, APPROACH: "GET CLOSE TO DANIEL" if close else "STAY PUT"}
@@ -406,6 +431,7 @@ def test_up_close_connor_can_bluff_sacrifice_himself_or_shoot(tmp_path, close):
     assert "COMPROMISE" in run.offered(DEMAND)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "search, close, talk",
     [
@@ -430,6 +456,7 @@ def test_connor_talks_to_emma_up_close_and_with_no_tablet_topics(
 PASTIME, EXPLORE_HOME = "ch5_00077", "ch31_1_x0004"
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "pastime, again",
     [
@@ -496,6 +523,7 @@ KILLS = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, can_deviate",
     [
@@ -510,6 +538,7 @@ def test_only_an_unstable_connor_can_become_deviant(tmp_path, picks, can_deviate
     assert "REMAIN A MACHINE" in offered
 
 
+@pytest.mark.slow
 def test_the_model_reads_connor_s_instability_moving(tmp_path):
     run = play_story(tmp_path, {})
     fish = next(e for e in run.events if e.get("node_id") == "ch1_00167")
@@ -522,6 +551,7 @@ def test_the_model_reads_connor_s_instability_moving(tmp_path):
 NORTH_HOSTILE = "ch28_00133"
 
 
+@pytest.mark.slow
 def test_a_friendly_north_answers_markus_and_he_can_mention_the_other_north(tmp_path):
     run = play_story(tmp_path, {"ch28_00137": "NORTH’S PAST"})
     rule = next(e for e in run.events if e.get("node_id") == NORTH_HOSTILE)
@@ -537,6 +567,7 @@ def test_a_friendly_north_answers_markus_and_he_can_mention_the_other_north(tmp_
     assert "OTHER NORTH" not in scanned.offered("ch28_00131")
 
 
+@pytest.mark.slow
 def test_the_march_rules_follow_the_relationships(tmp_path):
     run = play_story(tmp_path, {})
     for e in run.events:

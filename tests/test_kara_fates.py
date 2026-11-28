@@ -14,6 +14,7 @@ RETURNING_TO_ALICE, ALICE_GONE = "ch30_1_00131", "ch30_1_x0103"
 LUTHER_DIES_AT_THE_RANCH = {"ch25_x0001": "WAIT FOR ROSE", "ch25_00076": "UPSTAIRS"}
 
 
+@pytest.mark.slow
 def test_crawling_with_a_shot_leg_kara_and_alice_die(tmp_path):
     run = play_story(
         tmp_path, {SHOT_AT: "RUN", SHOT_IN_THE_LEG: "GET UP", LEG_AGAIN: "CRAWL"}
@@ -23,36 +24,49 @@ def test_crawling_with_a_shot_leg_kara_and_alice_die(tmp_path):
     assert not KARA_LATER & set(run.chapters)
 
 
+@pytest.mark.slow
 def test_defending_alice_luther_sacrifices_himself_and_they_escape(tmp_path):
-    run = play_story(tmp_path, {SHOT_AT: "PLAY DEAD", SOLDIERS_CLOSE_IN: "DEFEND ALICE"})
+    run = play_story(
+        tmp_path, {SHOT_AT: "PLAY DEAD", SOLDIERS_CLOSE_IN: "DEFEND ALICE"}
+    )
     assert LUTHER_SACRIFICES in run.nodes
     assert run.flags["luther_alive"] is False
     assert "32.1" in run.chapters
 
 
+@pytest.mark.slow
 def test_defending_alice_without_luther_kara_and_alice_die(tmp_path):
     run = play_story(
         tmp_path,
-        {**LUTHER_DIES_AT_THE_RANCH, SHOT_AT: "PLAY DEAD", SOLDIERS_CLOSE_IN: "DEFEND ALICE"},
+        {
+            **LUTHER_DIES_AT_THE_RANCH,
+            SHOT_AT: "PLAY DEAD",
+            SOLDIERS_CLOSE_IN: "DEFEND ALICE",
+        },
     )
     assert run.flags["kara_alive"] is False
     assert run.flags["alice_alive"] is False
     assert not KARA_LATER & set(run.chapters)
 
 
+@pytest.mark.slow
 def test_running_after_surrendering_kara_is_shot_in_the_leg(tmp_path):
     run = play_story(tmp_path, {SHOT_AT: "SURRENDER", AFTER_SURRENDER: "RUN"})
     assert KARA_SHOT_IN_THE_LEG in run.nodes
 
 
+@pytest.mark.slow
 def test_staying_distant_alice_leaves_and_kara_can_run_alone(tmp_path):
     run = play_story(tmp_path, {RETURNING_TO_ALICE: "DISTANT", ALICE_GONE: "RUN AWAY"})
     assert run.flags["kara_alive"] is True
     assert not KARA_LATER & set(run.chapters)
 
 
+@pytest.mark.slow
 def test_staying_distant_kara_can_go_back_for_alice(tmp_path):
-    run = play_story(tmp_path, {RETURNING_TO_ALICE: "DISTANT", ALICE_GONE: "FIND ALICE"})
+    run = play_story(
+        tmp_path, {RETURNING_TO_ALICE: "DISTANT", ALICE_GONE: "FIND ALICE"}
+    )
     assert KARA_LATER & set(run.chapters)
 
 
@@ -68,6 +82,7 @@ FREED_BY_MARKUS, RECYCLED = "ch32_2_00007", "ch32_9_x0003"
 REVOLUTION = {"ch31_1_00006": "REVOLUTION"}
 
 
+@pytest.mark.slow
 def test_fleeing_over_the_barbed_wire_the_soldier_shoots_them(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, FENCE: "FLEE"})
     assert "32.2" in run.chapters
@@ -76,6 +91,7 @@ def test_fleeing_over_the_barbed_wire_the_soldier_shoots_them(tmp_path):
     assert LANDFILL_HUG not in run.nodes
 
 
+@pytest.mark.slow
 def test_fighting_the_soldier_kara_and_alice_escape_on_a_truck(tmp_path):
     run = play_story(tmp_path, {**CAPTURED, FENCE: "PROTECT ALICE"})
     assert LANDFILL_HUG in run.nodes
@@ -83,6 +99,7 @@ def test_fighting_the_soldier_kara_and_alice_escape_on_a_truck(tmp_path):
     assert run.flags["alice_alive"] is True
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("revolution", [True, False])
 def test_only_markus_revolution_frees_the_camp(tmp_path, revolution):
     picks = {**CAPTURED, FENCE: "WAIT"} | (REVOLUTION if revolution else {})
@@ -95,14 +112,18 @@ def test_only_markus_revolution_frees_the_camp(tmp_path, revolution):
     assert LANDFILL_HUG not in run.nodes
 
 
+@pytest.mark.slow
 def test_alice_never_panics_because_quick_time_events_succeed(tmp_path):
     run = play_story(tmp_path, CAPTURED)
     assert PANIC not in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("luther_dead", [True, False])
 def test_a_dead_luther_never_appears_in_the_camp(tmp_path, luther_dead):
-    picks = {**CAPTURED, FENCE: "WAIT"} | (LUTHER_DIES_AT_THE_RANCH if luther_dead else {})
+    picks = {**CAPTURED, FENCE: "WAIT"} | (
+        LUTHER_DIES_AT_THE_RANCH if luther_dead else {}
+    )
     run = play_story(tmp_path, picks)
     assert "32.2" in run.chapters
     assert (TALK_TO_LUTHER in run.nodes) is not luther_dead

@@ -26,6 +26,7 @@ def _next(nid: str, flags: dict) -> str:
 
 # Night of the Soul: "If Markus decides to not trust Connor, he will ... [execute]
 # him"; "deviant Connor will die and another, non-deviant RK800 will be deployed".
+@pytest.mark.slow
 def test_not_trusting_connor_kills_him_and_cyberlife_sends_a_machine(tmp_path):
     run = play_story(tmp_path, {"ch31_1_00041": "DON'T TRUST"})
     assert run.flags["connor_deviant"] is False
@@ -43,8 +44,11 @@ def test_simon_s_josh_topic_needs_josh_dead():
 ENTRY = "ch32_6_x0118"
 REVOLT, NORTH_LEADS, END = "ch32_6_00125", "ch32_6_00011", "ch32_6_00001"
 ALIVE = {
-    "markus_alive": True, "markus_left_jericho": False, "north_alive": True,
-    "markus_demonstration_outcome": "none", "connor_shot_deviant_leader": False,
+    "markus_alive": True,
+    "markus_left_jericho": False,
+    "north_alive": True,
+    "markus_demonstration_outcome": "none",
+    "connor_shot_deviant_leader": False,
 }
 
 
@@ -54,14 +58,26 @@ ALIVE = {
         ({"markus_peaceful": False}, REVOLT),
         ({"markus_peaceful": True, "markus_demonstration_outcome": "won"}, END),
         # Markus died at the demonstration: there is no revolution for North to lead.
-        ({"markus_peaceful": True, "markus_demonstration_outcome": "died_with_his_people",
-          "markus_alive": False}, END),
+        (
+            {
+                "markus_peaceful": True,
+                "markus_demonstration_outcome": "died_with_his_people",
+                "markus_alive": False,
+            },
+            END,
+        ),
         # Markus died before the battle, or left Jericho.
         ({"markus_peaceful": False, "markus_alive": False}, NORTH_LEADS),
         ({"markus_peaceful": False, "markus_left_jericho": True}, NORTH_LEADS),
         # The demonstration itself ended Markus's story: nothing more to play.
-        ({"markus_peaceful": True, "markus_alive": False,
-          "markus_demonstration_outcome": "died_with_his_people"}, END),
+        (
+            {
+                "markus_peaceful": True,
+                "markus_alive": False,
+                "markus_demonstration_outcome": "died_with_his_people",
+            },
+            END,
+        ),
         ({"markus_peaceful": False, "markus_alive": False, "north_alive": False}, END),
     ],
 )
@@ -77,6 +93,7 @@ def test_every_way_into_32_6_goes_through_its_entry_rule():
 
 
 # 32.5 records how the demonstration ended, for 32.6 and Connor's rooftop.
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks, outcome, alive",
     [
@@ -84,8 +101,16 @@ def test_every_way_into_32_6_goes_through_its_entry_rule():
         ({**REFUSE_DEAL, "ch32_5_00045": "SACRIFICE"}, "died_with_his_people", False),
         ({**REFUSE_DEAL, "ch32_5_00045": "DO NOTHING"}, "died_with_his_people", False),
         ({"ch32_5_00076": "ACCEPT DEAL"}, "betrayed", False),
-        ({"ch26_00070": "REFUSE", "ch30_3_00171": "KEEP", **REFUSE_DEAL,
-          "ch32_5_00045": "DIRTY BOMB"}, "free_in_the_debris", True),
+        (
+            {
+                "ch26_00070": "REFUSE",
+                "ch30_3_00171": "KEEP",
+                **REFUSE_DEAL,
+                "ch32_5_00045": "DIRTY BOMB",
+            },
+            "free_in_the_debris",
+            True,
+        ),
     ],
 )
 def test_the_demonstration_records_its_outcome(tmp_path, picks, outcome, alive):
@@ -96,6 +121,7 @@ def test_the_demonstration_records_its_outcome(tmp_path, picks, outcome, alive):
 
 # Simon and Josh wiki pages: if Markus "sacrifices himself, or does nothing, Simon and
 # the rest of the group are killed".
+@pytest.mark.slow
 @pytest.mark.parametrize("response", ["SACRIFICE", "DO NOTHING"])
 def test_sacrifice_or_doing_nothing_kills_everyone_at_the_barricade(tmp_path, response):
     run = play_story(tmp_path, {**PEACEFUL, **REFUSE_DEAL, "ch32_5_00045": response})
@@ -105,14 +131,17 @@ def test_sacrifice_or_doing_nothing_kills_everyone_at_the_barricade(tmp_path, re
 
 
 # Public Opinion: "Choosing 'provoke' or 'accuse' when talking to the army" lowers it.
+@pytest.mark.slow
 def test_provoking_and_accusing_the_army_turns_the_song_into_a_massacre(tmp_path):
     hostile = {"ch32_5_00170": "PROVOKE", "ch32_5_00164": "ACCUSE"}
-    run = play_story(tmp_path, {**PEACEFUL, **REFUSE_DEAL, **hostile,
-                                "ch32_5_00045": "SING"})
+    run = play_story(
+        tmp_path, {**PEACEFUL, **REFUSE_DEAL, **hostile, "ch32_5_00045": "SING"}
+    )
     assert run.flags["markus_public_opinion"] == "negative"
     assert run.flags["markus_alive"] is False
 
 
+@pytest.mark.slow
 def test_staying_firm_keeps_public_opinion_positive(tmp_path):
     run = play_story(tmp_path, {**PEACEFUL, **REFUSE_DEAL, "ch32_5_00045": "SING"})
     assert run.flags["markus_public_opinion"] == "positive"
@@ -126,13 +155,24 @@ def test_a_failed_defence_without_north_kills_markus():
     assert "ch32_5_00045" not in reachable(dest, after)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "nid, labels",
     [
         ("ch32_5_x0108", ["RAISE FIST", "HANDS IN THE AIR", "SIT", "KNEEL"]),
-        ("ch32_5_00149", ["USE THE ABANDONED CAR", "USE THE BILLBOARD", "USE THE BENCH"]),
-        ("ch32_5_x0109", ["WE ARE ALIVE", "WE WANT FREEDOM", "EQUAL RIGHTS FOR ANDROIDS",
-                          "LET OUR PEOPLE GO"]),
+        (
+            "ch32_5_00149",
+            ["USE THE ABANDONED CAR", "USE THE BILLBOARD", "USE THE BENCH"],
+        ),
+        (
+            "ch32_5_x0109",
+            [
+                "WE ARE ALIVE",
+                "WE WANT FREEDOM",
+                "EQUAL RIGHTS FOR ANDROIDS",
+                "LET OUR PEOPLE GO",
+            ],
+        ),
     ],
 )
 def test_the_demonstration_offers_the_wiki_s_choices(tmp_path, nid, labels):
@@ -141,6 +181,7 @@ def test_the_demonstration_offers_the_wiki_s_choices(tmp_path, nid, labels):
 
 
 # 32.6 Revolution.
+@pytest.mark.slow
 def test_markus_can_leave_simon_behind_and_simon_dies(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, "ch32_6_x0124": "KEEP GOING"})
     assert run.flags["simon_alive"] is False
@@ -148,6 +189,7 @@ def test_markus_can_leave_simon_behind_and_simon_dies(tmp_path):
     assert saved.flags["simon_alive"] is True and "ch32_6_00058" in saved.nodes
 
 
+@pytest.mark.slow
 def test_josh_dies_whether_or_not_markus_reaches_him(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, "ch32_6_x0123": "KEEP GOING"})
     assert run.flags["josh_alive"] is False and "ch32_6_00104" not in run.nodes
@@ -156,7 +198,9 @@ def test_josh_dies_whether_or_not_markus_reaches_him(tmp_path):
 def test_markus_cannot_refuse_simon_s_heart():
     heart = _node("ch32_6_x0112")
     assert heart["type"] == "condition" and heart["resolution"] == "rule"
-    assert [b["effects"]["flags"] for b in heart["branches"]] == [{"simon_alive": False}]
+    assert [b["effects"]["flags"] for b in heart["branches"]] == [
+        {"simon_alive": False}
+    ]
 
 
 # Final Assault, machine Connor: "Control Connor → Win the Fight → Connor Stopped The
@@ -164,22 +208,35 @@ def test_markus_cannot_refuse_simon_s_heart():
 FIGHT, AS_CONNOR = "ch32_6_00046", "ch32_6_x0119"
 
 
+@pytest.mark.slow
 def test_who_to_control_in_the_final_fight_is_a_choice(tmp_path):
     run = play_story(tmp_path, {**REVOLUTION, **MACHINE})
     assert run.offered(FIGHT) == ["CONTROL MARKUS", "CONTROL CONNOR"]
     assert run.flags["markus_alive"] is True and "ch32_6_00039" in run.nodes
 
 
+@pytest.mark.slow
 def test_connor_winning_the_fight_stops_the_revolution(tmp_path):
-    picks = {**REVOLUTION, **MACHINE, FIGHT: "CONTROL CONNOR", AS_CONNOR: "WIN THE FIGHT"}
+    picks = {
+        **REVOLUTION,
+        **MACHINE,
+        FIGHT: "CONTROL CONNOR",
+        AS_CONNOR: "WIN THE FIGHT",
+    }
     run = play_story(tmp_path, picks)
     assert run.flags["markus_alive"] is False
     assert run.flags["connor_stopped_the_revolution"] is True
     assert "ch32_6_00039" not in run.nodes
 
 
+@pytest.mark.slow
 def test_connor_letting_markus_win_lets_the_assault_succeed(tmp_path):
-    picks = {**REVOLUTION, **MACHINE, FIGHT: "CONTROL CONNOR", AS_CONNOR: "LET MARKUS WIN"}
+    picks = {
+        **REVOLUTION,
+        **MACHINE,
+        FIGHT: "CONTROL CONNOR",
+        AS_CONNOR: "LET MARKUS WIN",
+    }
     run = play_story(tmp_path, picks)
     assert run.flags["markus_alive"] is True and "ch32_6_00039" in run.nodes
 
@@ -192,7 +249,10 @@ def test_markus_shot_by_connor_can_still_detonate_the_bomb():
 
 
 def test_not_detonating_after_connor_spares_him_gets_markus_executed():
-    assert effect_flags(_option("ch32_6_00024", "DO NOT DETONATE"))["markus_alive"] is False
+    assert (
+        effect_flags(_option("ch32_6_00024", "DO NOT DETONATE"))["markus_alive"]
+        is False
+    )
 
 
 # Inside Store with North: kissing her and giving up the bomb go back to the choice.
@@ -200,13 +260,17 @@ def test_the_store_kiss_and_giving_up_the_bomb_return_to_the_choice():
     kiss = _option("ch32_6_00019", "KISS")
     assert not kiss["requirements_unverified"] and kiss["requires"]
     assert {o["label"] for o in _node(kiss["next"])["options"]} == {
-        "DIRTY BOMB", "SUICIDE", "SURRENDER"}
+        "DIRTY BOMB",
+        "SUICIDE",
+        "SURRENDER",
+    }
     gave_up = _node(_option("ch32_6_00013", "GIVE UP")["next"])["next"]
     assert {o["label"] for o in _node(gave_up)["options"]} == {"SUICIDE", "SURRENDER"}
 
 
-@pytest.mark.parametrize("nid, label", [("ch32_6_00013", "PRESS"),
-                                        ("ch32_6_00031", "DIRTY BOMB")])
+@pytest.mark.parametrize(
+    "nid, label", [("ch32_6_00013", "PRESS"), ("ch32_6_00031", "DIRTY BOMB")]
+)
 def test_every_detonation_is_public_news(nid, label):
     assert _option(nid, label)["effects"]["news"]
 
@@ -218,8 +282,16 @@ def test_only_the_decision_quick_time_events_became_choices():
     nodes = load_dataset()["nodes"]
     assert nodes[FIGHT]["type"] == "choice"
     assert nodes["ch32_6_x0101"]["type"] == "choice"
-    for nid in ("ch19_00119", "ch23_00041", "ch26_00156", "ch28_00012",
-                "ch30_3_00035", "ch30_3_00076", "ch30_3_00095", "ch32_5_x0103"):
+    for nid in (
+        "ch19_00119",
+        "ch23_00041",
+        "ch26_00156",
+        "ch28_00012",
+        "ch30_3_00035",
+        "ch30_3_00076",
+        "ch30_3_00095",
+        "ch32_5_x0103",
+    ):
         assert nodes[nid]["resolution"] == "qte", nid
 
 
@@ -229,6 +301,7 @@ def test_intervening_for_josh_has_no_wounded_requirement():
 
 
 # Broken: "Check studio without Carl OR Check studio with Carl".
+@pytest.mark.slow
 def test_markus_chooses_whether_carl_comes_to_the_studio(tmp_path):
     run = play_story(tmp_path, {"ch8_00051": "CHECK THE STUDIO WITH CARL"})
     assert "ch8_00050" in run.nodes and "ch8_00049" not in run.nodes
@@ -236,9 +309,13 @@ def test_markus_chooses_whether_carl_comes_to_the_studio(tmp_path):
 
 # Shades of Color: "Protesters harass Markus (side option)"; The Painter: "Carl
 # notices Markus' clothes - happens if Markus encounters the protestors".
-@pytest.mark.parametrize("label, harassed", [("WALK PAST THE PROTESTERS", True),
-                                             ("GO AROUND THEM", False)])
-def test_carl_notices_the_torn_clothes_only_after_the_protesters(tmp_path, label, harassed):
+@pytest.mark.slow
+@pytest.mark.parametrize(
+    "label, harassed", [("WALK PAST THE PROTESTERS", True), ("GO AROUND THEM", False)]
+)
+def test_carl_notices_the_torn_clothes_only_after_the_protesters(
+    tmp_path, label, harassed
+):
     run = play_story(tmp_path, {"ch3_x0003": label})
     assert ("ch3_00013" in run.nodes) is harassed
     assert ("ch5_00115" in run.nodes) is harassed

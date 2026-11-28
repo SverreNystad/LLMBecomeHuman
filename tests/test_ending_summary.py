@@ -118,6 +118,7 @@ def test_no_sentence_names_a_flag(name):
         assert text and not SNAKE_CASE.search(text), text
 
 
+@pytest.mark.slow
 def test_a_demo_run_reads_as_its_recorded_route():
     peaceful = _summary(DETROIT_RUNS, "synthetic-google")
     assert _character(peaceful, "Markus")["sentence"] == (
@@ -249,7 +250,9 @@ def test_kara_who_escaped_the_camp_is_not_described_as_captured(
         "kara_story_ended": False,
         "alice_alive": alice,
     }
-    root = craft(flags=flags, routes=[("route_kara_final", "kara_captured", True, False)])
+    root = craft(
+        flags=flags, routes=[("route_kara_final", "kara_captured", True, False)]
+    )
     kara = _character(_summary(root, "crafted"), "Kara")
     assert kara["outcome"] == "escaped"
     assert kara["sentence"] == sentence

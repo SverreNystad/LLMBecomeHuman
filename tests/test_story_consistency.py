@@ -17,6 +17,7 @@ SIMON_LEFT_ON_THE_ROOF = {
 }
 
 
+@pytest.mark.slow
 def test_simon_left_on_the_roof_survives_when_connor_goes_to_the_kitchen(tmp_path):
     run = play_story(
         tmp_path, {**SIMON_LEFT_ON_THE_ROOF, "ch24_x0201": "QUESTION THE KITCHEN STAFF"}
@@ -26,6 +27,7 @@ def test_simon_left_on_the_roof_survives_when_connor_goes_to_the_kitchen(tmp_pat
     assert "ch26_00224" in run.nodes  # Simon is back in Jericho after Capitol Park
 
 
+@pytest.mark.slow
 def test_simon_left_on_the_roof_dies_when_connor_finds_him(tmp_path):
     run = play_story(
         tmp_path, {**SIMON_LEFT_ON_THE_ROOF, "ch24_x0201": "GO UP TO THE ROOF"}
@@ -49,6 +51,7 @@ def lines_by(run, speaker: str, after: str | None = None) -> list[tuple[str, str
     ]
 
 
+@pytest.mark.slow
 def test_simon_killed_in_the_broadcast_never_speaks_again(tmp_path):
     run = play_story(
         tmp_path,
@@ -64,6 +67,7 @@ def test_simon_killed_in_the_broadcast_never_speaks_again(tmp_path):
     assert [n for c, n in later if c != "29"] == []
 
 
+@pytest.mark.slow
 def test_luther_who_killed_the_policeman_does_not_see_him_leave(tmp_path):
     run = play_story(tmp_path, {"ch25_x0001": "WAIT FOR ROSE", "ch25_00076": "KITCHEN"})
     assert run.flags["luther_killed_cop"] is True
@@ -82,10 +86,12 @@ def guessed_conditions(run) -> list[str]:
     ]
 
 
+@pytest.mark.slow
 def test_a_default_run_decides_every_condition(tmp_path):
     assert guessed_conditions(play_story(tmp_path, {})) == []
 
 
+@pytest.mark.slow
 def test_dying_for_daniel_in_the_last_plea_is_remembered(tmp_path):
     # The Hostage: Connor steps forward and Daniel shoots him (wiki Last Chance, Connor:
     # a reactivated Daniel then apologises instead of calling Connor a liar).
@@ -100,6 +106,7 @@ def test_dying_for_daniel_in_the_last_plea_is_remembered(tmp_path):
     assert run.flags["connor_daniel_final_plea"] == "sacrifice"
 
 
+@pytest.mark.slow
 def test_kara_chooses_whether_to_make_the_policeman_coffee(tmp_path):
     run = play_story(tmp_path, {"ch25_x0101": "STAY WITH HIM"})
     assert run.offered("ch25_x0101") == ["MAKE COFFEE", "STAY WITH HIM"]
@@ -107,6 +114,7 @@ def test_kara_chooses_whether_to_make_the_policeman_coffee(tmp_path):
     assert guessed_conditions(run) == []
 
 
+@pytest.mark.slow
 def test_connor_cannot_ask_about_a_policeman_markus_never_met(tmp_path):
     # Capitol Park: a failed mission ends before the police patrol arrives.
     run = play_story(tmp_path, {"ch24_00031": "SAVE HANK"})
@@ -170,11 +178,13 @@ def play_randomly(run_dir, seed: int) -> list[tuple[str, str, str, str]]:
     return late_lines
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("seed", range(24))
 def test_nobody_speaks_after_their_fate_ended(tmp_path, seed):
     assert play_randomly(tmp_path, seed) == []
 
 
+@pytest.mark.slow
 def test_without_simon_on_the_roof_connor_goes_on_to_the_kitchen(tmp_path):
     # Public Enemy: the roof is a detour unless a wounded Simon hides there (wiki
     # flowchart: Go to Rooftop, Find Simon "only if wounded", Enter The Kitchen).

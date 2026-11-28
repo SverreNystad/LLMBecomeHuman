@@ -44,6 +44,7 @@ BADLY_WOUNDED = "ch32_6_00093"  # leads to the heart choice or nobody to save hi
 KAMSKI_WITH_MARKUS, KAMSKI_ALONE = "ch32_7_00030", "ch32_7_00031"
 
 
+@pytest.mark.slow
 def test_hearing_perkins_out_changes_no_fate(tmp_path):
     run = play_story(tmp_path, {GO_TALK: "ACCEPT", **REFUSE_DEAL})
     assert I_NEED_TO_HEAR_HIM in run.nodes
@@ -52,6 +53,7 @@ def test_hearing_perkins_out_changes_no_fate(tmp_path):
     assert KAMSKI_WITH_MARKUS in run.nodes
 
 
+@pytest.mark.slow
 def test_refusing_twice_to_talk_goes_straight_to_the_attack(tmp_path):
     run = play_story(tmp_path, {GO_TALK: "REFUSE", GO_TALK_AFTER_REFUSING: "REFUSE"})
     assert I_NEED_TO_HEAR_HIM not in run.nodes
@@ -59,6 +61,7 @@ def test_refusing_twice_to_talk_goes_straight_to_the_attack(tmp_path):
     assert BARRICADE_ATTACKED in run.nodes
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("north_alive", [True, False])
 def test_accepting_perkins_deal_gets_markus_shot(tmp_path, north_alive):
     picks = {DEAL: "ACCEPT DEAL"} | ({} if north_alive else LEAVE_NORTH)
@@ -73,6 +76,7 @@ def test_accepting_perkins_deal_gets_markus_shot(tmp_path, north_alive):
     assert KAMSKI_ALONE in run.nodes and KAMSKI_WITH_MARKUS not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_question_to_perkins_is_not_a_refusal(tmp_path):
     run = play_story(
         tmp_path, {DEAL: "OTHER DEMONSTRATIONS", DEAL_AFTER_QUESTION: "ACCEPT DEAL"}
@@ -82,6 +86,7 @@ def test_a_question_to_perkins_is_not_a_refusal(tmp_path):
     assert run.flags["markus_alive"] is False
 
 
+@pytest.mark.slow
 def test_a_failed_demonstration_has_no_victory_speech(tmp_path):
     # Sacrificing himself at the barricade: the soldiers fire.
     run = play_story(tmp_path, {**REFUSE_DEAL, "ch32_5_00045": "SACRIFICE"})
@@ -91,6 +96,7 @@ def test_a_failed_demonstration_has_no_victory_speech(tmp_path):
     assert NORTH_SAVES_MARKUS not in run.nodes
 
 
+@pytest.mark.slow
 def test_a_successful_demonstration_has_the_victory_speech(tmp_path):
     run = play_story(tmp_path, {**PEACEFUL, **REFUSE_DEAL, "ch32_5_00045": "SING"})
     assert VICTORY_SPEECH in run.nodes
@@ -107,6 +113,7 @@ def test_kissing_north_at_the_barricade_needs_her_alive_and_his_lover():
     assert {"flag": "markus_kissed_north", "equals": True} in kiss["requires"]
 
 
+@pytest.mark.slow
 def test_a_successful_revolution_never_plays_the_failure(tmp_path):
     run = play_story(tmp_path, REVOLUTION)
     assert ASSAULT_SUCCESSFUL in run.nodes
@@ -125,6 +132,7 @@ SIMON_LEFT_ON_THE_ROOF = {
 }
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize(
     "picks", [REVOLUTION, {**REVOLUTION, **LEAVE_NORTH, **SIMON_LEFT_ON_THE_ROOF}]
 )
@@ -142,7 +150,13 @@ def test_markus_badly_wounded_is_a_quick_time_event_failure():
     assert wounded["default_branch"] is None  # success: the fall-through next
 
 
-ENGINE_LABELS = ("TIME OUT", "TIMEOUT", "DEFAULT", "CommonTranslationKey", "OUT OF TIME")
+ENGINE_LABELS = (
+    "TIME OUT",
+    "TIMEOUT",
+    "DEFAULT",
+    "CommonTranslationKey",
+    "OUT OF TIME",
+)
 
 
 def test_no_option_label_is_an_engine_or_timeout_string():
