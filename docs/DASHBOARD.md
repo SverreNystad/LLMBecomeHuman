@@ -39,6 +39,22 @@ The dashboard shows every Run found anywhere under `--runs-dir`. In the Docker i
 - **No model chosen:** after **Clear**, every chapter stays listed, faded, with the current one highlighted, and the dashboard keeps that chapter's Character theme, the background network included. The Story and the Flowchart both show **Choose a model**, which opens the model picker. The controls that need a model hide, and the + button pulses.
 - **Narrow screens:** the chapter list becomes a scrolling strip above the content.
 
+## Synthetic Scene Art
+
+Behind the dashboard a slow node network moves in the style of the chapter's Character. Under it, the current scene's Synthetic Scene Art shows faded so the text stays readable, and the title screen has its own Synthetic Title Art. Both are made by an image model, not taken from the game, and ship with the repository and the Docker image (see [ADR 0008](adr/0008-synthetic-scene-art-ships-in-the-docker-image.md)).
+
+[`data/scene-art.json`](../data/scene-art.json) lists every piece of Synthetic Scene Art: its file, chapter, Character, the scene headings it belongs to, and whether it is the chapter's main art. The files sit at the paths it names, relative to `images/`:
+
+```text
+images/
+  ui/title.webp
+  scenes/ch01_penthouse.webp
+  scenes/ch02_android_zone_store.webp
+  ...
+```
+
+Scenes are WebP at 1280 px wide, quality 65: the art is always shown blurred, so more pixels would only add bytes. Raw generations are never committed; convert them and save only the files the manifest names. A missing file is simply skipped, and the network fills its place. `--images-dir` points the dashboard at another folder. While reading a Story the background follows the scene you are reading; in the Flowchart it follows the node you hover or select, else the chapter's main art.
+
 ## Story
 
 Read one Run, chapter by chapter.

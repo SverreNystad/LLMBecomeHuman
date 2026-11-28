@@ -53,6 +53,9 @@ theme:
 
 nav:
   - Home: index.md
+  - How it works: HOW_IT_WORKS.md
+  - Dashboard: DASHBOARD.md
+  - Developer setup: developer_setup.md
       
 plugins:
   - search
