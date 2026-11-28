@@ -108,14 +108,23 @@ def detroit_dashboard(tmp_path):
 
 
 @pytest.fixture
+def detroit_dashboard_with_art():
+    """The real dashboard over the six Synthetic Runs, with the repository's Synthetic
+    Scene Art and Synthetic Title Art in images/."""
+    yield from _serve(DETROIT_RUNS, PROJECT / "images")
+
+
+@pytest.fixture
 def browser():
-    """Chromium through Playwright; skips the test when either is unavailable."""
+    """Chromium through Playwright: a `chromium` on PATH, else the one `playwright
+    install chromium` downloads. Skips the test when either is unavailable."""
     playwright = pytest.importorskip("playwright.sync_api")
     binary = shutil.which("chromium") or shutil.which("chromium-browser")
-    if not binary:
-        pytest.skip("Chromium executable unavailable")
     with playwright.sync_playwright() as p:
-        b = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
+        try:
+            b = p.chromium.launch(executable_path=binary, args=["--no-sandbox"])
+        except playwright.Error as error:
+            pytest.skip(f"Chromium unavailable: {error.message.splitlines()[0]}")
         try:
             yield b
         finally:
